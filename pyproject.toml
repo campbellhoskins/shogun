@@ -1,0 +1,16 @@
+[project]
+name = "shogun"
+version = "0.1.0"
+description = "Duty of Care Compliance Agent — ontology graph constructor + reasoning agent for travel policy automation"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic>=0.25.0",
+    "networkx>=3.2",
+    "pyvis>=0.3.2",
+    "pydantic>=2.5.0",
+    "python-dotenv>=1.0.0",
+    "pypdf>=6.7.4",
+    "pymupdf>=1.27.1",
+    "pymupdf4llm>=0.3.4",
+]

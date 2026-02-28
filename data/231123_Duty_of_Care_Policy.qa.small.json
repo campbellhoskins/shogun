@@ -1,0 +1,72 @@
+[
+  {
+    "question": "What is the full name of the organization that issued this Duty of Care Policy?",
+    "answer": "NGO TECHNOLOGY OF PROGRESS",
+    "section": "1.2",
+    "difficulty": "easy",
+    "baseline": "PASS"
+  },
+  {
+    "question": "What three types of harm are defined in the policy?",
+    "answer": "(a) injury or death, (b) damage to property, and (c) economic loss.",
+    "section": "4 (Definitions)",
+    "difficulty": "easy",
+    "baseline": "FAIL"
+  },
+  {
+    "question": "To whom must Personnel or Representatives immediately report security incidents?",
+    "answer": "The person performing security functions or the Executive Director.",
+    "section": "6.4",
+    "difficulty": "easy",
+    "baseline": "PASS"
+  },
+  {
+    "question": "What four items must the office be equipped with for safety?",
+    "answer": "A fire extinguisher, first aid kit, personal protective equipment, and an action plan (information about the nearest bomb shelter) in case of a missile threat.",
+    "section": "6.7",
+    "difficulty": "medium",
+    "baseline": "PASS"
+  },
+  {
+    "question": "What social package benefits does the Organization provide?",
+    "answer": "Public transport, insurance, rehabilitation, etc., based on the financial capabilities of the Organization.",
+    "section": "6.16",
+    "difficulty": "medium",
+    "baseline": "FAIL"
+  },
+  {
+    "question": "Under what two conditions is a duty of care breached?",
+    "answer": "If Personnel or Representative (1) fails to do something a reasonable person in that position would do in the same circumstances, or (2) acts or fails to act in a way that causes harm to someone to whom the person owed a duty of care, including physical harm, emotional injury, or financial loss.",
+    "section": "7.1",
+    "difficulty": "medium",
+    "baseline": "FAIL"
+  },
+  {
+    "question": "What constrains the Organization's ability to provide training and social packages?",
+    "answer": "The financial capabilities of the Organization.",
+    "section": "6.1, 6.16, 6.18",
+    "difficulty": "medium",
+    "baseline": "FAIL"
+  },
+  {
+    "question": "What seven measures must the Organization take for Personnel on business trips to high-risk areas?",
+    "answer": "1) Situation assessment based on official information from public authorities and coordinating international organizations, 2) development of route and travel time, 3) informing about movement, 4) necessary training of everyone, 5) providing a communication plan, 6) providing a plan of informing in case of emergencies, 7) instruction including standard instructions for conduct in certain regions or under certain conditions.",
+    "section": "6.5",
+    "difficulty": "hard",
+    "baseline": "FAIL"
+  },
+  {
+    "question": "What does an emergency situation mean according to the policy?",
+    "answer": "A danger of natural, man-made, socio-political or military nature, war, anti-terrorist operation, other measures of increased risk of national, regional, local nature, which may affect the implementation of the goals of the Organization, saving the lives and health of the Personnel and the Representatives.",
+    "section": "6.26",
+    "difficulty": "hard",
+    "baseline": "PASS"
+  },
+  {
+    "question": "Does the policy define specific destination risk levels (Level 1 through Level 4)?",
+    "answer": "No, the policy does not define numbered destination risk levels. It refers to 'high-risk areas,' 'gray zones,' and 'war zones' but does not use a numbered classification system.",
+    "section": "6.5, 6.6",
+    "difficulty": "hard",
+    "baseline": "PASS"
+  }
+]
