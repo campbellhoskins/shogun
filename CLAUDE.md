@@ -44,6 +44,60 @@ Each parser writes its markdown output to its own subfolder under `data/`:
 
 Source PDFs live in `data/` root. Do not mix parser outputs into the same folder.
 
+### Result Storage Conventions
+
+Every pipeline run that makes API calls **must** save its outputs to `results/`. No LLM-generated data should exist only in console output or in-memory. If an API was called and tokens were spent, the result has a file.
+
+#### Directory Layout
+
+```
+results/
+├── runs/                              # One subdirectory per pipeline run
+│   ├── {timestamp}_{policy_name}/     # Run ID = UTC timestamp + sanitized policy name
+│   │   ├── run_meta.json              # Run metadata, timings, counts, anchoring stats
+│   │   ├── sections.json              # Stage 1: LLM segmentation output
+│   │   ├── extractions.json           # Stage 2: per-section extraction (pre-merge)
+│   │   ├── ontology.json              # Stage 3: final merged OntologyGraph (reloadable)
+│   │   ├── entities.json              # Entities grouped by type (human-readable)
+│   │   └── relationships.json         # Relationships grouped by type (human-readable)
+│   └── ...
+└── latest.txt                         # Contains the run_id of the most recent run
+```
+
+#### File Contracts
+
+Each file in a run directory has a fixed schema. Do not add ad-hoc files or change these schemas without updating both `src/results.py` and this section.
+
+| File | Purpose | Schema Owner |
+|------|---------|--------------|
+| `run_meta.json` | Pipeline config, timings, entity/relationship counts, source anchoring quality stats | `save_run()` in `src/results.py` |
+| `sections.json` | Array of sections: header, section_number, level, char_count, enumerated_lists | `save_run()` — sourced from `DocumentSection` model |
+| `extractions.json` | Array of per-section results: section info + raw entities/relationships before merge | `save_run()` — sourced from `SectionExtraction` model |
+| `ontology.json` | Full `OntologyGraph.model_dump()` — reloadable via `OntologyGraph(**data)` | `save_run()` — sourced from `OntologyGraph` model |
+| `entities.json` | Entities grouped by type with id, name, description, attributes, source_section, source_text | `save_run()` — derived view for human reading |
+| `relationships.json` | Relationships grouped by type with resolved entity names | `save_run()` — derived view for human reading |
+
+#### Rules
+
+1. **Every pipeline run auto-saves.** The `extract_ontology()` function in `src/pipeline.py` calls `save_run()` at the end of every execution. No manual save step.
+2. **Never lose API results.** If a new pipeline stage is added (e.g., cross-section inference, verification), its LLM output must be added as a new file in the run directory and registered in `save_run()`.
+3. **Run IDs are immutable.** Format: `YYYY-MM-DDTHH-MM-SS_{policy_name}`. Once a run is saved, its directory is never overwritten — each run gets a unique timestamp.
+4. **`ontology.json` is the source of truth.** It contains the complete serialized graph and can reconstruct the full `OntologyGraph` object. All other files are derived views for convenience.
+5. **Reload without re-running.** Use `load_latest_ontology()` or `load_run(run_id)` from `src/results.py` to reload any previous run's graph without making API calls.
+6. **When adding a new pipeline stage**, add a corresponding JSON file to the run directory (e.g., `cross_section.json`, `verification.json`), update `save_run()` to write it, and update `load_run()` to read it. Document the new file in this table.
+
+#### What Goes Where
+
+| Data Type | Where It Lives |
+|-----------|---------------|
+| Source policy PDFs | `data/` |
+| PDF-to-markdown conversions | `output/parsed/` |
+| Q&A test sets | `data/*.qa.json` |
+| Pipeline run outputs (entities, relationships, ontology) | `results/runs/{run_id}/` |
+| Evaluation results (agent Q&A scoring) | `output/eval_results.json` |
+| Graph visualizations (interactive HTML) | `output/graph.html` |
+| Saved graphs (legacy format from `build_graph.py`) | `output/graphs/` |
+
 ## Core Principles
 
 - **Accuracy over cost.** Never accept a worse outcome to save tokens or reduce API calls. If the agent needs more iterations, let it iterate.

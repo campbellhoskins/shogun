@@ -1,4 +1,27 @@
 __pycache__/
 *.pyc
 .env
-output/
+
+# Claude Code IDE settings (machine-specific)
+.claude/
+
+# Pipeline run results (large, regenerable from API calls)
+results/runs/
+results/latest.txt
+
+# Build artifacts
+output/graph.html
+output/eval_results.json
+output/graphs/
+
+# Keep output/parsed/ tracked (PDF-to-markdown conversions are useful to version)
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python
+*.egg-info/
+dist/
+build/
+.venv/
