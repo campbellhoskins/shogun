@@ -104,11 +104,16 @@ def save_run(
     sections_data = []
     for s in ontology.source_sections:
         sections_data.append({
+            "chunk_id": s.chunk_id,
             "section_number": s.section_number,
             "header": s.header,
             "level": s.level,
             "source_offset": s.source_offset,
             "parent_section": s.parent_section,
+            "parent_header": s.parent_header,
+            "hierarchical_path": [
+                entry.model_dump() for entry in s.hierarchical_path
+            ],
             "char_count": len(s.text),
             "enumerated_lists": [el.model_dump() for el in s.enumerated_lists],
         })

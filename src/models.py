@@ -27,15 +27,25 @@ class EnumeratedList(BaseModel):
     preview: str = ""  # First few words of the list for identification
 
 
+class HierarchyEntry(BaseModel):
+    """A single entry in a section's hierarchical path from document root."""
+
+    section_number: str = ""
+    header: str = ""
+
+
 class DocumentSection(BaseModel):
     """A logical section of a document identified by the segmenter."""
 
+    chunk_id: str = ""  # Stable ID for RAG retrieval (e.g., "chunk_001")
     header: str = ""
     section_number: str = ""
     level: int = 1
     text: str
     source_offset: int = 0
     parent_section: str | None = None
+    parent_header: str | None = None
+    hierarchical_path: list[HierarchyEntry] = []
     enumerated_lists: list[EnumeratedList] = []
 
 

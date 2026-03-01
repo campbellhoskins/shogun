@@ -45,12 +45,12 @@ def extract_ontology(
     pipeline_start = time.time()
     stage_timings: dict[str, float] = {}
 
-    # --- Stage 1: LLM Segmentation ---
-    print("Stage 1: Segmenting document...")
+    # --- Stage 1: Semantic Chunking ---
+    print("Stage 1: Chunking document...")
     stage_start = time.time()
     sections = segment_document(document_text, client=client)
     stage_timings["segmentation"] = round(time.time() - stage_start, 1)
-    print(f"  Found {len(sections)} sections ({stage_timings['segmentation']}s)")
+    print(f"  Found {len(sections)} chunks ({stage_timings['segmentation']}s)")
     for s in sections:
         list_info = ""
         if s.enumerated_lists:
@@ -58,7 +58,11 @@ def extract_ontology(
                 f"{el.item_count} {el.list_type}" for el in s.enumerated_lists
             ]
             list_info = f" [lists: {', '.join(list_counts)}]"
-        print(f"    {'  ' * (s.level - 1)}{s.section_number}: {s.header}{list_info}")
+        print(
+            f"    {'  ' * (s.level - 1)}{s.chunk_id} "
+            f"{s.section_number}: {s.header} "
+            f"({len(s.text)} chars){list_info}"
+        )
 
     # --- Stage 2: Per-Section Extraction ---
     print("\nStage 2: Extracting entities per section...")

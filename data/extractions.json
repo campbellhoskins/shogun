@@ -1,0 +1,4089 @@
+[
+  {
+    "chunk_id": "chunk_001",
+    "section_number": "0",
+    "entity_count": 10,
+    "relationship_count": 6,
+    "entities": [
+      {
+        "id": "s0_location_kyiv",
+        "type": "ContactInformation",
+        "name": "Location - Kyiv",
+        "description": "Location where the policy was created/signed",
+        "attributes": {
+          "location": "Kyiv"
+        },
+        "source_anchor": {
+          "source_text": "Kiyv, 2023",
+          "source_section": "0",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s0_year_2023",
+        "type": "Threshold",
+        "name": "Policy Year 2023",
+        "description": "Year when the policy was created and approved",
+        "attributes": {
+          "year": "2023"
+        },
+        "source_anchor": {
+          "source_text": "Kiyv, 2023",
+          "source_section": "0",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s0_executive_director_role",
+        "type": "Role",
+        "name": "Executive Director",
+        "description": "Senior executive role with policy approval authority",
+        "attributes": {
+          "role_type": "executive"
+        },
+        "source_anchor": {
+          "source_text": "Executive director",
+          "source_section": "0",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s0_vasyl_zadvornyy",
+        "type": "Person",
+        "name": "Vasyl Zadvornyy",
+        "description": "Executive director who approved the policy",
+        "attributes": {
+          "position": "Executive Director"
+        },
+        "source_anchor": {
+          "source_text": "Vasyl Zadvornyy",
+          "source_section": "0",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s0_approval_date_april_3",
+        "type": "Threshold",
+        "name": "Executive Director Approval Date",
+        "description": "Date when executive director approved the policy",
+        "attributes": {
+          "date": "03, April 2023"
+        },
+        "source_anchor": {
+          "source_text": "03, April 2023",
+          "source_section": "0",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s0_order_2d",
+        "type": "ApprovalRequirement",
+        "name": "Order № 2-Д",
+        "description": "Executive order approving the policy",
+        "attributes": {
+          "order_number": "2-Д",
+          "date": "03, April 2023"
+        },
+        "source_anchor": {
+          "source_text": "Order № 2-Д from 03, April 2023",
+          "source_section": "0",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s0_general_meeting_role",
+        "type": "Role",
+        "name": "General Meeting of NGO",
+        "description": "Governing body with authority to confirm organizational policies",
+        "attributes": {
+          "role_type": "governing_body"
+        },
+        "source_anchor": {
+          "source_text": "General Meeting of NGO",
+          "source_section": "0",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s0_technology_of_progress_ngo",
+        "type": "Role",
+        "name": "Technology of Progress NGO",
+        "description": "Non-governmental organization implementing the policy",
+        "attributes": {
+          "organization_type": "NGO"
+        },
+        "source_anchor": {
+          "source_text": "TECHNOLOGY OF PROGRESS",
+          "source_section": "0",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s0_decision_1p",
+        "type": "ApprovalRequirement",
+        "name": "Decision № 1-П",
+        "description": "General meeting decision confirming the policy",
+        "attributes": {
+          "decision_number": "1-П",
+          "date": "02, April 2023"
+        },
+        "source_anchor": {
+          "source_text": "the № 1-П from 02, April 2023",
+          "source_section": "0",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s0_duty_of_care_policy",
+        "type": "PolicyRule",
+        "name": "Duty of Care Policy",
+        "description": "The main policy document being approved and implemented",
+        "attributes": {
+          "policy_type": "duty_of_care"
+        },
+        "source_anchor": {
+          "source_text": "DUTY OF CARE POLICY",
+          "source_section": "0",
+          "source_offset": -1
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "s0_vasyl_zadvornyy",
+        "target_id": "s0_executive_director_role",
+        "type": "part_of",
+        "description": "Vasyl Zadvornyy holds the Executive Director role",
+        "source_sections": [
+          "0"
+        ]
+      },
+      {
+        "source_id": "s0_executive_director_role",
+        "target_id": "s0_duty_of_care_policy",
+        "type": "requires",
+        "description": "Executive director approval is required for the policy",
+        "source_sections": [
+          "0"
+        ]
+      },
+      {
+        "source_id": "s0_order_2d",
+        "target_id": "s0_approval_date_april_3",
+        "type": "references",
+        "description": "Order 2-Д was issued on April 3, 2023",
+        "source_sections": [
+          "0"
+        ]
+      },
+      {
+        "source_id": "s0_general_meeting_role",
+        "target_id": "s0_technology_of_progress_ngo",
+        "type": "part_of",
+        "description": "General meeting is part of Technology of Progress NGO",
+        "source_sections": [
+          "0"
+        ]
+      },
+      {
+        "source_id": "s0_decision_1p",
+        "target_id": "s0_duty_of_care_policy",
+        "type": "requires",
+        "description": "Decision 1-П confirms the duty of care policy",
+        "source_sections": [
+          "0"
+        ]
+      },
+      {
+        "source_id": "s0_general_meeting_role",
+        "target_id": "s0_duty_of_care_policy",
+        "type": "requires",
+        "description": "General meeting confirmation is required for the policy",
+        "source_sections": [
+          "0"
+        ]
+      }
+    ]
+  },
+  {
+    "chunk_id": "chunk_002",
+    "section_number": "1",
+    "entity_count": 8,
+    "relationship_count": 7,
+    "entities": [
+      {
+        "id": "s1_ngo_technology_of_progress",
+        "type": "Role",
+        "name": "NGO TECHNOLOGY OF PROGRESS",
+        "description": "The Organization referenced throughout the policy",
+        "attributes": {
+          "formal_name": "NGO TECHNOLOGY OF PROGRESS",
+          "reference_name": "the Organization"
+        },
+        "source_anchor": {
+          "source_text": "NGO TECHNOLOGY OF PROGRESS (hereafter – the \"Organization\")",
+          "source_section": "1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s1_organizational_values",
+        "type": "PolicyRule",
+        "name": "Organizational Values",
+        "description": "Core values that form the basis of organizational activities",
+        "attributes": {
+          "values": [
+            "activeness and care",
+            "association and cooperation",
+            "responsibility and the rule of law"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the \"Organization\") are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.",
+          "source_section": "1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s1_integrity_standards_commitment",
+        "type": "PolicyRule",
+        "name": "Highest Standards of Integrity and Professionalism",
+        "description": "Organization's commitment to maintain highest standards regardless of operating environment",
+        "attributes": {
+          "scope": "regardless of the environment in which it operates",
+          "standard_type": "integrity and professionalism"
+        },
+        "source_anchor": {
+          "source_text": "The Organization is committed to the highest standards of integrity and professionalism, regardless of the environment in which it operates.",
+          "source_section": "1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s1_employee_ethical_conduct_requirement",
+        "type": "PolicyRule",
+        "name": "Employee Ethical Conduct Requirement",
+        "description": "Requirement for employees to adhere to highest standards of ethical conduct",
+        "attributes": {
+          "applies_to": "employees",
+          "frequency": "at all times",
+          "standard_level": "highest standards"
+        },
+        "source_anchor": {
+          "source_text": "The Organization requires its employees to adhere to the highest standards of ethical conduct at all times.",
+          "source_section": "1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s1_working_environment_commitment",
+        "type": "PolicyRule",
+        "name": "Working Environment Provision Commitment",
+        "description": "Organization's commitment to provide supportive working environment",
+        "attributes": {
+          "purpose": "enable and facilitate implementation of commitments",
+          "environment_characteristics": [
+            "encourages high standards of productivity",
+            "professional and personal development",
+            "achieving organizational goals",
+            "prioritizing staff health and safety"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "To enable and facilitate the implementation of these commitments, the Organization has committed to providing a working environment that encourages high standards of productivity, professional and personal development, achieving organizational goals and prioritizing staff health and safety.",
+          "source_section": "1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s1_productivity_standards",
+        "type": "Threshold",
+        "name": "High Standards of Productivity",
+        "description": "Productivity expectations in the working environment",
+        "attributes": {
+          "standard_level": "high standards"
+        },
+        "source_anchor": {
+          "source_text": "encourages high standards of productivity",
+          "source_section": "1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s1_professional_personal_development",
+        "type": "BenefitOrPackage",
+        "name": "Professional and Personal Development",
+        "description": "Development opportunities provided in working environment",
+        "attributes": {
+          "development_types": [
+            "professional",
+            "personal"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "professional and personal development",
+          "source_section": "1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s1_staff_health_safety_priority",
+        "type": "PolicyRule",
+        "name": "Staff Health and Safety Priority",
+        "description": "Organizational priority on staff health and safety",
+        "attributes": {
+          "priority_level": "prioritizing",
+          "scope": "staff health and safety"
+        },
+        "source_anchor": {
+          "source_text": "prioritizing staff health and safety",
+          "source_section": "1",
+          "source_offset": -1
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "s1_ngo_technology_of_progress",
+        "target_id": "s1_organizational_values",
+        "type": "implements",
+        "description": "Organization's activities are based on these values",
+        "source_sections": [
+          "1"
+        ]
+      },
+      {
+        "source_id": "s1_ngo_technology_of_progress",
+        "target_id": "s1_integrity_standards_commitment",
+        "type": "implements",
+        "description": "Organization is committed to these standards",
+        "source_sections": [
+          "1"
+        ]
+      },
+      {
+        "source_id": "s1_ngo_technology_of_progress",
+        "target_id": "s1_employee_ethical_conduct_requirement",
+        "type": "requires",
+        "description": "Organization requires employees to adhere to ethical conduct",
+        "source_sections": [
+          "1"
+        ]
+      },
+      {
+        "source_id": "s1_ngo_technology_of_progress",
+        "target_id": "s1_working_environment_commitment",
+        "type": "provides",
+        "description": "Organization commits to providing supportive working environment",
+        "source_sections": [
+          "1"
+        ]
+      },
+      {
+        "source_id": "s1_working_environment_commitment",
+        "target_id": "s1_productivity_standards",
+        "type": "implements",
+        "description": "Working environment encourages productivity standards",
+        "source_sections": [
+          "1"
+        ]
+      },
+      {
+        "source_id": "s1_working_environment_commitment",
+        "target_id": "s1_professional_personal_development",
+        "type": "provides",
+        "description": "Working environment provides development opportunities",
+        "source_sections": [
+          "1"
+        ]
+      },
+      {
+        "source_id": "s1_working_environment_commitment",
+        "target_id": "s1_staff_health_safety_priority",
+        "type": "implements",
+        "description": "Working environment prioritizes staff health and safety",
+        "source_sections": [
+          "1"
+        ]
+      }
+    ]
+  },
+  {
+    "chunk_id": "chunk_003",
+    "section_number": "2",
+    "entity_count": 8,
+    "relationship_count": 5,
+    "entities": [
+      {
+        "id": "s2_policy_scope_personnel",
+        "type": "PolicyRule",
+        "name": "Policy Application to Personnel",
+        "description": "The policy applies to all staff and governance members of Organization",
+        "attributes": {
+          "scope": "all staff and governance members",
+          "organization": "Organization",
+          "definition": "Personnel"
+        },
+        "source_anchor": {
+          "source_text": "The policy applies to all staff and governance members of Organization (hereafter – named as Personnel).",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_personnel_definition",
+        "type": "Definition",
+        "name": "Personnel Definition",
+        "description": "Staff and governance members of Organization are collectively named as Personnel",
+        "attributes": {
+          "term": "Personnel",
+          "includes": [
+            "staff",
+            "governance members"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "(hereafter – named as Personnel)",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_policy_scope_representatives",
+        "type": "PolicyRule",
+        "name": "Policy Application to Representatives",
+        "description": "The provisions of this policy may also be applied to partners and other associated entities depending on specific conditions",
+        "attributes": {
+          "scope": "conditional application",
+          "dependency": "specific clauses and conditions of grant agreement"
+        },
+        "source_anchor": {
+          "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_representatives_definition",
+        "type": "Definition",
+        "name": "Representatives Definition",
+        "description": "Partners, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities are collectively named as Representatives",
+        "attributes": {
+          "term": "Representatives",
+          "includes": [
+            "partners",
+            "suppliers",
+            "sub-grantees",
+            "beneficiaries",
+            "stakeholders",
+            "consultants",
+            "external executors",
+            "engaged experts",
+            "volunteers",
+            "other associated entities"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "(hereafter – named as Representatives)",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_grant_agreement_dependency",
+        "type": "PolicyRule",
+        "name": "Grant Agreement Dependency",
+        "description": "Application of policy to partners depends on specific clauses and conditions of the grant agreement",
+        "attributes": {
+          "condition": "specific clauses and conditions of grant agreement",
+          "applies_to": "partners"
+        },
+        "source_anchor": {
+          "source_text": "depending on specific clauses and conditions of the grant agreement",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_policy_implementation_entities",
+        "type": "PolicyRule",
+        "name": "Policy Implementation Responsibility",
+        "description": "Specific entities are directly involved in the implementation of the Policy",
+        "attributes": {
+          "involvement_type": "directly involved",
+          "scope": "implementation of the Policy"
+        },
+        "source_anchor": {
+          "source_text": "Directly involved in the implementation of the Policy are:",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_general_meeting_role",
+        "type": "Role",
+        "name": "General Meeting",
+        "description": "General Meeting is directly involved in the implementation of the Policy",
+        "attributes": {
+          "responsibility": "policy implementation",
+          "involvement": "direct"
+        },
+        "source_anchor": {
+          "source_text": "General Meeting;",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_executive_director_role",
+        "type": "Role",
+        "name": "Executive Director",
+        "description": "Executive director is directly involved in the implementation of the Policy",
+        "attributes": {
+          "responsibility": "policy implementation",
+          "involvement": "direct"
+        },
+        "source_anchor": {
+          "source_text": "Executive director.",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "s2_policy_scope_personnel",
+        "target_id": "s2_personnel_definition",
+        "type": "references",
+        "description": "Policy scope rule references the Personnel definition",
+        "source_sections": [
+          "2"
+        ]
+      },
+      {
+        "source_id": "s2_policy_scope_representatives",
+        "target_id": "s2_representatives_definition",
+        "type": "references",
+        "description": "Policy scope rule references the Representatives definition",
+        "source_sections": [
+          "2"
+        ]
+      },
+      {
+        "source_id": "s2_policy_scope_representatives",
+        "target_id": "s2_grant_agreement_dependency",
+        "type": "requires",
+        "description": "Policy application to representatives requires grant agreement conditions",
+        "source_sections": [
+          "2"
+        ]
+      },
+      {
+        "source_id": "s2_policy_implementation_entities",
+        "target_id": "s2_general_meeting_role",
+        "type": "applies_to",
+        "description": "Policy implementation responsibility applies to General Meeting",
+        "source_sections": [
+          "2"
+        ]
+      },
+      {
+        "source_id": "s2_policy_implementation_entities",
+        "target_id": "s2_executive_director_role",
+        "type": "applies_to",
+        "description": "Policy implementation responsibility applies to Executive Director",
+        "source_sections": [
+          "2"
+        ]
+      }
+    ]
+  },
+  {
+    "chunk_id": "chunk_004",
+    "section_number": "3",
+    "entity_count": 13,
+    "relationship_count": 11,
+    "entities": [
+      {
+        "id": "s3_policy_purpose",
+        "type": "PolicyRule",
+        "name": "Policy Purpose Statement",
+        "description": "The primary purpose of providing staff with clear understanding and safe working environment",
+        "attributes": {
+          "scope": "staff of the Personnel and Representatives",
+          "deliverables": [
+            "clear understanding of policies",
+            "clear understanding of procedures",
+            "clear understanding of practices",
+            "healthy working environment",
+            "safe working environment"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s3_staff_personnel_representatives",
+        "type": "Role",
+        "name": "Staff of Personnel and Representatives",
+        "description": "Target group for policy application",
+        "attributes": {
+          "role_type": "policy_target_group"
+        },
+        "source_anchor": {
+          "source_text": "staff of the Personnel and Representatives",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s3_organizational_policies",
+        "type": "BenefitOrPackage",
+        "name": "Organizational Policies",
+        "description": "Policies used by the organization",
+        "attributes": {
+          "category": "organizational_framework"
+        },
+        "source_anchor": {
+          "source_text": "policies, procedures and practices used by the organization",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s3_organizational_procedures",
+        "type": "Procedure",
+        "name": "Organizational Procedures",
+        "description": "Procedures used by the organization",
+        "attributes": {
+          "category": "organizational_framework"
+        },
+        "source_anchor": {
+          "source_text": "policies, procedures and practices used by the organization",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s3_organizational_practices",
+        "type": "Procedure",
+        "name": "Organizational Practices",
+        "description": "Practices used by the organization",
+        "attributes": {
+          "category": "organizational_framework"
+        },
+        "source_anchor": {
+          "source_text": "policies, procedures and practices used by the organization",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s3_healthy_working_environment",
+        "type": "BenefitOrPackage",
+        "name": "Healthy Working Environment",
+        "description": "Healthy working environment provided to staff",
+        "attributes": {
+          "environment_type": "healthy",
+          "beneficiary": "staff"
+        },
+        "source_anchor": {
+          "source_text": "a healthy, safe working environment for staff",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s3_safe_working_environment",
+        "type": "BenefitOrPackage",
+        "name": "Safe Working Environment",
+        "description": "Safe working environment provided to staff",
+        "attributes": {
+          "environment_type": "safe",
+          "beneficiary": "staff"
+        },
+        "source_anchor": {
+          "source_text": "a healthy, safe working environment for staff",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s3_document_overview_purpose",
+        "type": "PolicyRule",
+        "name": "Document Overview Purpose",
+        "description": "Document provides overview of security risk management processes",
+        "attributes": {
+          "scope": [
+            "security risk assessment",
+            "security risk monitoring",
+            "security risk response"
+          ],
+          "impact_areas": [
+            "staff",
+            "program implementation"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "This document also provides an overview of how the Organization assesses, monitors and responds to security risks that may affect staff and program implementation.",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s3_security_risk_assessment",
+        "type": "Procedure",
+        "name": "Security Risk Assessment",
+        "description": "Process for assessing security risks",
+        "attributes": {
+          "process_type": "assessment",
+          "risk_category": "security"
+        },
+        "source_anchor": {
+          "source_text": "how the Organization assesses, monitors and responds to security risks",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s3_security_risk_monitoring",
+        "type": "Procedure",
+        "name": "Security Risk Monitoring",
+        "description": "Process for monitoring security risks",
+        "attributes": {
+          "process_type": "monitoring",
+          "risk_category": "security"
+        },
+        "source_anchor": {
+          "source_text": "how the Organization assesses, monitors and responds to security risks",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s3_security_risk_response",
+        "type": "Procedure",
+        "name": "Security Risk Response",
+        "description": "Process for responding to security risks",
+        "attributes": {
+          "process_type": "response",
+          "risk_category": "security"
+        },
+        "source_anchor": {
+          "source_text": "how the Organization assesses, monitors and responds to security risks",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s3_security_risks",
+        "type": "IncidentCategory",
+        "name": "Security Risks",
+        "description": "Security risks that may affect staff and program implementation",
+        "attributes": {
+          "risk_type": "security",
+          "impact_targets": [
+            "staff",
+            "program implementation"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "security risks that may affect staff and program implementation",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s3_program_implementation",
+        "type": "BenefitOrPackage",
+        "name": "Program Implementation",
+        "description": "Organizational program implementation activities",
+        "attributes": {
+          "activity_type": "program_implementation"
+        },
+        "source_anchor": {
+          "source_text": "program implementation",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "s3_policy_purpose",
+        "target_id": "s3_staff_personnel_representatives",
+        "type": "applies_to",
+        "description": "Policy purpose applies to staff of Personnel and Representatives",
+        "source_sections": [
+          "3"
+        ]
+      },
+      {
+        "source_id": "s3_policy_purpose",
+        "target_id": "s3_organizational_policies",
+        "type": "provides",
+        "description": "Policy purpose provides understanding of organizational policies",
+        "source_sections": [
+          "3"
+        ]
+      },
+      {
+        "source_id": "s3_policy_purpose",
+        "target_id": "s3_organizational_procedures",
+        "type": "provides",
+        "description": "Policy purpose provides understanding of organizational procedures",
+        "source_sections": [
+          "3"
+        ]
+      },
+      {
+        "source_id": "s3_policy_purpose",
+        "target_id": "s3_organizational_practices",
+        "type": "provides",
+        "description": "Policy purpose provides understanding of organizational practices",
+        "source_sections": [
+          "3"
+        ]
+      },
+      {
+        "source_id": "s3_policy_purpose",
+        "target_id": "s3_healthy_working_environment",
+        "type": "provides",
+        "description": "Policy purpose provides healthy working environment",
+        "source_sections": [
+          "3"
+        ]
+      },
+      {
+        "source_id": "s3_policy_purpose",
+        "target_id": "s3_safe_working_environment",
+        "type": "provides",
+        "description": "Policy purpose provides safe working environment",
+        "source_sections": [
+          "3"
+        ]
+      },
+      {
+        "source_id": "s3_document_overview_purpose",
+        "target_id": "s3_security_risk_assessment",
+        "type": "references",
+        "description": "Document overview references security risk assessment process",
+        "source_sections": [
+          "3"
+        ]
+      },
+      {
+        "source_id": "s3_document_overview_purpose",
+        "target_id": "s3_security_risk_monitoring",
+        "type": "references",
+        "description": "Document overview references security risk monitoring process",
+        "source_sections": [
+          "3"
+        ]
+      },
+      {
+        "source_id": "s3_document_overview_purpose",
+        "target_id": "s3_security_risk_response",
+        "type": "references",
+        "description": "Document overview references security risk response process",
+        "source_sections": [
+          "3"
+        ]
+      },
+      {
+        "source_id": "s3_security_risks",
+        "target_id": "s3_staff_personnel_representatives",
+        "type": "applies_to",
+        "description": "Security risks may affect staff",
+        "source_sections": [
+          "3"
+        ]
+      },
+      {
+        "source_id": "s3_security_risks",
+        "target_id": "s3_program_implementation",
+        "type": "applies_to",
+        "description": "Security risks may affect program implementation",
+        "source_sections": [
+          "3"
+        ]
+      }
+    ]
+  },
+  {
+    "chunk_id": "chunk_005",
+    "section_number": "4",
+    "entity_count": 13,
+    "relationship_count": 8,
+    "entities": [
+      {
+        "id": "s4_duty_of_care",
+        "type": "Definition",
+        "name": "Duty of Care",
+        "description": "Legal obligation to take reasonable care to avoid harm or injury to oneself and/or another person to whom they have responsibility",
+        "attributes": {
+          "term": "Duty of Care",
+          "definition_type": "legal_obligation"
+        },
+        "source_anchor": {
+          "source_text": "Duty of care is a legal obligation of a person to take reasonable care to avoid harm or injury to oneself and/or another person to whom they have responsibility.",
+          "source_section": "4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s4_breach",
+        "type": "Definition",
+        "name": "Breach",
+        "description": "Breach of a duty of care occurs if a person acts unreasonably or fails to act where action could be reasonably expected and harm is caused to a person",
+        "attributes": {
+          "term": "Breach",
+          "definition_type": "violation"
+        },
+        "source_anchor": {
+          "source_text": "Breach of a duty of care occurs if a person acts unreasonably or fails to act where action could be reasonably expected and harm is caused to a person.",
+          "source_section": "4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s4_reasonable_care",
+        "type": "Definition",
+        "name": "Reasonable care",
+        "description": "The degree of caution and concern for the safety of himself/herself and others that an ordinarily prudent and rational person would use in the circumstances",
+        "attributes": {
+          "term": "Reasonable care",
+          "definition_type": "standard_of_care",
+          "failure_consequence": "negligence"
+        },
+        "source_anchor": {
+          "source_text": "The degree of caution and concern for the safety of himself/herself and others that an ordinarily prudent and rational person would use in the circumstances. Failure to exercise reasonable care is considered negligence.",
+          "source_section": "4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s4_reasonable_person",
+        "type": "Definition",
+        "name": "Reasonable person",
+        "description": "Another person in the same situation would act in the same or a similar way",
+        "attributes": {
+          "term": "Reasonable person",
+          "definition_type": "comparative_standard"
+        },
+        "source_anchor": {
+          "source_text": "another person in the same situation would act in the same or a similar way.",
+          "source_section": "4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s4_risk",
+        "type": "Definition",
+        "name": "Risk",
+        "description": "A situation exposing an individual to danger, harm or loss",
+        "attributes": {
+          "term": "Risk",
+          "definition_type": "exposure_concept"
+        },
+        "source_anchor": {
+          "source_text": "A situation exposing an individual to danger, harm or loss.",
+          "source_section": "4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s4_harm",
+        "type": "Definition",
+        "name": "Harm",
+        "description": "Harm of any kind including injury, death, property damage, and economic loss",
+        "attributes": {
+          "term": "Harm",
+          "definition_type": "comprehensive_damage",
+          "includes_list": true
+        },
+        "source_anchor": {
+          "source_text": "means harm of any kind and includes— a) injury or death; and b) damage to property; and c) economic loss",
+          "source_section": "4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s4_harm_injury_or_death",
+        "type": "IncidentCategory",
+        "name": "Injury or Death",
+        "description": "Physical harm resulting in injury or death as a type of harm",
+        "attributes": {
+          "category": "physical_harm",
+          "severity": "high",
+          "list_item": "a"
+        },
+        "source_anchor": {
+          "source_text": "injury or death; and",
+          "source_section": "4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s4_harm_property_damage",
+        "type": "IncidentCategory",
+        "name": "Property Damage",
+        "description": "Damage to property as a type of harm",
+        "attributes": {
+          "category": "property_harm",
+          "list_item": "b"
+        },
+        "source_anchor": {
+          "source_text": "damage to property; and",
+          "source_section": "4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s4_harm_economic_loss",
+        "type": "IncidentCategory",
+        "name": "Economic Loss",
+        "description": "Economic loss as a type of harm",
+        "attributes": {
+          "category": "financial_harm",
+          "list_item": "c"
+        },
+        "source_anchor": {
+          "source_text": "economic loss",
+          "source_section": "4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s4_injury",
+        "type": "Definition",
+        "name": "Injury",
+        "description": "Personal or bodily injury including psychological, psychiatric injury, disease, and aggravation of existing conditions",
+        "attributes": {
+          "term": "Injury",
+          "definition_type": "comprehensive_injury",
+          "includes_list": true
+        },
+        "source_anchor": {
+          "source_text": "means personal or bodily injury and includes— a) psychological or psychiatric injury; and b) disease; and c) aggravation, acceleration or recurrence of an injury or disease",
+          "source_section": "4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s4_injury_psychological",
+        "type": "IncidentCategory",
+        "name": "Psychological or Psychiatric Injury",
+        "description": "Mental health injuries including psychological or psychiatric injury",
+        "attributes": {
+          "category": "mental_health_injury",
+          "list_item": "a"
+        },
+        "source_anchor": {
+          "source_text": "psychological or psychiatric injury; and",
+          "source_section": "4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s4_injury_disease",
+        "type": "IncidentCategory",
+        "name": "Disease",
+        "description": "Disease as a type of personal injury",
+        "attributes": {
+          "category": "illness_injury",
+          "list_item": "b"
+        },
+        "source_anchor": {
+          "source_text": "disease; and",
+          "source_section": "4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s4_injury_aggravation",
+        "type": "IncidentCategory",
+        "name": "Aggravation, Acceleration or Recurrence",
+        "description": "Aggravation, acceleration or recurrence of an injury or disease",
+        "attributes": {
+          "category": "existing_condition_worsening",
+          "list_item": "c"
+        },
+        "source_anchor": {
+          "source_text": "aggravation, acceleration or recurrence of an injury or disease",
+          "source_section": "4",
+          "source_offset": -1
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "s4_breach",
+        "target_id": "s4_duty_of_care",
+        "type": "references",
+        "description": "Breach is defined in relation to duty of care",
+        "source_sections": [
+          "4"
+        ]
+      },
+      {
+        "source_id": "s4_reasonable_person",
+        "target_id": "s4_reasonable_care",
+        "type": "references",
+        "description": "Reasonable person definition is read in conjunction with reasonable care",
+        "source_sections": [
+          "4"
+        ]
+      },
+      {
+        "source_id": "s4_harm",
+        "target_id": "s4_harm_injury_or_death",
+        "type": "part_of",
+        "description": "Injury or death is included as a type of harm",
+        "source_sections": [
+          "4"
+        ]
+      },
+      {
+        "source_id": "s4_harm",
+        "target_id": "s4_harm_property_damage",
+        "type": "part_of",
+        "description": "Property damage is included as a type of harm",
+        "source_sections": [
+          "4"
+        ]
+      },
+      {
+        "source_id": "s4_harm",
+        "target_id": "s4_harm_economic_loss",
+        "type": "part_of",
+        "description": "Economic loss is included as a type of harm",
+        "source_sections": [
+          "4"
+        ]
+      },
+      {
+        "source_id": "s4_injury",
+        "target_id": "s4_injury_psychological",
+        "type": "part_of",
+        "description": "Psychological or psychiatric injury is included as a type of injury",
+        "source_sections": [
+          "4"
+        ]
+      },
+      {
+        "source_id": "s4_injury",
+        "target_id": "s4_injury_disease",
+        "type": "part_of",
+        "description": "Disease is included as a type of injury",
+        "source_sections": [
+          "4"
+        ]
+      },
+      {
+        "source_id": "s4_injury",
+        "target_id": "s4_injury_aggravation",
+        "type": "part_of",
+        "description": "Aggravation, acceleration or recurrence is included as a type of injury",
+        "source_sections": [
+          "4"
+        ]
+      }
+    ]
+  },
+  {
+    "chunk_id": "chunk_006",
+    "section_number": "5",
+    "entity_count": 15,
+    "relationship_count": 19,
+    "entities": [
+      {
+        "id": "s5_persons_directly_involved",
+        "type": "Role",
+        "name": "Persons directly involved in Policy implementation",
+        "description": "Persons who are directly involved in the implementation of the Policy",
+        "attributes": {
+          "policy_section": "5.1"
+        },
+        "source_anchor": {
+          "source_text": "Persons, directly involved in the implementation of the Policy",
+          "source_section": "5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s5_physical_safety_responsibility",
+        "type": "PolicyRule",
+        "name": "Physical safety of life and health responsibility",
+        "description": "Responsibility for ensuring the physical safety of life and health of Personnel, including in high-risk areas",
+        "attributes": {
+          "includes_high_risk_areas": true
+        },
+        "source_anchor": {
+          "source_text": "ensuring the physical safety of life and health of Personnel, including in cases of stay in high- risk areas",
+          "source_section": "5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s5_information_security_organization",
+        "type": "PolicyRule",
+        "name": "Information security of Organization responsibility",
+        "description": "Responsibility for ensuring information security of the Organization, including intellectual property",
+        "attributes": {
+          "includes_intellectual_property": true
+        },
+        "source_anchor": {
+          "source_text": "ensuring information security of the Organization, including intellectual property",
+          "source_section": "5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s5_information_security_personnel",
+        "type": "PolicyRule",
+        "name": "Information security of Personnel responsibility",
+        "description": "Responsibility for ensuring information security of Personnel of the Organization",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "ensuring information security of Personnel of the Organization",
+          "source_section": "5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s5_material_assets_preservation",
+        "type": "PolicyRule",
+        "name": "Material assets preservation responsibility",
+        "description": "Responsibility for ensuring the preservation of material assets of the Organization and Personnel within the activities of the Organization",
+        "attributes": {
+          "scope": "Organization and Personnel assets"
+        },
+        "source_anchor": {
+          "source_text": "ensuring the preservation of material assets of the Organization and Personnel within the activities of the Organization",
+          "source_section": "5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s5_financial_security_responsibility",
+        "type": "PolicyRule",
+        "name": "Financial security of Organization responsibility",
+        "description": "Responsibility for ensuring the financial security of the Organization",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "ensuring the financial security of the Organization",
+          "source_section": "5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s5_representatives",
+        "type": "Role",
+        "name": "Representatives",
+        "description": "Representatives under the conditions set forth in clause 2.2 of the Policy",
+        "attributes": {
+          "reference_clause": "2.2"
+        },
+        "source_anchor": {
+          "source_text": "Representatives, under the conditions set forth in clause 2.2. of this Policy",
+          "source_section": "5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s5_personnel_role",
+        "type": "Role",
+        "name": "Personnel",
+        "description": "Personnel of the Organization with specific responsibilities",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "Personnel",
+          "source_section": "5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s5_policy_compliance_responsibility",
+        "type": "PolicyRule",
+        "name": "Policy compliance responsibility",
+        "description": "Responsibility for ensuring this policy is complied with, along with other related policies",
+        "attributes": {
+          "includes_related_policies": true
+        },
+        "source_anchor": {
+          "source_text": "ensuring this policy is complied with, along with other related policies",
+          "source_section": "5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s5_reasonable_care_responsibility",
+        "type": "PolicyRule",
+        "name": "Reasonable care and duty of care responsibility",
+        "description": "Responsibility for taking reasonable care in work and accepting duty of care for own and others' health and safety",
+        "attributes": {
+          "scope": "self and others",
+          "location": "workplace"
+        },
+        "source_anchor": {
+          "source_text": "taking reasonable care in the course of their work and accepting a duty of care for their own health and safety, as well as for the health and safety of others within the workplace",
+          "source_section": "5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s5_secure_environment_participation",
+        "type": "PolicyRule",
+        "name": "Secure environment participation responsibility",
+        "description": "Responsibility to actively participate in building and maintaining a secure environment through various communication and documentation activities",
+        "attributes": {
+          "methods": [
+            "open communication",
+            "clear boundaries",
+            "managing complaints",
+            "disclosure",
+            "accurate documentation",
+            "notifying authorities"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "actively participate in building and maintaining a secure environment, through open communication, clear boundaries, managing complaints or disclosure, accurate documentation and notifying appropriate authorities of risk or harm in accordance with relevant procedures",
+          "source_section": "5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s5_harm_anticipation_responsibility",
+        "type": "PolicyRule",
+        "name": "Harm anticipation and reporting responsibility",
+        "description": "Responsibility for anticipating foreseeable harm and risks and immediately reporting unsafe conditions to direct manager",
+        "attributes": {
+          "reporting_target": "direct manager",
+          "timing": "immediately"
+        },
+        "source_anchor": {
+          "source_text": "anticipating foreseeable harm and risks to self and/or others and immediately reporting any unsafe conditions or behaviors observed in the workplace to direct manager",
+          "source_section": "5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s5_preventative_measures_responsibility",
+        "type": "PolicyRule",
+        "name": "Preventative measures implementation responsibility",
+        "description": "Responsibility for implementing preventative and risk control measures in consultation with direct manager when harm or risk is identified",
+        "attributes": {
+          "consultation_required": "direct manager",
+          "condition": "where practical",
+          "compliance": "relevant procedures"
+        },
+        "source_anchor": {
+          "source_text": "where foreseeable harm or risk is identified, implementing preventative and risk control measures in consultation with direct manager (where practical) and in line with relevant procedures",
+          "source_section": "5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s5_reasonable_person_care",
+        "type": "PolicyRule",
+        "name": "Reasonable person care standard",
+        "description": "Responsibility for taking the amount of care a reasonable person would expect",
+        "attributes": {
+          "standard": "reasonable person expectation"
+        },
+        "source_anchor": {
+          "source_text": "taking the amount of care a reasonable person would expect",
+          "source_section": "5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s5_direct_manager",
+        "type": "Role",
+        "name": "Direct Manager",
+        "description": "Manager role responsible for receiving reports and providing consultation on risk control measures",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "direct manager",
+          "source_section": "5",
+          "source_offset": -1
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "s5_persons_directly_involved",
+        "target_id": "s5_physical_safety_responsibility",
+        "type": "requires",
+        "description": "Persons directly involved in Policy implementation are responsible for physical safety",
+        "source_sections": [
+          "5"
+        ]
+      },
+      {
+        "source_id": "s5_persons_directly_involved",
+        "target_id": "s5_information_security_organization",
+        "type": "requires",
+        "description": "Persons directly involved in Policy implementation are responsible for Organization information security",
+        "source_sections": [
+          "5"
+        ]
+      },
+      {
+        "source_id": "s5_persons_directly_involved",
+        "target_id": "s5_information_security_personnel",
+        "type": "requires",
+        "description": "Persons directly involved in Policy implementation are responsible for Personnel information security",
+        "source_sections": [
+          "5"
+        ]
+      },
+      {
+        "source_id": "s5_persons_directly_involved",
+        "target_id": "s5_material_assets_preservation",
+        "type": "requires",
+        "description": "Persons directly involved in Policy implementation are responsible for material assets preservation",
+        "source_sections": [
+          "5"
+        ]
+      },
+      {
+        "source_id": "s5_persons_directly_involved",
+        "target_id": "s5_financial_security_responsibility",
+        "type": "requires",
+        "description": "Persons directly involved in Policy implementation are responsible for financial security",
+        "source_sections": [
+          "5"
+        ]
+      },
+      {
+        "source_id": "s5_representatives",
+        "target_id": "s5_policy_compliance_responsibility",
+        "type": "requires",
+        "description": "Representatives are responsible for policy compliance",
+        "source_sections": [
+          "5"
+        ]
+      },
+      {
+        "source_id": "s5_personnel_role",
+        "target_id": "s5_policy_compliance_responsibility",
+        "type": "requires",
+        "description": "Personnel are responsible for policy compliance",
+        "source_sections": [
+          "5"
+        ]
+      },
+      {
+        "source_id": "s5_representatives",
+        "target_id": "s5_reasonable_care_responsibility",
+        "type": "requires",
+        "description": "Representatives are responsible for taking reasonable care",
+        "source_sections": [
+          "5"
+        ]
+      },
+      {
+        "source_id": "s5_personnel_role",
+        "target_id": "s5_reasonable_care_responsibility",
+        "type": "requires",
+        "description": "Personnel are responsible for taking reasonable care",
+        "source_sections": [
+          "5"
+        ]
+      },
+      {
+        "source_id": "s5_representatives",
+        "target_id": "s5_secure_environment_participation",
+        "type": "requires",
+        "description": "Representatives are responsible for participating in secure environment building",
+        "source_sections": [
+          "5"
+        ]
+      },
+      {
+        "source_id": "s5_personnel_role",
+        "target_id": "s5_secure_environment_participation",
+        "type": "requires",
+        "description": "Personnel are responsible for participating in secure environment building",
+        "source_sections": [
+          "5"
+        ]
+      },
+      {
+        "source_id": "s5_representatives",
+        "target_id": "s5_harm_anticipation_responsibility",
+        "type": "requires",
+        "description": "Representatives are responsible for anticipating harm and reporting",
+        "source_sections": [
+          "5"
+        ]
+      },
+      {
+        "source_id": "s5_personnel_role",
+        "target_id": "s5_harm_anticipation_responsibility",
+        "type": "requires",
+        "description": "Personnel are responsible for anticipating harm and reporting",
+        "source_sections": [
+          "5"
+        ]
+      },
+      {
+        "source_id": "s5_harm_anticipation_responsibility",
+        "target_id": "s5_direct_manager",
+        "type": "escalates_to",
+        "description": "Unsafe conditions and behaviors are reported to direct manager",
+        "source_sections": [
+          "5"
+        ]
+      },
+      {
+        "source_id": "s5_representatives",
+        "target_id": "s5_preventative_measures_responsibility",
+        "type": "requires",
+        "description": "Representatives are responsible for implementing preventative measures",
+        "source_sections": [
+          "5"
+        ]
+      },
+      {
+        "source_id": "s5_personnel_role",
+        "target_id": "s5_preventative_measures_responsibility",
+        "type": "requires",
+        "description": "Personnel are responsible for implementing preventative measures",
+        "source_sections": [
+          "5"
+        ]
+      },
+      {
+        "source_id": "s5_preventative_measures_responsibility",
+        "target_id": "s5_direct_manager",
+        "type": "requires",
+        "description": "Preventative measures implementation requires consultation with direct manager",
+        "source_sections": [
+          "5"
+        ]
+      },
+      {
+        "source_id": "s5_representatives",
+        "target_id": "s5_reasonable_person_care",
+        "type": "requires",
+        "description": "Representatives are responsible for taking reasonable person care",
+        "source_sections": [
+          "5"
+        ]
+      },
+      {
+        "source_id": "s5_personnel_role",
+        "target_id": "s5_reasonable_person_care",
+        "type": "requires",
+        "description": "Personnel are responsible for taking reasonable person care",
+        "source_sections": [
+          "5"
+        ]
+      }
+    ]
+  },
+  {
+    "chunk_id": "chunk_007",
+    "section_number": "6",
+    "entity_count": 1,
+    "relationship_count": 0,
+    "entities": [
+      {
+        "id": "s6_organization_responsibilities",
+        "type": "Procedure",
+        "name": "Organization Responsibilities for Security and Rights Protection",
+        "description": "The overall set of responsibilities that the organization has for ensuring security and rights protection",
+        "attributes": {
+          "scope": "security_and_rights_protection",
+          "responsible_party": "organization"
+        },
+        "source_anchor": {
+          "source_text": "RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION",
+          "source_section": "6",
+          "source_offset": -1
+        }
+      }
+    ],
+    "relationships": []
+  },
+  {
+    "chunk_id": "chunk_008",
+    "section_number": "6.1",
+    "entity_count": 28,
+    "relationship_count": 20,
+    "entities": [
+      {
+        "id": "s6_1_personnel_safety_priority",
+        "type": "PolicyRule",
+        "name": "Personnel Safety Priority",
+        "description": "Organization prioritizes safety of life and health of Personnel",
+        "attributes": {
+          "priority_level": "highest",
+          "scope": "life and health"
+        },
+        "source_anchor": {
+          "source_text": "The Organization prioritizes the safety of life and health of its Personnel, taking all possible measures to ensure them.",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_safety_training_provision",
+        "type": "PolicyRule",
+        "name": "Safety Training Provision",
+        "description": "Organization provides training and safety training considering financial capabilities",
+        "attributes": {
+          "training_types": [
+            "safety training",
+            "high-risk situation procedures",
+            "first aid",
+            "other activities"
+          ],
+          "constraint": "financial capabilities"
+        },
+        "source_anchor": {
+          "source_text": "The Organization promotes and provides training, safety training, including the procedure for dealing with high-risk situations, first aid, and other activities, taking into account the financial capabilities of the Organization.",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_board_mandatory_training_authority",
+        "type": "ApprovalRequirement",
+        "name": "Board Authority for Mandatory Training",
+        "description": "Board has right to determine mandatory trainings based on work nature",
+        "attributes": {
+          "authority": "Board",
+          "criteria": "nature of work"
+        },
+        "source_anchor": {
+          "source_text": "The Organization has the right, by a decision of the Board, to determine certain trainings and exercises mandatory depending on the nature of work.",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_security_plan_reading_responsibility",
+        "type": "PolicyRule",
+        "name": "Security Plan Reading Responsibility",
+        "description": "Personnel and Representatives must read and understand security plan and guidelines",
+        "attributes": {
+          "applies_to": [
+            "Personnel",
+            "Representatives"
+          ],
+          "includes": "updates"
+        },
+        "source_anchor": {
+          "source_text": "Each member of the Personnel or the Representatives is responsible for reading and understanding the security plan and guidelines, including through updates.",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_labor_protection_instruction",
+        "type": "PolicyRule",
+        "name": "Labor Protection Instruction",
+        "description": "Personnel and Representatives receive instruction in labor protection and safety",
+        "attributes": {
+          "purpose": "make informed decisions about working in particular field",
+          "applies_to": [
+            "Personnel",
+            "Representatives"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "The specified persons are instructed in labor protection and safety, and training that allows them to make informed decisions about working in a particular field.",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_personal_team_responsibility",
+        "type": "PolicyRule",
+        "name": "Personal and Team Responsibility Understanding",
+        "description": "Personnel and Representatives must understand responsibility for themselves and team",
+        "attributes": {
+          "responsibility_scope": [
+            "themselves",
+            "team"
+          ],
+          "risk_awareness": [
+            "risks to themselves",
+            "risks to team",
+            "risks to tasks"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "Each member of the Personnel or the Representatives shall understand the responsibility for themselves and the team, as well as the risks to themselves, the team, and the tasks they perform.",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_security_incident_reporting",
+        "type": "PolicyRule",
+        "name": "Security Incident Reporting Obligation",
+        "description": "Personnel and Representatives must immediately report security incidents",
+        "attributes": {
+          "timing": "immediately",
+          "recipients": [
+            "security functions person",
+            "Executive director"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "Each member of the Personnel or the Representatives is obliged to immediately report security incidents to the person performing security functions or the Executive director.",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_office_security_reporting_method",
+        "type": "Procedure",
+        "name": "Office Security Reporting Method",
+        "description": "In-person reporting of security threats while in office",
+        "attributes": {
+          "location": "office",
+          "method": "personally report"
+        },
+        "source_anchor": {
+          "source_text": "While in the office, the specified persons personally report security threats.",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_remote_security_reporting_method",
+        "type": "Procedure",
+        "name": "Remote Security Reporting Method",
+        "description": "Phone or email contact for remote work security threats",
+        "attributes": {
+          "location": "remote work outside office",
+          "methods": [
+            "phone",
+            "e-mail"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "For remote work outside the office, should contact by phone or e-mail.",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_business_trip_measures",
+        "type": "PolicyRule",
+        "name": "Business Trip Safety Measures",
+        "description": "Organization takes measures for Personnel on business trips to remote/high-risk areas",
+        "attributes": {
+          "trip_types": [
+            "business trips",
+            "business trips to remote areas",
+            "high-risk areas"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "The Organization shall take all measures regarding the Personnel or the Representatives in case they are on business trips, business trips to remote areas, high-risk areas by:",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_situation_assessment",
+        "type": "Procedure",
+        "name": "Situation Assessment",
+        "description": "Assessment based on official information from authorities and international organizations",
+        "attributes": {
+          "information_sources": [
+            "public authorities",
+            "coordinating international organizations"
+          ],
+          "information_type": "official"
+        },
+        "source_anchor": {
+          "source_text": "situation assessment (based on official information from public authorities and coordinating international organizations)",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_route_development",
+        "type": "Procedure",
+        "name": "Route and Travel Time Development",
+        "description": "Development of travel route and timing",
+        "attributes": {
+          "components": [
+            "route",
+            "travel time"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "development of route and travel time",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_movement_informing",
+        "type": "Procedure",
+        "name": "Movement Informing",
+        "description": "Informing about movement during business trips",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "informing about movement",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_necessary_training",
+        "type": "Procedure",
+        "name": "Necessary Training for Everyone",
+        "description": "Providing necessary training for all trip participants",
+        "attributes": {
+          "scope": "everyone"
+        },
+        "source_anchor": {
+          "source_text": "the necessary training of everyone",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_communication_plan",
+        "type": "Procedure",
+        "name": "Communication Plan Provision",
+        "description": "Providing a communication plan for business trips",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "providing a communication plan",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_emergency_informing_plan",
+        "type": "Procedure",
+        "name": "Emergency Informing Plan",
+        "description": "Plan for informing in case of emergencies",
+        "attributes": {
+          "purpose": "emergencies"
+        },
+        "source_anchor": {
+          "source_text": "providing a plan of informing in case of emergencies",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_regional_instruction",
+        "type": "Procedure",
+        "name": "Regional and Situational Instructions",
+        "description": "Instructions for conduct in certain regions or conditions",
+        "attributes": {
+          "regional_examples": [
+            "checkpoints",
+            "areas of limited or restricted access"
+          ],
+          "situational_examples": [
+            "shelling",
+            "mines"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "instruction, including the provision of standard instructions for conduct in certain regions (such as checkpoints, areas of limited or restricted access) or under certain conditions (shelling, mines)",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_project_selection_safety_emphasis",
+        "type": "PolicyRule",
+        "name": "Project Selection Safety Emphasis",
+        "description": "Main emphasis on health and safety risk assessment when choosing projects",
+        "attributes": {
+          "priority": "first of all",
+          "focus": "risk to health and safety of employees"
+        },
+        "source_anchor": {
+          "source_text": "The Organization cares about the safety of the Personnel or the Representatives, therefore, when choosing a project, first of all, the main emphasis is on assessing the risk to the health and safety of employees.",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_gray_war_zone_avoidance",
+        "type": "PolicyRule",
+        "name": "Gray Zone and War Zone Avoidance",
+        "description": "Organization tries not to involve personnel in gray or war zones",
+        "attributes": {
+          "avoided_areas": [
+            "gray zone",
+            "war zone"
+          ],
+          "preferred_location": "office"
+        },
+        "source_anchor": {
+          "source_text": "The Organization tries not to involve the specified persons in the gray zone or the war zone, concentrating as much as possible, all activities in the office.",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_office_safety_equipment",
+        "type": "Equipment",
+        "name": "Office Safety Equipment",
+        "description": "Safety equipment and plans provided in office",
+        "attributes": {
+          "equipment_list": [
+            "fire extinguisher",
+            "first aid kit",
+            "personal protective equipment"
+          ],
+          "plans": [
+            "action plan",
+            "nearest bomb shelter information"
+          ],
+          "threat_type": "missile threat"
+        },
+        "source_anchor": {
+          "source_text": "To ensure safety, the office is equipped with a fire extinguisher, first aid kit, personal protective equipment, action plan (information about the nearest bomb shelter) in case of a missile threat.",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_project_risk_assessment",
+        "type": "Procedure",
+        "name": "Project Risk Assessment",
+        "description": "Risk assessment before starting each project to identify threats and vulnerabilities",
+        "attributes": {
+          "timing": "before starting each project",
+          "purpose": [
+            "identify threats and vulnerabilities",
+            "assess likelihood and impact",
+            "identify mitigation opportunities"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "Before starting each project, the Organization assesses risks to identify threats and vulnerabilities, assess their likelihood and impact, and identifies opportunities to mitigate them.",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_introductory_meeting",
+        "type": "Procedure",
+        "name": "Project Introductory Meeting",
+        "description": "Meeting to inform team members about project progress, risks and mitigation methods",
+        "attributes": {
+          "participants": "team members",
+          "information_covered": [
+            "project progress",
+            "risks",
+            "risk mitigation methods"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "An introductory meeting is held, at which team members are informed about the progress of the project, risks and methods for mitigating them.",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_working_chats",
+        "type": "CommunicationRequirement",
+        "name": "Project Working Chats",
+        "description": "Working chats created for prompt information transfer on projects",
+        "attributes": {
+          "purpose": "prompt transfer of information on the project"
+        },
+        "source_anchor": {
+          "source_text": "And also working chats are created for the prompt transfer of information on the project.",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_threat_assessment_step",
+        "type": "Procedure",
+        "name": "Employee Threat Assessment",
+        "description": "Assessment of potential threats to employees at all project stages",
+        "attributes": {
+          "scope": "all stages of the project"
+        },
+        "source_anchor": {
+          "source_text": "assessment of potential threats to employees at all stages of the project",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_risk_analysis_step",
+        "type": "Procedure",
+        "name": "Risk Analysis and Probability",
+        "description": "Analysis of risks and probability of their occurrence",
+        "attributes": {
+          "components": [
+            "risk analysis",
+            "probability of occurrence"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "risk analysis and probability of their occurrence",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_risk_reduction_identification",
+        "type": "Procedure",
+        "name": "Risk Reduction Steps Identification",
+        "description": "Identification of possible steps to reduce risks",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "identification of possible steps to reduce risks",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_project_evaluation_decision",
+        "type": "Procedure",
+        "name": "Project Evaluation Decision Making",
+        "description": "Making decision based on previous project evaluation stage",
+        "attributes": {
+          "basis": "previous stage of project evaluation"
+        },
+        "source_anchor": {
+          "source_text": "making a decision based on the previous stage of the project evaluation",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_1_threat_monitoring",
+        "type": "Procedure",
+        "name": "Ongoing Threat Monitoring",
+        "description": "Further monitoring of threats during project implementation",
+        "attributes": {
+          "timing": "during project implementation"
+        },
+        "source_anchor": {
+          "source_text": "further monitoring of threats during project implementation",
+          "source_section": "6.1",
+          "source_offset": -1
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "s6_1_safety_training_provision",
+        "target_id": "s6_1_personnel_safety_priority",
+        "type": "implements",
+        "description": "Safety training provision implements the personnel safety priority",
+        "source_sections": [
+          "6.1"
+        ]
+      },
+      {
+        "source_id": "s6_1_board_mandatory_training_authority",
+        "target_id": "s6_1_safety_training_provision",
+        "type": "manages",
+        "description": "Board authority manages aspects of safety training provision",
+        "source_sections": [
+          "6.1"
+        ]
+      },
+      {
+        "source_id": "s6_1_security_incident_reporting",
+        "target_id": "s6_1_office_security_reporting_method",
+        "type": "implements",
+        "description": "Office security reporting method implements security incident reporting requirement",
+        "source_sections": [
+          "6.1"
+        ]
+      },
+      {
+        "source_id": "s6_1_security_incident_reporting",
+        "target_id": "s6_1_remote_security_reporting_method",
+        "type": "implements",
+        "description": "Remote security reporting method implements security incident reporting requirement",
+        "source_sections": [
+          "6.1"
+        ]
+      },
+      {
+        "source_id": "s6_1_business_trip_measures",
+        "target_id": "s6_1_situation_assessment",
+        "type": "implements",
+        "description": "Situation assessment implements business trip safety measures",
+        "source_sections": [
+          "6.1"
+        ]
+      },
+      {
+        "source_id": "s6_1_business_trip_measures",
+        "target_id": "s6_1_route_development",
+        "type": "implements",
+        "description": "Route development implements business trip safety measures",
+        "source_sections": [
+          "6.1"
+        ]
+      },
+      {
+        "source_id": "s6_1_business_trip_measures",
+        "target_id": "s6_1_movement_informing",
+        "type": "implements",
+        "description": "Movement informing implements business trip safety measures",
+        "source_sections": [
+          "6.1"
+        ]
+      },
+      {
+        "source_id": "s6_1_business_trip_measures",
+        "target_id": "s6_1_necessary_training",
+        "type": "implements",
+        "description": "Necessary training implements business trip safety measures",
+        "source_sections": [
+          "6.1"
+        ]
+      },
+      {
+        "source_id": "s6_1_business_trip_measures",
+        "target_id": "s6_1_communication_plan",
+        "type": "implements",
+        "description": "Communication plan implements business trip safety measures",
+        "source_sections": [
+          "6.1"
+        ]
+      },
+      {
+        "source_id": "s6_1_business_trip_measures",
+        "target_id": "s6_1_emergency_informing_plan",
+        "type": "implements",
+        "description": "Emergency informing plan implements business trip safety measures",
+        "source_sections": [
+          "6.1"
+        ]
+      },
+      {
+        "source_id": "s6_1_business_trip_measures",
+        "target_id": "s6_1_regional_instruction",
+        "type": "implements",
+        "description": "Regional instruction implements business trip safety measures",
+        "source_sections": [
+          "6.1"
+        ]
+      },
+      {
+        "source_id": "s6_1_project_selection_safety_emphasis",
+        "target_id": "s6_1_gray_war_zone_avoidance",
+        "type": "implements",
+        "description": "Gray and war zone avoidance implements project selection safety emphasis",
+        "source_sections": [
+          "6.1"
+        ]
+      },
+      {
+        "source_id": "s6_1_project_risk_assessment",
+        "target_id": "s6_1_introductory_meeting",
+        "type": "triggers",
+        "description": "Project risk assessment triggers introductory meeting",
+        "source_sections": [
+          "6.1"
+        ]
+      },
+      {
+        "source_id": "s6_1_project_risk_assessment",
+        "target_id": "s6_1_working_chats",
+        "type": "triggers",
+        "description": "Project risk assessment triggers creation of working chats",
+        "source_sections": [
+          "6.1"
+        ]
+      },
+      {
+        "source_id": "s6_1_project_risk_assessment",
+        "target_id": "s6_1_threat_assessment_step",
+        "type": "implements",
+        "description": "Threat assessment step implements project risk assessment",
+        "source_sections": [
+          "6.1"
+        ]
+      },
+      {
+        "source_id": "s6_1_project_risk_assessment",
+        "target_id": "s6_1_risk_analysis_step",
+        "type": "implements",
+        "description": "Risk analysis step implements project risk assessment",
+        "source_sections": [
+          "6.1"
+        ]
+      },
+      {
+        "source_id": "s6_1_project_risk_assessment",
+        "target_id": "s6_1_risk_reduction_identification",
+        "type": "implements",
+        "description": "Risk reduction identification implements project risk assessment",
+        "source_sections": [
+          "6.1"
+        ]
+      },
+      {
+        "source_id": "s6_1_project_risk_assessment",
+        "target_id": "s6_1_project_evaluation_decision",
+        "type": "implements",
+        "description": "Project evaluation decision implements project risk assessment",
+        "source_sections": [
+          "6.1"
+        ]
+      },
+      {
+        "source_id": "s6_1_project_risk_assessment",
+        "target_id": "s6_1_threat_monitoring",
+        "type": "implements",
+        "description": "Threat monitoring implements project risk assessment",
+        "source_sections": [
+          "6.1"
+        ]
+      },
+      {
+        "source_id": "s6_1_office_safety_equipment",
+        "target_id": "s6_1_personnel_safety_priority",
+        "type": "implements",
+        "description": "Office safety equipment implements personnel safety priority",
+        "source_sections": [
+          "6.1"
+        ]
+      }
+    ]
+  },
+  {
+    "chunk_id": "chunk_009",
+    "section_number": "6.2",
+    "entity_count": 7,
+    "relationship_count": 5,
+    "entities": [
+      {
+        "id": "s6_2_organization_personnel_representatives",
+        "type": "Role",
+        "name": "Organization, Personnel and Representatives",
+        "description": "Collective entity responsible for non-discrimination and equality duties",
+        "attributes": {
+          "scope": "all organizational stakeholders"
+        },
+        "source_anchor": {
+          "source_text": "The Organization, all the Personnel and the Representatives",
+          "source_section": "6.2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_2_work_environment_free_from_discrimination",
+        "type": "PolicyRule",
+        "name": "Work Environment Free from Discrimination",
+        "description": "Requirement to take reasonable steps to ensure discrimination-free work environment",
+        "attributes": {
+          "scope": "work environment and work materials, actions and activities",
+          "prohibited_behaviors": [
+            "discrimination",
+            "harassment",
+            "bullying",
+            "victimization",
+            "intimidation",
+            "other unfavorable and inappropriate behavior"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "take all reasonable steps to ensure that the work environment and work materials, actions and activities are free from discrimination, harassment, bullying, victimization, intimidation or other unfavorable and inappropriate behavior",
+          "source_section": "6.2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_2_inclusive_practices_implementation",
+        "type": "PolicyRule",
+        "name": "Inclusive Practices Implementation",
+        "description": "Requirement to implement inclusive practices in organizational activities",
+        "attributes": {
+          "scope": "activities of the Organization, members, employees, engaged experts, volunteers"
+        },
+        "source_anchor": {
+          "source_text": "implementation of inclusive practices in the activities of the Organization, as well as members, employees, engaged experts, volunteers of the Organization",
+          "source_section": "6.2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_2_educational_activities_non_discrimination",
+        "type": "PolicyRule",
+        "name": "Educational Activities on Non-Discrimination",
+        "description": "Requirement to conduct educational activities on non-discrimination and equality",
+        "attributes": {
+          "activities": [
+            "trainings",
+            "programs",
+            "awareness raising projects"
+          ],
+          "target_audience": [
+            "Personnel",
+            "Representatives",
+            "donors",
+            "society",
+            "government"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "conducting educational activities on non-discrimination and equality, implementation of trainings, programs, awareness raising projects for the Personnel, the Representatives, donors, society, government",
+          "source_section": "6.2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_2_complaints_procedure",
+        "type": "Procedure",
+        "name": "Complaints Filing and Review Procedure",
+        "description": "Effective procedure for filing and reviewing complaints based on fairness principles",
+        "attributes": {
+          "principle": "fairness",
+          "effectiveness": "effective"
+        },
+        "source_anchor": {
+          "source_text": "ensuring an effective procedure for filing and reviewing complaints based on the principles of fairness",
+          "source_section": "6.2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_2_legal_framework_monitoring",
+        "type": "PolicyRule",
+        "name": "Legal Framework Monitoring",
+        "description": "Constant monitoring of national and international legal framework on non-discrimination",
+        "attributes": {
+          "frequency": "constantly",
+          "scope": "national and international levels",
+          "subject_matter": "non-discrimination and equality issues"
+        },
+        "source_anchor": {
+          "source_text": "The Organization constantly monitors the legal framework at the national and international levels on non-discrimination and equality issues",
+          "source_section": "6.2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_2_corporate_email_proposals_complaints",
+        "type": "ContactInformation",
+        "name": "Corporate Email for Proposals and Complaints",
+        "description": "Universal corporate email address for organizational proposals and complaints",
+        "attributes": {
+          "email": "info.technology.progress@gmail.com",
+          "purpose": "proposals and complaints"
+        },
+        "source_anchor": {
+          "source_text": "info.technology.progress@gmail.com",
+          "source_section": "6.2",
+          "source_offset": -1
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "s6_2_organization_personnel_representatives",
+        "target_id": "s6_2_work_environment_free_from_discrimination",
+        "type": "requires",
+        "description": "Organization, Personnel and Representatives are required to ensure discrimination-free work environment",
+        "source_sections": [
+          "6.2"
+        ]
+      },
+      {
+        "source_id": "s6_2_organization_personnel_representatives",
+        "target_id": "s6_2_inclusive_practices_implementation",
+        "type": "requires",
+        "description": "Organization, Personnel and Representatives are required to implement inclusive practices",
+        "source_sections": [
+          "6.2"
+        ]
+      },
+      {
+        "source_id": "s6_2_organization_personnel_representatives",
+        "target_id": "s6_2_educational_activities_non_discrimination",
+        "type": "requires",
+        "description": "Organization, Personnel and Representatives are required to conduct educational activities",
+        "source_sections": [
+          "6.2"
+        ]
+      },
+      {
+        "source_id": "s6_2_organization_personnel_representatives",
+        "target_id": "s6_2_complaints_procedure",
+        "type": "requires",
+        "description": "Organization, Personnel and Representatives are required to ensure effective complaints procedure",
+        "source_sections": [
+          "6.2"
+        ]
+      },
+      {
+        "source_id": "s6_2_complaints_procedure",
+        "target_id": "s6_2_corporate_email_proposals_complaints",
+        "type": "implements",
+        "description": "Corporate email address implements part of the complaints procedure",
+        "source_sections": [
+          "6.2"
+        ]
+      }
+    ]
+  },
+  {
+    "chunk_id": "chunk_010",
+    "section_number": "6.3",
+    "entity_count": 12,
+    "relationship_count": 10,
+    "entities": [
+      {
+        "id": "s6_3_personnel_representatives_compliance",
+        "type": "PolicyRule",
+        "name": "Personnel and Representatives SEA Compliance",
+        "description": "Personnel and Representatives must fully comply with SEA principles",
+        "attributes": {
+          "scope": "Personnel and Representatives referred to in Article 2",
+          "compliance_level": "full"
+        },
+        "source_anchor": {
+          "source_text": "The Personnel and the Representatives, referred to in Article 2 of this Policy, shall fully comply with the principles set out below:",
+          "source_section": "6.3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_3_sexual_activity_children_prohibition",
+        "type": "PolicyRule",
+        "name": "Sexual Activity with Children Prohibition",
+        "description": "Sexual activity with children (persons under 18) is prohibited regardless of local age laws",
+        "attributes": {
+          "age_threshold": "18 years",
+          "exceptions": "none",
+          "defense_availability": "mistaken belief regarding age is not a defence"
+        },
+        "source_anchor": {
+          "source_text": "sexual activity with children (persons under the age of 18) is prohibited regardless of the age of majority or age of consent locally. Mistaken belief regarding the age of a child is not a defence;",
+          "source_section": "6.3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_3_exchange_for_sex_prohibition",
+        "type": "PolicyRule",
+        "name": "Exchange for Sex Prohibition",
+        "description": "Exchange of money, employment, goods, or services for sex is prohibited",
+        "attributes": {
+          "prohibited_exchanges": [
+            "money",
+            "employment",
+            "goods",
+            "services"
+          ],
+          "prohibited_behaviors": [
+            "sexual favors",
+            "humiliating behavior",
+            "degrading behavior",
+            "exploitative behavior"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "exchange of money, employment, goods, or services for sex, including sexual favors or other forms of humiliating, degrading or exploitative behavior is prohibited;",
+          "source_section": "6.3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_3_improper_rank_relationship_prohibition",
+        "type": "PolicyRule",
+        "name": "Improper Rank Sexual Relationship Prohibition",
+        "description": "Sexual relationships involving improper use of rank or position are prohibited",
+        "attributes": {
+          "scope": "Personnel, Representatives and other associated persons",
+          "prohibited_element": "improper use of rank or position"
+        },
+        "source_anchor": {
+          "source_text": "any sexual relationship between the Personnel, the Representatives and other associated persons, that involves improper use of rank or position is prohibited;",
+          "source_section": "6.3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_3_reporting_obligation",
+        "type": "PolicyRule",
+        "name": "SEA Reporting Obligation",
+        "description": "Personnel and Representatives must report concerns or suspicions regarding sexual abuse or exploitation",
+        "attributes": {
+          "trigger": "concerns or suspicions regarding sexual abuse or exploitation",
+          "scope": "fellow worker, whether in the same agency or not",
+          "method": "established reporting mechanisms"
+        },
+        "source_anchor": {
+          "source_text": "where the Personnel or the Representative develops concerns or suspicions regarding sexual abuse or exploitation by a fellow worker, whether in the same agency or not, he or she must report such concerns via established reporting mechanisms;",
+          "source_section": "6.3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_3_environment_maintenance_obligation",
+        "type": "PolicyRule",
+        "name": "SEA Prevention Environment Obligation",
+        "description": "Personnel and Representatives must create and maintain environment preventing SEA",
+        "attributes": {
+          "general_obligation": "create and maintain environment preventing SEA",
+          "manager_responsibilities": "particular responsibilities to support and develop systems"
+        },
+        "source_anchor": {
+          "source_text": "the Personnel and the Representatives are obliged to create and maintain an environment which prevents sexual exploitation and abuse. Managers at all levels have particular responsibilities to support and develop systems which maintain this environment.",
+          "source_section": "6.3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_3_age_threshold_18",
+        "type": "Threshold",
+        "name": "Child Age Threshold",
+        "description": "Age threshold defining children for SEA policy",
+        "attributes": {
+          "value": "18",
+          "unit": "years",
+          "applies_to": "sexual activity prohibition"
+        },
+        "source_anchor": {
+          "source_text": "persons under the age of 18",
+          "source_section": "6.3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_3_work_environment_commitment",
+        "type": "PolicyRule",
+        "name": "Respectful Work Environment Commitment",
+        "description": "Organization commitment to creating respectful work environment",
+        "attributes": {
+          "objectives": [
+            "respects dignity",
+            "enables full potential",
+            "empowers best results"
+          ],
+          "beneficiaries": "people we work for"
+        },
+        "source_anchor": {
+          "source_text": "The organization is committed to creating and maintaining a work environment that respects the dignity of all people, enabling them to reach their full potential and empowering them to achieve the best possible results for the people we work for.",
+          "source_section": "6.3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_3_commissioner_sea_role",
+        "type": "Role",
+        "name": "Commissioner for Countering SEA",
+        "description": "Role responsible for SEA information, training, and reporting contact",
+        "attributes": {
+          "responsibilities": [
+            "provide information materials",
+            "organize training",
+            "facilitate training",
+            "contact person for reporting"
+          ],
+          "scope": "Organization's Personnel and Representatives"
+        },
+        "source_anchor": {
+          "source_text": "The Commissioner for countering SEA shall provide the Organization's Personnel and the Representatives with information materials, organize and facilitate training on SEA, and shall be the contact person for reporting SEA cases.",
+          "source_section": "6.3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_3_sea_training_requirement",
+        "type": "Procedure",
+        "name": "SEA Training Provision",
+        "description": "Training on SEA to be organized and facilitated by Commissioner",
+        "attributes": {
+          "provider": "Commissioner for countering SEA",
+          "recipients": "Organization's Personnel and Representatives"
+        },
+        "source_anchor": {
+          "source_text": "organize and facilitate training on SEA",
+          "source_section": "6.3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_3_sea_information_materials",
+        "type": "Procedure",
+        "name": "SEA Information Materials Provision",
+        "description": "Information materials on SEA to be provided by Commissioner",
+        "attributes": {
+          "provider": "Commissioner for countering SEA",
+          "recipients": "Organization's Personnel and Representatives"
+        },
+        "source_anchor": {
+          "source_text": "provide the Organization's Personnel and the Representatives with information materials",
+          "source_section": "6.3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_3_sea_reporting_contact",
+        "type": "Procedure",
+        "name": "SEA Reporting Contact Point",
+        "description": "Commissioner serves as contact person for reporting SEA cases",
+        "attributes": {
+          "contact_role": "Commissioner for countering SEA",
+          "purpose": "reporting SEA cases"
+        },
+        "source_anchor": {
+          "source_text": "shall be the contact person for reporting SEA cases",
+          "source_section": "6.3",
+          "source_offset": -1
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "s6_3_personnel_representatives_compliance",
+        "target_id": "s6_3_sexual_activity_children_prohibition",
+        "type": "requires",
+        "description": "Compliance includes adherence to child protection prohibition",
+        "source_sections": [
+          "6.3"
+        ]
+      },
+      {
+        "source_id": "s6_3_personnel_representatives_compliance",
+        "target_id": "s6_3_exchange_for_sex_prohibition",
+        "type": "requires",
+        "description": "Compliance includes adherence to exchange prohibition",
+        "source_sections": [
+          "6.3"
+        ]
+      },
+      {
+        "source_id": "s6_3_personnel_representatives_compliance",
+        "target_id": "s6_3_improper_rank_relationship_prohibition",
+        "type": "requires",
+        "description": "Compliance includes adherence to rank relationship prohibition",
+        "source_sections": [
+          "6.3"
+        ]
+      },
+      {
+        "source_id": "s6_3_personnel_representatives_compliance",
+        "target_id": "s6_3_reporting_obligation",
+        "type": "requires",
+        "description": "Compliance includes reporting obligations",
+        "source_sections": [
+          "6.3"
+        ]
+      },
+      {
+        "source_id": "s6_3_personnel_representatives_compliance",
+        "target_id": "s6_3_environment_maintenance_obligation",
+        "type": "requires",
+        "description": "Compliance includes environment maintenance obligations",
+        "source_sections": [
+          "6.3"
+        ]
+      },
+      {
+        "source_id": "s6_3_sexual_activity_children_prohibition",
+        "target_id": "s6_3_age_threshold_18",
+        "type": "references",
+        "description": "Child protection rule references age threshold",
+        "source_sections": [
+          "6.3"
+        ]
+      },
+      {
+        "source_id": "s6_3_commissioner_sea_role",
+        "target_id": "s6_3_sea_training_requirement",
+        "type": "manages",
+        "description": "Commissioner manages SEA training provision",
+        "source_sections": [
+          "6.3"
+        ]
+      },
+      {
+        "source_id": "s6_3_commissioner_sea_role",
+        "target_id": "s6_3_sea_information_materials",
+        "type": "manages",
+        "description": "Commissioner manages information materials provision",
+        "source_sections": [
+          "6.3"
+        ]
+      },
+      {
+        "source_id": "s6_3_commissioner_sea_role",
+        "target_id": "s6_3_sea_reporting_contact",
+        "type": "implements",
+        "description": "Commissioner implements reporting contact function",
+        "source_sections": [
+          "6.3"
+        ]
+      },
+      {
+        "source_id": "s6_3_reporting_obligation",
+        "target_id": "s6_3_sea_reporting_contact",
+        "type": "triggers",
+        "description": "Reporting obligation can be fulfilled through Commissioner contact",
+        "source_sections": [
+          "6.3"
+        ]
+      }
+    ]
+  },
+  {
+    "chunk_id": "chunk_011",
+    "section_number": "6.4",
+    "entity_count": 10,
+    "relationship_count": 7,
+    "entities": [
+      {
+        "id": "s6_4_work_mode_determination",
+        "type": "PolicyRule",
+        "name": "Work Mode Determination",
+        "description": "Personnel work mode including holidays, business trips, holidays determined by Ukraine legislation and Rules of Procedure",
+        "attributes": {
+          "governing_law": "current legislation of Ukraine",
+          "internal_document": "approved Rules of Procedure",
+          "scope": [
+            "holidays",
+            "business trips",
+            "holidays"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "The mode of work of the Personnel, including holidays, business trips, holidays are determined in accordance with current legislation of Ukraine and the approved Rules of Procedure.",
+          "source_section": "6.4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_4_working_hours_schedule",
+        "type": "PolicyRule",
+        "name": "Working Hours Schedule Authority",
+        "description": "Organization independently determines working hours schedule based on work areas and project features",
+        "attributes": {
+          "decision_authority": "organization",
+          "independence_level": "independently",
+          "factors": [
+            "areas of work",
+            "features of project implementation"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "The organization independently determines the schedule of working hours in accordance with the areas of work and features of project implementation.",
+          "source_section": "6.4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_4_personnel_priority",
+        "type": "PolicyRule",
+        "name": "Personnel Lives and Health Priority",
+        "description": "Organization prioritizes the lives and health of Personnel",
+        "attributes": {
+          "priority_level": "prioritizes",
+          "scope": [
+            "lives",
+            "health"
+          ],
+          "target": "Personnel"
+        },
+        "source_anchor": {
+          "source_text": "The organization prioritizes the lives and health of the Personnel.",
+          "source_section": "6.4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_4_social_package",
+        "type": "BenefitOrPackage",
+        "name": "Social Package",
+        "description": "Social package provided to Personnel based on Organization's financial capabilities",
+        "attributes": {
+          "components": [
+            "public transport",
+            "insurance",
+            "rehabilitation",
+            "etc."
+          ],
+          "constraint": "based on the financial capabilities of the Organization"
+        },
+        "source_anchor": {
+          "source_text": "including by providing a social package (public transport, insurance, rehabilitation, etc.) based on the financial capabilities of the Organization",
+          "source_section": "6.4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_4_work_mode_change_provision",
+        "type": "PolicyRule",
+        "name": "Work Mode Change Provision",
+        "description": "Organization provides Personnel ability to contact supervisor for work mode changes",
+        "attributes": {
+          "contact_person": "supervisor",
+          "change_types": [
+            "temporary mode changes",
+            "nature of work",
+            "place of work (including remote)",
+            "day off",
+            "special leave"
+          ],
+          "purposes": [
+            "avoid burnout",
+            "promoting effective implementation of work"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "The organization provides for the Personnel to contact the supervisor to change the mode of work, including temporary, nature of work, place of work (including remote), get a day off, special leave to avoid burnout and promoting the effective implementation of their work by employees.",
+          "source_section": "6.4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_4_reporting_obligation",
+        "type": "PolicyRule",
+        "name": "Personnel Reporting Obligation",
+        "description": "Personnel must report circumstances affecting work implementation to supervisor",
+        "attributes": {
+          "obligation_type": "obliged to report",
+          "scope": [
+            "any circumstances",
+            "force majeure"
+          ],
+          "impact": "affect the person's employment to implement the Organization's Strategy",
+          "reporting_method": "notifying the supervisor",
+          "exception": "except when this is impossible"
+        },
+        "source_anchor": {
+          "source_text": "The Personnel are obliged to report any circumstances, including force majeure, that affect the person's employment to implement the Organization's Strategy by notifying the supervisor, except when this is impossible.",
+          "source_section": "6.4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_4_professional_development",
+        "type": "PolicyRule",
+        "name": "Professional Development Promotion",
+        "description": "Organization promotes continuous professional development of Personnel",
+        "attributes": {
+          "development_type": "continuous professional development",
+          "scope": [
+            "intellectual",
+            "professional",
+            "creative",
+            "sports qualities"
+          ],
+          "application": [
+            "individually",
+            "collectively"
+          ],
+          "target": "Personnel"
+        },
+        "source_anchor": {
+          "source_text": "The Organization promotes continuous professional development of the Personnel, including intellectual, professional, creative, sports qualities of staff individually and collectively.",
+          "source_section": "6.4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_4_capacity_development_measures",
+        "type": "PolicyRule",
+        "name": "Capacity Development Measures",
+        "description": "Organization shall take all possible measures to develop capacity within financial constraints",
+        "attributes": {
+          "commitment_level": "shall take all possible measures",
+          "objective": "develop its capacity",
+          "constraint": "taking into account the financial capacity of the Organization"
+        },
+        "source_anchor": {
+          "source_text": "The Organization shall take all possible measures to develop its capacity, taking into account the financial capacity of the Organization.",
+          "source_section": "6.4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_4_supervisor_role",
+        "type": "Role",
+        "name": "Supervisor",
+        "description": "Role responsible for receiving Personnel notifications and work mode change requests",
+        "attributes": {
+          "responsibilities": [
+            "receive circumstance notifications",
+            "handle work mode change requests"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "The organization provides for the Personnel to contact the supervisor to change the mode of work",
+          "source_section": "6.4",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_4_financial_capability_constraint",
+        "type": "Threshold",
+        "name": "Financial Capability Constraint",
+        "description": "Organization's financial capabilities limit benefit provision and development measures",
+        "attributes": {
+          "constraint_type": "financial capability",
+          "applies_to": [
+            "social package provision",
+            "capacity development measures"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "based on the financial capabilities of the Organization",
+          "source_section": "6.4",
+          "source_offset": -1
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "s6_4_work_mode_determination",
+        "target_id": "s6_4_working_hours_schedule",
+        "type": "part_of",
+        "description": "Working hours schedule determination is part of overall work mode determination",
+        "source_sections": [
+          "6.4"
+        ]
+      },
+      {
+        "source_id": "s6_4_personnel_priority",
+        "target_id": "s6_4_social_package",
+        "type": "implements",
+        "description": "Social package provision implements the priority for Personnel lives and health",
+        "source_sections": [
+          "6.4"
+        ]
+      },
+      {
+        "source_id": "s6_4_social_package",
+        "target_id": "s6_4_financial_capability_constraint",
+        "type": "exceeds",
+        "description": "Social package provision is limited by Organization's financial capabilities",
+        "source_sections": [
+          "6.4"
+        ]
+      },
+      {
+        "source_id": "s6_4_work_mode_change_provision",
+        "target_id": "s6_4_supervisor_role",
+        "type": "managed_by",
+        "description": "Work mode changes are managed by supervisor role",
+        "source_sections": [
+          "6.4"
+        ]
+      },
+      {
+        "source_id": "s6_4_reporting_obligation",
+        "target_id": "s6_4_supervisor_role",
+        "type": "escalates_to",
+        "description": "Personnel reporting obligation escalates to supervisor",
+        "source_sections": [
+          "6.4"
+        ]
+      },
+      {
+        "source_id": "s6_4_capacity_development_measures",
+        "target_id": "s6_4_financial_capability_constraint",
+        "type": "exceeds",
+        "description": "Capacity development measures are limited by Organization's financial capability",
+        "source_sections": [
+          "6.4"
+        ]
+      },
+      {
+        "source_id": "s6_4_professional_development",
+        "target_id": "s6_4_capacity_development_measures",
+        "type": "implements",
+        "description": "Capacity development measures implement professional development promotion",
+        "source_sections": [
+          "6.4"
+        ]
+      }
+    ]
+  },
+  {
+    "chunk_id": "chunk_012",
+    "section_number": "6.5",
+    "entity_count": 13,
+    "relationship_count": 8,
+    "entities": [
+      {
+        "id": "s6_5_information_protection_requirement",
+        "type": "PolicyRule",
+        "name": "Adequate Information Protection Requirement",
+        "description": "The Organization must maintain adequate protection of information, software and technical resources",
+        "attributes": {
+          "protection_aspects": [
+            "integrity",
+            "confidentiality",
+            "legality",
+            "accessibility",
+            "monitoring"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "The Organization determines the need to maintain adequate protection of information, software and technical resources while ensuring the integrity, confidentiality, legality, accessibility and monitoring.",
+          "source_section": "6.5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_5_information_security_components",
+        "type": "Definition",
+        "name": "Information Security Components",
+        "description": "Components that comprise information security",
+        "attributes": {
+          "components": [
+            "information literacy",
+            "separation of powers",
+            "access to and transmission of information",
+            "privacy",
+            "intellectual property rights",
+            "preservation of archival copies"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "Information security includes information literacy, separation of powers, access to and transmission of information, privacy, intellectual property rights, preservation of archival copies.",
+          "source_section": "6.5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_5_information_security_applicability",
+        "type": "PolicyRule",
+        "name": "Information Security Applicability",
+        "description": "Information security applies to Personnel and Representatives",
+        "attributes": {
+          "applies_to": [
+            "Personnel",
+            "Representatives"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "Information security applies to the Personnel and the Representatives.",
+          "source_section": "6.5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_5_personnel_role",
+        "type": "Role",
+        "name": "Personnel",
+        "description": "Organizational personnel subject to information security requirements",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "Information security applies to the Personnel and the Representatives.",
+          "source_section": "6.5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_5_representatives_role",
+        "type": "Role",
+        "name": "Representatives",
+        "description": "Organizational representatives subject to information security requirements",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "Information security applies to the Personnel and the Representatives.",
+          "source_section": "6.5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_5_records_keeping_procedure",
+        "type": "Procedure",
+        "name": "Records Keeping Procedure",
+        "description": "Organization keeps records of information, software and technical resources belonging to the Organization",
+        "attributes": {
+          "scope": [
+            "information",
+            "software",
+            "technical resources"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "The Organization keeps records of information, software and technical resources belonging to the Organization, determines the procedure for creation, access, including the range of entities, the procedure for storing, amending and disposing of information.",
+          "source_section": "6.5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_5_information_lifecycle_procedure",
+        "type": "Procedure",
+        "name": "Information Lifecycle Procedure",
+        "description": "Procedure for creation, access, storing, amending and disposing of information",
+        "attributes": {
+          "lifecycle_stages": [
+            "creation",
+            "access",
+            "storing",
+            "amending",
+            "disposing"
+          ],
+          "includes": "range of entities"
+        },
+        "source_anchor": {
+          "source_text": "The Organization keeps records of information, software and technical resources belonging to the Organization, determines the procedure for creation, access, including the range of entities, the procedure for storing, amending and disposing of information.",
+          "source_section": "6.5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_5_personal_data_handling_requirement",
+        "type": "PolicyRule",
+        "name": "Personal Data Handling Requirement",
+        "description": "Organization must ensure proper storage, processing and transfer of personal data for Personnel and Representatives",
+        "attributes": {
+          "data_subjects": [
+            "Personnel",
+            "Representatives"
+          ],
+          "operations": [
+            "storage",
+            "processing",
+            "transfer"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "The Organization determines the need for proper storage, processing and transfer of personal data, information security of the Personnel and the Representatives.",
+          "source_section": "6.5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_5_beneficiary_data_handling_requirement",
+        "type": "PolicyRule",
+        "name": "Beneficiary Personal Data Handling Requirement",
+        "description": "Organization must ensure proper storage, processing and transfer of personal data of beneficiaries with notification",
+        "attributes": {
+          "data_subjects": [
+            "beneficiaries"
+          ],
+          "operations": [
+            "storage",
+            "processing",
+            "transfer"
+          ],
+          "notification_required": true
+        },
+        "source_anchor": {
+          "source_text": "The organization determines the need for proper storage, processing and transfer of personal data of beneficiaries with notification of such actions.",
+          "source_section": "6.5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_5_beneficiaries",
+        "type": "Role",
+        "name": "Beneficiaries",
+        "description": "Recipients of organization services whose personal data requires special handling",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "The organization determines the need for proper storage, processing and transfer of personal data of beneficiaries with notification of such actions.",
+          "source_section": "6.5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_5_notification_requirement",
+        "type": "PolicyRule",
+        "name": "Beneficiary Data Processing Notification Requirement",
+        "description": "Notification required when processing beneficiary personal data",
+        "attributes": {
+          "applies_to": "beneficiary personal data processing"
+        },
+        "source_anchor": {
+          "source_text": "The organization determines the need for proper storage, processing and transfer of personal data of beneficiaries with notification of such actions.",
+          "source_section": "6.5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_5_cooperation_security_procedure",
+        "type": "Procedure",
+        "name": "Information Security Cooperation Procedure",
+        "description": "Procedure for ensuring information security in cooperation with external entities",
+        "attributes": {
+          "external_entities": [
+            "private information providers",
+            "donors",
+            "public authorities",
+            "local governments",
+            "international organizations",
+            "non-governmental organizations",
+            "media",
+            "other individuals",
+            "legal entities"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "The organization determines the procedure for ensuring information security in cooperation with private information providers, donors, public authorities and local governments, international and non- governmental organizations, the media, and other individuals and legal entities.",
+          "source_section": "6.5",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_5_intellectual_property_requirement",
+        "type": "PolicyRule",
+        "name": "Intellectual Property Rights Requirement",
+        "description": "Organization promotes observance of intellectual property rights, copyright and other related rights",
+        "attributes": {
+          "rights_types": [
+            "intellectual property rights",
+            "copyright",
+            "other related rights"
+          ],
+          "scope": "with respect to it and in relation to it",
+          "responsibility_basis": "current legislation"
+        },
+        "source_anchor": {
+          "source_text": "The organization promotes the observance of intellectual property rights, copyright and other related rights with respect to it and in relation to it, with the definition of responsibility in accordance with the current legislation.",
+          "source_section": "6.5",
+          "source_offset": -1
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "s6_5_information_protection_requirement",
+        "target_id": "s6_5_information_security_components",
+        "type": "part_of",
+        "description": "Information protection requirement includes the defined components of information security",
+        "source_sections": [
+          "6.5"
+        ]
+      },
+      {
+        "source_id": "s6_5_information_security_applicability",
+        "target_id": "s6_5_personnel_role",
+        "type": "applies_to",
+        "description": "Information security applies to Personnel",
+        "source_sections": [
+          "6.5"
+        ]
+      },
+      {
+        "source_id": "s6_5_information_security_applicability",
+        "target_id": "s6_5_representatives_role",
+        "type": "applies_to",
+        "description": "Information security applies to Representatives",
+        "source_sections": [
+          "6.5"
+        ]
+      },
+      {
+        "source_id": "s6_5_records_keeping_procedure",
+        "target_id": "s6_5_information_lifecycle_procedure",
+        "type": "implements",
+        "description": "Records keeping procedure implements information lifecycle management",
+        "source_sections": [
+          "6.5"
+        ]
+      },
+      {
+        "source_id": "s6_5_personal_data_handling_requirement",
+        "target_id": "s6_5_personnel_role",
+        "type": "applies_to",
+        "description": "Personal data handling requirement applies to Personnel data",
+        "source_sections": [
+          "6.5"
+        ]
+      },
+      {
+        "source_id": "s6_5_personal_data_handling_requirement",
+        "target_id": "s6_5_representatives_role",
+        "type": "applies_to",
+        "description": "Personal data handling requirement applies to Representatives data",
+        "source_sections": [
+          "6.5"
+        ]
+      },
+      {
+        "source_id": "s6_5_beneficiary_data_handling_requirement",
+        "target_id": "s6_5_beneficiaries",
+        "type": "applies_to",
+        "description": "Beneficiary data handling requirement applies to beneficiaries' personal data",
+        "source_sections": [
+          "6.5"
+        ]
+      },
+      {
+        "source_id": "s6_5_beneficiary_data_handling_requirement",
+        "target_id": "s6_5_notification_requirement",
+        "type": "requires",
+        "description": "Beneficiary data handling requires notification",
+        "source_sections": [
+          "6.5"
+        ]
+      }
+    ]
+  },
+  {
+    "chunk_id": "chunk_013",
+    "section_number": "6.6",
+    "entity_count": 8,
+    "relationship_count": 6,
+    "entities": [
+      {
+        "id": "s6_6_emergency_situation_definition",
+        "type": "Definition",
+        "name": "Emergency Situation",
+        "description": "Definition of emergency situation covering various types of dangers and risks",
+        "attributes": {
+          "types": [
+            "natural",
+            "man-made",
+            "socio-political",
+            "military nature",
+            "war",
+            "anti-terrorist operation"
+          ],
+          "scope": [
+            "national",
+            "regional",
+            "local"
+          ],
+          "impact": [
+            "implementation of Organization goals",
+            "saving lives and health of Personnel and Representatives"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "An emergency situation means danger of natural, man-made, socio-political or military nature, war, anti-terrorist operation, other measures of increased risk of national, regional, local nature, which may affect the implementation of the goals of the Organization, saving the lives and health of the Personnel and the Representatives.",
+          "source_section": "6.6",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_6_emergency_response_rule",
+        "type": "PolicyRule",
+        "name": "Emergency Response Measures",
+        "description": "Organization must take all measures to preserve assets and protect life and health during emergencies",
+        "attributes": {
+          "trigger": "assessment of emergency situation",
+          "protected_assets": [
+            "Organization assets",
+            "life and health of Personnel",
+            "life and health of Representatives"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "In accordance with the assessment of the emergency situation, the Organization shall take all measures to preserve the assets of the Organization and to preserve the life and health of the Personnel and the Representatives.",
+          "source_section": "6.6",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_6_remote_work_mechanism",
+        "type": "Procedure",
+        "name": "Remote Work Mechanism",
+        "description": "Mechanism for remote organization of work during potential threats",
+        "attributes": {
+          "trigger": "situation that could pose potential threat to life and health of Personnel while in office",
+          "purpose": "continue working without losing quality remotely",
+          "location_flexibility": "Personnel can be in safe place and perform all tasks"
+        },
+        "source_anchor": {
+          "source_text": "In the event of a situation that could pose a potential threat to the life and health of the Personnel while in the office, a mechanism for remote organization of work has been developed. Equipment and algorithms allow you to continue working without losing its quality remotely. Each Personnel can be in a safe place for himself and perform all his tasks.",
+          "source_section": "6.6",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_6_remote_work_equipment",
+        "type": "Equipment",
+        "name": "Remote Work Equipment and Algorithms",
+        "description": "Equipment and algorithms that enable remote work without quality loss",
+        "attributes": {
+          "capability": "continue working without losing quality remotely"
+        },
+        "source_anchor": {
+          "source_text": "Equipment and algorithms allow you to continue working without losing its quality remotely.",
+          "source_section": "6.6",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_6_google_drive_access",
+        "type": "Equipment",
+        "name": "Google Drive Document Access",
+        "description": "Access to working documents provided through organization's Google drive",
+        "attributes": {
+          "platform": "Google drive",
+          "purpose": "access to working documents"
+        },
+        "source_anchor": {
+          "source_text": "Access to working documents is provided through the organization's Google drive.",
+          "source_section": "6.6",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_6_communication_tools",
+        "type": "Equipment",
+        "name": "Remote Communication Tools",
+        "description": "Communication tools for work coordination during remote work",
+        "attributes": {
+          "tools": [
+            "telephone",
+            "Zoom",
+            "WhatsApp"
+          ],
+          "purpose": "coordination of work"
+        },
+        "source_anchor": {
+          "source_text": "Coordination of work takes place using telephone or online means of communication: Zoom, Whats App, etc.",
+          "source_section": "6.6",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_6_remote_work_monitoring",
+        "type": "Procedure",
+        "name": "Remote Work Monitoring and Meetings",
+        "description": "Regular meetings and work monitoring during remote work",
+        "attributes": {
+          "activities": [
+            "regular meetings of Personnel and Representatives",
+            "work monitoring"
+          ],
+          "frequency": "regular"
+        },
+        "source_anchor": {
+          "source_text": "During remote work, regular meetings of the Personnel and the Representatives are held and work is monitored.",
+          "source_section": "6.6",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s6_6_office_threat_trigger",
+        "type": "Threshold",
+        "name": "Office Threat Trigger",
+        "description": "Threshold for activating remote work mechanism",
+        "attributes": {
+          "condition": "potential threat to life and health of Personnel while in office",
+          "action": "activate remote work mechanism"
+        },
+        "source_anchor": {
+          "source_text": "In the event of a situation that could pose a potential threat to the life and health of the Personnel while in the office",
+          "source_section": "6.6",
+          "source_offset": -1
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "s6_6_emergency_response_rule",
+        "target_id": "s6_6_emergency_situation_definition",
+        "type": "triggers",
+        "description": "Emergency response measures are triggered by emergency situations as defined",
+        "source_sections": [
+          "6.6"
+        ]
+      },
+      {
+        "source_id": "s6_6_office_threat_trigger",
+        "target_id": "s6_6_remote_work_mechanism",
+        "type": "triggers",
+        "description": "Office threat threshold triggers the remote work mechanism",
+        "source_sections": [
+          "6.6"
+        ]
+      },
+      {
+        "source_id": "s6_6_remote_work_mechanism",
+        "target_id": "s6_6_remote_work_equipment",
+        "type": "requires",
+        "description": "Remote work mechanism requires equipment and algorithms",
+        "source_sections": [
+          "6.6"
+        ]
+      },
+      {
+        "source_id": "s6_6_remote_work_mechanism",
+        "target_id": "s6_6_google_drive_access",
+        "type": "requires",
+        "description": "Remote work mechanism requires Google drive access for documents",
+        "source_sections": [
+          "6.6"
+        ]
+      },
+      {
+        "source_id": "s6_6_remote_work_mechanism",
+        "target_id": "s6_6_communication_tools",
+        "type": "requires",
+        "description": "Remote work mechanism requires communication tools for coordination",
+        "source_sections": [
+          "6.6"
+        ]
+      },
+      {
+        "source_id": "s6_6_remote_work_mechanism",
+        "target_id": "s6_6_remote_work_monitoring",
+        "type": "implements",
+        "description": "Remote work mechanism implements monitoring and meeting procedures",
+        "source_sections": [
+          "6.6"
+        ]
+      }
+    ]
+  },
+  {
+    "chunk_id": "chunk_014",
+    "section_number": "7",
+    "entity_count": 8,
+    "relationship_count": 10,
+    "entities": [
+      {
+        "id": "s7_duty_of_care_breach",
+        "type": "Definition",
+        "name": "Duty of Care Breach",
+        "description": "Definition of when a duty of care is breached by Personnel or Representatives",
+        "attributes": {
+          "applies_to": [
+            "Personnel",
+            "Representatives"
+          ],
+          "breach_conditions": 2
+        },
+        "source_anchor": {
+          "source_text": "A duty of care is breached if the Personnel or the Representative:",
+          "source_section": "7",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s7_failure_reasonable_person_standard",
+        "type": "PolicyRule",
+        "name": "Reasonable Person Standard Failure",
+        "description": "Breach condition: failing to do what a reasonable person would do in same circumstances",
+        "attributes": {
+          "breach_type": "omission",
+          "standard": "reasonable person in same position and circumstances"
+        },
+        "source_anchor": {
+          "source_text": "Fails to do something a reasonable person in that person's position would do in the same circumstances",
+          "source_section": "7",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s7_harmful_act_or_omission",
+        "type": "PolicyRule",
+        "name": "Harmful Act or Omission",
+        "description": "Breach condition: acting or failing to act in a way that causes harm to someone owed duty of care",
+        "attributes": {
+          "breach_type": "commission or omission",
+          "harm_types": [
+            "physical",
+            "emotional injury",
+            "financial loss"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "Acts or fails to act in a way that causes harm to someone to whom the person owed a duty of care, including harm that is physical, an emotional injury or financial loss.",
+          "source_section": "7",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s7_organization_duty_commitment",
+        "type": "PolicyRule",
+        "name": "Organization Duty of Care Commitment",
+        "description": "Organization's serious commitment to duty of care obligations",
+        "attributes": {
+          "commitment_level": "extremely seriously"
+        },
+        "source_anchor": {
+          "source_text": "Organization takes its duty of care extremely seriously.",
+          "source_section": "7",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s7_disciplinary_action",
+        "type": "Procedure",
+        "name": "Disciplinary Action for Non-Compliance",
+        "description": "Disciplinary consequences for Personnel or Representatives not acting in accordance with policy",
+        "attributes": {
+          "applies_to": [
+            "Personnel",
+            "Representatives"
+          ],
+          "trigger": "not acting in accordance with this policy or related policies",
+          "consequence_type": "disciplinary action"
+        },
+        "source_anchor": {
+          "source_text": "The Personnel or the Representatives who do not act in accordance with this policy or any other related policy or procedure will be subject to disciplinary action",
+          "source_section": "7",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s7_employment_termination",
+        "type": "Procedure",
+        "name": "Employment/Placement Termination",
+        "description": "Termination of employment or placement for gross misconduct cases",
+        "attributes": {
+          "trigger": "gross misconduct",
+          "consequence": "employment/placement termination",
+          "severity": "gross misconduct"
+        },
+        "source_anchor": {
+          "source_text": "or in the case of gross misconduct, their employment/placement may be terminated",
+          "source_section": "7",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s7_personnel_role",
+        "type": "Role",
+        "name": "Personnel",
+        "description": "Staff members subject to duty of care obligations and disciplinary measures",
+        "attributes": {
+          "subject_to": [
+            "duty of care",
+            "disciplinary action",
+            "termination"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "Personnel or the Representative",
+          "source_section": "7",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s7_representative_role",
+        "type": "Role",
+        "name": "Representative",
+        "description": "Representatives subject to duty of care obligations and disciplinary measures",
+        "attributes": {
+          "subject_to": [
+            "duty of care",
+            "disciplinary action",
+            "termination"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "Personnel or the Representative",
+          "source_section": "7",
+          "source_offset": -1
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "s7_failure_reasonable_person_standard",
+        "target_id": "s7_duty_of_care_breach",
+        "type": "part_of",
+        "description": "This failure condition is part of the duty of care breach definition",
+        "source_sections": [
+          "7"
+        ]
+      },
+      {
+        "source_id": "s7_harmful_act_or_omission",
+        "target_id": "s7_duty_of_care_breach",
+        "type": "part_of",
+        "description": "This harmful act condition is part of the duty of care breach definition",
+        "source_sections": [
+          "7"
+        ]
+      },
+      {
+        "source_id": "s7_duty_of_care_breach",
+        "target_id": "s7_personnel_role",
+        "type": "applies_to",
+        "description": "Duty of care breach definition applies to Personnel",
+        "source_sections": [
+          "7"
+        ]
+      },
+      {
+        "source_id": "s7_duty_of_care_breach",
+        "target_id": "s7_representative_role",
+        "type": "applies_to",
+        "description": "Duty of care breach definition applies to Representatives",
+        "source_sections": [
+          "7"
+        ]
+      },
+      {
+        "source_id": "s7_duty_of_care_breach",
+        "target_id": "s7_disciplinary_action",
+        "type": "triggers",
+        "description": "Duty of care breach triggers disciplinary action",
+        "source_sections": [
+          "7"
+        ]
+      },
+      {
+        "source_id": "s7_disciplinary_action",
+        "target_id": "s7_employment_termination",
+        "type": "escalates_to",
+        "description": "Disciplinary action escalates to termination in gross misconduct cases",
+        "source_sections": [
+          "7"
+        ]
+      },
+      {
+        "source_id": "s7_disciplinary_action",
+        "target_id": "s7_personnel_role",
+        "type": "applies_to",
+        "description": "Disciplinary action applies to Personnel",
+        "source_sections": [
+          "7"
+        ]
+      },
+      {
+        "source_id": "s7_disciplinary_action",
+        "target_id": "s7_representative_role",
+        "type": "applies_to",
+        "description": "Disciplinary action applies to Representatives",
+        "source_sections": [
+          "7"
+        ]
+      },
+      {
+        "source_id": "s7_employment_termination",
+        "target_id": "s7_personnel_role",
+        "type": "applies_to",
+        "description": "Employment termination applies to Personnel",
+        "source_sections": [
+          "7"
+        ]
+      },
+      {
+        "source_id": "s7_employment_termination",
+        "target_id": "s7_representative_role",
+        "type": "applies_to",
+        "description": "Placement termination applies to Representatives",
+        "source_sections": [
+          "7"
+        ]
+      }
+    ]
+  },
+  {
+    "chunk_id": "chunk_015",
+    "section_number": "8",
+    "entity_count": 8,
+    "relationship_count": 6,
+    "entities": [
+      {
+        "id": "s8_incident_assessment_requirement",
+        "type": "PolicyRule",
+        "name": "Duty of Care Breach Assessment Requirement",
+        "description": "Requirement to assess instances of breaches of Duty of Care for their significance using specified criteria",
+        "attributes": {
+          "assessment_scope": "instances of breaches of Duty of Care",
+          "assessment_purpose": "significance determination"
+        },
+        "source_anchor": {
+          "source_text": "Instances of breaches of Duty of Care shall be assessed for their significance using the following criteria:",
+          "source_section": "8",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s8_risk_level_low",
+        "type": "RiskLevel",
+        "name": "Low Risk Level",
+        "description": "Impacts the local environment and can be remedied with short term action and there are no ongoing consequences",
+        "attributes": {
+          "impact_scope": "local environment",
+          "remedy_duration": "short term action",
+          "ongoing_consequences": "none"
+        },
+        "source_anchor": {
+          "source_text": "**Low - **impacts the local environment and can be remedied with short term action and there are no ongoing consequences.",
+          "source_section": "8",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s8_risk_level_moderate",
+        "type": "RiskLevel",
+        "name": "Moderate Risk Level",
+        "description": "Has a broader impact than the local environment and remedies are readily available but take place over a period of time and/or involve a number of persons",
+        "attributes": {
+          "impact_scope": "broader than local environment",
+          "remedy_availability": "readily available",
+          "remedy_duration": "over a period of time",
+          "remedy_involvement": "number of persons",
+          "ongoing_consequences": "manageable",
+          "regulator_notification": "may be required"
+        },
+        "source_anchor": {
+          "source_text": "**Moderate - **has a broader impact than the local environment and remedies are readily available but take place over a period of time and/or involve a number of persons. There may be ongoing consequences, but these are manageable. There may be a requirement to notify regulators.",
+          "source_section": "8",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s8_risk_level_high",
+        "type": "RiskLevel",
+        "name": "High Risk Level",
+        "description": "The instance has longer term ramifications of negligence, may require financial or legal restitution, may include data breach instances may result in short term reputational issues and will require regulators to be notified",
+        "attributes": {
+          "ramifications": "longer term negligence",
+          "financial_restitution": "may be required",
+          "legal_restitution": "may be required",
+          "data_breach": "may include instances",
+          "reputational_impact": "short term issues",
+          "regulator_notification": "required"
+        },
+        "source_anchor": {
+          "source_text": "**High - **the instance has longer term ramifications of negligence, may require financial or legal restitution, may include data breach instances may result in short term reputational issues and will require regulators to be notified.",
+          "source_section": "8",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s8_risk_level_extreme",
+        "type": "RiskLevel",
+        "name": "Extreme Risk Level",
+        "description": "The instance has major ramifications of negligence, will require financial restitution, will involve protracted legal action, may include significant data breach instances, will require regulators to be notified and there is the potential for long term reputational damage",
+        "attributes": {
+          "ramifications": "major negligence",
+          "financial_restitution": "required",
+          "legal_action": "protracted",
+          "data_breach": "may include significant instances",
+          "reputational_damage": "potential long term",
+          "regulator_notification": "required"
+        },
+        "source_anchor": {
+          "source_text": "**Extreme - **the instance has major ramifications of negligence, will require financial restitution, will involve protracted legal action, may include significant data breach instances, will require regulators to be notified and there is the potential for long term reputational damage.",
+          "source_section": "8",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s8_legislative_compliance_requirement",
+        "type": "PolicyRule",
+        "name": "Legislative Requirements Compliance",
+        "description": "Organization must follow all legislative requirements regarding Incident Reporting",
+        "attributes": {
+          "compliance_scope": "all legislative requirements",
+          "subject": "Incident Reporting"
+        },
+        "source_anchor": {
+          "source_text": "Organization will follow all legislative requirements regarding Incident Reporting.",
+          "source_section": "8",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s8_incident_reporting_purpose",
+        "type": "Definition",
+        "name": "Incident Reporting Purpose",
+        "description": "Incident reporting is conducted in workplaces and within work practices to ensure that the safety risks of all parties are minimized",
+        "attributes": {
+          "locations": [
+            "workplaces",
+            "within work practices"
+          ],
+          "purpose": "ensure that the safety risks of all parties are minimized"
+        },
+        "source_anchor": {
+          "source_text": "Incident reporting is conducted in workplaces and within work practices to ensure that the safety risks of all parties are minimized.",
+          "source_section": "8",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s8_breach_condition_failure",
+        "type": "PolicyRule",
+        "name": "Breach Condition for Incident Reporting Failure",
+        "description": "Where incident reporting does not happen to minimize safety risks, it may be a Breach of Duty of Care",
+        "attributes": {
+          "trigger_condition": "incident reporting failure to minimize safety risks",
+          "consequence": "may be a Breach of Duty of Care"
+        },
+        "source_anchor": {
+          "source_text": "Where this does not happen, it may be a Breach of Duty of Care.",
+          "source_section": "8",
+          "source_offset": -1
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "s8_incident_assessment_requirement",
+        "target_id": "s8_risk_level_low",
+        "type": "implements",
+        "description": "Assessment requirement uses low risk level criteria",
+        "source_sections": [
+          "8"
+        ]
+      },
+      {
+        "source_id": "s8_incident_assessment_requirement",
+        "target_id": "s8_risk_level_moderate",
+        "type": "implements",
+        "description": "Assessment requirement uses moderate risk level criteria",
+        "source_sections": [
+          "8"
+        ]
+      },
+      {
+        "source_id": "s8_incident_assessment_requirement",
+        "target_id": "s8_risk_level_high",
+        "type": "implements",
+        "description": "Assessment requirement uses high risk level criteria",
+        "source_sections": [
+          "8"
+        ]
+      },
+      {
+        "source_id": "s8_incident_assessment_requirement",
+        "target_id": "s8_risk_level_extreme",
+        "type": "implements",
+        "description": "Assessment requirement uses extreme risk level criteria",
+        "source_sections": [
+          "8"
+        ]
+      },
+      {
+        "source_id": "s8_legislative_compliance_requirement",
+        "target_id": "s8_incident_reporting_purpose",
+        "type": "references",
+        "description": "Legislative compliance requirement references incident reporting practices",
+        "source_sections": [
+          "8"
+        ]
+      },
+      {
+        "source_id": "s8_incident_reporting_purpose",
+        "target_id": "s8_breach_condition_failure",
+        "type": "triggers",
+        "description": "Failure to conduct proper incident reporting may trigger breach of duty of care",
+        "source_sections": [
+          "8"
+        ]
+      }
+    ]
+  },
+  {
+    "chunk_id": "chunk_016",
+    "section_number": "9",
+    "entity_count": 4,
+    "relationship_count": 4,
+    "entities": [
+      {
+        "id": "s9_executive_director_role",
+        "type": "Role",
+        "name": "Executive Director",
+        "description": "Organizational role responsible for notifying breaches of Duty of Care",
+        "attributes": {
+          "responsibility": "notification of incidents"
+        },
+        "source_anchor": {
+          "source_text": "The Executive Director will notify all instances of breaches of Duty of Care.",
+          "source_section": "9",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s9_notification_requirement",
+        "type": "PolicyRule",
+        "name": "Incident Notification Requirement",
+        "description": "Rule requiring notification of all breaches of Duty of Care",
+        "attributes": {
+          "scope": "all instances of breaches",
+          "mandatory": true
+        },
+        "source_anchor": {
+          "source_text": "The Executive Director will notify all instances of breaches of Duty of Care.",
+          "source_section": "9",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s9_duty_of_care_breach",
+        "type": "IncidentCategory",
+        "name": "Duty of Care Breach",
+        "description": "Category of incidents that must be notified",
+        "attributes": {
+          "notification_required": true,
+          "coverage": "all instances"
+        },
+        "source_anchor": {
+          "source_text": "The Executive Director will notify all instances of breaches of Duty of Care.",
+          "source_section": "9",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s9_notification_procedure",
+        "type": "Procedure",
+        "name": "Incident Notification Procedure",
+        "description": "Process by which the Executive Director notifies breaches of Duty of Care",
+        "attributes": {
+          "responsible_party": "Executive Director",
+          "trigger": "breach of Duty of Care"
+        },
+        "source_anchor": {
+          "source_text": "The Executive Director will notify all instances of breaches of Duty of Care.",
+          "source_section": "9",
+          "source_offset": -1
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "s9_executive_director_role",
+        "target_id": "s9_notification_procedure",
+        "type": "managed_by",
+        "description": "Executive Director manages the notification procedure",
+        "source_sections": [
+          "9"
+        ]
+      },
+      {
+        "source_id": "s9_duty_of_care_breach",
+        "target_id": "s9_notification_procedure",
+        "type": "triggers",
+        "description": "Duty of Care breach triggers the notification procedure",
+        "source_sections": [
+          "9"
+        ]
+      },
+      {
+        "source_id": "s9_notification_requirement",
+        "target_id": "s9_duty_of_care_breach",
+        "type": "applies_to",
+        "description": "Notification requirement applies to all Duty of Care breaches",
+        "source_sections": [
+          "9"
+        ]
+      },
+      {
+        "source_id": "s9_notification_procedure",
+        "target_id": "s9_notification_requirement",
+        "type": "implements",
+        "description": "Notification procedure implements the notification requirement",
+        "source_sections": [
+          "9"
+        ]
+      }
+    ]
+  }
+]

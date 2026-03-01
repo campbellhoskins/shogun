@@ -1,0 +1,476 @@
+<chunking_plan>
+
+## Step 1: List all sections
+
+1. **[Title/Approval Block]** - Preamble with approval signatures, location, date, and document title
+2. **1. INTRODUCTION** - Sections 1.1 and 1.2 (note: document has two "1.2" entries - likely a typo, first should be 1.1)
+3. **2. SCOPE** - Sections 2.1, 2.2, 2.3
+4. **3. AIM** - Sections 3.1, 3.2
+5. **4. DEFINITIONS** - All defined terms
+6. **5. DIRECTIONS OF ACTIVITY AND AREAS OF COMPETENCE** - Sections 5.1, 5.2
+7. **6. RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION** - Header section
+   - **Physical security** - Sections 6.1–6.8
+   - **Non-Discrimination and equality** - Sections 6.9–6.11
+   - **Protection against sexual exploitation and abuse (SEA)** - Sections 6.12–6.14
+   - **Legal protection** - Sections 6.15–6.18
+   - **Informational security** - Sections 6.19–6.25
+   - **Security in emergencies** - Sections 6.26–6.28
+8. **7. BREACHES OF THIS POLICY** - Sections 7.1, 7.2
+9. **8. ASSESSMENT OF INCIDENT** - Sections 8.1, 8.2
+10. **9. NOTIFICATION OF INCIDENT** - Section 9.1
+
+## Step 2: Map hierarchical relationships
+
+- [Title/Approval Block]: root level, no parent
+- 1. INTRODUCTION: level 1, no parent
+- 2. SCOPE: level 1, no parent
+- 3. AIM: level 1, no parent
+- 4. DEFINITIONS: level 1, no parent
+- 5. DIRECTIONS OF ACTIVITY AND AREAS OF COMPETENCE: level 1, no parent
+- 6. RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION: level 1, no parent
+  - Physical security (subsection of 6): level 2, parent = 6
+  - Non-Discrimination and equality (subsection of 6): level 2, parent = 6
+  - Protection against sexual exploitation and abuse (SEA) (subsection of 6): level 2, parent = 6
+  - Legal protection (subsection of 6): level 2, parent = 6
+  - Informational security (subsection of 6): level 2, parent = 6
+  - Security in emergencies (subsection of 6): level 2, parent = 6
+- 7. BREACHES OF THIS POLICY: level 1, no parent
+- 8. ASSESSMENT OF INCIDENT: level 1, no parent
+- 9. NOTIFICATION OF INCIDENT: level 1, no parent
+
+## Step 3: Determine chunk boundaries
+
+- **Chunk 0**: From document start through DUTY OF CARE POLICY title (approval block)
+- **Chunk 1**: Section 1 INTRODUCTION (1.2 + 1.2, both paragraphs)
+- **Chunk 2**: Section 2 SCOPE (2.1, 2.2, 2.3)
+- **Chunk 3**: Section 3 AIM (3.1, 3.2)
+- **Chunk 4**: Section 4 DEFINITIONS (all definitions)
+- **Chunk 5**: Section 5 DIRECTIONS OF ACTIVITY AND AREAS OF COMPETENCE (5.1, 5.2)
+- **Chunk 6**: Section 6 header + Physical security subsection (6.1–6.8) — this is a large section but tightly coupled; however it's quite long so I'll split it:
+  - **Chunk 6a**: Section 6 header intro + Physical security (6.1–6.5)
+  - **Chunk 6b**: Physical security continued (6.6–6.8)
+- **Chunk 7**: Non-Discrimination and equality (6.9–6.11)
+- **Chunk 8**: Protection against sexual exploitation and abuse (SEA) (6.12–6.14)
+- **Chunk 9**: Legal protection (6.15–6.18)
+- **Chunk 10**: Informational security (6.19–6.25)
+- **Chunk 11**: Security in emergencies (6.26–6.28)
+- **Chunk 12**: Section 7 BREACHES OF THIS POLICY (7.1, 7.2)
+- **Chunk 13**: Section 8 ASSESSMENT OF INCIDENT (8.1, 8.2)
+- **Chunk 14**: Section 9 NOTIFICATION OF INCIDENT (9.1)
+
+Actually, looking more carefully at the document structure:
+- Section 6 has a header "## 6. RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION" and then subsections marked with "### Physical security", "### Non-Discrimination and equality", etc.
+- The header of section 6 itself has no standalone content before the first subsection - it goes straight into "### Physical security"
+
+Let me reconsider: The section 6 header text "## 6. RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION" and "## PROTECTION" appear to be part of the same header (spanning two lines). The subsections are labeled with ### headers.
+
+For chunk boundaries:
+- I'll make Section 6 header + Physical security as a chunk (since the header has no standalone content)
+- Actually, looking at the structure, Physical security runs from 6.1 to 6.8 which is quite long (~3000 chars). I'll split into:
+  - Chunk for Physical security 6.1-6.5
+  - Chunk for Physical security 6.6-6.8
+
+Wait, but the rules say "A section heading belongs with the content that follows it". Since 6.1-6.8 all fall under "### Physical security", let me keep them together if possible, or split at a natural boundary.
+
+Let me count characters more carefully:
+- 6.1-6.5: reasonably long with the bullet lists
+- 6.6-6.8: also has content
+
+I'll split physical security into two chunks: 6.1-6.5 and 6.6-6.8, with the section 6 header going with 6.1.
+
+Actually, for cleanliness, I'll put the Section 6 main header together with the "### Physical security" heading and 6.1-6.5, then 6.6-6.8 as a continuation under physical security.
+
+Let me reconsider the overall approach more carefully:
+
+The document structure is:
+- Section 6 (level 1): "RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION"
+  - Subsection (level 2): "Physical security" → paragraphs 6.1-6.8
+  - Subsection (level 2): "Non-Discrimination and equality" → paragraphs 6.9-6.11
+  - Subsection (level 2): "Protection against sexual exploitation and abuse (SEA)" → paragraphs 6.12-6.14
+  - Subsection (level 2): "Legal protection" → paragraphs 6.15-6.18
+  - Subsection (level 2): "Informational security" → paragraphs 6.19-6.25
+  - Subsection (level 2): "Security in emergencies" → paragraphs 6.26-6.28
+
+The section 6 header itself has no standalone text content, so it needs to be paired with something. I'll pair it with the "Physical security" subsection header and its content. Since Physical security is quite long, I'll split it:
+- Chunk: Section 6 header + "### Physical security" + 6.1-6.5
+- Chunk: Physical security 6.6-6.8
+
+For chunk numbering/section_number assignment:
+- The "### Physical security" subsection doesn't have its own number, but its content is numbered 6.1-6.8. I'll use "6.1-6.5" and "6.6-6.8" as approximate section numbers, or better, treat "Physical security" as an unnumbered subsection of section 6.
+
+Actually let me simplify: I'll treat the named subsections of section 6 as having section numbers based on their content paragraphs:
+- Physical security: 6.1 through 6.8 → section_number "6" with subsection "Physical security"
+- Non-Discrimination: 6.9 through 6.11
+- etc.
+
+For the section_number field, I'll use descriptive identifiers:
+- "6" for the section 6 + physical security chunk(s)
+- I'll split physical security into two chunks: first (6.1-6.5) and second (6.6-6.8)
+
+Let me finalize the plan:
+
+**Chunk 0**: [Title/Approval Block] - preamble
+**Chunk 1**: Section 1 - INTRODUCTION
+**Chunk 2**: Section 2 - SCOPE
+**Chunk 3**: Section 3 - AIM
+**Chunk 4**: Section 4 - DEFINITIONS
+**Chunk 5**: Section 5 - DIRECTIONS OF ACTIVITY AND AREAS OF COMPETENCE
+**Chunk 6**: Section 6 header + Physical security (6.1-6.5)
+**Chunk 7**: Physical security continued (6.6-6.8)
+**Chunk 8**: Non-Discrimination and equality (6.9-6.11)
+**Chunk 9**: Protection against SEA (6.12-6.14)
+**Chunk 10**: Legal protection (6.15-6.18)
+**Chunk 11**: Informational security (6.19-6.25)
+**Chunk 12**: Security in emergencies (6.26-6.28)
+**Chunk 13**: Section 7 - BREACHES OF THIS POLICY
+**Chunk 14**: Section 8 - ASSESSMENT OF INCIDENT
+**Chunk 15**: Section 9 - NOTIFICATION OF INCIDENT
+
+## Step 4: Verify complete coverage
+
+Going through the document top to bottom:
+- "Kiyv, 2023" through "# DUTY OF CARE POLICY" → Chunk 0 ✓
+- "## 1. INTRODUCTION" through end of second 1.2 paragraph → Chunk 1 ✓
+- "## 2. SCOPE" through end of bullet list in 2.3 → Chunk 2 ✓
+- "## 3. AIM" through 3.2 → Chunk 3 ✓
+- "## 4. DEFINITIONS" through end of Injury definition → Chunk 4 ✓
+- "## 5. DIRECTIONS OF ACTIVITY AND AREAS OF COMPETENCE" through end of 5.2 bullet list → Chunk 5 ✓
+- "## 6. RESPONSIBILITIES..." + "### Physical security" + 6.1-6.5 → Chunk 6 ✓
+- 6.6-6.8 → Chunk 7 ✓
+- "### Non-Discrimination and equality" + 6.9-6.11 → Chunk 8 ✓
+- "### Protection against sexual exploitation and abuse (SEA)" + 6.12-6.14 → Chunk 9 ✓
+- "### Legal protection" + 6.15-6.18 → Chunk 10 ✓
+- "### Informational security" + 6.19-6.25 → Chunk 11 ✓
+- "### Security in emergencies" + 6.26-6.28 → Chunk 12 ✓
+- "## 7. BREACHES OF THIS POLICY" + 7.1-7.2 → Chunk 13 ✓
+- "## 8. ASSESSMENT OF INCIDENT" + 8.1-8.2 → Chunk 14 ✓
+- "## 9. NOTIFICATION OF INCIDENT" + 9.1 → Chunk 15 ✓
+
+All sections covered. Now I'll write the JSON output.
+
+For section numbers of the named subsections within section 6, I'll use:
+- "6.A" for Physical security (6.1-6.5 part)
+- "6.B" for Physical security continued (6.6-6.8 part)  
+- Actually this is confusing. Let me use:
+  - Chunk 6: section_number = "6", containing the header + Physical security header + 6.1-6.5
+  - Chunk 7: section_number = "6.physical_security_cont" ... no that's too complex
+
+Better approach: Since Physical security is a named subsection of 6, I'll treat it as the "main" content of section 6 and split it:
+- Chunk 6: section_number = "6", level = 1, contains section 6 header + Physical security subheader + 6.1-6.5
+- Chunk 7: section_number = "6.6", level = 2 (continuation of physical security, using the first paragraph number as identifier)
+
+Actually, the cleanest approach given the document structure:
+- Use the named subsection headers as the chunk headers for level 2 chunks
+- For the split physical security, the first chunk gets the header "Physical security" and the second gets "[Physical security continued]"
+
+Let me finalize section numbers:
+- Chunk 6: header="RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION" + Physical security, section_number="6", level=1
+  - Wait, but the Physical security is a subsection (###), so it should be level 2
+
+I think the cleanest approach is:
+- Chunk 6: The section 6 header paired with the Physical security subsection header and content 6.1-6.5. Since the section 6 header has no standalone content, this chunk is essentially level 1+2 combined. I'll set level=1 and note Physical security as a subsection.
+
+Actually, let me just do it cleanly:
+- Chunk 6: Section 6 header (no content) PLUS Physical security header and 6.1-6.5. Since I must pair the section 6 header with something (it has no standalone content), and the first thing after it is the Physical security subsection, I'll include the section 6 header in this chunk. I'll label this chunk with the Physical security header and note it's under section 6.
+  - header: "Physical security"
+  - section_number: "6" (treating it as the start of section 6)
+  - level: 2
+
+Hmm, but then I lose the section 6 header information. Let me just include section 6 header + Physical security header in one chunk, labeled at level 1 with the section 6 header, including everything through 6.5.
+
+Final decision:
+- Chunk 6: header="RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION", section_number="6", level=1, contains full header text + "### Physical security" heading + 6.1-6.5
+- Chunk 7: header="Physical security (continued)", section_number="6.6", level=2, parent=6, contains 6.6-6.8
+- Chunk 8: header="Non-Discrimination and equality", section_number="6.9", level=2, parent=6, contains 6.9-6.11
+- Chunk 9: header="Protection against sexual exploitation and abuse (SEA)", section_number="6.12", level=2, parent=6, contains 6.12-6.14
+- Chunk 10: header="Legal protection", section_number="6.15", level=2, parent=6, contains 6.15-6.18
+- Chunk 11: header="Informational security", section_number="6.19", level=2, parent=6, contains 6.19-6.25
+- Chunk 12: header="Security in emergencies", section_number="6.26", level=2, parent=6, contains 6.26-6.28
+
+This seems the cleanest. Let me proceed with writing the JSON.
+
+For Physical security section numbers: The actual section number for "Physical security" as a named subsection isn't numbered itself, but its content ranges from 6.1 to 6.8. I'll use "6.1" for the first physical security chunk and "6.6" for the continuation.
+
+Wait - I realize I need to be more careful. The named subsections (Physical security, Non-Discrimination, etc.) don't have their own numbers - they're just named groupings. The paragraph numbers (6.1, 6.2, etc.) continue sequentially across these subsections. So:
+- Physical security contains paragraphs 6.1-6.8
+- Non-Discrimination contains paragraphs 6.9-6.11
+- SEA contains paragraphs 6.12-6.14
+- Legal protection contains paragraphs 6.15-6.18
+- Informational security contains paragraphs 6.19-6.25
+- Security in emergencies contains paragraphs 6.26-6.28
+
+For the section_number field, I'll use:
+- The named subsection combined with its first paragraph number
+- Physical security (first part): "6.1" (first paragraph)
+- Physical security (second part): "6.6" (starting paragraph)
+- Non-Discrimination: "6.9"
+- SEA: "6.12"
+- Legal protection: "6.15"
+- Informational security: "6.19"
+- Security in emergencies: "6.26"
+
+But since chunk 6 contains both the section 6 header and physical security, I'll use section_number="6" for it, and "6.6" for the continuation.
+
+OK, I think I'm overcomplicating this. Let me just write the JSON now with reasonable choices.
+
+</chunking_plan>
+
+```json
+[
+  {
+    "header": "[Title and Approval Block]",
+    "section_number": "0",
+    "level": 1,
+    "text": "Kiyv, 2023\n\n## APPROVED\n\n## Executive director\n\n## Vasyl Zadvornyy\n\n## 03, April 2023\n\n## ___________________\n\n## APPROVED\n\n## Order № 2-Д from 03, April 2023\n\n## CONFIRMED\n\n## By decision of the General Meeting of NGO\n\n## TECHNOLOGY OF PROGRESS\n\n## the № 1-П from 02, April 2023\n\n# DUTY OF CARE POLICY",
+    "parent_section": null,
+    "parent_header": null,
+    "hierarchical_path": [],
+    "enumerated_lists": []
+  },
+  {
+    "header": "INTRODUCTION",
+    "section_number": "1",
+    "level": 1,
+    "text": "## 1. INTRODUCTION\n\n1.2 The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the "Organization") are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.\n\n1.2 The Organization is committed to the highest standards of integrity and professionalism, regardless of the environment in which it operates. The Organization requires its employees to adhere to the highest standards of ethical conduct at all times. To enable and facilitate the implementation of these commitments, the Organization has committed to providing a working environment that encourages high standards of productivity, professional and personal development, achieving organizational goals and prioritizing staff health and safety.",
+    "parent_section": null,
+    "parent_header": null,
+    "hierarchical_path": [],
+    "enumerated_lists": []
+  },
+  {
+    "header": "SCOPE",
+    "section_number": "2",
+    "level": 1,
+    "text": "## 2. SCOPE\n\n2.1 The policy applies to all staff and governance members of Organization (hereafter – named as Personnel).\n\n2.2 The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\n\n2.3 Directly involved in the implementation of the Policy are:\n\n- General Meeting;\n- Executive director.",
+    "parent_section": null,
+    "parent_header": null,
+    "hierarchical_path": [],
+    "enumerated_lists": [
+      {
+        "item_count": 2,
+        "list_type": "bulleted",
+        "preview": "General Meeting;"
+      }
+    ]
+  },
+  {
+    "header": "AIM",
+    "section_number": "3",
+    "level": 1,
+    "text": "## 3. AIM\n\n3.1 The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.\n\n3.2 This document also provides an overview of how the Organization assesses, monitors and responds to security risks that may affect staff and program implementation.",
+    "parent_section": null,
+    "parent_header": null,
+    "hierarchical_path": [],
+    "enumerated_lists": []
+  },
+  {
+    "header": "DEFINITIONS",
+    "section_number": "4",
+    "level": 1,
+    "text": "## 4. DEFINITIONS\n\n**Duty of Care:** Duty of care is a legal obligation of a person to take reasonable care to avoid harm or\n\ninjury to oneself and/or another person to whom they have responsibility.\n\n**Breach:** Breach of a duty of care occurs if a person acts unreasonably or fails to act where action could\n\nbe reasonably expected and harm is caused to a person.\n\n**Reasonable care:** The degree of caution and concern for the safety of himself/herself and others that\n\nan ordinarily prudent and rational person would use in the circumstances. Failure to exercise reasonable care is considered negligence.\n\n**Reasonable person:** (Read in conjunction with Definition of Reasonable care) another person in the\n\nsame situation would act in the same or a similar way.\n\n**Risk:** A situation exposing an individual to danger, harm or loss.\n\n**Harm:** means harm of any kind and includes—\n\na) injury or death; and b) damage to property; and c) economic loss\n\n**Injury:** means personal or bodily injury and includes—\n\na) psychological or psychiatric injury; and b) disease; and c) aggravation, acceleration or recurrence of an injury or disease",
+    "parent_section": null,
+    "parent_header": null,
+    "hierarchical_path": [],
+    "enumerated_lists": [
+      {
+        "item_count": 3,
+        "list_type": "lettered",
+        "preview": "injury or death; and"
+      },
+      {
+        "item_count": 3,
+        "list_type": "lettered",
+        "preview": "psychological or psychiatric injury; and"
+      }
+    ]
+  },
+  {
+    "header": "DIRECTIONS OF ACTIVITY AND AREAS OF COMPETENCE",
+    "section_number": "5",
+    "level": 1,
+    "text": "## 5. DIRECTIONS OF ACTIVITY AND AREAS OF COMPETENCE\n\n5.1 Persons, directly involved in the implementation of the Policy, are responsible for:\n\n- ensuring the physical safety of life and health of Personnel, including in cases of stay in high- risk areas;\n- ensuring information security of the Organization, including intellectual property;\n- ensuring information security of Personnel of the Organization;\n- ensuring the preservation of material assets of the Organization and Personnel within the activities of the Organization;\n- ensuring the financial security of the Organization;\n5.2 Representatives, under the conditions set forth in clause 2.2. of this Policy, and Personnel, are responsible for:\n\n- ensuring this policy is complied with, along with other related policies;\n- taking reasonable care in the course of their work and accepting a duty of care for their own health and safety, as well as for the health and safety of others within the workplace;\n- actively participate in building and maintaining a secure environment, through open communication, clear boundaries, managing complaints or disclosure, accurate documentation and notifying appropriate authorities of risk or harm in accordance with relevant procedures;\n- anticipating foreseeable harm and risks to self and/or others and immediately reporting any unsafe conditions or behaviors observed in the workplace to direct manager;\n- where foreseeable harm or risk is identified, implementing preventative and risk control measures in consultation with direct manager (where practical) and in line with relevant procedures;\n- taking the amount of care a reasonable person would expect.",
+    "parent_section": null,
+    "parent_header": null,
+    "hierarchical_path": [],
+    "enumerated_lists": [
+      {
+        "item_count": 5,
+        "list_type": "bulleted",
+        "preview": "ensuring the physical safety of life and health of Personnel..."
+      },
+      {
+        "item_count": 6,
+        "list_type": "bulleted",
+        "preview": "ensuring this policy is complied with..."
+      }
+    ]
+  },
+  {
+    "header": "Physical security",
+    "section_number": "6",
+    "level": 1,
+    "text": "## 6. RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS\n\n## PROTECTION\n\n### Physical security\n\n6.1. The Organization prioritizes the safety of life and health of its Personnel, taking all possible measures to ensure them. The Organization promotes and provides training, safety training, including the procedure for dealing with high-risk situations, first aid, and other activities, taking into account the financial capabilities of the Organization. The Organization has the right, by a decision of the Board, to determine certain trainings and exercises mandatory depending on the nature of work.\n\n6.2. Each member of the Personnel or the Representatives is responsible for reading and understanding the security plan and guidelines, including through updates. The specified persons are instructed in labor protection and safety, and training that allows them to make informed decisions about working in a particular field.\n\n6.3. Each member of the Personnel or the Representatives shall understand the responsibility for themselves and the team, as well as the risks to themselves, the team, and the tasks they perform.\n\n6.4. Each member of the Personnel or the Representatives is obliged to immediately report security incidents to the person performing security functions or the Executive director. While in the office, the specified persons personally report security threats. For remote work outside the office, should contact by phone or e-mail.\n\n6.5. The Organization shall take all measures regarding the Personnel or the Representatives in case they are on business trips, business trips to remote areas, high-risk areas by:\n\n- situation assessment (based on official information from public authorities and coordinating international organizations);\n- development of route and travel time;\n- informing about movement;\n- the necessary training of everyone;\n- providing a communication plan;\n- providing a plan of informing in case of emergencies;\n- instruction, including the provision of standard instructions for conduct in certain regions (such as checkpoints, areas of limited or restricted access) or under certain conditions (shelling, mines).",
+    "parent_section": null,
+    "parent_header": null,
+    "hierarchical_path": [],
+    "enumerated_lists": [
+      {
+        "item_count": 7,
+        "list_type": "bulleted",
+        "preview": "situation assessment (based on official information..."
+      }
+    ]
+  },
+  {
+    "header": "[Physical security continued]",
+    "section_number": "6.6",
+    "level": 2,
+    "text": "6.6 The Organization cares about the safety of the Personnel or the Representatives, therefore, when choosing a project, first of all, the main emphasis is on assessing the risk to the health and safety of employees. The Organization tries not to involve the specified persons in the gray zone or the war zone, concentrating as much as possible, all activities in the office.\n\n6.7. To ensure safety, the office is equipped with a fire extinguisher, first aid kit, personal protective equipment, action plan (information about the nearest bomb shelter) in case of a missile threat.\n\n6.8 Before starting each project, the Organization assesses risks to identify threats and vulnerabilities, assess their likelihood and impact, and identifies opportunities to mitigate them. An introductory meeting is held, at which team members are informed about the progress of the project, risks and methods for mitigating them. And also working chats are created for the prompt transfer of information on the project. To do this, a number of steps are taken:\n\n- assessment of potential threats to employees at all stages of the project;\n- risk analysis and probability of their occurrence;\n- identification of possible steps to reduce risks;\n- making a decision based on the previous stage of the project evaluation;\n- further monitoring of threats during project implementation.",
+    "parent_section": "6",
+    "parent_header": "RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION",
+    "hierarchical_path": [
+      {
+        "section_number": "6",
+        "header": "RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION"
+      }
+    ],
+    "enumerated_lists": [
+      {
+        "item_count": 5,
+        "list_type": "bulleted",
+        "preview": "assessment of potential threats to employees..."
+      }
+    ]
+  },
+  {
+    "header": "Non-Discrimination and equality",
+    "section_number": "6.9",
+    "level": 2,
+    "text": "### Non-Discrimination and equality\n\n6.9 The Organization, all the Personnel and the Representatives\n\n- take all reasonable steps to ensure that the work environment and work materials, actions and activities are free from discrimination, harassment, bullying, victimization, intimidation or other unfavorable and inappropriate behavior;\n- implementation of inclusive practices in the activities of the Organization, as well as members, employees, engaged experts, volunteers of the Organization;\n- conducting educational activities on non-discrimination and equality, implementation of trainings, programs, awareness raising projects for the Personnel, the Representatives, donors, society, government;\n- ensuring an effective procedure for filing and reviewing complaints based on the principles of fairness.\n6.10 The Organization constantly monitors the legal framework at the national and international levels on non-discrimination and equality issues.\n\n6.11 Universal corporate e-mail address of the Organization for proposals and complaints:\n\ninfo.technology.progress@gmail.com.",
+    "parent_section": "6",
+    "parent_header": "RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION",
+    "hierarchical_path": [
+      {
+        "section_number": "6",
+        "header": "RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION"
+      }
+    ],
+    "enumerated_lists": [
+      {
+        "item_count": 4,
+        "list_type": "bulleted",
+        "preview": "take all reasonable steps to ensure that the work environment..."
+      }
+    ]
+  },
+  {
+    "header": "Protection against sexual exploitation and abuse (SEA)",
+    "section_number": "6.12",
+    "level": 2,
+    "text": "### Protection against sexual exploitation and abuse (SEA)\n\n6.12 The Personnel and the Representatives, referred to in Article 2 of this Policy, shall fully comply with the principles set out below:\n\n- sexual activity with children (persons under the age of 18) is prohibited regardless of the age of majority or age of consent locally. Mistaken belief regarding the age of a child is not a defence;\n- exchange of money, employment, goods, or services for sex, including sexual favors or other forms of humiliating, degrading or exploitative behavior is prohibited;\n- any sexual relationship between the Personnel, the Representatives and other associated persons, that involves improper use of rank or position is prohibited;\n- where the Personnel or the Representative develops concerns or suspicions regarding sexual abuse or exploitation by a fellow worker, whether in the same agency or not, he or she must report such concerns via established reporting mechanisms;\n- the Personnel and the Representatives are obliged to create and maintain an environment which prevents sexual exploitation and abuse. Managers at all levels have particular responsibilities to support and develop systems which maintain this environment.\n6.13 The organization is committed to creating and maintaining a work environment that respects the dignity of all people, enabling them to reach their full potential and empowering them to achieve the best possible results for the people we work for.\n\n6.14 The Commissioner for countering SEA shall provide the Organization's Personnel and the Representatives with information materials, organize and facilitate training on SEA, and shall be the contact person for reporting SEA cases.",
+    "parent_section": "6",
+    "parent_header": "RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION",
+    "hierarchical_path": [
+      {
+        "section_number": "6",
+        "header": "RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION"
+      }
+    ],
+    "enumerated_lists": [
+      {
+        "item_count": 5,
+        "list_type": "bulleted",
+        "preview": "sexual activity with children (persons under the age of 18)..."
+      }
+    ]
+  },
+  {
+    "header": "Legal protection",
+    "section_number": "6.15",
+    "level": 2,
+    "text": "### Legal protection\n\n6.15 The mode of work of the Personnel, including holidays, business trips, holidays are determined in accordance with current legislation of Ukraine and the approved Rules of Procedure. The organization independently determines the schedule of working hours in accordance with the areas of work and features of project implementation.\n\n6.16 The organization prioritizes the lives and health of the Personnel. The Organization fully contributes to this, including by providing a social package (public transport, insurance, rehabilitation, etc.) based on the financial capabilities of the Organization. The organization provides for the Personnel to contact the supervisor to change the mode of work, including temporary, nature of work, place of work (including remote), get a day off, special leave to avoid burnout and promoting the effective implementation of their work by employees.\n\n6.17 The Personnel are obliged to report any circumstances, including force majeure, that affect the person's employment to implement the Organization's Strategy by notifying the supervisor, except when this is impossible.\n\n6.18 The Organization promotes continuous professional development of the Personnel, including intellectual, professional, creative, sports qualities of staff individually and collectively. The Organization shall take all possible measures to develop its capacity, taking into account the financial capacity of the Organization.",
+    "parent_section": "6",
+    "parent_header": "RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION",
+    "hierarchical_path": [
+      {
+        "section_number": "6",
+        "header": "RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION"
+      }
+    ],
+    "enumerated_lists": []
+  },
+  {
+    "header": "Informational security",
+    "section_number": "6.19",
+    "level": 2,
+    "text": "### Informational security\n\n6.19 The Organization determines the need to maintain adequate protection of information, software and technical resources while ensuring the integrity, confidentiality, legality, accessibility and monitoring. Information security includes information literacy, separation of powers, access to and transmission of information, privacy, intellectual property rights, preservation of archival copies.\n\n6.20 Information security applies to the Personnel and the Representatives.\n\n6.21 The Organization keeps records of information, software and technical resources belonging to the Organization, determines the procedure for creation, access, including the range of entities, the procedure for storing, amending and disposing of information.\n\n6.22 The Organization determines the need for proper storage, processing and transfer of personal data, information security of the Personnel and the Representatives.\n\n6.23 The organization determines the need for proper storage, processing and transfer of personal data of beneficiaries with notification of such actions.\n\n6.24 The organization determines the procedure for ensuring information security in cooperation with private information providers, donors, public authorities and local governments, international and non- governmental organizations, the media, and other individuals and legal entities.\n\n6.25 The organization promotes the observance of intellectual property rights, copyright and other related rights with respect to it and in relation to it, with the definition of responsibility in accordance with the current legislation.",
+    "parent_section": "6",
+    "parent_header": "RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION",
+    "hierarchical_path": [
+      {
+        "section_number": "6",
+        "header": "RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION"
+      }
+    ],
+    "enumerated_lists": []
+  },
+  {
+    "header": "Security in emergencies",
+    "section_number": "6.26",
+    "level": 2,
+    "text": "### Security in emergencies\n\n6.26 An emergency situation means danger of natural, man-made, socio-political or military nature, war, anti-terrorist operation, other measures of increased risk of national, regional, local nature, which may affect the implementation of the goals of the Organization, saving the lives and health of the Personnel and the Representatives.\n\n6.27 In accordance with the assessment of the emergency situation, the Organization shall take all measures to preserve the assets of the Organization and to preserve the life and health of the Personnel and the Representatives.\n\n6.28 In the event of a situation that could pose a potential threat to the life and health of the Personnel while in the office, a mechanism for remote organization of work has been developed. Equipment and algorithms allow you to continue working without losing its quality remotely. Each Personnel can be in a safe place for himself and perform all his tasks. Access to working documents is provided through the organization's Google drive. Coordination of work takes place using telephone or online means of communication: Zoom, Whats App, etc. During remote work, regular meetings of the Personnel and the Representatives are held and work is monitored.",
+    "parent_section": "6",
+    "parent_header": "RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION",
+    "hierarchical_path": [
+      {
+        "section_number": "6",
+        "header": "RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION"
+      }
+    ],
+    "enumerated_lists": []
+  },
+  {
+    "header": "BREACHES OF THIS POLICY",
+    "section_number": "7",
+    "level": 1,
+    "text": "## 7. BREACHES OF THIS POLICY\n\n7.1 A duty of care is breached if the Personnel or the Representative:\n\n- Fails to do something a reasonable person in that person's position would do in the same circumstances\n- Acts or fails to act in a way that causes harm to someone to whom the person owed a duty of care, including harm that is physical, an emotional injury or financial loss.\n7.2 Organization takes its duty of care extremely seriously. The Personnel or the Representatives who do not act in accordance with this policy or any other related policy or procedure will be subject to disciplinary action, or in the case of gross misconduct, their employment/placement may be terminated.",
+    "parent_section": null,
+    "parent_header": null,
+    "hierarchical_path": [],
+    "enumerated_lists": [
+      {
+        "item_count": 2,
+        "list_type": "bulleted",
+        "preview": "Fails to do something a reasonable person..."
+      }
+    ]
+  },
+  {
+    "header": "ASSESSMENT OF INCIDENT",
+    "section_number": "8",
+    "level": 1,
+    "text": "## 8. ASSESSMENT OF INCIDENT\n\n8.1 Instances of breaches of Duty of Care shall be assessed for their significance using the following criteria:\n\n- **Low - **impacts the local environment and can be remedied with short term action and there are no ongoing consequences.\n- **Moderate - **has a broader impact than the local environment and remedies are readily available but take place over a period of time and/or involve a number of persons. There may be ongoing consequences, but these are manageable. There may be a requirement to notify regulators.\n- **High - **the instance has longer term ramifications of negligence, may require financial or legal restitution, may include data breach instances may result in short term reputational issues and will require regulators to be notified.\n- **Extreme - **the instance has major ramifications of negligence, will require financial restitution, will involve protracted legal action, may include significant data breach instances, will require regulators to be notified and there is the potential for long term reputational damage.\n8.2 Organization will follow all legislative requirements regarding Incident Reporting. Incident reporting is conducted in workplaces and within work practices to ensure that the safety risks of all parties are minimized. Where this does not happen, it may be a Breach of Duty of Care.",
+    "parent_section": null,
+    "parent_header": null,
+    "hierarchical_path": [],
+    "enumerated_lists": [
+      {
+        "item_count": 4,
+        "list_type": "bulleted",
+        "preview": "Low - impacts the local environment..."
+      }
+    ]
+  },
+  {
+    "header": "NOTIFICATION OF INCIDENT",
+    "section_number": "9",
+    "level": 1,
+    "text": "## 9. NOTIFICATION OF INCIDENT\n\n9.1 The Executive Director will notify all instances of breaches of Duty of Care.",
+    "parent_section": null,
+    "parent_header": null,
+    "hierarchical_path": [],
+    "enumerated_lists": []
+  }
+]
+```
+-

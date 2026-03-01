@@ -2,11 +2,17 @@
 
 Merges all per-section extraction results into a single OntologyGraph,
 deduplicating entities that appear across sections using exact-match strategies.
+
+CLI usage:
+    python -m src.merge <extractions.json> <chunks.json> <source_text_file> -o <ontology.json>
 """
 
 from __future__ import annotations
 
+import argparse
+import json
 import re
+import sys
 import unicodedata
 from difflib import SequenceMatcher
 
@@ -292,3 +298,120 @@ def _compute_source_offsets(entities: list[Entity], source_document: str) -> Non
 
             if best_ratio >= 0.85:
                 entity.source_anchor.source_offset = best_idx
+
+
+def _sections_from_chunks(chunks: list[dict]) -> list[DocumentSection]:
+    """Reconstruct DocumentSection objects from chunks.json dicts."""
+    from src.models import EnumeratedList, HierarchyEntry
+
+    sections = []
+    for c in chunks:
+        enum_lists = []
+        for el in c.get("enumerated_lists", []):
+            enum_lists.append(EnumeratedList(**el))
+        hier_path = [
+            HierarchyEntry(**entry)
+            for entry in c.get("hierarchical_path", [])
+        ]
+        sections.append(DocumentSection(
+            chunk_id=c["chunk_id"],
+            header=c.get("header", ""),
+            section_number=c.get("section_number", ""),
+            level=c.get("level", 1),
+            text=c["text"],
+            source_offset=c.get("source_offset", 0),
+            parent_section=c.get("parent_section"),
+            parent_header=c.get("parent_header"),
+            hierarchical_path=hier_path,
+            enumerated_lists=enum_lists,
+        ))
+    return sections
+
+
+def _extractions_from_json(
+    extractions_data: list[dict], sections: list[DocumentSection]
+) -> list[SectionExtraction]:
+    """Reconstruct SectionExtraction objects from extractions.json + sections."""
+    section_by_chunk_id = {s.chunk_id: s for s in sections}
+
+    results = []
+    for ext in extractions_data:
+        chunk_id = ext.get("chunk_id", "")
+        section = section_by_chunk_id.get(chunk_id)
+        if section is None:
+            # Fall back to matching by section_number
+            sec_num = ext.get("section_number", "")
+            for s in sections:
+                if s.section_number == sec_num:
+                    section = s
+                    break
+            if section is None:
+                # Create a minimal placeholder section
+                section = DocumentSection(
+                    chunk_id=chunk_id,
+                    section_number=ext.get("section_number", ""),
+                    text="",
+                )
+
+        entities = [Entity(**e) for e in ext.get("entities", [])]
+        relationships = [Relationship(**r) for r in ext.get("relationships", [])]
+
+        results.append(SectionExtraction(
+            section=section,
+            entities=entities,
+            relationships=relationships,
+        ))
+    return results
+
+
+def main(argv: list[str] | None = None) -> None:
+    """CLI entry point: merge extractions into a deduplicated ontology graph."""
+    parser = argparse.ArgumentParser(
+        prog="python -m src.merge",
+        description="Stage 3: Merge per-section extractions into a single ontology graph.",
+    )
+    parser.add_argument(
+        "extractions",
+        help="Path to extractions.json (Stage 2 output).",
+    )
+    parser.add_argument(
+        "chunks",
+        help="Path to chunks.json (Stage 1 output).",
+    )
+    parser.add_argument(
+        "source_text",
+        help="Path to the original source text/markdown file.",
+    )
+    parser.add_argument(
+        "-o", "--output",
+        default="data/ontology.json",
+        help="Path to write ontology JSON (default: data/ontology.json).",
+    )
+    args = parser.parse_args(argv)
+
+    with open(args.extractions, encoding="utf-8") as f:
+        extractions_data = json.load(f)
+    with open(args.chunks, encoding="utf-8") as f:
+        chunks_data = json.load(f)
+    source_text = open(args.source_text, encoding="utf-8").read()
+
+    print(f"Loaded {len(extractions_data)} extraction results, {len(chunks_data)} chunks, {len(source_text)} chars source text")
+
+    sections = _sections_from_chunks(chunks_data)
+    section_extractions = _extractions_from_json(extractions_data, sections)
+    ontology = merge_extractions(section_extractions, source_text, sections)
+
+    with open(args.output, "w", encoding="utf-8") as f:
+        json.dump(ontology.model_dump(), f, indent=2, ensure_ascii=False, default=str)
+
+    meta = ontology.extraction_metadata
+    print(
+        f"Wrote ontology to {args.output}: "
+        f"{meta.final_entity_count} entities, "
+        f"{meta.final_relationship_count} relationships "
+        f"({meta.deduplication_merges} duplicates merged)"
+    )
+
+
+if __name__ == "__main__":
+    main()

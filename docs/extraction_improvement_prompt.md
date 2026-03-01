@@ -1,250 +1,247 @@
-# Extraction Prompt Improvement — Meta-Prompt for Anthropic Console
+# Extraction Prompt Improvement — Context for Anthropic Console
 
-Copy this entire document into the Anthropic Console. The current extraction prompt and a sample document are included below. Ask the model to improve the extraction prompt.
-
----
-
-## Meta-Prompt
-
-I have a system prompt that instructs an LLM to extract an ontology graph (entities and relationships) from corporate policy documents. The extracted graph is then used by an AI agent that traverses the graph programmatically to answer compliance questions — the agent does NOT read the raw document, it only has access to the graph.
-
-This means the graph must be:
-1. **Complete** — every fact, rule, threshold, definition, role, and procedure in the document must be captured as an entity or attribute
-2. **Dense** — entities must be heavily interconnected via relationships. Orphan nodes are useless. Every entity should connect to multiple others.
-3. **Query-friendly** — an agent traversing the graph by following edges should be able to answer any question about the policy. Specific values (numbers, names, dates, email addresses) must be stored in entity attributes, not just descriptions.
-4. **Connected** — the graph should be a single connected component, not fragmented into isolated clusters
-
-The current prompt produces graphs that have these problems:
-- Only 39 nodes and 36 edges from a 7-page policy document (too sparse)
-- 11 disconnected clusters (fragmented — should be 1 connected component)
-- 5 orphan nodes with zero connections
-- Missing entire sections: formal definitions (harm, injury, breach), legal/HR details (social packages, work arrangements, professional development), and information security specifics
-- Descriptions are vague instead of containing exact policy language
-
-Please improve this prompt to fix these issues. Specifically:
-
-1. **Add explicit instructions to extract definitions** — every term defined in the document should become an entity with the full definition text in its description
-2. **Add instructions to create bridge relationships** — connect entities across sections. If a definition is referenced by a rule, create a relationship. If a role appears in multiple sections, connect them all.
-3. **Require specific values in attributes** — amounts, dates, email addresses, age thresholds, lists of items should all be in attributes, not just mentioned in descriptions
-4. **Add a completeness check instruction** — tell the model to review each section of the document and verify it extracted at least one entity from every section
-5. **Add instructions about graph connectivity** — explicitly tell the model that every entity must connect to at least 2 other entities, and the overall graph should be one connected component
-6. **Increase relationship density** — for each entity, the model should consider relationships to ALL other entities, not just the ones in the same section
-
-Return the improved prompt that I can use as a drop-in replacement.
+Paste this entire document into the Anthropic Console BEFORE pasting the extraction prompt you want improved. This gives Claude full context about the pipeline architecture, what this prompt does, and what you want changed. Then paste the prompt and hit "Improve."
 
 ---
 
-## Current Extraction Prompt
+## What This Prompt Does — Pipeline Architecture
 
-This is the system prompt currently used (from `src/parser.py`). Improve this:
+This prompt is **Stage 2** of a 3-stage ontology extraction pipeline that turns unstructured policy documents into structured knowledge graphs. The pipeline works like this:
+
+### Stage 1: Semantic Chunking (already complete before this prompt runs)
+
+An LLM breaks the full document into semantically complete chunks. Each chunk is a JSON object with:
+- `chunk_id`, `header`, `section_number`, `level` — structural metadata
+- `text` — the verbatim document text for this chunk
+- `parent_section`, `parent_header` — what larger section this chunk belongs to
+- `hierarchical_path` — full breadcrumb from document root (e.g., `[{section_number: "6", header: "RESPONSIBILITIES..."}]`)
+- `enumerated_lists` — detected lists with item counts and types
+
+A typical policy document produces 12-20 chunks. Each chunk is 200-3000 characters.
+
+### Stage 2: Per-Section Extraction (THIS IS THE PROMPT BEING IMPROVED)
+
+This prompt runs independently on EACH chunk from Stage 1. It receives:
+1. A brief outline of ALL section headers in the document (so it knows where this chunk fits)
+2. The current section's header, number, parent context, and hierarchical position
+3. Any detected enumerated lists with item counts (so it can verify it extracted every item)
+4. The full verbatim text of this one chunk
+
+It must produce:
+- **Entities** — every fact, rule, definition, threshold, role, procedure, or requirement as a structured object with a type, name, description, attributes dict, and a mandatory source anchor (exact verbatim quote from the section text)
+- **Relationships** — typed connections between entities within this section only
+
+Critical constraints:
+- Entities are prefixed with a section identifier (e.g., `s6_1_` for section 6.1) to avoid ID collisions across sections
+- Source anchoring is mandatory — every entity must have `source_text` containing an exact verbatim quote from the section. This is verified downstream.
+- Relationships are ONLY between entities in this section. Cross-section relationships are handled in Stage 3.
+
+### Stage 3: Merge and Deduplication (runs after this prompt)
+
+A deterministic (no LLM) merge stage:
+1. Collects all entities and relationships from every section extraction
+2. Deduplicates entities that appear across sections (exact ID match after stripping section prefix, exact name+type match)
+3. Merges attributes and picks the best source anchor for each duplicate group
+4. Updates relationship references to point to canonical entity IDs
+5. Computes source offsets by locating each entity's `source_text` in the original document
+6. Builds the final `OntologyGraph` with metadata
+
+### Downstream Usage
+
+The final graph is used by an AI agent that traverses it programmatically to answer compliance questions. The agent does NOT read the original document — it only has the graph. This means:
+- Every fact in the document must be captured as an entity or attribute
+- Entities must be densely interconnected via relationships
+- Specific values (numbers, names, dates, emails) must be in attributes, not just descriptions
+- Source anchors must be exact verbatim quotes so they can be verified against the original document
+
+## How the Prompt is Assembled at Runtime
+
+The prompt is a template with these variables filled in by Python code:
+
+- `{section_outline}` — A brief indented outline of ALL section headers, generated from all chunks. Example:
+  ```
+  - 0: [Document Header and Approval Block]
+  - 1: INTRODUCTION
+  - 2: SCOPE
+  - 3: AIM
+  - 4: DEFINITIONS
+  - 5: DIRECTIONS OF ACTIVITY AND AREAS OF COMPETENCE
+  - 6: RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION
+    - 6.1: Physical security
+    - 6.2: Non-Discrimination and equality
+    - 6.3: Protection against sexual exploitation and abuse (SEA)
+  ```
+
+- `{section_header}` — The header of the current chunk (e.g., "Physical security")
+
+- `{section_number}` — The section number (e.g., "6.1")
+
+- `{parent_context}` — Human-readable parent context. For top-level sections: "Top-level". For subsections: "6 — RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION"
+
+- `{list_instructions}` — If the chunk contains detected enumerated lists, this is populated with instructions like:
+  ```
+  ## Enumerated Lists in This Section
+
+  The following enumerated lists have been detected in this section.
+  You MUST produce a SEPARATE entity for EACH item in each list.
+
+  1. A bulleted list with **7 items** (starts with: "situation assessment (based on official information...")
+     -> You must produce exactly 7 entities for this list.
+  ```
+  This is empty string if no lists were detected.
+
+- `{section_text}` — The full verbatim text of this chunk
+
+- `{id_prefix}` — Section-specific prefix for entity IDs (e.g., "s6_1" for section 6.1)
+
+## What I Want Improved
+
+Here is my feedback on the current prompt's output quality, based on running it against real policy documents:
+
+### 1. Entity extraction density is inconsistent
+
+Some sections produce rich extractions (28 entities from a 2000-char section on Physical Security) while others produce very sparse results (1 entity from a section header, 4 entities from a 300-char notification section). The prompt should push harder for exhaustive extraction from every section, especially short ones that still contain policy-relevant facts.
+
+### 2. Source anchoring quality varies
+
+The `source_text` field sometimes contains paraphrased text instead of exact verbatim quotes. The downstream merge stage tries to locate each `source_text` in the original document using exact string matching and fuzzy matching. When the LLM paraphrases, the offset computation fails and the entity can't be verified. The prompt must be much more forceful about verbatim copying.
+
+### 3. Attribute usage is too thin
+
+Entities often have empty `attributes: {}` even when the section text contains specific values. Dates, email addresses, age thresholds, numerical limits, lists of required items — these should all be captured as structured key-value pairs in the attributes dict, not just mentioned in the description string. The agent downstream queries attributes directly.
+
+### 4. Relationship descriptions are too generic
+
+Many relationships have descriptions like "relates to" or "requires compliance." These should contain specific information about HOW the entities relate, drawn from the section text.
+
+### 5. The prompt doesn't leverage the hierarchical context well enough
+
+The prompt receives `{parent_context}` and `{section_outline}` but doesn't explicitly instruct the LLM to use the hierarchical position to understand scope. For example, when extracting from section 6.1 (Physical security), the LLM should understand that every rule here falls under the umbrella of "RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION" and tag entities accordingly.
+
+### 6. Definition sections need special handling
+
+When the section contains formal definitions (bold terms followed by explanations), the prompt should produce one entity per definition with the COMPLETE definition text as the description and structured attributes (e.g., `{"includes": ["injury or death", "damage to property", "economic loss"]}`).
+
+### What NOT to change
+
+- Keep the `source_anchor` requirement mandatory — this is critical and non-negotiable
+- Keep the instruction to create relationships ONLY within this section — cross-section linking happens in Stage 3
+- Keep the entity ID prefix convention (`{id_prefix}_`)
+- Keep the JSON output format as-is — the downstream parser expects exactly this structure
+- Do NOT add chain-of-thought / thinking tags — this prompt runs in parallel across 16 sections and needs to be fast
+
+## The Extraction Prompt to Improve
+
+Below is the current prompt template. The `{{` and `}}` are escaped braces for Python's `.format()` — they become literal `{` and `}` in the output. The `{variable_name}` placeholders are filled at runtime as described above.
 
 ```
-You are an expert ontology engineer specializing in corporate travel compliance. Your task is to extract a complete, densely connected ontology graph from a corporate travel policy document.
+You are an expert ontology engineer extracting entities and relationships from a single section of a corporate policy document.
 
-Here is the corporate travel policy document you need to analyze:
+## Section Context
 
-<policy_document>
-{{Duty_Care_Document}}
-</policy_document>
+This section is from a larger document with the following structure:
+{{section_outline}}
 
-## Critical Context
+You are extracting from:
+**Section: {{section_header}} ({{section_number}})**
+Parent: {{parent_context}}
 
-The ontology graph you create will be used by an AI agent to answer compliance questions. The agent will ONLY have access to your graph - it will NOT be able to read the original policy document. This means your graph must be:
+{{list_instructions}}
 
-1. **Complete**: Every fact, rule, threshold, definition, role, and procedure in the document must be captured as an entity or attribute
-2. **Dense**: Entities must be heavily interconnected via relationships. Every entity should connect to multiple others.
-3. **Query-friendly**: An agent traversing the graph by following edges should be able to answer any question about the policy. Specific values (numbers, names, dates, email addresses) must be stored in entity attributes.
-4. **Connected**: The graph should be a single connected component, not fragmented into isolated clusters.
+## Section Text
 
-## Entity Types to Extract
+<section_text>
+{{section_text}}
+</section_text>
 
-Extract ALL instances of these entity types:
+## Extraction Requirements
 
-- **PolicyRule**: A specific rule, requirement, or restriction stated in the policy
-- **Definition**: Any term that is formally defined in the policy (e.g., "harm", "injury", "breach")
-- **RiskLevel**: A destination risk classification tier (Level 1 through Level 4)
-- **ApprovalRequirement**: Who must approve travel and under what conditions
-- **InsuranceRequirement**: Specific insurance coverage minimums or requirements
-- **VaccinationRequirement**: Required vaccinations for specific destinations or regions
-- **Destination**: A specific country, region, or destination category mentioned
-- **Role**: An organizational role involved in the policy (e.g., Travel Risk Manager, CSO, direct manager)
-- **Person**: A specific named individual mentioned in the policy
-- **Vendor**: An approved or mentioned vendor (airline, hotel chain, security firm, etc.)
-- **Procedure**: A defined process or workflow (e.g., evacuation procedure, check-in procedure)
-- **IncidentCategory**: A classification of incidents (Category 1, 2, 3)
+For EVERY distinct factual claim, rule, definition, threshold, role, procedure, or requirement in this section, create an entity.
+
+### Source Anchoring (MANDATORY)
+
+For EVERY entity you create, you MUST include a "source_anchor" object with:
+- **source_text**: The EXACT verbatim quote from the section text that this entity represents. Copy the text character-for-character. Do not paraphrase, summarize, or alter it in any way.
+- **source_section**: "{{section_number}}"
+
+If an entity cannot be tied to a specific quote (e.g., it represents an implicit concept), set source_text to the most relevant sentence from the section.
+
+### Entity Types
+
+- **PolicyRule**: A specific rule, requirement, or restriction
+- **Definition**: Any formally defined term
+- **RiskLevel**: A destination risk classification tier
+- **ApprovalRequirement**: Who must approve and under what conditions
+- **InsuranceRequirement**: Insurance coverage minimums
+- **VaccinationRequirement**: Required vaccinations
+- **Destination**: A country, region, or destination category
+- **Role**: An organizational role (Travel Risk Manager, CSO, etc.)
+- **Person**: A named individual
+- **Vendor**: An approved vendor (airline, hotel, security firm)
+- **Procedure**: A defined process or workflow
+- **IncidentCategory**: A classification of incidents
 - **CommunicationRequirement**: Check-in frequency or communication obligations
-- **Equipment**: Required equipment or technology (satellite phone, GPS tracker, etc.)
-- **Threshold**: Specific numeric thresholds or limits mentioned in the policy
-- **ContactInformation**: Email addresses, phone numbers, or other contact details
-- **BenefitOrPackage**: Social packages, work arrangements, professional development programs
+- **Equipment**: Required equipment or technology
+- **Threshold**: Specific numeric thresholds or limits
+- **ContactInformation**: Email addresses, phone numbers, contact details
+- **BenefitOrPackage**: Social packages, work arrangements, programs
 
-## Relationship Types to Use
-
-Create relationships using these types:
+### Relationship Types
 
 - **requires**: Entity A requires Entity B
 - **applies_to**: Rule applies to a destination, role, or risk level
-- **triggers**: An event or condition triggers a procedure or escalation
-- **escalates_to**: One role escalates to another in the chain
-- **prohibits**: A rule prohibits an action
-- **permits**: A rule permits an action under conditions
+- **triggers**: An event triggers a procedure or escalation
+- **escalates_to**: One role escalates to another
+- **prohibits / permits**: A rule prohibits or permits an action
 - **provides**: An entity provides a service or coverage
 - **classified_as**: A destination is classified as a risk level
 - **managed_by**: A process is managed by a role
-- **part_of**: Entity is part of a larger entity or process
-- **references**: An entity references or mentions another entity (use this to create bridge relationships)
-- **defined_in**: An entity is defined in a particular section or context
-- **implements**: A procedure implements a rule or requirement
-- **exceeds**: A value or requirement exceeds a threshold
+- **part_of**: Entity is part of a larger entity
+- **references**: Entity references another entity
+- **implements**: A procedure implements a rule
+- **exceeds**: A value exceeds a threshold
 
-## Instructions
+Create relationships ONLY between entities within this section. Cross-section relationships will be handled in a later stage.
 
-Before extracting entities and relationships, you must perform a thorough analysis and planning process inside your thinking block:
+### Entity ID Convention
 
-1. **Section Analysis**: In <section_analysis> tags, read through the entire document and create a detailed map of all sections, subsections, and topics covered. Quote the actual section titles and headings directly from the document. List every distinct section you identify. It's OK for this section to be quite long.
-
-2. **Extraction Planning**: In <extraction_plan> tags, for each section you identified, plan what entities you will extract. For each section, list out the specific entity IDs you will create (e.g., "From Section 2.1 I will extract: insurance_req_001, insurance_req_002, threshold_travel_cost"). Make sure you extract:
-   - Every formal definition as a Definition entity with the complete definition text
-   - Every specific numeric value, threshold, or limit as attributes
-   - Every contact detail (email, phone, address) as a ContactInformation entity
-   - Every procedure, process, or workflow as a Procedure entity
-   - Every role mentioned, even if it appears in multiple sections
-   
-   It's OK for this section to be quite long - thoroughness is critical.
-
-3. **Relationship Planning**: In <relationship_plan> tags, plan how you will create bridge relationships across sections. For each major entity you identified in the extraction plan:
-   - List what other entities it relates to in the same section
-   - List what entities in OTHER sections it relates to
-   - Explicitly identify "bridge entities" (roles, definitions, procedures) that appear in multiple sections and can connect different parts of the graph
-   - Map out at least 3-5 cross-section relationship paths to ensure connectivity
-
-4. **Completeness Check**: In <completeness_check> tags, create a systematic checklist:
-   - [ ] Have I extracted at least one entity from every section I identified?
-   - [ ] Does every entity participate in at least 2 relationships?
-   - [ ] Are there any orphan nodes (entities with zero connections)?
-   - [ ] Have I identified bridge relationships connecting different sections?
-   - [ ] Are all specific values (amounts, dates, emails, thresholds, lists) captured in entity attributes?
-   - [ ] Will the graph form a single connected component?
-   
-   Work through each item explicitly.
-
-After completing your analysis and planning in the thinking block, extract the ontology graph following these guidelines:
-
-### Entity Extraction Guidelines
-
-- Extract EVERY distinct rule, requirement, threshold, definition, and procedure - be exhaustively thorough
-- Each entity must have a unique, descriptive snake_case ID
-- In the `description` field, use the EXACT language from the policy document, not paraphrased summaries
-- In the `attributes` object, capture ALL specific values:
-  - Numeric amounts (e.g., {"coverage_amount": "500000", "currency": "USD"})
-  - Dates and timeframes (e.g., {"effective_date": "2024-01-01"})
-  - Email addresses and contact details (e.g., {"email": "travel@company.com"})
-  - Lists of items (e.g., {"required_items": ["passport", "visa", "vaccination_certificate"]})
-  - Thresholds and limits (e.g., {"max_duration_days": "30"})
-  - Risk levels or categories (e.g., {"risk_level": "3"})
-
-### Relationship Extraction Guidelines
-
-- Create relationships BOTH within sections AND across sections
-- For each entity, actively consider potential relationships to ALL other entities, not just nearby ones
-- Use "references" relationships to connect entities that mention or relate to each other across different sections
-- Ensure the approval chain and escalation hierarchy are captured as explicit relationship paths
-- Every entity MUST participate in at least 2 relationships (incoming or outgoing)
-- Create bridge relationships between:
-  - Definitions and the rules/procedures that use those terms
-  - Roles that appear in multiple sections
-  - Procedures that implement multiple rules
-  - Requirements that apply to multiple destinations or risk levels
+Prefix ALL entity IDs with the section identifier: "{{id_prefix}}_"
+Example: "{{id_prefix}}_risk_level_standard", "{{id_prefix}}_manager_approval"
 
 ### Output Format
 
-Return a JSON object with exactly this structure:
-
-```json
+Return a JSON object:
 {
   "entities": [
     {
-      "id": "unique_snake_case_id",
+      "id": "{{id_prefix}}_example_id",
       "type": "EntityType",
       "name": "Human Readable Name",
-      "description": "Exact text from the policy document describing this entity",
-      "attributes": {
-        "key1": "value1",
-        "key2": "value2"
+      "description": "Brief description from the policy",
+      "attributes": {"key": "value"},
+      "source_anchor": {
+        "source_text": "Exact verbatim quote from section",
+        "source_section": "{{section_number}}"
       }
     }
   ],
   "relationships": [
     {
-      "source_id": "entity_id_1",
-      "target_id": "entity_id_2",
+      "source_id": "{{id_prefix}}_entity_1",
+      "target_id": "{{id_prefix}}_entity_2",
       "type": "relationship_type",
-      "description": "Brief description of how these entities relate"
+      "description": "How they relate"
     }
   ]
 }
+
+### Density Requirements
+
+Be exhaustive. Extract EVERY factual claim. A 500-word section should produce at least 5-15 entities. Every numeric value, every role mention, every rule, every definition, every procedure step is a separate entity.
+
+Use attributes to capture specific values: amounts, dates, emails, thresholds, lists of items, risk levels, durations.
+
+Return ONLY the JSON object. No other text.
 ```
 
-### Example Structure (Generic)
-
-Here is a generic example showing the expected structure (NOT actual content from the policy):
-
-```json
-{
-  "entities": [
-    {
-      "id": "example_rule_001",
-      "type": "PolicyRule",
-      "name": "Example Rule Name",
-      "description": "Exact text of the rule as written in the policy document",
-      "attributes": {
-        "section": "3.2",
-        "applies_to": "all_travelers"
-      }
-    },
-    {
-      "id": "example_threshold_001",
-      "type": "Threshold",
-      "name": "Example Threshold",
-      "description": "Exact text describing the threshold",
-      "attributes": {
-        "value": "1000",
-        "unit": "USD",
-        "type": "maximum"
-      }
-    },
-    {
-      "id": "example_role_001",
-      "type": "Role",
-      "name": "Example Role Title",
-      "description": "Exact description of this role from the policy",
-      "attributes": {
-        "department": "example_department"
-      }
-    }
-  ],
-  "relationships": [
-    {
-      "source_id": "example_rule_001",
-      "target_id": "example_threshold_001",
-      "type": "requires",
-      "description": "This rule requires compliance with this threshold"
-    },
-    {
-      "source_id": "example_rule_001",
-      "target_id": "example_role_001",
-      "type": "managed_by",
-      "description": "This rule is managed and enforced by this role"
-    }
-  ]
-}
-```
-
-## Final Requirements
-
-- Ensure the graph is a single connected component (all entities reachable from any starting point)
-- Maximize relationship density - a 7-page document should produce at least 100+ entities and 150+ relationships
-- Every section of the document must be represented by at least one entity
-- Capture the complete semantic structure of the policy, not just high-level summaries
-
-Your final output should consist only of the JSON object with no other text before or after it. Do not duplicate or rehash any of the analysis and planning work you did in the thinking block.
+Please improve this prompt and return the improved version as a drop-in replacement. In the improved prompt, keep all template variables in double-brace format `{{variable_name}}` exactly as shown above. Literal JSON braces should remain as single `{` and `}`.
