@@ -32,6 +32,7 @@ from src.models import (
     OntologyGraph,
     SectionExtraction,
 )
+from src.schemas import get_typed_attributes
 
 RESULTS_DIR = Path(__file__).parent.parent / "results"
 RUNS_DIR = RESULTS_DIR / "runs"
@@ -146,7 +147,7 @@ def save_run(
             "id": e.id,
             "name": e.name,
             "description": e.description,
-            "attributes": e.attributes,
+            "typed_attributes": get_typed_attributes(e),
             "source_section": e.source_anchor.source_section,
             "source_text": e.source_anchor.source_text,
         }

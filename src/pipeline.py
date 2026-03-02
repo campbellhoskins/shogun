@@ -14,6 +14,7 @@ from src.extraction import extract_all_sections
 from src.merge import merge_extractions
 from src.models import OntologyGraph
 from src.results import save_run
+from src.schemas import validate_relationship
 from src.segmenter import segment_document
 
 
@@ -112,6 +113,21 @@ def extract_ontology(
         f"({100 * anchored / max(meta.final_entity_count, 1):.0f}%) anchored, "
         f"{verified} verified in document"
     )
+
+    # --- Relationship schema validation (advisory) ---
+    entity_type_lookup = {e.id: e.type for e in ontology.entities}
+    rel_warnings: list[str] = []
+    for rel in ontology.relationships:
+        warnings = validate_relationship(
+            rel.type, rel.source_id, rel.target_id, entity_type_lookup
+        )
+        rel_warnings.extend(warnings)
+    if rel_warnings:
+        print(f"\n  Relationship validation: {len(rel_warnings)} warning(s)")
+        for w in rel_warnings[:10]:  # Show first 10
+            print(f"    [WARN] {w}")
+        if len(rel_warnings) > 10:
+            print(f"    ... and {len(rel_warnings) - 10} more")
 
     pipeline_elapsed = time.time() - pipeline_start
     print(f"\nPipeline complete in {pipeline_elapsed:.1f}s")

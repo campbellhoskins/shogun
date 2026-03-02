@@ -1,19 +1,10 @@
 from __future__ import annotations
 
-from typing import Any
-
 from pydantic import BaseModel, Field
 
-
-# --- Source Anchoring ---
-
-
-class SourceAnchor(BaseModel):
-    """Provenance information linking an entity back to its source text."""
-
-    source_text: str = ""
-    source_section: str = ""
-    source_offset: int = -1
+# SourceAnchor lives in base_models to break circular import with schemas.py.
+# Re-exported here so existing `from src.models import SourceAnchor` still works.
+from src.base_models import SourceAnchor  # noqa: F401
 
 
 # --- Document Structure ---
@@ -49,15 +40,24 @@ class DocumentSection(BaseModel):
     enumerated_lists: list[EnumeratedList] = []
 
 
+# --- Core Graph Models ---
+
+
+class Relationship(BaseModel):
+    source_id: str
+    target_id: str
+    type: str
+    description: str
+    source_sections: list[str] = []
+
+
+# Import typed entity union after SourceAnchor is defined (schemas.py needs it).
+# schemas.py imports SourceAnchor from this file, so SourceAnchor must be
+# defined before this import executes.
+from src.schemas import AnyEntity  # noqa: E402
+
+
 # --- Extraction Pipeline ---
-
-
-class SectionExtraction(BaseModel):
-    """Extraction results from a single document section."""
-
-    section: DocumentSection
-    entities: list[Entity] = []
-    relationships: list[Relationship] = []
 
 
 class ExtractionMetadata(BaseModel):
@@ -76,29 +76,16 @@ class ExtractionMetadata(BaseModel):
     semantic_dedup_api_calls: int = 0
 
 
-# --- Core Graph Models ---
+class SectionExtraction(BaseModel):
+    """Extraction results from a single document section."""
 
-
-class Entity(BaseModel):
-    id: str
-    type: str
-    name: str
-    description: str
-    attributes: dict[str, Any] = {}
-    source_anchor: SourceAnchor = Field(default_factory=SourceAnchor)
-    source_anchors: list[SourceAnchor] = []  # All source references (populated during merge)
-
-
-class Relationship(BaseModel):
-    source_id: str
-    target_id: str
-    type: str
-    description: str
-    source_sections: list[str] = []
+    section: DocumentSection
+    entities: list[AnyEntity] = []
+    relationships: list[Relationship] = []
 
 
 class OntologyGraph(BaseModel):
-    entities: list[Entity]
+    entities: list[AnyEntity]
     relationships: list[Relationship]
     source_sections: list[DocumentSection] = []
     source_document: str = ""

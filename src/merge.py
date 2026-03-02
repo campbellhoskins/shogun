@@ -22,12 +22,17 @@ from anthropic import Anthropic
 
 from src.models import (
     DocumentSection,
-    Entity,
     ExtractionMetadata,
     OntologyGraph,
     Relationship,
     SectionExtraction,
     SourceAnchor,
+)
+from src.schemas import (
+    BaseEntitySchema,
+    get_typed_attributes,
+    reconstruct_merged_entity,
+    validate_entity,
 )
 
 
@@ -231,7 +236,7 @@ def merge_extractions(
         Tuple of (OntologyGraph, dedup_log for result storage).
     """
     # Collect all entities and relationships
-    all_entities: list[Entity] = []
+    all_entities: list[BaseEntitySchema] = []
     all_relationships: list[Relationship] = []
 
     for se in section_extractions:
@@ -308,19 +313,23 @@ def merge_extractions(
 # ---------------------------------------------------------------------------
 
 
-def _build_entities_block(entities: list[Entity]) -> str:
+def _build_entities_block(entities: list[BaseEntitySchema]) -> str:
     """Format entities as a JSON array for the dedup prompt."""
     items = []
     for e in entities:
-        items.append({
+        item: dict = {
             "id": e.id,
             "type": e.type,
             "name": e.name,
             "description": e.description,
-            "attributes": e.attributes,
             "source_text": e.source_anchor.source_text,
             "source_section": e.source_anchor.source_section,
-        })
+        }
+        # Include typed attributes (type-specific fields + extras)
+        typed_attrs = get_typed_attributes(e)
+        if typed_attrs:
+            item["typed_attributes"] = typed_attrs
+        items.append(item)
     return json.dumps(items, indent=2, ensure_ascii=False)
 
 
@@ -346,9 +355,9 @@ def _parse_dedup_response(raw: str) -> list[dict]:
 
 
 def _llm_deduplicate_entities(
-    entities: list[Entity],
+    entities: list[BaseEntitySchema],
     client: Anthropic,
-) -> tuple[list[Entity], list[Relationship], dict[str, str], int, int, list[dict]]:
+) -> tuple[list[BaseEntitySchema], list[Relationship], dict[str, str], int, int, list[dict]]:
     """Use LLM to deduplicate entities by type group.
 
     Groups entities by type, sends each group to the LLM, and gets back
@@ -357,7 +366,7 @@ def _llm_deduplicate_entities(
 
     Returns:
         Tuple of:
-            - deduplicated entities (list[Entity])
+            - deduplicated entities (list[BaseEntitySchema])
             - new relationships discovered during dedup (list[Relationship])
             - id_mapping old->new (dict[str, str])
             - merge count (int)
@@ -365,7 +374,7 @@ def _llm_deduplicate_entities(
             - dedup log for result storage (list[dict])
     """
     # Group entities by type
-    by_type: dict[str, list[Entity]] = defaultdict(list)
+    by_type: dict[str, list[BaseEntitySchema]] = defaultdict(list)
     for entity in entities:
         by_type[entity.type].append(entity)
 
@@ -373,7 +382,7 @@ def _llm_deduplicate_entities(
     merge_count = 0
     api_calls = 0
     dedup_log: list[dict] = []
-    all_deduped: list[Entity] = []
+    all_deduped: list[BaseEntitySchema] = []
     new_relationships: list[Relationship] = []
 
     for entity_type, type_entities in sorted(by_type.items()):
@@ -454,7 +463,7 @@ def _llm_deduplicate_entities(
             originals_by_id = {e.id: e for e in type_entities}
 
             # Process each returned entity
-            type_deduped: list[Entity] = []
+            type_deduped: list[BaseEntitySchema] = []
 
             for item in deduped_list:
                 merged_from = item.get("merged_from", [])
@@ -483,15 +492,44 @@ def _llm_deduplicate_entities(
                 # Primary source anchor = first (or best)
                 primary_anchor = source_anchors[0] if source_anchors else SourceAnchor()
 
-                entity = Entity(
-                    id=item["id"],
-                    type=item["type"],
-                    name=item["name"],
-                    description=item.get("description", ""),
-                    attributes=item.get("attributes", {}),
-                    source_anchor=primary_anchor,
-                    source_anchors=source_anchors,
+                # Build entity dict for typed schema validation.
+                # Flatten "attributes" dict if LLM returned old-format.
+                entity_dict: dict = {
+                    "id": item["id"],
+                    "type": item["type"],
+                    "name": item["name"],
+                    "description": item.get("description", ""),
+                    "source_anchor": primary_anchor.model_dump(),
+                    "source_anchors": [a.model_dump() for a in source_anchors],
+                }
+                # Flatten legacy attributes dict to top-level
+                if "attributes" in item and isinstance(item["attributes"], dict):
+                    for k, v in item["attributes"].items():
+                        if k not in entity_dict:
+                            entity_dict[k] = v
+                # Also carry any top-level typed attribute fields
+                skip_keys = {"id", "type", "name", "description", "source_anchor",
+                             "source_anchors", "attributes", "merged_from",
+                             "relationships", "source_text", "source_section"}
+                for k, v in item.items():
+                    if k not in skip_keys and k not in entity_dict:
+                        entity_dict[k] = v
+
+                # Reconstruct as typed entity with merge-specific checks
+                source_entities = [
+                    originals_by_id[oid]
+                    for oid in merged_from
+                    if oid in originals_by_id
+                ]
+                entity, warnings = reconstruct_merged_entity(
+                    entity_dict, source_entities
                 )
+                if warnings:
+                    for w in warnings:
+                        print(f"      [WARN] {w}")
+                if entity is None:
+                    print(f"      [WARN] Skipping entity '{item.get('id', '?')}' — failed validation")
+                    continue
                 type_deduped.append(entity)
 
                 # Build id_mapping for relationship remapping
@@ -631,7 +669,7 @@ def _find_offset(source_text: str, source_document: str, normalized_doc: str) ->
     return -1
 
 
-def _compute_source_offsets(entities: list[Entity], source_document: str) -> None:
+def _compute_source_offsets(entities: list[BaseEntitySchema], source_document: str) -> None:
     """Compute source_offset for each entity's source anchors in the document."""
     normalized_doc = _normalize_text_for_search(source_document)
 
@@ -708,7 +746,19 @@ def _extractions_from_json(
                     text="",
                 )
 
-        entities = [Entity(**e) for e in ext.get("entities", [])]
+        entities = []
+        for e_data in ext.get("entities", []):
+            # Flatten legacy "attributes" dict to top-level for typed schema
+            if "attributes" in e_data and isinstance(e_data["attributes"], dict):
+                attrs = e_data.pop("attributes")
+                for k, v in attrs.items():
+                    if k not in e_data:
+                        e_data[k] = v
+            entity, warnings = validate_entity(e_data)
+            if entity is not None:
+                entities.append(entity)
+            elif warnings:
+                print(f"    [WARN] Loading entity: {'; '.join(warnings)}")
         relationships = [Relationship(**r) for r in ext.get("relationships", [])]
 
         results.append(SectionExtraction(

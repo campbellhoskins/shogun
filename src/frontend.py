@@ -358,12 +358,21 @@ def _load_graph(args: argparse.Namespace) -> OntologyGraph:
         return OntologyGraph(**data)
     elif isinstance(data, list):
         # Extractions format — flatten entities and relationships
-        from src.models import Entity, Relationship, ExtractionMetadata
+        from src.models import Relationship, ExtractionMetadata
+        from src.schemas import validate_entity
         entities = []
         relationships = []
         for section in data:
             for e in section.get("entities", []):
-                entities.append(Entity(**e))
+                # Flatten legacy attributes dict
+                if "attributes" in e and isinstance(e["attributes"], dict):
+                    attrs = e.pop("attributes")
+                    for k, v in attrs.items():
+                        if k not in e:
+                            e[k] = v
+                entity, _ = validate_entity(e)
+                if entity is not None:
+                    entities.append(entity)
             for r in section.get("relationships", []):
                 relationships.append(Relationship(**r))
         return OntologyGraph(

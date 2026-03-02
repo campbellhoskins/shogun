@@ -3,6 +3,7 @@ from __future__ import annotations
 import networkx as nx
 
 from src.models import OntologyGraph
+from src.schemas import get_typed_attributes
 
 
 def build_graph(ontology: OntologyGraph) -> nx.DiGraph:
@@ -17,7 +18,8 @@ def build_graph(ontology: OntologyGraph) -> nx.DiGraph:
         # Stringify attribute values for NetworkX compatibility
         # Filter out keys that collide with our explicit node attributes
         reserved = {"type", "name", "description", "source_text", "source_section", "source_offset"}
-        attrs = {k: str(v) for k, v in entity.attributes.items() if k not in reserved}
+        typed_attrs = get_typed_attributes(entity)
+        attrs = {k: str(v) for k, v in typed_attrs.items() if k not in reserved}
         g.add_node(
             entity.id,
             type=entity.type,

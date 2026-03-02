@@ -23,12 +23,18 @@ _THINKING_CONFIG = {"type": "enabled", "budget_tokens": 32768}
 
 from src.models import (
     DocumentSection,
-    Entity,
     EnumeratedList,
     HierarchyEntry,
     Relationship,
     SectionExtraction,
     SourceAnchor,
+)
+from src.schemas import (
+    generate_entity_structure_prompt_section,
+    generate_entity_type_prompt_section,
+    generate_json_output_example,
+    generate_relationship_type_prompt_section,
+    validate_entity,
 )
 
 # Module-level debug flag — set via CLI --debug or programmatically
@@ -334,75 +340,11 @@ After completing your analysis, create entity objects for the JSON output.
 
 ### Entity Types
 
-Classify each entity using one of these types based on what the text describes:
-
-- **Organization**: The organization that owns or is governed by the policy
-- **Role**: An organizational role or party type (Travel Risk Manager, CSO, \
-Stakeholders, Partners, Volunteers, etc.)
-- **Person**: A named individual
-- **GovernanceBody**: Named governance bodies (General Meeting, Board, \
-Committee, etc.)
-- **Policy**: Referenced policies and documents (Grant Agreement, Duty of Care \
-Policy, Code of Conduct, etc.)
-- **Definition**: A formally defined term
-- **RiskLevel**: A destination or context risk classification tier
-- **Procedure**: A defined process or workflow
-- **Incident**: A classification of incidents or incident types
-- **Threshold**: Specific numeric thresholds or limits
-- **ContactInformation**: Email addresses, phone numbers, reporting channels
-- **Training**: Training programs, briefings, and certification requirements
-- **Equipment**: Required equipment or technology
-- **Location**: A country, region, destination, or location category
-- **Requirement**: A complex obligation that cannot be expressed as a simple \
-triple — use typed relationships (requires, requires_approval_from, specifies) \
-to connect it to roles, policies, and benefits
-- **BenefitOrPackage**: Insurance coverage, social packages, allowances, \
-programs
-
-**IMPORTANT**: The following are NOT valid entity types — do not use them: \
-ApprovalRequirement, InsuranceRequirement, VaccinationRequirement, \
-CommunicationRequirement, Vendor, Constraint, Document, OrganizationalBody, \
-IncidentCategory, Destination, PolicyRule. Use the types listed above instead \
-(e.g., Document → Policy, OrganizationalBody → GovernanceBody, \
-IncidentCategory → Incident, Destination → Location).
+{entity_types_section}
 
 ### Entity Structure
 
-Create each entity with the following fields:
-
-**id** (required)
-- Format: Start with the prefix `{id_prefix}_` followed by a descriptive \
-identifier
-- Use lowercase with underscores
-- Make it descriptive of the entity content
-- Example: `{id_prefix}_role_stakeholders` or `{id_prefix}_doc_policy`
-
-**type** (required)
-- Must be one of the entity types listed above
-
-**name** (required)
-- A clear, human-readable name for this entity
-- Should be concise but descriptive
-
-**description** (required)
-- A brief description of what this entity represents
-- Draw this from the policy text
-- For named entities from lists, reference the parent sentence context
-
-**attributes** (required)
-- A dictionary of specific key-value pairs capturing concrete values
-- Include numbers, dates, emails, thresholds, lists found in the text
-- If no specific values are present, use an empty object: {{}}
-- Examples: `{{"threshold_days": "30"}}`, `{{"minimum_coverage": "1000000"}}`, \
-`{{"risk_level": "high"}}`
-
-**source_anchor** (required)
-- This is a mandatory object with two fields:
-  - **source_text**: The EXACT verbatim quote from the section text that \
-supports this entity. Copy character-for-character from the source. Do NOT \
-paraphrase. For named entities from lists, use the complete parent sentence \
-that introduces the list.
-  - **source_section**: Must be set to `{section_number}`
+{entity_structure_section}
 
 ### Special Handling for Definitions
 
@@ -475,29 +417,7 @@ After creating entities, create relationship objects for the JSON output.
 
 ### Relationship Types
 
-Use these relationship types to describe how entities connect:
-
-- **requires**: Entity A requires Entity B (general dependency)
-- **applies_to**: Rule/policy applies to a location, role, or risk level
-- **triggers**: An event triggers a procedure or escalation
-- **escalates_to**: One role escalates to another
-- **prohibits**: A rule prohibits an action
-- **permits**: A rule permits an action
-- **provides**: An entity provides a service or coverage
-- **classified_as**: A location is classified as a risk level
-- **managed_by**: A process is managed by a role
-- **part_of**: Entity is part of a larger entity (use this for list members!)
-- **references**: Entity references another entity
-- **implements**: A procedure implements a rule
-- **reports_to**: Role reports to another role
-- **responsible_for**: Role is responsible for a process or area
-- **specifies**: A requirement specifies a particular benefit, equipment, \
-training, or condition that must be met
-- **requires_approval_from**: A requirement or procedure requires approval \
-from a specific role
-- **must_comply_with**: An entity must comply with a policy or requirement
-- **mitigates**: A procedure, training, or equipment mitigates an incident \
-or risk level
+{relationship_types_section}
 
 ### Relationship Structure
 
@@ -538,91 +458,7 @@ final output as a JSON object.
 
 The JSON object must have this exact structure:
 
-```json
-{{
-  "entities": [
-    {{
-      "id": "string (with required prefix)",
-      "type": "string (from allowed types)",
-      "name": "string",
-      "description": "string",
-      "attributes": {{
-        "key": "value"
-      }},
-      "source_anchor": {{
-        "source_text": "string (verbatim quote)",
-        "source_section": "string (section number)"
-      }}
-    }}
-  ],
-  "relationships": [
-    {{
-      "source_id": "string (entity id)",
-      "target_id": "string (entity id)",
-      "type": "string (from allowed types)",
-      "description": "string"
-    }}
-  ]
-}}
-```
-
-### Example Output Structure
-
-Here is a generic example showing the structure (this is purely illustrative - \
-your actual output should be based on the section text):
-
-```json
-{{
-  "entities": [
-    {{
-      "id": "sec_01_role_personnel",
-      "type": "Role",
-      "name": "Personnel",
-      "description": "Staff members and employees covered by the policy",
-      "attributes": {{}},
-      "source_anchor": {{
-        "source_text": "This policy applies to all Personnel of the organization.",
-        "source_section": "1.0"
-      }}
-    }},
-    {{
-      "id": "sec_01_doc_policy",
-      "type": "Policy",
-      "name": "Travel Safety Policy",
-      "description": "The organizational travel safety policy document",
-      "attributes": {{
-        "document_type": "policy"
-      }},
-      "source_anchor": {{
-        "source_text": "This policy applies to all Personnel of the organization.",
-        "source_section": "1.0"
-      }}
-    }},
-    {{
-      "id": "sec_01_threshold_duration",
-      "type": "Threshold",
-      "name": "Extended Travel Duration",
-      "description": "Threshold for travel duration that triggers additional requirements",
-      "attributes": {{
-        "threshold_days": "30",
-        "unit": "days"
-      }},
-      "source_anchor": {{
-        "source_text": "Travel exceeding 30 days requires additional approval.",
-        "source_section": "1.0"
-      }}
-    }}
-  ],
-  "relationships": [
-    {{
-      "source_id": "sec_01_doc_policy",
-      "target_id": "sec_01_role_personnel",
-      "type": "applies_to",
-      "description": "The policy applies to all personnel in the organization"
-    }}
-  ]
-}}
-```
+{json_output_example}
 
 ## Final Instructions
 
@@ -708,6 +544,13 @@ def _build_prompt(section: DocumentSection, all_sections: list[DocumentSection])
         list_instructions=_build_list_instructions(section),
         section_text=section.text,
         id_prefix=id_prefix,
+        # Auto-generated schema sections
+        entity_types_section=generate_entity_type_prompt_section(),
+        entity_structure_section=generate_entity_structure_prompt_section(
+            id_prefix, section.section_number
+        ),
+        relationship_types_section=generate_relationship_type_prompt_section(),
+        json_output_example=generate_json_output_example(),
     )
 
     _dbg(
@@ -753,29 +596,49 @@ def _parse_extraction_response(raw: str) -> dict:
 def _build_section_extraction(
     data: dict, section: DocumentSection
 ) -> SectionExtraction:
-    """Build a SectionExtraction from parsed JSON data."""
+    """Build a SectionExtraction from parsed JSON data.
+
+    Uses validate_entity() from schemas.py to construct typed entity subclasses.
+    Entities with unknown types or validation failures are skipped with warnings.
+    """
     entities = []
     for e in data.get("entities", []):
+        # Ensure required base fields are present as strings
+        entity_dict: dict = {
+            "id": str(e.get("id", "")),
+            "type": str(e.get("type", "")),
+            "name": str(e.get("name", "")),
+            "description": str(e.get("description", "")),
+        }
+
+        # Source anchor
         anchor_data = e.get("source_anchor", {})
-        entities.append(
-            Entity(
-                id=str(e["id"]),
-                type=str(e["type"]),
-                name=str(e["name"]),
-                description=str(e.get("description", "")),
-                attributes={
-                    k: v
-                    for k, v in e.get("attributes", {}).items()
-                    if k not in ("type", "name", "description")
-                },
-                source_anchor=SourceAnchor(
-                    source_text=str(anchor_data.get("source_text", "")),
-                    source_section=str(
-                        anchor_data.get("source_section", section.section_number)
-                    ),
-                ),
-            )
-        )
+        entity_dict["source_anchor"] = {
+            "source_text": str(anchor_data.get("source_text", "")),
+            "source_section": str(
+                anchor_data.get("source_section", section.section_number)
+            ),
+        }
+
+        # Carry over all other fields from LLM output (typed attributes,
+        # or legacy "attributes" dict flattened to top-level).
+        # If LLM returns old-style {"attributes": {...}}, flatten them.
+        if "attributes" in e and isinstance(e["attributes"], dict):
+            for k, v in e["attributes"].items():
+                if k not in entity_dict:
+                    entity_dict[k] = v
+        # Also carry any top-level typed attribute fields
+        skip_keys = {"id", "type", "name", "description", "source_anchor", "attributes"}
+        for k, v in e.items():
+            if k not in skip_keys and k not in entity_dict:
+                entity_dict[k] = v
+
+        entity, warnings = validate_entity(entity_dict)
+        if warnings:
+            for w in warnings:
+                print(f"    [WARN] Section {section.section_number}: {w}")
+        if entity is not None:
+            entities.append(entity)
 
     relationships = []
     for r in data.get("relationships", []):
