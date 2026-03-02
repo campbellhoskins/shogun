@@ -1,0 +1,1193 @@
+[
+  {
+    "entity_type": "Definition",
+    "input_count": 14,
+    "input_ids": [
+      "s1_value_activeness_care",
+      "s1_value_association_cooperation",
+      "s1_value_responsibility_rule_of_law",
+      "s1_standard_integrity_professionalism",
+      "s1_environment_working",
+      "s2_definition_personnel",
+      "s2_definition_representatives",
+      "s4_def_duty_of_care",
+      "s4_def_breach",
+      "s4_def_reasonable_care",
+      "s4_def_reasonable_person",
+      "s4_def_risk",
+      "s4_def_harm",
+      "s4_def_injury"
+    ],
+    "prompt": "You are deduplicating entities that were extracted from a travel policy document. The extraction process pulled entities of the same type from different sections of the document. Some of these entities may refer to the same real-world thing despite having different names, IDs, or descriptions.\n\nHere are all the entities of this type that need deduplication:\n\n<entities>\n[\n  {\n    \"id\": \"s1_value_activeness_care\",\n    \"type\": \"Definition\",\n    \"name\": \"Activeness and Care\",\n    \"description\": \"Core organizational value that forms the foundation of the Organization's activities\",\n    \"attributes\": {\n      \"value_type\": \"core_organizational_value\"\n    },\n    \"source_text\": \"The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the \\\"Organization\\\") are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.\",\n    \"source_section\": \"1\"\n  },\n  {\n    \"id\": \"s1_value_association_cooperation\",\n    \"type\": \"Definition\",\n    \"name\": \"Association and Cooperation\",\n    \"description\": \"Core organizational value that forms the foundation of the Organization's activities\",\n    \"attributes\": {\n      \"value_type\": \"core_organizational_value\"\n    },\n    \"source_text\": \"The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the \\\"Organization\\\") are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.\",\n    \"source_section\": \"1\"\n  },\n  {\n    \"id\": \"s1_value_responsibility_rule_of_law\",\n    \"type\": \"Definition\",\n    \"name\": \"Responsibility and the Rule of Law\",\n    \"description\": \"Core organizational value that forms the foundation of the Organization's activities\",\n    \"attributes\": {\n      \"value_type\": \"core_organizational_value\"\n    },\n    \"source_text\": \"The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the \\\"Organization\\\") are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.\",\n    \"source_section\": \"1\"\n  },\n  {\n    \"id\": \"s1_standard_integrity_professionalism\",\n    \"type\": \"Definition\",\n    \"name\": \"Standards of Integrity and Professionalism\",\n    \"description\": \"The highest standards of integrity and professionalism that the Organization is committed to maintaining regardless of operating environment\",\n    \"attributes\": {\n      \"standard_level\": \"highest\",\n      \"applicability\": \"regardless of environment\"\n    },\n    \"source_text\": \"The Organization is committed to the highest standards of integrity and professionalism, regardless of the environment in which it operates.\",\n    \"source_section\": \"1\"\n  },\n  {\n    \"id\": \"s1_environment_working\",\n    \"type\": \"Definition\",\n    \"name\": \"Working Environment\",\n    \"description\": \"Environment provided by the Organization that encourages high standards of productivity, professional and personal development, achieving organizational goals and prioritizing staff health and safety\",\n    \"attributes\": {\n      \"encourages\": [\n        \"high standards of productivity\",\n        \"professional and personal development\",\n        \"achieving organizational goals\",\n        \"staff health and safety priority\"\n      ]\n    },\n    \"source_text\": \"To enable and facilitate the implementation of these commitments, the Organization has committed to providing a working environment that encourages high standards of productivity, professional and personal development, achieving organizational goals and prioritizing staff health and safety.\",\n    \"source_section\": \"1\"\n  },\n  {\n    \"id\": \"s2_definition_personnel\",\n    \"type\": \"Definition\",\n    \"name\": \"Personnel\",\n    \"description\": \"Defined as all staff and governance members of Organization\",\n    \"attributes\": {\n      \"includes\": [\n        \"staff\",\n        \"governance members\"\n      ],\n      \"organization_scope\": \"Organization\"\n    },\n    \"source_text\": \"The policy applies to all staff and governance members of Organization (hereafter – named as Personnel).\",\n    \"source_section\": \"2\"\n  },\n  {\n    \"id\": \"s2_definition_representatives\",\n    \"type\": \"Definition\",\n    \"name\": \"Representatives\",\n    \"description\": \"Defined as partners, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities\",\n    \"attributes\": {\n      \"includes\": [\n        \"partners\",\n        \"suppliers\",\n        \"sub-grantees\",\n        \"beneficiaries\",\n        \"stakeholders\",\n        \"consultants\",\n        \"external executors\",\n        \"engaged experts\",\n        \"volunteers\",\n        \"other associated entities\"\n      ],\n      \"application_condition\": \"depending on specific clauses and conditions of the grant agreement\"\n    },\n    \"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\",\n    \"source_section\": \"2\"\n  },\n  {\n    \"id\": \"s4_def_duty_of_care\",\n    \"type\": \"Definition\",\n    \"name\": \"Duty of Care\",\n    \"description\": \"A legal obligation of a person to take reasonable care to avoid harm or injury to oneself and/or another person to whom they have responsibility\",\n    \"attributes\": {\n      \"obligation_type\": \"legal\",\n      \"scope\": \"self and others with responsibility\"\n    },\n    \"source_text\": \"Duty of care is a legal obligation of a person to take reasonable care to avoid harm or injury to oneself and/or another person to whom they have responsibility.\",\n    \"source_section\": \"4\"\n  },\n  {\n    \"id\": \"s4_def_breach\",\n    \"type\": \"Definition\",\n    \"name\": \"Breach\",\n    \"description\": \"Breach of a duty of care occurs if a person acts unreasonably or fails to act where action could be reasonably expected and harm is caused to a person\",\n    \"attributes\": {\n      \"triggers\": [\n        \"acts unreasonably\",\n        \"fails to act where action expected\"\n      ],\n      \"consequence\": \"harm is caused\"\n    },\n    \"source_text\": \"Breach of a duty of care occurs if a person acts unreasonably or fails to act where action could be reasonably expected and harm is caused to a person.\",\n    \"source_section\": \"4\"\n  },\n  {\n    \"id\": \"s4_def_reasonable_care\",\n    \"type\": \"Definition\",\n    \"name\": \"Reasonable Care\",\n    \"description\": \"The degree of caution and concern for the safety of himself/herself and others that an ordinarily prudent and rational person would use in the circumstances. Failure to exercise reasonable care is considered negligence\",\n    \"attributes\": {\n      \"standard\": \"ordinarily prudent and rational person\",\n      \"failure_consequence\": \"negligence\"\n    },\n    \"source_text\": \"The degree of caution and concern for the safety of himself/herself and others that an ordinarily prudent and rational person would use in the circumstances. Failure to exercise reasonable care is considered negligence.\",\n    \"source_section\": \"4\"\n  },\n  {\n    \"id\": \"s4_def_reasonable_person\",\n    \"type\": \"Definition\",\n    \"name\": \"Reasonable Person\",\n    \"description\": \"Another person in the same situation would act in the same or a similar way. Read in conjunction with Definition of Reasonable care\",\n    \"attributes\": {\n      \"cross_reference\": \"Reasonable care\"\n    },\n    \"source_text\": \"another person in the same situation would act in the same or a similar way.\",\n    \"source_section\": \"4\"\n  },\n  {\n    \"id\": \"s4_def_risk\",\n    \"type\": \"Definition\",\n    \"name\": \"Risk\",\n    \"description\": \"A situation exposing an individual to danger, harm or loss\",\n    \"attributes\": {\n      \"exposure_types\": [\n        \"danger\",\n        \"harm\",\n        \"loss\"\n      ]\n    },\n    \"source_text\": \"A situation exposing an individual to danger, harm or loss.\",\n    \"source_section\": \"4\"\n  },\n  {\n    \"id\": \"s4_def_harm\",\n    \"type\": \"Definition\",\n    \"name\": \"Harm\",\n    \"description\": \"Harm of any kind including injury or death, damage to property, and economic loss\",\n    \"attributes\": {\n      \"includes\": [\n        \"injury or death\",\n        \"damage to property\",\n        \"economic loss\"\n      ]\n    },\n    \"source_text\": \"means harm of any kind and includes— a) injury or death; and b) damage to property; and c) economic loss\",\n    \"source_section\": \"4\"\n  },\n  {\n    \"id\": \"s4_def_injury\",\n    \"type\": \"Definition\",\n    \"name\": \"Injury\",\n    \"description\": \"Personal or bodily injury including psychological or psychiatric injury, disease, and aggravation, acceleration or recurrence of an injury or disease\",\n    \"attributes\": {\n      \"includes\": [\n        \"psychological or psychiatric injury\",\n        \"disease\",\n        \"aggravation, acceleration or recurrence of an injury or disease\"\n      ]\n    },\n    \"source_text\": \"means personal or bodily injury and includes— a) psychological or psychiatric injury; and b) disease; and c) aggravation, acceleration or recurrence of an injury or disease\",\n    \"source_section\": \"4\"\n  }\n]\n</entities>\n\n<entity_type>\nDefinition\n</entity_type>\n\n---\n\n## CORE PRINCIPLE: PRESERVE QUERYABILITY\n\nEvery distinctly-named entity that a user might search for must exist as its own node in the graph. When two entities are related but use different names, keep both and connect them with a relationship. Only merge when two extractions are truly the same entity appearing in different sections — same name, same real-world referent — where keeping both would create a meaningless exact duplicate.\n\nA redundant node with a relationship is always preferable to a lost query path. When in doubt, do NOT merge.\n\n---\n\n## MERGE LOGIC\n\nProduce a deduplicated list of entities. For every group of entities that are true duplicates, merge them into ONE entity. All other entities pass through with relationships added where appropriate.\n\n### When to Merge\n\nMerge two entities ONLY when ALL of the following are true:\n- Their names are the same or unambiguous abbreviations of each other (e.g., \"ED\" and \"Executive Director\")\n- Their descriptions refer to the same real-world role, object, or concept — not merely a related or overlapping one\n- Keeping both as separate nodes would create a meaningless exact duplicate with no distinct query value\n\n### When NOT to Merge\n\nDo NOT merge when:\n- Two entities use different terminology for the same or similar group (e.g., \"Employees\" and \"Personnel\") — instead, keep both and link with an `equivalent_to` relationship\n- One entity is an umbrella or collective term that contains the other (e.g., \"Representatives\" contains \"Consultants\") — instead, keep both and link with a `part_of` relationship\n- Two entities share a generic name (e.g., both called \"Policy\") but describe clearly different real-world things\n- You are unsure — false negatives (keeping duplicates) are always preferable to false positives (incorrectly merging distinct entities)\n\n### Relationships Between Non-Merged Entities\n\nWhen two entities are related but must remain separate, add a `relationships` entry to connect them:\n\n| Situation | Action | Relationship |\n|---|---|---|\n| Same name, same role, different sections | **Merge** | — |\n| Different name, same or similar group of people | **Keep both** | `equivalent_to` (on both entities, bidirectional) |\n| One entity is a named subcategory or member of another | **Keep both** | `part_of` (on the child, pointing to the parent) |\n| Unclear whether same or different | **Keep both** | Add relationship only if confident |\n\n### Conflicting Attributes\n\nIf merged entities have conflicting values for the same attribute key, keep both values as a list:\n```json\n\"effective_date\": [\"2023-01-01\", \"2023-04-03\"]\n```\nAnd note the conflict in the description.\n\n---\n\n## OUTPUT SCHEMA\n\nOutput ONLY a JSON array. No preamble, no explanation, no commentary outside the JSON.\n\nEvery entity in the array must follow this exact structure:\n```json\n{\n  \"id\": \"clean_lowercase_snake_case_id\",\n  \"type\": \"Definition\",\n  \"name\": \"Best most complete name\",\n  \"description\": \"Combined or original description\",\n  \"attributes\": {\"key\": \"value\"},\n  \"relationships\": [\n    {\"target_id\": \"other_entity_id\", \"type\": \"equivalent_to | part_of\"}\n  ],\n  \"source_anchors\": [\n    {\"source_text\": \"EXACT verbatim quote from input\", \"source_section\": \"0\"}\n  ],\n  \"merged_from\": [\"original_id_1\", \"original_id_2\"]\n}\n```\n\n### Field Rules\n\n- **id**: Lowercase snake_case. Remove section prefixes (e.g., `s3_role_expense_limit` → `expense_limit`). If two non-merged entities would produce the same clean ID, append a disambiguating suffix (e.g., `policy_travel`, `policy_expense`).\n- **name**: For merged entities, pick the most specific and complete name. For pass-through entities, keep as-is.\n- **description**: For merged entities, combine descriptions using the pattern: \"[Most complete description]. [Unique facts from other sources not already covered].\" For pass-through entities, keep the original description verbatim — do not rewrite it.\n- **attributes**: For merged entities, take the union of all attribute keys. For pass-through entities, keep as-is.\n- **relationships**: Array of relationship objects. Use `equivalent_to` for entities that use different names for the same or similar group (add to both entities bidirectionally). Use `part_of` for entities that are a named member or subcategory of an umbrella entity (add only to the child, pointing at the parent). Empty array `[]` if no relationships apply.\n- **source_anchors**: Include ALL source references from all original entities. The `source_text` value must be copied character-for-character from the input. Do not paraphrase, truncate, or edit.\n- **merged_from**: Array of all original entity IDs that were merged. For pass-through entities, a single-element array.\n\n---\n\n## SELF-VERIFICATION\n\nBefore finalizing your output, verify:\n\n1. Every `source_text` value matches the input exactly — character for character\n2. Every original entity ID appears in exactly one `merged_from` array across the entire output\n3. The total count of original IDs across all `merged_from` arrays equals the total number of input entities\n4. No information from any original entity's description or attributes was lost\n5. No two output entities should themselves be merged (check your own output for remaining duplicates)\n6. Every `target_id` in a relationship points to an `id` that exists in your output\n7. All `equivalent_to` relationships are bidirectional (if A → B, then B → A)\n8. The JSON is syntactically valid\n",
+    "input_tokens": 3719,
+    "output_tokens": 3966,
+    "raw_response": "```json\n[\n  {\n    \"id\": \"activeness_and_care\",\n    \"type\": \"Definition\",\n    \"name\": \"Activeness and Care\",\n    \"description\": \"Core organizational value that forms the foundation of the Organization's activities\",\n    \"attributes\": {\n      \"value_type\": \"core_organizational_value\"\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the \\\"Organization\\\") are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.\",\n        \"source_section\": \"1\"\n      }\n    ],\n    \"merged_from\": [\"s1_value_activeness_care\"]\n  },\n  {\n    \"id\": \"association_and_cooperation\",\n    \"type\": \"Definition\",\n    \"name\": \"Association and Cooperation\",\n    \"description\": \"Core organizational value that forms the foundation of the Organization's activities\",\n    \"attributes\": {\n      \"value_type\": \"core_organizational_value\"\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the \\\"Organization\\\") are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.\",\n        \"source_section\": \"1\"\n      }\n    ],\n    \"merged_from\": [\"s1_value_association_cooperation\"]\n  },\n  {\n    \"id\": \"responsibility_and_rule_of_law\",\n    \"type\": \"Definition\",\n    \"name\": \"Responsibility and the Rule of Law\",\n    \"description\": \"Core organizational value that forms the foundation of the Organization's activities\",\n    \"attributes\": {\n      \"value_type\": \"core_organizational_value\"\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the \\\"Organization\\\") are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.\",\n        \"source_section\": \"1\"\n      }\n    ],\n    \"merged_from\": [\"s1_value_responsibility_rule_of_law\"]\n  },\n  {\n    \"id\": \"standards_of_integrity_and_professionalism\",\n    \"type\": \"Definition\",\n    \"name\": \"Standards of Integrity and Professionalism\",\n    \"description\": \"The highest standards of integrity and professionalism that the Organization is committed to maintaining regardless of operating environment\",\n    \"attributes\": {\n      \"standard_level\": \"highest\",\n      \"applicability\": \"regardless of environment\"\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"The Organization is committed to the highest standards of integrity and professionalism, regardless of the environment in which it operates.\",\n        \"source_section\": \"1\"\n      }\n    ],\n    \"merged_from\": [\"s1_standard_integrity_professionalism\"]\n  },\n  {\n    \"id\": \"working_environment\",\n    \"type\": \"Definition\",\n    \"name\": \"Working Environment\",\n    \"description\": \"Environment provided by the Organization that encourages high standards of productivity, professional and personal development, achieving organizational goals and prioritizing staff health and safety\",\n    \"attributes\": {\n      \"encourages\": [\n        \"high standards of productivity\",\n        \"professional and personal development\",\n        \"achieving organizational goals\",\n        \"staff health and safety priority\"\n      ]\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"To enable and facilitate the implementation of these commitments, the Organization has committed to providing a working environment that encourages high standards of productivity, professional and personal development, achieving organizational goals and prioritizing staff health and safety.\",\n        \"source_section\": \"1\"\n      }\n    ],\n    \"merged_from\": [\"s1_environment_working\"]\n  },\n  {\n    \"id\": \"personnel\",\n    \"type\": \"Definition\",\n    \"name\": \"Personnel\",\n    \"description\": \"Defined as all staff and governance members of Organization\",\n    \"attributes\": {\n      \"includes\": [\n        \"staff\",\n        \"governance members\"\n      ],\n      \"organization_scope\": \"Organization\"\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"The policy applies to all staff and governance members of Organization (hereafter – named as Personnel).\",\n        \"source_section\": \"2\"\n      }\n    ],\n    \"merged_from\": [\"s2_definition_personnel\"]\n  },\n  {\n    \"id\": \"representatives\",\n    \"type\": \"Definition\",\n    \"name\": \"Representatives\",\n    \"description\": \"Defined as partners, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities\",\n    \"attributes\": {\n      \"includes\": [\n        \"partners\",\n        \"suppliers\",\n        \"sub-grantees\",\n        \"beneficiaries\",\n        \"stakeholders\",\n        \"consultants\",\n        \"external executors\",\n        \"engaged experts\",\n        \"volunteers\",\n        \"other associated entities\"\n      ],\n      \"application_condition\": \"depending on specific clauses and conditions of the grant agreement\"\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\",\n        \"source_section\": \"2\"\n      }\n    ],\n    \"merged_from\": [\"s2_definition_representatives\"]\n  },\n  {\n    \"id\": \"duty_of_care\",\n    \"type\": \"Definition\",\n    \"name\": \"Duty of Care\",\n    \"description\": \"A legal obligation of a person to take reasonable care to avoid harm or injury to oneself and/or another person to whom they have responsibility\",\n    \"attributes\": {\n      \"obligation_type\": \"legal\",\n      \"scope\": \"self and others with responsibility\"\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"Duty of care is a legal obligation of a person to take reasonable care to avoid harm or injury to oneself and/or another person to whom they have responsibility.\",\n        \"source_section\": \"4\"\n      }\n    ],\n    \"merged_from\": [\"s4_def_duty_of_care\"]\n  },\n  {\n    \"id\": \"breach\",\n    \"type\": \"Definition\",\n    \"name\": \"Breach\",\n    \"description\": \"Breach of a duty of care occurs if a person acts unreasonably or fails to act where action could be reasonably expected and harm is caused to a person\",\n    \"attributes\": {\n      \"triggers\": [\n        \"acts unreasonably\",\n        \"fails to act where action expected\"\n      ],\n      \"consequence\": \"harm is caused\"\n    },\n    \"relationships\": [\n      {\"target_id\": \"duty_of_care\", \"type\": \"part_of\"}\n    ],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"Breach of a duty of care occurs if a person acts unreasonably or fails to act where action could be reasonably expected and harm is caused to a person.\",\n        \"source_section\": \"4\"\n      }\n    ],\n    \"merged_from\": [\"s4_def_breach\"]\n  },\n  {\n    \"id\": \"reasonable_care\",\n    \"type\": \"Definition\",\n    \"name\": \"Reasonable Care\",\n    \"description\": \"The degree of caution and concern for the safety of himself/herself and others that an ordinarily prudent and rational person would use in the circumstances. Failure to exercise reasonable care is considered negligence\",\n    \"attributes\": {\n      \"standard\": \"ordinarily prudent and rational person\",\n      \"failure_consequence\": \"negligence\"\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"The degree of caution and concern for the safety of himself/herself and others that an ordinarily prudent and rational person would use in the circumstances. Failure to exercise reasonable care is considered negligence.\",\n        \"source_section\": \"4\"\n      }\n    ],\n    \"merged_from\": [\"s4_def_reasonable_care\"]\n  },\n  {\n    \"id\": \"reasonable_person\",\n    \"type\": \"Definition\",\n    \"name\": \"Reasonable Person\",\n    \"description\": \"Another person in the same situation would act in the same or a similar way. Read in conjunction with Definition of Reasonable care\",\n    \"attributes\": {\n      \"cross_reference\": \"Reasonable care\"\n    },\n    \"relationships\": [\n      {\"target_id\": \"reasonable_care\", \"type\": \"equivalent_to\"}\n    ],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"another person in the same situation would act in the same or a similar way.\",\n        \"source_section\": \"4\"\n      }\n    ],\n    \"merged_from\": [\"s4_def_reasonable_person\"]\n  },\n  {\n    \"id\": \"risk\",\n    \"type\": \"Definition\",\n    \"name\": \"Risk\",\n    \"description\": \"A situation exposing an individual to danger, harm or loss\",\n    \"attributes\": {\n      \"exposure_types\": [\n        \"danger\",\n        \"harm\",\n        \"loss\"\n      ]\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"A situation exposing an individual to danger, harm or loss.\",\n        \"source_section\": \"4\"\n      }\n    ],\n    \"merged_from\": [\"s4_def_risk\"]\n  },\n  {\n    \"id\": \"harm\",\n    \"type\": \"Definition\",\n    \"name\": \"Harm\",\n    \"description\": \"Harm of any kind including injury or death, damage to property, and economic loss\",\n    \"attributes\": {\n      \"includes\": [\n        \"injury or death\",\n        \"damage to property\",\n        \"economic loss\"\n      ]\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"means harm of any kind and includes— a) injury or death; and b) damage to property; and c) economic loss\",\n        \"source_section\": \"4\"\n      }\n    ],\n    \"merged_from\": [\"s4_def_harm\"]\n  },\n  {\n    \"id\": \"injury\",\n    \"type\": \"Definition\",\n    \"name\": \"Injury\",\n    \"description\": \"Personal or bodily injury including psychological or psychiatric injury, disease, and aggravation, acceleration or recurrence of an injury or disease\",\n    \"attributes\": {\n      \"includes\": [\n        \"psychological or psychiatric injury\",\n        \"disease\",\n        \"aggravation, acceleration or recurrence of an injury or disease\"\n      ]\n    },\n    \"relationships\": [\n      {\"target_id\": \"harm\", \"type\": \"part_of\"}\n    ],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"means personal or bodily injury and includes— a) psychological or psychiatric injury; and b) disease; and c) aggravation, acceleration or recurrence of an injury or disease\",\n        \"source_section\": \"4\"\n      }\n    ],\n    \"merged_from\": [\"s4_def_injury\"]\n  }\n]\n```",
+    "thinking": "Let me analyze these entities to determine which should be merged and which should be kept separate with relationships.\n\nLooking at the entities:\n\n1. \"Activeness and Care\" (s1_value_activeness_care)\n2. \"Association and Cooperation\" (s1_value_association_cooperation)\n3. \"Responsibility and the Rule of Law\" (s1_value_responsibility_rule_of_law)\n4. \"Standards of Integrity and Professionalism\" (s1_standard_integrity_professionalism)\n5. \"Working Environment\" (s1_environment_working)\n6. \"Personnel\" (s2_definition_personnel)\n7. \"Representatives\" (s2_definition_representatives)\n8. \"Duty of Care\" (s4_def_duty_of_care)\n9. \"Breach\" (s4_def_breach)\n10. \"Reasonable Care\" (s4_def_reasonable_care)\n11. \"Reasonable Person\" (s4_def_reasonable_person)\n12. \"Risk\" (s4_def_risk)\n13. \"Harm\" (s4_def_harm)\n14. \"Injury\" (s4_def_injury)\n\nLooking at these, I don't see any obvious exact duplicates. Each entity has a distinct name and refers to different concepts, even though some are related.\n\nHowever, let me check for relationships:\n\n1. The three organizational values (Activeness and Care, Association and Cooperation, Responsibility and the Rule of Law) are all part of the same organizational values system but are distinct values.\n\n2. \"Reasonable Care\" and \"Reasonable Person\" are related - the \"Reasonable Person\" definition specifically mentions it should be \"Read in conjunction with Definition of Reasonable care\". This suggests they're closely related but distinct concepts.\n\n3. \"Duty of Care\" and \"Breach\" are related - Breach is specifically about breach of duty of care.\n\n4. \"Harm\" and \"Injury\" are related - Injury is a specific type of Harm.\n\n\n5. \"Personnel\" and \"Representatives\" represent different groups within the organization. All entities appear distinct with no exact duplicates, so I'll maintain them separately while establishing connections where they exist. I need to add relationships between \"Reasonable Person\" and \"Reasonable Care\" since they cross-reference each other, link \"Breach\" to \"Duty of Care\" as it defines violations of that duty, and establish that \"Injury\" is a subset of \"Harm\".\n\nFor the ID structure, I'm removing section prefixes to create cleaner identifiers: activeness_and_care, association_and_cooperation, responsibility_and_rule_of_law, standards_of_integrity_and_professionalism, working_environment, personnel, representatives, duty_of_care, breach, and reasonable_care.\n\nI'm establishing key relationships between these definitions: reasonable_person references reasonable_care since the description explicitly connects them, breach links to duty_of_care as it represents a violation of that duty, and injury is categorized as part_of harm since injuries constitute a type of harm. Now I'm formatting this into a structured JSON output with each definition including its id, type, name, description, attributes, relationships, and source anchors.\n\nThe first entry captures the foundational organizational values from section 1, specifically activeness and care as a core principle that underpins all NGO activities. I'll continue mapping each remaining definition systematically through the document, ensuring proper cross-references and source attribution.",
+    "output_count": 14,
+    "merges": 0,
+    "new_relationships": 3,
+    "llm_response": [
+      {
+        "id": "activeness_and_care",
+        "type": "Definition",
+        "name": "Activeness and Care",
+        "description": "Core organizational value that forms the foundation of the Organization's activities",
+        "attributes": {
+          "value_type": "core_organizational_value"
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the \"Organization\") are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.",
+            "source_section": "1"
+          }
+        ],
+        "merged_from": [
+          "s1_value_activeness_care"
+        ]
+      },
+      {
+        "id": "association_and_cooperation",
+        "type": "Definition",
+        "name": "Association and Cooperation",
+        "description": "Core organizational value that forms the foundation of the Organization's activities",
+        "attributes": {
+          "value_type": "core_organizational_value"
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the \"Organization\") are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.",
+            "source_section": "1"
+          }
+        ],
+        "merged_from": [
+          "s1_value_association_cooperation"
+        ]
+      },
+      {
+        "id": "responsibility_and_rule_of_law",
+        "type": "Definition",
+        "name": "Responsibility and the Rule of Law",
+        "description": "Core organizational value that forms the foundation of the Organization's activities",
+        "attributes": {
+          "value_type": "core_organizational_value"
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the \"Organization\") are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.",
+            "source_section": "1"
+          }
+        ],
+        "merged_from": [
+          "s1_value_responsibility_rule_of_law"
+        ]
+      },
+      {
+        "id": "standards_of_integrity_and_professionalism",
+        "type": "Definition",
+        "name": "Standards of Integrity and Professionalism",
+        "description": "The highest standards of integrity and professionalism that the Organization is committed to maintaining regardless of operating environment",
+        "attributes": {
+          "standard_level": "highest",
+          "applicability": "regardless of environment"
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "The Organization is committed to the highest standards of integrity and professionalism, regardless of the environment in which it operates.",
+            "source_section": "1"
+          }
+        ],
+        "merged_from": [
+          "s1_standard_integrity_professionalism"
+        ]
+      },
+      {
+        "id": "working_environment",
+        "type": "Definition",
+        "name": "Working Environment",
+        "description": "Environment provided by the Organization that encourages high standards of productivity, professional and personal development, achieving organizational goals and prioritizing staff health and safety",
+        "attributes": {
+          "encourages": [
+            "high standards of productivity",
+            "professional and personal development",
+            "achieving organizational goals",
+            "staff health and safety priority"
+          ]
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "To enable and facilitate the implementation of these commitments, the Organization has committed to providing a working environment that encourages high standards of productivity, professional and personal development, achieving organizational goals and prioritizing staff health and safety.",
+            "source_section": "1"
+          }
+        ],
+        "merged_from": [
+          "s1_environment_working"
+        ]
+      },
+      {
+        "id": "personnel",
+        "type": "Definition",
+        "name": "Personnel",
+        "description": "Defined as all staff and governance members of Organization",
+        "attributes": {
+          "includes": [
+            "staff",
+            "governance members"
+          ],
+          "organization_scope": "Organization"
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "The policy applies to all staff and governance members of Organization (hereafter – named as Personnel).",
+            "source_section": "2"
+          }
+        ],
+        "merged_from": [
+          "s2_definition_personnel"
+        ]
+      },
+      {
+        "id": "representatives",
+        "type": "Definition",
+        "name": "Representatives",
+        "description": "Defined as partners, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities",
+        "attributes": {
+          "includes": [
+            "partners",
+            "suppliers",
+            "sub-grantees",
+            "beneficiaries",
+            "stakeholders",
+            "consultants",
+            "external executors",
+            "engaged experts",
+            "volunteers",
+            "other associated entities"
+          ],
+          "application_condition": "depending on specific clauses and conditions of the grant agreement"
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+            "source_section": "2"
+          }
+        ],
+        "merged_from": [
+          "s2_definition_representatives"
+        ]
+      },
+      {
+        "id": "duty_of_care",
+        "type": "Definition",
+        "name": "Duty of Care",
+        "description": "A legal obligation of a person to take reasonable care to avoid harm or injury to oneself and/or another person to whom they have responsibility",
+        "attributes": {
+          "obligation_type": "legal",
+          "scope": "self and others with responsibility"
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "Duty of care is a legal obligation of a person to take reasonable care to avoid harm or injury to oneself and/or another person to whom they have responsibility.",
+            "source_section": "4"
+          }
+        ],
+        "merged_from": [
+          "s4_def_duty_of_care"
+        ]
+      },
+      {
+        "id": "breach",
+        "type": "Definition",
+        "name": "Breach",
+        "description": "Breach of a duty of care occurs if a person acts unreasonably or fails to act where action could be reasonably expected and harm is caused to a person",
+        "attributes": {
+          "triggers": [
+            "acts unreasonably",
+            "fails to act where action expected"
+          ],
+          "consequence": "harm is caused"
+        },
+        "relationships": [
+          {
+            "target_id": "duty_of_care",
+            "type": "part_of"
+          }
+        ],
+        "source_anchors": [
+          {
+            "source_text": "Breach of a duty of care occurs if a person acts unreasonably or fails to act where action could be reasonably expected and harm is caused to a person.",
+            "source_section": "4"
+          }
+        ],
+        "merged_from": [
+          "s4_def_breach"
+        ]
+      },
+      {
+        "id": "reasonable_care",
+        "type": "Definition",
+        "name": "Reasonable Care",
+        "description": "The degree of caution and concern for the safety of himself/herself and others that an ordinarily prudent and rational person would use in the circumstances. Failure to exercise reasonable care is considered negligence",
+        "attributes": {
+          "standard": "ordinarily prudent and rational person",
+          "failure_consequence": "negligence"
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "The degree of caution and concern for the safety of himself/herself and others that an ordinarily prudent and rational person would use in the circumstances. Failure to exercise reasonable care is considered negligence.",
+            "source_section": "4"
+          }
+        ],
+        "merged_from": [
+          "s4_def_reasonable_care"
+        ]
+      },
+      {
+        "id": "reasonable_person",
+        "type": "Definition",
+        "name": "Reasonable Person",
+        "description": "Another person in the same situation would act in the same or a similar way. Read in conjunction with Definition of Reasonable care",
+        "attributes": {
+          "cross_reference": "Reasonable care"
+        },
+        "relationships": [
+          {
+            "target_id": "reasonable_care",
+            "type": "equivalent_to"
+          }
+        ],
+        "source_anchors": [
+          {
+            "source_text": "another person in the same situation would act in the same or a similar way.",
+            "source_section": "4"
+          }
+        ],
+        "merged_from": [
+          "s4_def_reasonable_person"
+        ]
+      },
+      {
+        "id": "risk",
+        "type": "Definition",
+        "name": "Risk",
+        "description": "A situation exposing an individual to danger, harm or loss",
+        "attributes": {
+          "exposure_types": [
+            "danger",
+            "harm",
+            "loss"
+          ]
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "A situation exposing an individual to danger, harm or loss.",
+            "source_section": "4"
+          }
+        ],
+        "merged_from": [
+          "s4_def_risk"
+        ]
+      },
+      {
+        "id": "harm",
+        "type": "Definition",
+        "name": "Harm",
+        "description": "Harm of any kind including injury or death, damage to property, and economic loss",
+        "attributes": {
+          "includes": [
+            "injury or death",
+            "damage to property",
+            "economic loss"
+          ]
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "means harm of any kind and includes— a) injury or death; and b) damage to property; and c) economic loss",
+            "source_section": "4"
+          }
+        ],
+        "merged_from": [
+          "s4_def_harm"
+        ]
+      },
+      {
+        "id": "injury",
+        "type": "Definition",
+        "name": "Injury",
+        "description": "Personal or bodily injury including psychological or psychiatric injury, disease, and aggravation, acceleration or recurrence of an injury or disease",
+        "attributes": {
+          "includes": [
+            "psychological or psychiatric injury",
+            "disease",
+            "aggravation, acceleration or recurrence of an injury or disease"
+          ]
+        },
+        "relationships": [
+          {
+            "target_id": "harm",
+            "type": "part_of"
+          }
+        ],
+        "source_anchors": [
+          {
+            "source_text": "means personal or bodily injury and includes— a) psychological or psychiatric injury; and b) disease; and c) aggravation, acceleration or recurrence of an injury or disease",
+            "source_section": "4"
+          }
+        ],
+        "merged_from": [
+          "s4_def_injury"
+        ]
+      }
+    ]
+  },
+  {
+    "entity_type": "GovernanceBody",
+    "input_count": 2,
+    "input_ids": [
+      "s0_governance_general_meeting",
+      "s2_governance_general_meeting"
+    ],
+    "prompt": "You are deduplicating entities that were extracted from a travel policy document. The extraction process pulled entities of the same type from different sections of the document. Some of these entities may refer to the same real-world thing despite having different names, IDs, or descriptions.\n\nHere are all the entities of this type that need deduplication:\n\n<entities>\n[\n  {\n    \"id\": \"s0_governance_general_meeting\",\n    \"type\": \"GovernanceBody\",\n    \"name\": \"General Meeting of NGO TECHNOLOGY OF PROGRESS\",\n    \"description\": \"Governing body that makes decisions for the NGO organization\",\n    \"attributes\": {\n      \"decision_number\": \"№ 1-П\",\n      \"decision_date\": \"02, April 2023\"\n    },\n    \"source_text\": \"By decision of the General Meeting of NGO TECHNOLOGY OF PROGRESS the № 1-П from 02, April 2023\",\n    \"source_section\": \"0\"\n  },\n  {\n    \"id\": \"s2_governance_general_meeting\",\n    \"type\": \"GovernanceBody\",\n    \"name\": \"General Meeting\",\n    \"description\": \"Governance body directly involved in the implementation of the Policy\",\n    \"attributes\": {\n      \"role_in_policy\": \"implementation\"\n    },\n    \"source_text\": \"Directly involved in the implementation of the Policy are: - General Meeting; - Executive director.\",\n    \"source_section\": \"2\"\n  }\n]\n</entities>\n\n<entity_type>\nGovernanceBody\n</entity_type>\n\n---\n\n## CORE PRINCIPLE: PRESERVE QUERYABILITY\n\nEvery distinctly-named entity that a user might search for must exist as its own node in the graph. When two entities are related but use different names, keep both and connect them with a relationship. Only merge when two extractions are truly the same entity appearing in different sections — same name, same real-world referent — where keeping both would create a meaningless exact duplicate.\n\nA redundant node with a relationship is always preferable to a lost query path. When in doubt, do NOT merge.\n\n---\n\n## MERGE LOGIC\n\nProduce a deduplicated list of entities. For every group of entities that are true duplicates, merge them into ONE entity. All other entities pass through with relationships added where appropriate.\n\n### When to Merge\n\nMerge two entities ONLY when ALL of the following are true:\n- Their names are the same or unambiguous abbreviations of each other (e.g., \"ED\" and \"Executive Director\")\n- Their descriptions refer to the same real-world role, object, or concept — not merely a related or overlapping one\n- Keeping both as separate nodes would create a meaningless exact duplicate with no distinct query value\n\n### When NOT to Merge\n\nDo NOT merge when:\n- Two entities use different terminology for the same or similar group (e.g., \"Employees\" and \"Personnel\") — instead, keep both and link with an `equivalent_to` relationship\n- One entity is an umbrella or collective term that contains the other (e.g., \"Representatives\" contains \"Consultants\") — instead, keep both and link with a `part_of` relationship\n- Two entities share a generic name (e.g., both called \"Policy\") but describe clearly different real-world things\n- You are unsure — false negatives (keeping duplicates) are always preferable to false positives (incorrectly merging distinct entities)\n\n### Relationships Between Non-Merged Entities\n\nWhen two entities are related but must remain separate, add a `relationships` entry to connect them:\n\n| Situation | Action | Relationship |\n|---|---|---|\n| Same name, same role, different sections | **Merge** | — |\n| Different name, same or similar group of people | **Keep both** | `equivalent_to` (on both entities, bidirectional) |\n| One entity is a named subcategory or member of another | **Keep both** | `part_of` (on the child, pointing to the parent) |\n| Unclear whether same or different | **Keep both** | Add relationship only if confident |\n\n### Conflicting Attributes\n\nIf merged entities have conflicting values for the same attribute key, keep both values as a list:\n```json\n\"effective_date\": [\"2023-01-01\", \"2023-04-03\"]\n```\nAnd note the conflict in the description.\n\n---\n\n## OUTPUT SCHEMA\n\nOutput ONLY a JSON array. No preamble, no explanation, no commentary outside the JSON.\n\nEvery entity in the array must follow this exact structure:\n```json\n{\n  \"id\": \"clean_lowercase_snake_case_id\",\n  \"type\": \"GovernanceBody\",\n  \"name\": \"Best most complete name\",\n  \"description\": \"Combined or original description\",\n  \"attributes\": {\"key\": \"value\"},\n  \"relationships\": [\n    {\"target_id\": \"other_entity_id\", \"type\": \"equivalent_to | part_of\"}\n  ],\n  \"source_anchors\": [\n    {\"source_text\": \"EXACT verbatim quote from input\", \"source_section\": \"0\"}\n  ],\n  \"merged_from\": [\"original_id_1\", \"original_id_2\"]\n}\n```\n\n### Field Rules\n\n- **id**: Lowercase snake_case. Remove section prefixes (e.g., `s3_role_expense_limit` → `expense_limit`). If two non-merged entities would produce the same clean ID, append a disambiguating suffix (e.g., `policy_travel`, `policy_expense`).\n- **name**: For merged entities, pick the most specific and complete name. For pass-through entities, keep as-is.\n- **description**: For merged entities, combine descriptions using the pattern: \"[Most complete description]. [Unique facts from other sources not already covered].\" For pass-through entities, keep the original description verbatim — do not rewrite it.\n- **attributes**: For merged entities, take the union of all attribute keys. For pass-through entities, keep as-is.\n- **relationships**: Array of relationship objects. Use `equivalent_to` for entities that use different names for the same or similar group (add to both entities bidirectionally). Use `part_of` for entities that are a named member or subcategory of an umbrella entity (add only to the child, pointing at the parent). Empty array `[]` if no relationships apply.\n- **source_anchors**: Include ALL source references from all original entities. The `source_text` value must be copied character-for-character from the input. Do not paraphrase, truncate, or edit.\n- **merged_from**: Array of all original entity IDs that were merged. For pass-through entities, a single-element array.\n\n---\n\n## SELF-VERIFICATION\n\nBefore finalizing your output, verify:\n\n1. Every `source_text` value matches the input exactly — character for character\n2. Every original entity ID appears in exactly one `merged_from` array across the entire output\n3. The total count of original IDs across all `merged_from` arrays equals the total number of input entities\n4. No information from any original entity's description or attributes was lost\n5. No two output entities should themselves be merged (check your own output for remaining duplicates)\n6. Every `target_id` in a relationship points to an `id` that exists in your output\n7. All `equivalent_to` relationships are bidirectional (if A → B, then B → A)\n8. The JSON is syntactically valid\n",
+    "input_tokens": 1763,
+    "output_tokens": 749,
+    "raw_response": "```json\n[\n  {\n    \"id\": \"general_meeting\",\n    \"type\": \"GovernanceBody\",\n    \"name\": \"General Meeting of NGO TECHNOLOGY OF PROGRESS\",\n    \"description\": \"Governing body that makes decisions for the NGO organization. Governance body directly involved in the implementation of the Policy.\",\n    \"attributes\": {\n      \"decision_number\": \"№ 1-П\",\n      \"decision_date\": \"02, April 2023\",\n      \"role_in_policy\": \"implementation\"\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"By decision of the General Meeting of NGO TECHNOLOGY OF PROGRESS the № 1-П from 02, April 2023\",\n        \"source_section\": \"0\"\n      },\n      {\n        \"source_text\": \"Directly involved in the implementation of the Policy are: - General Meeting; - Executive director.\",\n        \"source_section\": \"2\"\n      }\n    ],\n    \"merged_from\": [\"s0_governance_general_meeting\", \"s2_governance_general_meeting\"]\n  }\n]\n```",
+    "thinking": "Let me analyze these two entities:\n\n1. Entity 1:\n   - id: \"s0_governance_general_meeting\"\n   - name: \"General Meeting of NGO TECHNOLOGY OF PROGRESS\"\n   - description: \"Governing body that makes decisions for the NGO organization\"\n   - attributes: decision_number and decision_date\n   - source: mentions decision from General Meeting\n\n2. Entity 2:\n   - id: \"s2_governance_general_meeting\"\n   - name: \"General Meeting\"\n   - description: \"Governance body directly involved in the implementation of the Policy\"\n   - attributes: role_in_policy\n   - source: mentions General Meeting as involved in policy implementation\n\nNow I need to decide whether to merge these or keep them separate.\n\nLooking at the merge criteria:\n- Names: \"General Meeting of NGO TECHNOLOGY OF PROGRESS\" vs \"General Meeting\" - these appear to be the same entity, where the first is the full formal name and the second is the shortened version\n- Descriptions: Both refer to the same governance body - one describes its decision-making role, the other its policy implementation role. These are describing the same real-world entity from different perspectives.\n- Real-world referent: Both clearly refer to the same General Meeting of the NGO organization\n\nThis seems like a clear case for merging because:\n1. They have the same or unambiguous abbreviations of names (General Meeting is clearly an abbreviation of \"General Meeting of NGO TECHNOLOGY OF PROGRESS\")\n2. They refer to the same real-world governance body\n3. Keeping both would create a meaningless duplicate since they're the same meeting body\n\nSo I should merge these into one entity.\n\nFor the merged entity:\n- id: \"general_meeting\" (clean snake_case, removing section prefix)\n- name: \"General Meeting of NGO TECHNOLOGY OF PROGRESS\" (more complete name)\n- description: Combine both descriptions\n- attributes: Union of all attributes\n- source_anchors: Include both source texts exactly as they appear\n\n\n- merged_from: Both original IDs",
+    "output_count": 1,
+    "merges": 1,
+    "new_relationships": 0,
+    "llm_response": [
+      {
+        "id": "general_meeting",
+        "type": "GovernanceBody",
+        "name": "General Meeting of NGO TECHNOLOGY OF PROGRESS",
+        "description": "Governing body that makes decisions for the NGO organization. Governance body directly involved in the implementation of the Policy.",
+        "attributes": {
+          "decision_number": "№ 1-П",
+          "decision_date": "02, April 2023",
+          "role_in_policy": "implementation"
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "By decision of the General Meeting of NGO TECHNOLOGY OF PROGRESS the № 1-П from 02, April 2023",
+            "source_section": "0"
+          },
+          {
+            "source_text": "Directly involved in the implementation of the Policy are: - General Meeting; - Executive director.",
+            "source_section": "2"
+          }
+        ],
+        "merged_from": [
+          "s0_governance_general_meeting",
+          "s2_governance_general_meeting"
+        ]
+      }
+    ]
+  },
+  {
+    "entity_type": "Organization",
+    "input_count": 4,
+    "input_ids": [
+      "s0_org_technology_of_progress",
+      "s1_org_ngo_technology_progress",
+      "s3_org_organization",
+      "s5_role_organization"
+    ],
+    "prompt": "You are deduplicating entities that were extracted from a travel policy document. The extraction process pulled entities of the same type from different sections of the document. Some of these entities may refer to the same real-world thing despite having different names, IDs, or descriptions.\n\nHere are all the entities of this type that need deduplication:\n\n<entities>\n[\n  {\n    \"id\": \"s0_org_technology_of_progress\",\n    \"type\": \"Organization\",\n    \"name\": \"TECHNOLOGY OF PROGRESS\",\n    \"description\": \"NGO organization that owns and governs the Duty of Care Policy\",\n    \"attributes\": {\n      \"organization_type\": \"NGO\",\n      \"location\": \"Kiyv\",\n      \"year\": \"2023\"\n    },\n    \"source_text\": \"By decision of the General Meeting of NGO TECHNOLOGY OF PROGRESS\",\n    \"source_section\": \"0\"\n  },\n  {\n    \"id\": \"s1_org_ngo_technology_progress\",\n    \"type\": \"Organization\",\n    \"name\": \"NGO TECHNOLOGY OF PROGRESS\",\n    \"description\": \"The organization whose activities are governed by this policy, committed to high standards of integrity and professionalism\",\n    \"attributes\": {\n      \"full_name\": \"NGO TECHNOLOGY OF PROGRESS\",\n      \"alias\": \"Organization\"\n    },\n    \"source_text\": \"The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the \\\"Organization\\\") are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.\",\n    \"source_section\": \"1\"\n  },\n  {\n    \"id\": \"s3_org_organization\",\n    \"type\": \"Organization\",\n    \"name\": \"Organization\",\n    \"description\": \"The organization that owns the policy and assesses, monitors and responds to security risks\",\n    \"attributes\": {\n      \"security_activities\": [\n        \"assesses\",\n        \"monitors\",\n        \"responds\"\n      ],\n      \"risk_focus\": \"security risks affecting staff and program implementation\"\n    },\n    \"source_text\": \"This document also provides an overview of how the Organization assesses, monitors and responds to security risks that may affect staff and program implementation.\",\n    \"source_section\": \"3\"\n  },\n  {\n    \"id\": \"s5_role_organization\",\n    \"type\": \"Organization\",\n    \"name\": \"Organization\",\n    \"description\": \"The organization whose policy this document represents and whose assets and security must be protected\",\n    \"attributes\": {},\n    \"source_text\": \"ensuring information security of the Organization, including intellectual property;\",\n    \"source_section\": \"5\"\n  }\n]\n</entities>\n\n<entity_type>\nOrganization\n</entity_type>\n\n---\n\n## CORE PRINCIPLE: PRESERVE QUERYABILITY\n\nEvery distinctly-named entity that a user might search for must exist as its own node in the graph. When two entities are related but use different names, keep both and connect them with a relationship. Only merge when two extractions are truly the same entity appearing in different sections — same name, same real-world referent — where keeping both would create a meaningless exact duplicate.\n\nA redundant node with a relationship is always preferable to a lost query path. When in doubt, do NOT merge.\n\n---\n\n## MERGE LOGIC\n\nProduce a deduplicated list of entities. For every group of entities that are true duplicates, merge them into ONE entity. All other entities pass through with relationships added where appropriate.\n\n### When to Merge\n\nMerge two entities ONLY when ALL of the following are true:\n- Their names are the same or unambiguous abbreviations of each other (e.g., \"ED\" and \"Executive Director\")\n- Their descriptions refer to the same real-world role, object, or concept — not merely a related or overlapping one\n- Keeping both as separate nodes would create a meaningless exact duplicate with no distinct query value\n\n### When NOT to Merge\n\nDo NOT merge when:\n- Two entities use different terminology for the same or similar group (e.g., \"Employees\" and \"Personnel\") — instead, keep both and link with an `equivalent_to` relationship\n- One entity is an umbrella or collective term that contains the other (e.g., \"Representatives\" contains \"Consultants\") — instead, keep both and link with a `part_of` relationship\n- Two entities share a generic name (e.g., both called \"Policy\") but describe clearly different real-world things\n- You are unsure — false negatives (keeping duplicates) are always preferable to false positives (incorrectly merging distinct entities)\n\n### Relationships Between Non-Merged Entities\n\nWhen two entities are related but must remain separate, add a `relationships` entry to connect them:\n\n| Situation | Action | Relationship |\n|---|---|---|\n| Same name, same role, different sections | **Merge** | — |\n| Different name, same or similar group of people | **Keep both** | `equivalent_to` (on both entities, bidirectional) |\n| One entity is a named subcategory or member of another | **Keep both** | `part_of` (on the child, pointing to the parent) |\n| Unclear whether same or different | **Keep both** | Add relationship only if confident |\n\n### Conflicting Attributes\n\nIf merged entities have conflicting values for the same attribute key, keep both values as a list:\n```json\n\"effective_date\": [\"2023-01-01\", \"2023-04-03\"]\n```\nAnd note the conflict in the description.\n\n---\n\n## OUTPUT SCHEMA\n\nOutput ONLY a JSON array. No preamble, no explanation, no commentary outside the JSON.\n\nEvery entity in the array must follow this exact structure:\n```json\n{\n  \"id\": \"clean_lowercase_snake_case_id\",\n  \"type\": \"Organization\",\n  \"name\": \"Best most complete name\",\n  \"description\": \"Combined or original description\",\n  \"attributes\": {\"key\": \"value\"},\n  \"relationships\": [\n    {\"target_id\": \"other_entity_id\", \"type\": \"equivalent_to | part_of\"}\n  ],\n  \"source_anchors\": [\n    {\"source_text\": \"EXACT verbatim quote from input\", \"source_section\": \"0\"}\n  ],\n  \"merged_from\": [\"original_id_1\", \"original_id_2\"]\n}\n```\n\n### Field Rules\n\n- **id**: Lowercase snake_case. Remove section prefixes (e.g., `s3_role_expense_limit` → `expense_limit`). If two non-merged entities would produce the same clean ID, append a disambiguating suffix (e.g., `policy_travel`, `policy_expense`).\n- **name**: For merged entities, pick the most specific and complete name. For pass-through entities, keep as-is.\n- **description**: For merged entities, combine descriptions using the pattern: \"[Most complete description]. [Unique facts from other sources not already covered].\" For pass-through entities, keep the original description verbatim — do not rewrite it.\n- **attributes**: For merged entities, take the union of all attribute keys. For pass-through entities, keep as-is.\n- **relationships**: Array of relationship objects. Use `equivalent_to` for entities that use different names for the same or similar group (add to both entities bidirectionally). Use `part_of` for entities that are a named member or subcategory of an umbrella entity (add only to the child, pointing at the parent). Empty array `[]` if no relationships apply.\n- **source_anchors**: Include ALL source references from all original entities. The `source_text` value must be copied character-for-character from the input. Do not paraphrase, truncate, or edit.\n- **merged_from**: Array of all original entity IDs that were merged. For pass-through entities, a single-element array.\n\n---\n\n## SELF-VERIFICATION\n\nBefore finalizing your output, verify:\n\n1. Every `source_text` value matches the input exactly — character for character\n2. Every original entity ID appears in exactly one `merged_from` array across the entire output\n3. The total count of original IDs across all `merged_from` arrays equals the total number of input entities\n4. No information from any original entity's description or attributes was lost\n5. No two output entities should themselves be merged (check your own output for remaining duplicates)\n6. Every `target_id` in a relationship points to an `id` that exists in your output\n7. All `equivalent_to` relationships are bidirectional (if A → B, then B → A)\n8. The JSON is syntactically valid\n",
+    "input_tokens": 2038,
+    "output_tokens": 1023,
+    "raw_response": "```json\n[\n  {\n    \"id\": \"ngo_technology_of_progress\",\n    \"type\": \"Organization\",\n    \"name\": \"NGO TECHNOLOGY OF PROGRESS\",\n    \"description\": \"NGO organization that owns and governs the Duty of Care Policy, committed to high standards of integrity and professionalism. The organization assesses, monitors and responds to security risks that may affect staff and program implementation, and whose assets and security must be protected.\",\n    \"attributes\": {\n      \"organization_type\": \"NGO\",\n      \"location\": \"Kiyv\",\n      \"year\": \"2023\",\n      \"full_name\": \"NGO TECHNOLOGY OF PROGRESS\",\n      \"alias\": \"Organization\",\n      \"security_activities\": [\n        \"assesses\",\n        \"monitors\",\n        \"responds\"\n      ],\n      \"risk_focus\": \"security risks affecting staff and program implementation\"\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"By decision of the General Meeting of NGO TECHNOLOGY OF PROGRESS\",\n        \"source_section\": \"0\"\n      },\n      {\n        \"source_text\": \"The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the \\\"Organization\\\") are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.\",\n        \"source_section\": \"1\"\n      },\n      {\n        \"source_text\": \"This document also provides an overview of how the Organization assesses, monitors and responds to security risks that may affect staff and program implementation.\",\n        \"source_section\": \"3\"\n      },\n      {\n        \"source_text\": \"ensuring information security of the Organization, including intellectual property;\",\n        \"source_section\": \"5\"\n      }\n    ],\n    \"merged_from\": [\"s0_org_technology_of_progress\", \"s1_org_ngo_technology_progress\", \"s3_org_organization\", \"s5_role_organization\"]\n  }\n]\n```",
+    "thinking": "Let me analyze these entities to determine which should be merged and which should remain separate:\n\n1. \"s0_org_technology_of_progress\" - \"TECHNOLOGY OF PROGRESS\" (NGO organization)\n2. \"s1_org_ngo_technology_progress\" - \"NGO TECHNOLOGY OF PROGRESS\" (full name)\n3. \"s3_org_organization\" - \"Organization\" (generic reference)\n4. \"s5_role_organization\" - \"Organization\" (generic reference)\n\nLooking at the merge criteria:\n\nEntities 1 and 2: These appear to be the same organization - one uses the shortened name \"TECHNOLOGY OF PROGRESS\" and the other uses the full name \"NGO TECHNOLOGY OF PROGRESS\". They both refer to the same real-world NGO entity. The descriptions also align - both are about the same organization. This should be merged.\n\nEntities 3 and 4: Both are called \"Organization\" and both refer to the same entity (the organization that owns the policy), but they appear in different contexts. These are generic references to the same organization. These should be merged as they're the same entity with the same name appearing in different sections.\n\nHowever, I need to consider if entities 1-2 (the specifically named NGO) and entities 3-4 (the generic \"Organization\" references) refer to the same real-world entity. Looking at the context:\n\n- Entity 1: \"NGO organization that owns and governs the Duty of Care Policy\"\n- Entity 2: \"The organization whose activities are governed by this policy\"\n- Entity 3: \"The organization that owns the policy and assesses, monitors and responds to security risks\"\n- Entity 4: \"The organization whose policy this document represents\"\n\nAll of these appear to refer to the same real-world organization - NGO TECHNOLOGY OF PROGRESS. The generic \"Organization\" references are clearly referring to the same entity as the specifically named NGO.\n\nSo I should merge all four into one entity representing NGO TECHNOLOGY OF PROGRESS.\n\n\nI'll consolidate these into a single entity using \"NGO TECHNOLOGY OF PROGRESS\" as the authoritative name, combining all descriptive information and attributes from the four original entities. The merged record will track all four source IDs and include all relevant source anchors from the policy document.",
+    "output_count": 1,
+    "merges": 3,
+    "new_relationships": 0,
+    "llm_response": [
+      {
+        "id": "ngo_technology_of_progress",
+        "type": "Organization",
+        "name": "NGO TECHNOLOGY OF PROGRESS",
+        "description": "NGO organization that owns and governs the Duty of Care Policy, committed to high standards of integrity and professionalism. The organization assesses, monitors and responds to security risks that may affect staff and program implementation, and whose assets and security must be protected.",
+        "attributes": {
+          "organization_type": "NGO",
+          "location": "Kiyv",
+          "year": "2023",
+          "full_name": "NGO TECHNOLOGY OF PROGRESS",
+          "alias": "Organization",
+          "security_activities": [
+            "assesses",
+            "monitors",
+            "responds"
+          ],
+          "risk_focus": "security risks affecting staff and program implementation"
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "By decision of the General Meeting of NGO TECHNOLOGY OF PROGRESS",
+            "source_section": "0"
+          },
+          {
+            "source_text": "The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the \"Organization\") are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.",
+            "source_section": "1"
+          },
+          {
+            "source_text": "This document also provides an overview of how the Organization assesses, monitors and responds to security risks that may affect staff and program implementation.",
+            "source_section": "3"
+          },
+          {
+            "source_text": "ensuring information security of the Organization, including intellectual property;",
+            "source_section": "5"
+          }
+        ],
+        "merged_from": [
+          "s0_org_technology_of_progress",
+          "s1_org_ngo_technology_progress",
+          "s3_org_organization",
+          "s5_role_organization"
+        ]
+      }
+    ]
+  },
+  {
+    "entity_type": "Policy",
+    "input_count": 3,
+    "input_ids": [
+      "s0_policy_duty_of_care",
+      "s2_policy_main",
+      "s3_doc_policy"
+    ],
+    "prompt": "You are deduplicating entities that were extracted from a travel policy document. The extraction process pulled entities of the same type from different sections of the document. Some of these entities may refer to the same real-world thing despite having different names, IDs, or descriptions.\n\nHere are all the entities of this type that need deduplication:\n\n<entities>\n[\n  {\n    \"id\": \"s0_policy_duty_of_care\",\n    \"type\": \"Policy\",\n    \"name\": \"DUTY OF CARE POLICY\",\n    \"description\": \"The organizational policy document establishing duty of care obligations\",\n    \"attributes\": {\n      \"approval_date\": \"03, April 2023\",\n      \"order_number\": \"№ 2-Д\"\n    },\n    \"source_text\": \"DUTY OF CARE POLICY\",\n    \"source_section\": \"0\"\n  },\n  {\n    \"id\": \"s2_policy_main\",\n    \"type\": \"Policy\",\n    \"name\": \"Organization Policy\",\n    \"description\": \"The main organizational policy document being defined in terms of scope\",\n    \"attributes\": {},\n    \"source_text\": \"The policy applies to all staff and governance members of Organization (hereafter – named as Personnel).\",\n    \"source_section\": \"2\"\n  },\n  {\n    \"id\": \"s3_doc_policy\",\n    \"type\": \"Policy\",\n    \"name\": \"Policy\",\n    \"description\": \"The organizational policy document that provides staff understanding and safe working environment\",\n    \"attributes\": {\n      \"primary_purpose\": \"provide clear understanding of policies, procedures and practices and healthy, safe working environment\",\n      \"secondary_purpose\": \"provide overview of security risk assessment and response\"\n    },\n    \"source_text\": \"The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.\",\n    \"source_section\": \"3\"\n  }\n]\n</entities>\n\n<entity_type>\nPolicy\n</entity_type>\n\n---\n\n## CORE PRINCIPLE: PRESERVE QUERYABILITY\n\nEvery distinctly-named entity that a user might search for must exist as its own node in the graph. When two entities are related but use different names, keep both and connect them with a relationship. Only merge when two extractions are truly the same entity appearing in different sections — same name, same real-world referent — where keeping both would create a meaningless exact duplicate.\n\nA redundant node with a relationship is always preferable to a lost query path. When in doubt, do NOT merge.\n\n---\n\n## MERGE LOGIC\n\nProduce a deduplicated list of entities. For every group of entities that are true duplicates, merge them into ONE entity. All other entities pass through with relationships added where appropriate.\n\n### When to Merge\n\nMerge two entities ONLY when ALL of the following are true:\n- Their names are the same or unambiguous abbreviations of each other (e.g., \"ED\" and \"Executive Director\")\n- Their descriptions refer to the same real-world role, object, or concept — not merely a related or overlapping one\n- Keeping both as separate nodes would create a meaningless exact duplicate with no distinct query value\n\n### When NOT to Merge\n\nDo NOT merge when:\n- Two entities use different terminology for the same or similar group (e.g., \"Employees\" and \"Personnel\") — instead, keep both and link with an `equivalent_to` relationship\n- One entity is an umbrella or collective term that contains the other (e.g., \"Representatives\" contains \"Consultants\") — instead, keep both and link with a `part_of` relationship\n- Two entities share a generic name (e.g., both called \"Policy\") but describe clearly different real-world things\n- You are unsure — false negatives (keeping duplicates) are always preferable to false positives (incorrectly merging distinct entities)\n\n### Relationships Between Non-Merged Entities\n\nWhen two entities are related but must remain separate, add a `relationships` entry to connect them:\n\n| Situation | Action | Relationship |\n|---|---|---|\n| Same name, same role, different sections | **Merge** | — |\n| Different name, same or similar group of people | **Keep both** | `equivalent_to` (on both entities, bidirectional) |\n| One entity is a named subcategory or member of another | **Keep both** | `part_of` (on the child, pointing to the parent) |\n| Unclear whether same or different | **Keep both** | Add relationship only if confident |\n\n### Conflicting Attributes\n\nIf merged entities have conflicting values for the same attribute key, keep both values as a list:\n```json\n\"effective_date\": [\"2023-01-01\", \"2023-04-03\"]\n```\nAnd note the conflict in the description.\n\n---\n\n## OUTPUT SCHEMA\n\nOutput ONLY a JSON array. No preamble, no explanation, no commentary outside the JSON.\n\nEvery entity in the array must follow this exact structure:\n```json\n{\n  \"id\": \"clean_lowercase_snake_case_id\",\n  \"type\": \"Policy\",\n  \"name\": \"Best most complete name\",\n  \"description\": \"Combined or original description\",\n  \"attributes\": {\"key\": \"value\"},\n  \"relationships\": [\n    {\"target_id\": \"other_entity_id\", \"type\": \"equivalent_to | part_of\"}\n  ],\n  \"source_anchors\": [\n    {\"source_text\": \"EXACT verbatim quote from input\", \"source_section\": \"0\"}\n  ],\n  \"merged_from\": [\"original_id_1\", \"original_id_2\"]\n}\n```\n\n### Field Rules\n\n- **id**: Lowercase snake_case. Remove section prefixes (e.g., `s3_role_expense_limit` → `expense_limit`). If two non-merged entities would produce the same clean ID, append a disambiguating suffix (e.g., `policy_travel`, `policy_expense`).\n- **name**: For merged entities, pick the most specific and complete name. For pass-through entities, keep as-is.\n- **description**: For merged entities, combine descriptions using the pattern: \"[Most complete description]. [Unique facts from other sources not already covered].\" For pass-through entities, keep the original description verbatim — do not rewrite it.\n- **attributes**: For merged entities, take the union of all attribute keys. For pass-through entities, keep as-is.\n- **relationships**: Array of relationship objects. Use `equivalent_to` for entities that use different names for the same or similar group (add to both entities bidirectionally). Use `part_of` for entities that are a named member or subcategory of an umbrella entity (add only to the child, pointing at the parent). Empty array `[]` if no relationships apply.\n- **source_anchors**: Include ALL source references from all original entities. The `source_text` value must be copied character-for-character from the input. Do not paraphrase, truncate, or edit.\n- **merged_from**: Array of all original entity IDs that were merged. For pass-through entities, a single-element array.\n\n---\n\n## SELF-VERIFICATION\n\nBefore finalizing your output, verify:\n\n1. Every `source_text` value matches the input exactly — character for character\n2. Every original entity ID appears in exactly one `merged_from` array across the entire output\n3. The total count of original IDs across all `merged_from` arrays equals the total number of input entities\n4. No information from any original entity's description or attributes was lost\n5. No two output entities should themselves be merged (check your own output for remaining duplicates)\n6. Every `target_id` in a relationship points to an `id` that exists in your output\n7. All `equivalent_to` relationships are bidirectional (if A → B, then B → A)\n8. The JSON is syntactically valid\n",
+    "input_tokens": 1875,
+    "output_tokens": 2049,
+    "raw_response": "```json\n[\n  {\n    \"id\": \"duty_of_care_policy\",\n    \"type\": \"Policy\",\n    \"name\": \"DUTY OF CARE POLICY\",\n    \"description\": \"The organizational policy document establishing duty of care obligations\",\n    \"attributes\": {\n      \"approval_date\": \"03, April 2023\",\n      \"order_number\": \"№ 2-Д\"\n    },\n    \"relationships\": [\n      {\"target_id\": \"organization_policy\", \"type\": \"equivalent_to\"},\n      {\"target_id\": \"policy_staff_safety\", \"type\": \"equivalent_to\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"DUTY OF CARE POLICY\", \"source_section\": \"0\"}\n    ],\n    \"merged_from\": [\"s0_policy_duty_of_care\"]\n  },\n  {\n    \"id\": \"organization_policy\",\n    \"type\": \"Policy\",\n    \"name\": \"Organization Policy\",\n    \"description\": \"The main organizational policy document being defined in terms of scope\",\n    \"attributes\": {},\n    \"relationships\": [\n      {\"target_id\": \"duty_of_care_policy\", \"type\": \"equivalent_to\"},\n      {\"target_id\": \"policy_staff_safety\", \"type\": \"equivalent_to\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The policy applies to all staff and governance members of Organization (hereafter – named as Personnel).\", \"source_section\": \"2\"}\n    ],\n    \"merged_from\": [\"s2_policy_main\"]\n  },\n  {\n    \"id\": \"policy_staff_safety\",\n    \"type\": \"Policy\",\n    \"name\": \"Policy\",\n    \"description\": \"The organizational policy document that provides staff understanding and safe working environment\",\n    \"attributes\": {\n      \"primary_purpose\": \"provide clear understanding of policies, procedures and practices and healthy, safe working environment\",\n      \"secondary_purpose\": \"provide overview of security risk assessment and response\"\n    },\n    \"relationships\": [\n      {\"target_id\": \"duty_of_care_policy\", \"type\": \"equivalent_to\"},\n      {\"target_id\": \"organization_policy\", \"type\": \"equivalent_to\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.\", \"source_section\": \"3\"}\n    ],\n    \"merged_from\": [\"s3_doc_policy\"]\n  }\n]\n```",
+    "thinking": "Let me analyze these three policy entities to determine if they should be merged or kept separate:\n\n1. **s0_policy_duty_of_care**: \"DUTY OF CARE POLICY\" - This is specifically a duty of care policy document with approval date and order number\n2. **s2_policy_main**: \"Organization Policy\" - This refers to \"the main organizational policy document\" in terms of scope\n3. **s3_doc_policy**: \"Policy\" - This is \"the organizational policy document\" that provides understanding and safe working environment\n\nLet me check if these refer to the same real-world document:\n\n- s0 refers specifically to a \"DUTY OF CARE POLICY\" with specific approval date and order number\n- s2 refers to \"Organization Policy\" and talks about scope (\"applies to all staff and governance members\")\n- s3 refers to \"Policy\" and talks about purpose (\"provide clear understanding of policies, procedures and practices\")\n\nLooking at the source texts:\n- s0: \"DUTY OF CARE POLICY\" - this is clearly a title/header\n- s2: \"The policy applies to all staff and governance members of Organization (hereafter – named as Personnel).\" - this talks about the scope of \"the policy\"\n- s3: \"The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding...\" - this talks about the purpose of \"this Policy\"\n\nThe key question is: are s2 and s3 referring to the same policy document as s0? \n\nLooking more carefully:\n- s0 is specifically titled \"DUTY OF CARE POLICY\" \n- s2 talks about \"the policy\" in context of scope\n- s3 talks about \"this Policy\" in context of purpose\n\nIt's quite possible that s2 and s3 are both referring to the same \"DUTY OF CARE POLICY\" document mentioned in s0, just from different sections that describe different aspects (scope and purpose).\n\nHowever, I need to be very careful here. The names are different:\n\n\n- \"DUTY OF CARE POLICY\" is a specific, formal title\n- \"Organization Policy\" and \"Policy\" are generic descriptors\n\nThe principle is clear: when entities use different names, keep them separate and connect with relationships rather than merging. Even if they might reference the same underlying document, the terminology used is distinct enough that I should maintain separate entities for \"DUTY OF CARE POLICY,\" \"Organization Policy,\" and \"Policy,\" then establish relationships between them to show how they connect. Looking at the descriptions more carefully, all three nodes characterize the same organizational policy document but emphasize different aspects—s0 focuses on duty of care obligations, s2 on scope definition, and s3 on staff understanding and safety. Since the extraction assigned them distinct names, I'll maintain them as separate nodes but establish equivalence relationships between them, particularly if s0 (the \"DUTY OF CARE POLICY\") is indeed the main policy that s2 and s3 reference. I'm confident these three segments all reference the same underlying duty of care policy document, so I'll establish equivalent_to relationships between them. For the IDs, I need to be more specific than generic terms like \"policy\" — s0 becomes duty_of_care_policy, s2 becomes organization_policy, and s3 becomes policy_staff_safety since it emphasizes creating a healthy and safe working environment. I'll link all three with equivalent relationships to reflect that they're describing different aspects of the same document.",
+    "output_count": 3,
+    "merges": 0,
+    "new_relationships": 6,
+    "llm_response": [
+      {
+        "id": "duty_of_care_policy",
+        "type": "Policy",
+        "name": "DUTY OF CARE POLICY",
+        "description": "The organizational policy document establishing duty of care obligations",
+        "attributes": {
+          "approval_date": "03, April 2023",
+          "order_number": "№ 2-Д"
+        },
+        "relationships": [
+          {
+            "target_id": "organization_policy",
+            "type": "equivalent_to"
+          },
+          {
+            "target_id": "policy_staff_safety",
+            "type": "equivalent_to"
+          }
+        ],
+        "source_anchors": [
+          {
+            "source_text": "DUTY OF CARE POLICY",
+            "source_section": "0"
+          }
+        ],
+        "merged_from": [
+          "s0_policy_duty_of_care"
+        ]
+      },
+      {
+        "id": "organization_policy",
+        "type": "Policy",
+        "name": "Organization Policy",
+        "description": "The main organizational policy document being defined in terms of scope",
+        "attributes": {},
+        "relationships": [
+          {
+            "target_id": "duty_of_care_policy",
+            "type": "equivalent_to"
+          },
+          {
+            "target_id": "policy_staff_safety",
+            "type": "equivalent_to"
+          }
+        ],
+        "source_anchors": [
+          {
+            "source_text": "The policy applies to all staff and governance members of Organization (hereafter – named as Personnel).",
+            "source_section": "2"
+          }
+        ],
+        "merged_from": [
+          "s2_policy_main"
+        ]
+      },
+      {
+        "id": "policy_staff_safety",
+        "type": "Policy",
+        "name": "Policy",
+        "description": "The organizational policy document that provides staff understanding and safe working environment",
+        "attributes": {
+          "primary_purpose": "provide clear understanding of policies, procedures and practices and healthy, safe working environment",
+          "secondary_purpose": "provide overview of security risk assessment and response"
+        },
+        "relationships": [
+          {
+            "target_id": "duty_of_care_policy",
+            "type": "equivalent_to"
+          },
+          {
+            "target_id": "organization_policy",
+            "type": "equivalent_to"
+          }
+        ],
+        "source_anchors": [
+          {
+            "source_text": "The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.",
+            "source_section": "3"
+          }
+        ],
+        "merged_from": [
+          "s3_doc_policy"
+        ]
+      }
+    ]
+  },
+  {
+    "entity_type": "Requirement",
+    "input_count": 11,
+    "input_ids": [
+      "s5_requirement_physical_safety",
+      "s5_requirement_org_info_security",
+      "s5_requirement_personnel_info_security",
+      "s5_requirement_material_assets",
+      "s5_requirement_financial_security",
+      "s5_requirement_policy_compliance",
+      "s5_requirement_reasonable_care",
+      "s5_requirement_secure_environment",
+      "s5_requirement_risk_reporting",
+      "s5_requirement_risk_control",
+      "s5_requirement_reasonable_care_standard"
+    ],
+    "prompt": "You are deduplicating entities that were extracted from a travel policy document. The extraction process pulled entities of the same type from different sections of the document. Some of these entities may refer to the same real-world thing despite having different names, IDs, or descriptions.\n\nHere are all the entities of this type that need deduplication:\n\n<entities>\n[\n  {\n    \"id\": \"s5_requirement_physical_safety\",\n    \"type\": \"Requirement\",\n    \"name\": \"Physical Safety Responsibility\",\n    \"description\": \"Ensuring the physical safety of life and health of Personnel, including in cases of stay in high-risk areas\",\n    \"attributes\": {\n      \"includes_context\": \"high-risk areas\"\n    },\n    \"source_text\": \"ensuring the physical safety of life and health of Personnel, including in cases of stay in high- risk areas;\",\n    \"source_section\": \"5\"\n  },\n  {\n    \"id\": \"s5_requirement_org_info_security\",\n    \"type\": \"Requirement\",\n    \"name\": \"Organization Information Security Responsibility\",\n    \"description\": \"Ensuring information security of the Organization, including intellectual property\",\n    \"attributes\": {\n      \"includes\": \"intellectual property\"\n    },\n    \"source_text\": \"ensuring information security of the Organization, including intellectual property;\",\n    \"source_section\": \"5\"\n  },\n  {\n    \"id\": \"s5_requirement_personnel_info_security\",\n    \"type\": \"Requirement\",\n    \"name\": \"Personnel Information Security Responsibility\",\n    \"description\": \"Ensuring information security of Personnel of the Organization\",\n    \"attributes\": {},\n    \"source_text\": \"ensuring information security of Personnel of the Organization;\",\n    \"source_section\": \"5\"\n  },\n  {\n    \"id\": \"s5_requirement_material_assets\",\n    \"type\": \"Requirement\",\n    \"name\": \"Material Assets Preservation Responsibility\",\n    \"description\": \"Ensuring the preservation of material assets of the Organization and Personnel within the activities of the Organization\",\n    \"attributes\": {},\n    \"source_text\": \"ensuring the preservation of material assets of the Organization and Personnel within the activities of the Organization;\",\n    \"source_section\": \"5\"\n  },\n  {\n    \"id\": \"s5_requirement_financial_security\",\n    \"type\": \"Requirement\",\n    \"name\": \"Financial Security Responsibility\",\n    \"description\": \"Ensuring the financial security of the Organization\",\n    \"attributes\": {},\n    \"source_text\": \"ensuring the financial security of the Organization;\",\n    \"source_section\": \"5\"\n  },\n  {\n    \"id\": \"s5_requirement_policy_compliance\",\n    \"type\": \"Requirement\",\n    \"name\": \"Policy Compliance Responsibility\",\n    \"description\": \"Ensuring this policy is complied with, along with other related policies\",\n    \"attributes\": {\n      \"scope\": \"this policy and other related policies\"\n    },\n    \"source_text\": \"ensuring this policy is complied with, along with other related policies;\",\n    \"source_section\": \"5\"\n  },\n  {\n    \"id\": \"s5_requirement_reasonable_care\",\n    \"type\": \"Requirement\",\n    \"name\": \"Reasonable Care and Duty of Care Responsibility\",\n    \"description\": \"Taking reasonable care in the course of their work and accepting a duty of care for their own health and safety, as well as for the health and safety of others within the workplace\",\n    \"attributes\": {\n      \"scope\": \"own health and safety and others in workplace\"\n    },\n    \"source_text\": \"taking reasonable care in the course of their work and accepting a duty of care for their own health and safety, as well as for the health and safety of others within the workplace;\",\n    \"source_section\": \"5\"\n  },\n  {\n    \"id\": \"s5_requirement_secure_environment\",\n    \"type\": \"Requirement\",\n    \"name\": \"Secure Environment Participation Responsibility\",\n    \"description\": \"Actively participate in building and maintaining a secure environment, through open communication, clear boundaries, managing complaints or disclosure, accurate documentation and notifying appropriate authorities of risk or harm in accordance with relevant procedures\",\n    \"attributes\": {\n      \"methods\": [\n        \"open communication\",\n        \"clear boundaries\",\n        \"managing complaints or disclosure\",\n        \"accurate documentation\",\n        \"notifying appropriate authorities\"\n      ]\n    },\n    \"source_text\": \"actively participate in building and maintaining a secure environment, through open communication, clear boundaries, managing complaints or disclosure, accurate documentation and notifying appropriate authorities of risk or harm in accordance with relevant procedures;\",\n    \"source_section\": \"5\"\n  },\n  {\n    \"id\": \"s5_requirement_risk_reporting\",\n    \"type\": \"Requirement\",\n    \"name\": \"Risk Reporting Responsibility\",\n    \"description\": \"Anticipating foreseeable harm and risks to self and/or others and immediately reporting any unsafe conditions or behaviors observed in the workplace to direct manager\",\n    \"attributes\": {\n      \"immediacy\": \"immediately\",\n      \"scope\": \"self and/or others\"\n    },\n    \"source_text\": \"anticipating foreseeable harm and risks to self and/or others and immediately reporting any unsafe conditions or behaviors observed in the workplace to direct manager;\",\n    \"source_section\": \"5\"\n  },\n  {\n    \"id\": \"s5_requirement_risk_control\",\n    \"type\": \"Requirement\",\n    \"name\": \"Risk Control Implementation Responsibility\",\n    \"description\": \"Where foreseeable harm or risk is identified, implementing preventative and risk control measures in consultation with direct manager (where practical) and in line with relevant procedures\",\n    \"attributes\": {\n      \"condition\": \"where foreseeable harm or risk is identified\",\n      \"consultation_condition\": \"where practical\"\n    },\n    \"source_text\": \"where foreseeable harm or risk is identified, implementing preventative and risk control measures in consultation with direct manager (where practical) and in line with relevant procedures;\",\n    \"source_section\": \"5\"\n  },\n  {\n    \"id\": \"s5_requirement_reasonable_care_standard\",\n    \"type\": \"Requirement\",\n    \"name\": \"Reasonable Care Standard Responsibility\",\n    \"description\": \"Taking the amount of care a reasonable person would expect\",\n    \"attributes\": {\n      \"standard\": \"reasonable person expectation\"\n    },\n    \"source_text\": \"taking the amount of care a reasonable person would expect.\",\n    \"source_section\": \"5\"\n  }\n]\n</entities>\n\n<entity_type>\nRequirement\n</entity_type>\n\n---\n\n## CORE PRINCIPLE: PRESERVE QUERYABILITY\n\nEvery distinctly-named entity that a user might search for must exist as its own node in the graph. When two entities are related but use different names, keep both and connect them with a relationship. Only merge when two extractions are truly the same entity appearing in different sections — same name, same real-world referent — where keeping both would create a meaningless exact duplicate.\n\nA redundant node with a relationship is always preferable to a lost query path. When in doubt, do NOT merge.\n\n---\n\n## MERGE LOGIC\n\nProduce a deduplicated list of entities. For every group of entities that are true duplicates, merge them into ONE entity. All other entities pass through with relationships added where appropriate.\n\n### When to Merge\n\nMerge two entities ONLY when ALL of the following are true:\n- Their names are the same or unambiguous abbreviations of each other (e.g., \"ED\" and \"Executive Director\")\n- Their descriptions refer to the same real-world role, object, or concept — not merely a related or overlapping one\n- Keeping both as separate nodes would create a meaningless exact duplicate with no distinct query value\n\n### When NOT to Merge\n\nDo NOT merge when:\n- Two entities use different terminology for the same or similar group (e.g., \"Employees\" and \"Personnel\") — instead, keep both and link with an `equivalent_to` relationship\n- One entity is an umbrella or collective term that contains the other (e.g., \"Representatives\" contains \"Consultants\") — instead, keep both and link with a `part_of` relationship\n- Two entities share a generic name (e.g., both called \"Policy\") but describe clearly different real-world things\n- You are unsure — false negatives (keeping duplicates) are always preferable to false positives (incorrectly merging distinct entities)\n\n### Relationships Between Non-Merged Entities\n\nWhen two entities are related but must remain separate, add a `relationships` entry to connect them:\n\n| Situation | Action | Relationship |\n|---|---|---|\n| Same name, same role, different sections | **Merge** | — |\n| Different name, same or similar group of people | **Keep both** | `equivalent_to` (on both entities, bidirectional) |\n| One entity is a named subcategory or member of another | **Keep both** | `part_of` (on the child, pointing to the parent) |\n| Unclear whether same or different | **Keep both** | Add relationship only if confident |\n\n### Conflicting Attributes\n\nIf merged entities have conflicting values for the same attribute key, keep both values as a list:\n```json\n\"effective_date\": [\"2023-01-01\", \"2023-04-03\"]\n```\nAnd note the conflict in the description.\n\n---\n\n## OUTPUT SCHEMA\n\nOutput ONLY a JSON array. No preamble, no explanation, no commentary outside the JSON.\n\nEvery entity in the array must follow this exact structure:\n```json\n{\n  \"id\": \"clean_lowercase_snake_case_id\",\n  \"type\": \"Requirement\",\n  \"name\": \"Best most complete name\",\n  \"description\": \"Combined or original description\",\n  \"attributes\": {\"key\": \"value\"},\n  \"relationships\": [\n    {\"target_id\": \"other_entity_id\", \"type\": \"equivalent_to | part_of\"}\n  ],\n  \"source_anchors\": [\n    {\"source_text\": \"EXACT verbatim quote from input\", \"source_section\": \"0\"}\n  ],\n  \"merged_from\": [\"original_id_1\", \"original_id_2\"]\n}\n```\n\n### Field Rules\n\n- **id**: Lowercase snake_case. Remove section prefixes (e.g., `s3_role_expense_limit` → `expense_limit`). If two non-merged entities would produce the same clean ID, append a disambiguating suffix (e.g., `policy_travel`, `policy_expense`).\n- **name**: For merged entities, pick the most specific and complete name. For pass-through entities, keep as-is.\n- **description**: For merged entities, combine descriptions using the pattern: \"[Most complete description]. [Unique facts from other sources not already covered].\" For pass-through entities, keep the original description verbatim — do not rewrite it.\n- **attributes**: For merged entities, take the union of all attribute keys. For pass-through entities, keep as-is.\n- **relationships**: Array of relationship objects. Use `equivalent_to` for entities that use different names for the same or similar group (add to both entities bidirectionally). Use `part_of` for entities that are a named member or subcategory of an umbrella entity (add only to the child, pointing at the parent). Empty array `[]` if no relationships apply.\n- **source_anchors**: Include ALL source references from all original entities. The `source_text` value must be copied character-for-character from the input. Do not paraphrase, truncate, or edit.\n- **merged_from**: Array of all original entity IDs that were merged. For pass-through entities, a single-element array.\n\n---\n\n## SELF-VERIFICATION\n\nBefore finalizing your output, verify:\n\n1. Every `source_text` value matches the input exactly — character for character\n2. Every original entity ID appears in exactly one `merged_from` array across the entire output\n3. The total count of original IDs across all `merged_from` arrays equals the total number of input entities\n4. No information from any original entity's description or attributes was lost\n5. No two output entities should themselves be merged (check your own output for remaining duplicates)\n6. Every `target_id` in a relationship points to an `id` that exists in your output\n7. All `equivalent_to` relationships are bidirectional (if A → B, then B → A)\n8. The JSON is syntactically valid\n",
+    "input_tokens": 2950,
+    "output_tokens": 3176,
+    "raw_response": "```json\n[\n  {\n    \"id\": \"physical_safety_responsibility\",\n    \"type\": \"Requirement\",\n    \"name\": \"Physical Safety Responsibility\",\n    \"description\": \"Ensuring the physical safety of life and health of Personnel, including in cases of stay in high-risk areas\",\n    \"attributes\": {\n      \"includes_context\": \"high-risk areas\"\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"ensuring the physical safety of life and health of Personnel, including in cases of stay in high- risk areas;\",\n        \"source_section\": \"5\"\n      }\n    ],\n    \"merged_from\": [\"s5_requirement_physical_safety\"]\n  },\n  {\n    \"id\": \"org_info_security_responsibility\",\n    \"type\": \"Requirement\",\n    \"name\": \"Organization Information Security Responsibility\",\n    \"description\": \"Ensuring information security of the Organization, including intellectual property\",\n    \"attributes\": {\n      \"includes\": \"intellectual property\"\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"ensuring information security of the Organization, including intellectual property;\",\n        \"source_section\": \"5\"\n      }\n    ],\n    \"merged_from\": [\"s5_requirement_org_info_security\"]\n  },\n  {\n    \"id\": \"personnel_info_security_responsibility\",\n    \"type\": \"Requirement\",\n    \"name\": \"Personnel Information Security Responsibility\",\n    \"description\": \"Ensuring information security of Personnel of the Organization\",\n    \"attributes\": {},\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"ensuring information security of Personnel of the Organization;\",\n        \"source_section\": \"5\"\n      }\n    ],\n    \"merged_from\": [\"s5_requirement_personnel_info_security\"]\n  },\n  {\n    \"id\": \"material_assets_responsibility\",\n    \"type\": \"Requirement\",\n    \"name\": \"Material Assets Preservation Responsibility\",\n    \"description\": \"Ensuring the preservation of material assets of the Organization and Personnel within the activities of the Organization\",\n    \"attributes\": {},\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"ensuring the preservation of material assets of the Organization and Personnel within the activities of the Organization;\",\n        \"source_section\": \"5\"\n      }\n    ],\n    \"merged_from\": [\"s5_requirement_material_assets\"]\n  },\n  {\n    \"id\": \"financial_security_responsibility\",\n    \"type\": \"Requirement\",\n    \"name\": \"Financial Security Responsibility\",\n    \"description\": \"Ensuring the financial security of the Organization\",\n    \"attributes\": {},\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"ensuring the financial security of the Organization;\",\n        \"source_section\": \"5\"\n      }\n    ],\n    \"merged_from\": [\"s5_requirement_financial_security\"]\n  },\n  {\n    \"id\": \"policy_compliance_responsibility\",\n    \"type\": \"Requirement\",\n    \"name\": \"Policy Compliance Responsibility\",\n    \"description\": \"Ensuring this policy is complied with, along with other related policies\",\n    \"attributes\": {\n      \"scope\": \"this policy and other related policies\"\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"ensuring this policy is complied with, along with other related policies;\",\n        \"source_section\": \"5\"\n      }\n    ],\n    \"merged_from\": [\"s5_requirement_policy_compliance\"]\n  },\n  {\n    \"id\": \"reasonable_care_duty_responsibility\",\n    \"type\": \"Requirement\",\n    \"name\": \"Reasonable Care and Duty of Care Responsibility\",\n    \"description\": \"Taking reasonable care in the course of their work and accepting a duty of care for their own health and safety, as well as for the health and safety of others within the workplace\",\n    \"attributes\": {\n      \"scope\": \"own health and safety and others in workplace\"\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"taking reasonable care in the course of their work and accepting a duty of care for their own health and safety, as well as for the health and safety of others within the workplace;\",\n        \"source_section\": \"5\"\n      }\n    ],\n    \"merged_from\": [\"s5_requirement_reasonable_care\"]\n  },\n  {\n    \"id\": \"secure_environment_responsibility\",\n    \"type\": \"Requirement\",\n    \"name\": \"Secure Environment Participation Responsibility\",\n    \"description\": \"Actively participate in building and maintaining a secure environment, through open communication, clear boundaries, managing complaints or disclosure, accurate documentation and notifying appropriate authorities of risk or harm in accordance with relevant procedures\",\n    \"attributes\": {\n      \"methods\": [\n        \"open communication\",\n        \"clear boundaries\",\n        \"managing complaints or disclosure\",\n        \"accurate documentation\",\n        \"notifying appropriate authorities\"\n      ]\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"actively participate in building and maintaining a secure environment, through open communication, clear boundaries, managing complaints or disclosure, accurate documentation and notifying appropriate authorities of risk or harm in accordance with relevant procedures;\",\n        \"source_section\": \"5\"\n      }\n    ],\n    \"merged_from\": [\"s5_requirement_secure_environment\"]\n  },\n  {\n    \"id\": \"risk_reporting_responsibility\",\n    \"type\": \"Requirement\",\n    \"name\": \"Risk Reporting Responsibility\",\n    \"description\": \"Anticipating foreseeable harm and risks to self and/or others and immediately reporting any unsafe conditions or behaviors observed in the workplace to direct manager\",\n    \"attributes\": {\n      \"immediacy\": \"immediately\",\n      \"scope\": \"self and/or others\"\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"anticipating foreseeable harm and risks to self and/or others and immediately reporting any unsafe conditions or behaviors observed in the workplace to direct manager;\",\n        \"source_section\": \"5\"\n      }\n    ],\n    \"merged_from\": [\"s5_requirement_risk_reporting\"]\n  },\n  {\n    \"id\": \"risk_control_responsibility\",\n    \"type\": \"Requirement\",\n    \"name\": \"Risk Control Implementation Responsibility\",\n    \"description\": \"Where foreseeable harm or risk is identified, implementing preventative and risk control measures in consultation with direct manager (where practical) and in line with relevant procedures\",\n    \"attributes\": {\n      \"condition\": \"where foreseeable harm or risk is identified\",\n      \"consultation_condition\": \"where practical\"\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"where foreseeable harm or risk is identified, implementing preventative and risk control measures in consultation with direct manager (where practical) and in line with relevant procedures;\",\n        \"source_section\": \"5\"\n      }\n    ],\n    \"merged_from\": [\"s5_requirement_risk_control\"]\n  },\n  {\n    \"id\": \"reasonable_care_standard_responsibility\",\n    \"type\": \"Requirement\",\n    \"name\": \"Reasonable Care Standard Responsibility\",\n    \"description\": \"Taking the amount of care a reasonable person would expect\",\n    \"attributes\": {\n      \"standard\": \"reasonable person expectation\"\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\n        \"source_text\": \"taking the amount of care a reasonable person would expect.\",\n        \"source_section\": \"5\"\n      }\n    ],\n    \"merged_from\": [\"s5_requirement_reasonable_care_standard\"]\n  }\n]\n```",
+    "thinking": "Let me carefully analyze these entities to determine which should be merged vs. which should remain separate.\n\nLooking at the entities, they all appear to be different requirements/responsibilities from section 5 of a travel policy document. Let me examine them for potential merges:\n\n1. s5_requirement_physical_safety - Physical Safety Responsibility - about ensuring physical safety of personnel including in high-risk areas\n\n2. s5_requirement_org_info_security - Organization Information Security Responsibility - about ensuring information security of the organization including IP\n\n3. s5_requirement_personnel_info_security - Personnel Information Security Responsibility - about ensuring information security of personnel\n\n4. s5_requirement_material_assets - Material Assets Preservation Responsibility - about preserving material assets\n\n5. s5_requirement_financial_security - Financial Security Responsibility - about ensuring financial security\n\n6. s5_requirement_policy_compliance - Policy Compliance Responsibility - about ensuring policy compliance\n\n7. s5_requirement_reasonable_care - Reasonable Care and Duty of Care Responsibility - about taking reasonable care for own and others' health/safety\n\n8. s5_requirement_secure_environment - Secure Environment Participation Responsibility - about actively participating in building secure environment\n\n9. s5_requirement_risk_reporting - Risk Reporting Responsibility - about anticipating and reporting risks\n\n10. s5_requirement_risk_control - Risk Control Implementation Responsibility - about implementing preventative measures when risks identified\n\n11. s5_requirement_reasonable_care_standard - Reasonable Care Standard Responsibility - about taking care a reasonable person would expect\n\nNow let me look for potential merges:\n\nLooking at #7 (s5_requirement_reasonable_care) and #11 (s5_requirement_reasonable_care_standard):\n- #7: \"Reasonable Care and Duty of Care Responsibility\" - \"Taking reasonable care in the course of their work and accepting a duty of care for their own health and safety, as well as for the health and safety of others within the workplace\"\n- #11: \"Reasonable Care Standard Responsibility\" - \"Taking the amount of care a reasonable person would expect\"\n\n\nThese address distinct concepts—one focuses on workplace health and safety duties toward oneself and colleagues, while the other establishes a general standard of conduct. They should stay separate. Similarly, #2 and #3 clearly distinguish between organizational and personnel information security, so those remain distinct as well.\n\n#9 and #10 represent different stages of risk management: anticipating and reporting risks versus actually implementing preventative controls once identified. These warrant separate entries.\n\nNo duplicates emerge across the requirements—each addresses a unique responsibility dimension. I'll proceed with keeping all entities distinct and clean up the naming conventions by removing prefixes like s5_ and requirement_.\n\nFor the IDs, I need to handle the overlap between #7 and #11, both touching on reasonable care but from different angles. I'll differentiate them as reasonable_care_duty_responsibility and reasonable_care_standard_responsibility. Working through systematically: physical_safety_responsibility, org_info_security_responsibility, personnel_info_security_responsibility, material_assets_responsibility, financial_security_responsibility, policy_compliance_responsibility, reasonable_care_duty_responsibility, secure_environment_responsibility, risk_reporting_responsibility, risk_control_responsibility, and reasonable_care_standard_responsibility.\n\nLooking at potential connections between these responsibilities, information security responsibilities for the organization and personnel could share an equivalent relationship since they both address information protection but at different levels. The reasonable care concepts might relate to each other given their shared foundation. Risk reporting and risk control form a natural sequence within risk management processes.\n\nHowever, I'm uncertain whether these truly warrant relationship designations. The requirements are connected but fundamentally distinct in their scope and application. I'll hold off on adding relationships until I have stronger confidence in their validity.",
+    "output_count": 11,
+    "merges": 0,
+    "new_relationships": 0,
+    "llm_response": [
+      {
+        "id": "physical_safety_responsibility",
+        "type": "Requirement",
+        "name": "Physical Safety Responsibility",
+        "description": "Ensuring the physical safety of life and health of Personnel, including in cases of stay in high-risk areas",
+        "attributes": {
+          "includes_context": "high-risk areas"
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "ensuring the physical safety of life and health of Personnel, including in cases of stay in high- risk areas;",
+            "source_section": "5"
+          }
+        ],
+        "merged_from": [
+          "s5_requirement_physical_safety"
+        ]
+      },
+      {
+        "id": "org_info_security_responsibility",
+        "type": "Requirement",
+        "name": "Organization Information Security Responsibility",
+        "description": "Ensuring information security of the Organization, including intellectual property",
+        "attributes": {
+          "includes": "intellectual property"
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "ensuring information security of the Organization, including intellectual property;",
+            "source_section": "5"
+          }
+        ],
+        "merged_from": [
+          "s5_requirement_org_info_security"
+        ]
+      },
+      {
+        "id": "personnel_info_security_responsibility",
+        "type": "Requirement",
+        "name": "Personnel Information Security Responsibility",
+        "description": "Ensuring information security of Personnel of the Organization",
+        "attributes": {},
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "ensuring information security of Personnel of the Organization;",
+            "source_section": "5"
+          }
+        ],
+        "merged_from": [
+          "s5_requirement_personnel_info_security"
+        ]
+      },
+      {
+        "id": "material_assets_responsibility",
+        "type": "Requirement",
+        "name": "Material Assets Preservation Responsibility",
+        "description": "Ensuring the preservation of material assets of the Organization and Personnel within the activities of the Organization",
+        "attributes": {},
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "ensuring the preservation of material assets of the Organization and Personnel within the activities of the Organization;",
+            "source_section": "5"
+          }
+        ],
+        "merged_from": [
+          "s5_requirement_material_assets"
+        ]
+      },
+      {
+        "id": "financial_security_responsibility",
+        "type": "Requirement",
+        "name": "Financial Security Responsibility",
+        "description": "Ensuring the financial security of the Organization",
+        "attributes": {},
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "ensuring the financial security of the Organization;",
+            "source_section": "5"
+          }
+        ],
+        "merged_from": [
+          "s5_requirement_financial_security"
+        ]
+      },
+      {
+        "id": "policy_compliance_responsibility",
+        "type": "Requirement",
+        "name": "Policy Compliance Responsibility",
+        "description": "Ensuring this policy is complied with, along with other related policies",
+        "attributes": {
+          "scope": "this policy and other related policies"
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "ensuring this policy is complied with, along with other related policies;",
+            "source_section": "5"
+          }
+        ],
+        "merged_from": [
+          "s5_requirement_policy_compliance"
+        ]
+      },
+      {
+        "id": "reasonable_care_duty_responsibility",
+        "type": "Requirement",
+        "name": "Reasonable Care and Duty of Care Responsibility",
+        "description": "Taking reasonable care in the course of their work and accepting a duty of care for their own health and safety, as well as for the health and safety of others within the workplace",
+        "attributes": {
+          "scope": "own health and safety and others in workplace"
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "taking reasonable care in the course of their work and accepting a duty of care for their own health and safety, as well as for the health and safety of others within the workplace;",
+            "source_section": "5"
+          }
+        ],
+        "merged_from": [
+          "s5_requirement_reasonable_care"
+        ]
+      },
+      {
+        "id": "secure_environment_responsibility",
+        "type": "Requirement",
+        "name": "Secure Environment Participation Responsibility",
+        "description": "Actively participate in building and maintaining a secure environment, through open communication, clear boundaries, managing complaints or disclosure, accurate documentation and notifying appropriate authorities of risk or harm in accordance with relevant procedures",
+        "attributes": {
+          "methods": [
+            "open communication",
+            "clear boundaries",
+            "managing complaints or disclosure",
+            "accurate documentation",
+            "notifying appropriate authorities"
+          ]
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "actively participate in building and maintaining a secure environment, through open communication, clear boundaries, managing complaints or disclosure, accurate documentation and notifying appropriate authorities of risk or harm in accordance with relevant procedures;",
+            "source_section": "5"
+          }
+        ],
+        "merged_from": [
+          "s5_requirement_secure_environment"
+        ]
+      },
+      {
+        "id": "risk_reporting_responsibility",
+        "type": "Requirement",
+        "name": "Risk Reporting Responsibility",
+        "description": "Anticipating foreseeable harm and risks to self and/or others and immediately reporting any unsafe conditions or behaviors observed in the workplace to direct manager",
+        "attributes": {
+          "immediacy": "immediately",
+          "scope": "self and/or others"
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "anticipating foreseeable harm and risks to self and/or others and immediately reporting any unsafe conditions or behaviors observed in the workplace to direct manager;",
+            "source_section": "5"
+          }
+        ],
+        "merged_from": [
+          "s5_requirement_risk_reporting"
+        ]
+      },
+      {
+        "id": "risk_control_responsibility",
+        "type": "Requirement",
+        "name": "Risk Control Implementation Responsibility",
+        "description": "Where foreseeable harm or risk is identified, implementing preventative and risk control measures in consultation with direct manager (where practical) and in line with relevant procedures",
+        "attributes": {
+          "condition": "where foreseeable harm or risk is identified",
+          "consultation_condition": "where practical"
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "where foreseeable harm or risk is identified, implementing preventative and risk control measures in consultation with direct manager (where practical) and in line with relevant procedures;",
+            "source_section": "5"
+          }
+        ],
+        "merged_from": [
+          "s5_requirement_risk_control"
+        ]
+      },
+      {
+        "id": "reasonable_care_standard_responsibility",
+        "type": "Requirement",
+        "name": "Reasonable Care Standard Responsibility",
+        "description": "Taking the amount of care a reasonable person would expect",
+        "attributes": {
+          "standard": "reasonable person expectation"
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "taking the amount of care a reasonable person would expect.",
+            "source_section": "5"
+          }
+        ],
+        "merged_from": [
+          "s5_requirement_reasonable_care_standard"
+        ]
+      }
+    ]
+  },
+  {
+    "entity_type": "Role",
+    "input_count": 19,
+    "input_ids": [
+      "s0_role_executive_director",
+      "s1_role_employees",
+      "s2_role_partners",
+      "s2_role_suppliers",
+      "s2_role_subgrantees",
+      "s2_role_beneficiaries",
+      "s2_role_stakeholders",
+      "s2_role_consultants",
+      "s2_role_external_executors",
+      "s2_role_engaged_experts",
+      "s2_role_volunteers",
+      "s2_role_other_associated_entities",
+      "s2_role_executive_director",
+      "s3_role_personnel",
+      "s3_role_representatives",
+      "s5_role_persons_directly_involved",
+      "s5_role_representatives",
+      "s5_role_personnel",
+      "s5_role_direct_manager"
+    ],
+    "prompt": "You are deduplicating entities that were extracted from a travel policy document. The extraction process pulled entities of the same type from different sections of the document. Some of these entities may refer to the same real-world thing despite having different names, IDs, or descriptions.\n\nHere are all the entities of this type that need deduplication:\n\n<entities>\n[\n  {\n    \"id\": \"s0_role_executive_director\",\n    \"type\": \"Role\",\n    \"name\": \"Executive director\",\n    \"description\": \"Senior leadership role with policy approval authority\",\n    \"attributes\": {},\n    \"source_text\": \"Executive director\",\n    \"source_section\": \"0\"\n  },\n  {\n    \"id\": \"s1_role_employees\",\n    \"type\": \"Role\",\n    \"name\": \"Employees\",\n    \"description\": \"Staff members required to adhere to the highest standards of ethical conduct at all times\",\n    \"attributes\": {\n      \"conduct_requirement\": \"highest standards of ethical conduct\",\n      \"compliance_frequency\": \"at all times\"\n    },\n    \"source_text\": \"The Organization requires its employees to adhere to the highest standards of ethical conduct at all times.\",\n    \"source_section\": \"1\"\n  },\n  {\n    \"id\": \"s2_role_partners\",\n    \"type\": \"Role\",\n    \"name\": \"Partners\",\n    \"description\": \"External partners that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\",\n    \"source_section\": \"2\"\n  },\n  {\n    \"id\": \"s2_role_suppliers\",\n    \"type\": \"Role\",\n    \"name\": \"Suppliers\",\n    \"description\": \"External suppliers that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\",\n    \"source_section\": \"2\"\n  },\n  {\n    \"id\": \"s2_role_subgrantees\",\n    \"type\": \"Role\",\n    \"name\": \"Sub-grantees\",\n    \"description\": \"Sub-grantees that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\",\n    \"source_section\": \"2\"\n  },\n  {\n    \"id\": \"s2_role_beneficiaries\",\n    \"type\": \"Role\",\n    \"name\": \"Beneficiaries\",\n    \"description\": \"Program beneficiaries that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\",\n    \"source_section\": \"2\"\n  },\n  {\n    \"id\": \"s2_role_stakeholders\",\n    \"type\": \"Role\",\n    \"name\": \"Stakeholders\",\n    \"description\": \"Stakeholders that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\",\n    \"source_section\": \"2\"\n  },\n  {\n    \"id\": \"s2_role_consultants\",\n    \"type\": \"Role\",\n    \"name\": \"Consultants\",\n    \"description\": \"External consultants that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\",\n    \"source_section\": \"2\"\n  },\n  {\n    \"id\": \"s2_role_external_executors\",\n    \"type\": \"Role\",\n    \"name\": \"External Executors\",\n    \"description\": \"External executors that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\",\n    \"source_section\": \"2\"\n  },\n  {\n    \"id\": \"s2_role_engaged_experts\",\n    \"type\": \"Role\",\n    \"name\": \"Engaged Experts\",\n    \"description\": \"Engaged experts that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\",\n    \"source_section\": \"2\"\n  },\n  {\n    \"id\": \"s2_role_volunteers\",\n    \"type\": \"Role\",\n    \"name\": \"Volunteers\",\n    \"description\": \"Volunteers that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\",\n    \"source_section\": \"2\"\n  },\n  {\n    \"id\": \"s2_role_other_associated_entities\",\n    \"type\": \"Role\",\n    \"name\": \"Other Associated Entities\",\n    \"description\": \"Other associated entities that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\",\n    \"source_section\": \"2\"\n  },\n  {\n    \"id\": \"s2_role_executive_director\",\n    \"type\": \"Role\",\n    \"name\": \"Executive Director\",\n    \"description\": \"Leadership role directly involved in the implementation of the Policy\",\n    \"attributes\": {\n      \"role_in_policy\": \"implementation\"\n    },\n    \"source_text\": \"Directly involved in the implementation of the Policy are: - General Meeting; - Executive director.\",\n    \"source_section\": \"2\"\n  },\n  {\n    \"id\": \"s3_role_personnel\",\n    \"type\": \"Role\",\n    \"name\": \"Personnel\",\n    \"description\": \"Staff members of the organization covered by the policy\",\n    \"attributes\": {\n      \"includes\": \"staff\"\n    },\n    \"source_text\": \"The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.\",\n    \"source_section\": \"3\"\n  },\n  {\n    \"id\": \"s3_role_representatives\",\n    \"type\": \"Role\",\n    \"name\": \"Representatives\",\n    \"description\": \"Representatives of the organization covered by the policy\",\n    \"attributes\": {},\n    \"source_text\": \"The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.\",\n    \"source_section\": \"3\"\n  },\n  {\n    \"id\": \"s5_role_persons_directly_involved\",\n    \"type\": \"Role\",\n    \"name\": \"Persons Directly Involved in Policy Implementation\",\n    \"description\": \"Persons who are directly involved in the implementation of the Policy and have specific security and safety responsibilities\",\n    \"attributes\": {},\n    \"source_text\": \"Persons, directly involved in the implementation of the Policy, are responsible for:\",\n    \"source_section\": \"5\"\n  },\n  {\n    \"id\": \"s5_role_representatives\",\n    \"type\": \"Role\",\n    \"name\": \"Representatives\",\n    \"description\": \"Representatives operating under the conditions set forth in clause 2.2 of this Policy\",\n    \"attributes\": {\n      \"reference_clause\": \"2.2\"\n    },\n    \"source_text\": \"Representatives, under the conditions set forth in clause 2.2. of this Policy, and Personnel, are responsible for:\",\n    \"source_section\": \"5\"\n  },\n  {\n    \"id\": \"s5_role_personnel\",\n    \"type\": \"Role\",\n    \"name\": \"Personnel\",\n    \"description\": \"Personnel of the Organization with health, safety and security responsibilities\",\n    \"attributes\": {},\n    \"source_text\": \"Representatives, under the conditions set forth in clause 2.2. of this Policy, and Personnel, are responsible for:\",\n    \"source_section\": \"5\"\n  },\n  {\n    \"id\": \"s5_role_direct_manager\",\n    \"type\": \"Role\",\n    \"name\": \"Direct Manager\",\n    \"description\": \"The direct supervisor to whom unsafe conditions and risk control consultations must be reported\",\n    \"attributes\": {},\n    \"source_text\": \"immediately reporting any unsafe conditions or behaviors observed in the workplace to direct manager;\",\n    \"source_section\": \"5\"\n  }\n]\n</entities>\n\n<entity_type>\nRole\n</entity_type>\n\n---\n\n## CORE PRINCIPLE: PRESERVE QUERYABILITY\n\nEvery distinctly-named entity that a user might search for must exist as its own node in the graph. When two entities are related but use different names, keep both and connect them with a relationship. Only merge when two extractions are truly the same entity appearing in different sections — same name, same real-world referent — where keeping both would create a meaningless exact duplicate.\n\nA redundant node with a relationship is always preferable to a lost query path. When in doubt, do NOT merge.\n\n---\n\n## MERGE LOGIC\n\nProduce a deduplicated list of entities. For every group of entities that are true duplicates, merge them into ONE entity. All other entities pass through with relationships added where appropriate.\n\n### When to Merge\n\nMerge two entities ONLY when ALL of the following are true:\n- Their names are the same or unambiguous abbreviations of each other (e.g., \"ED\" and \"Executive Director\")\n- Their descriptions refer to the same real-world role, object, or concept — not merely a related or overlapping one\n- Keeping both as separate nodes would create a meaningless exact duplicate with no distinct query value\n\n### When NOT to Merge\n\nDo NOT merge when:\n- Two entities use different terminology for the same or similar group (e.g., \"Employees\" and \"Personnel\") — instead, keep both and link with an `equivalent_to` relationship\n- One entity is an umbrella or collective term that contains the other (e.g., \"Representatives\" contains \"Consultants\") — instead, keep both and link with a `part_of` relationship\n- Two entities share a generic name (e.g., both called \"Policy\") but describe clearly different real-world things\n- You are unsure — false negatives (keeping duplicates) are always preferable to false positives (incorrectly merging distinct entities)\n\n### Relationships Between Non-Merged Entities\n\nWhen two entities are related but must remain separate, add a `relationships` entry to connect them:\n\n| Situation | Action | Relationship |\n|---|---|---|\n| Same name, same role, different sections | **Merge** | — |\n| Different name, same or similar group of people | **Keep both** | `equivalent_to` (on both entities, bidirectional) |\n| One entity is a named subcategory or member of another | **Keep both** | `part_of` (on the child, pointing to the parent) |\n| Unclear whether same or different | **Keep both** | Add relationship only if confident |\n\n### Conflicting Attributes\n\nIf merged entities have conflicting values for the same attribute key, keep both values as a list:\n```json\n\"effective_date\": [\"2023-01-01\", \"2023-04-03\"]\n```\nAnd note the conflict in the description.\n\n---\n\n## OUTPUT SCHEMA\n\nOutput ONLY a JSON array. No preamble, no explanation, no commentary outside the JSON.\n\nEvery entity in the array must follow this exact structure:\n```json\n{\n  \"id\": \"clean_lowercase_snake_case_id\",\n  \"type\": \"Role\",\n  \"name\": \"Best most complete name\",\n  \"description\": \"Combined or original description\",\n  \"attributes\": {\"key\": \"value\"},\n  \"relationships\": [\n    {\"target_id\": \"other_entity_id\", \"type\": \"equivalent_to | part_of\"}\n  ],\n  \"source_anchors\": [\n    {\"source_text\": \"EXACT verbatim quote from input\", \"source_section\": \"0\"}\n  ],\n  \"merged_from\": [\"original_id_1\", \"original_id_2\"]\n}\n```\n\n### Field Rules\n\n- **id**: Lowercase snake_case. Remove section prefixes (e.g., `s3_role_expense_limit` → `expense_limit`). If two non-merged entities would produce the same clean ID, append a disambiguating suffix (e.g., `policy_travel`, `policy_expense`).\n- **name**: For merged entities, pick the most specific and complete name. For pass-through entities, keep as-is.\n- **description**: For merged entities, combine descriptions using the pattern: \"[Most complete description]. [Unique facts from other sources not already covered].\" For pass-through entities, keep the original description verbatim — do not rewrite it.\n- **attributes**: For merged entities, take the union of all attribute keys. For pass-through entities, keep as-is.\n- **relationships**: Array of relationship objects. Use `equivalent_to` for entities that use different names for the same or similar group (add to both entities bidirectionally). Use `part_of` for entities that are a named member or subcategory of an umbrella entity (add only to the child, pointing at the parent). Empty array `[]` if no relationships apply.\n- **source_anchors**: Include ALL source references from all original entities. The `source_text` value must be copied character-for-character from the input. Do not paraphrase, truncate, or edit.\n- **merged_from**: Array of all original entity IDs that were merged. For pass-through entities, a single-element array.\n\n---\n\n## SELF-VERIFICATION\n\nBefore finalizing your output, verify:\n\n1. Every `source_text` value matches the input exactly — character for character\n2. Every original entity ID appears in exactly one `merged_from` array across the entire output\n3. The total count of original IDs across all `merged_from` arrays equals the total number of input entities\n4. No information from any original entity's description or attributes was lost\n5. No two output entities should themselves be merged (check your own output for remaining duplicates)\n6. Every `target_id` in a relationship points to an `id` that exists in your output\n7. All `equivalent_to` relationships are bidirectional (if A → B, then B → A)\n8. The JSON is syntactically valid\n",
+    "input_tokens": 3966,
+    "output_tokens": 7625,
+    "raw_response": "```json\n[\n  {\n    \"id\": \"executive_director\",\n    \"type\": \"Role\",\n    \"name\": \"Executive Director\",\n    \"description\": \"Senior leadership role with policy approval authority. Leadership role directly involved in the implementation of the Policy\",\n    \"attributes\": {\n      \"role_in_policy\": \"implementation\"\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\"source_text\": \"Executive director\", \"source_section\": \"0\"},\n      {\"source_text\": \"Directly involved in the implementation of the Policy are: - General Meeting; - Executive director.\", \"source_section\": \"2\"}\n    ],\n    \"merged_from\": [\"s0_role_executive_director\", \"s2_role_executive_director\"]\n  },\n  {\n    \"id\": \"employees\",\n    \"type\": \"Role\",\n    \"name\": \"Employees\",\n    \"description\": \"Staff members required to adhere to the highest standards of ethical conduct at all times\",\n    \"attributes\": {\n      \"conduct_requirement\": \"highest standards of ethical conduct\",\n      \"compliance_frequency\": \"at all times\"\n    },\n    \"relationships\": [\n      {\"target_id\": \"personnel\", \"type\": \"equivalent_to\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The Organization requires its employees to adhere to the highest standards of ethical conduct at all times.\", \"source_section\": \"1\"}\n    ],\n    \"merged_from\": [\"s1_role_employees\"]\n  },\n  {\n    \"id\": \"partners\",\n    \"type\": \"Role\",\n    \"name\": \"Partners\",\n    \"description\": \"External partners that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"relationships\": [\n      {\"target_id\": \"representatives\", \"type\": \"part_of\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\", \"source_section\": \"2\"}\n    ],\n    \"merged_from\": [\"s2_role_partners\"]\n  },\n  {\n    \"id\": \"suppliers\",\n    \"type\": \"Role\",\n    \"name\": \"Suppliers\",\n    \"description\": \"External suppliers that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"relationships\": [\n      {\"target_id\": \"representatives\", \"type\": \"part_of\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\", \"source_section\": \"2\"}\n    ],\n    \"merged_from\": [\"s2_role_suppliers\"]\n  },\n  {\n    \"id\": \"sub_grantees\",\n    \"type\": \"Role\",\n    \"name\": \"Sub-grantees\",\n    \"description\": \"Sub-grantees that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"relationships\": [\n      {\"target_id\": \"representatives\", \"type\": \"part_of\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\", \"source_section\": \"2\"}\n    ],\n    \"merged_from\": [\"s2_role_subgrantees\"]\n  },\n  {\n    \"id\": \"beneficiaries\",\n    \"type\": \"Role\",\n    \"name\": \"Beneficiaries\",\n    \"description\": \"Program beneficiaries that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"relationships\": [\n      {\"target_id\": \"representatives\", \"type\": \"part_of\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\", \"source_section\": \"2\"}\n    ],\n    \"merged_from\": [\"s2_role_beneficiaries\"]\n  },\n  {\n    \"id\": \"stakeholders\",\n    \"type\": \"Role\",\n    \"name\": \"Stakeholders\",\n    \"description\": \"Stakeholders that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"relationships\": [\n      {\"target_id\": \"representatives\", \"type\": \"part_of\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\", \"source_section\": \"2\"}\n    ],\n    \"merged_from\": [\"s2_role_stakeholders\"]\n  },\n  {\n    \"id\": \"consultants\",\n    \"type\": \"Role\",\n    \"name\": \"Consultants\",\n    \"description\": \"External consultants that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"relationships\": [\n      {\"target_id\": \"representatives\", \"type\": \"part_of\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\", \"source_section\": \"2\"}\n    ],\n    \"merged_from\": [\"s2_role_consultants\"]\n  },\n  {\n    \"id\": \"external_executors\",\n    \"type\": \"Role\",\n    \"name\": \"External Executors\",\n    \"description\": \"External executors that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"relationships\": [\n      {\"target_id\": \"representatives\", \"type\": \"part_of\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\", \"source_section\": \"2\"}\n    ],\n    \"merged_from\": [\"s2_role_external_executors\"]\n  },\n  {\n    \"id\": \"engaged_experts\",\n    \"type\": \"Role\",\n    \"name\": \"Engaged Experts\",\n    \"description\": \"Engaged experts that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"relationships\": [\n      {\"target_id\": \"representatives\", \"type\": \"part_of\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\", \"source_section\": \"2\"}\n    ],\n    \"merged_from\": [\"s2_role_engaged_experts\"]\n  },\n  {\n    \"id\": \"volunteers\",\n    \"type\": \"Role\",\n    \"name\": \"Volunteers\",\n    \"description\": \"Volunteers that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"relationships\": [\n      {\"target_id\": \"representatives\", \"type\": \"part_of\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\", \"source_section\": \"2\"}\n    ],\n    \"merged_from\": [\"s2_role_volunteers\"]\n  },\n  {\n    \"id\": \"other_associated_entities\",\n    \"type\": \"Role\",\n    \"name\": \"Other Associated Entities\",\n    \"description\": \"Other associated entities that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"relationships\": [\n      {\"target_id\": \"representatives\", \"type\": \"part_of\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\", \"source_section\": \"2\"}\n    ],\n    \"merged_from\": [\"s2_role_other_associated_entities\"]\n  },\n  {\n    \"id\": \"personnel\",\n    \"type\": \"Role\",\n    \"name\": \"Personnel\",\n    \"description\": \"Staff members of the organization covered by the policy. Personnel of the Organization with health, safety and security responsibilities\",\n    \"attributes\": {\n      \"includes\": \"staff\"\n    },\n    \"relationships\": [\n      {\"target_id\": \"employees\", \"type\": \"equivalent_to\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.\", \"source_section\": \"3\"},\n      {\"source_text\": \"Representatives, under the conditions set forth in clause 2.2. of this Policy, and Personnel, are responsible for:\", \"source_section\": \"5\"}\n    ],\n    \"merged_from\": [\"s3_role_personnel\", \"s5_role_personnel\"]\n  },\n  {\n    \"id\": \"representatives\",\n    \"type\": \"Role\",\n    \"name\": \"Representatives\",\n    \"description\": \"Representatives of the organization covered by the policy. Representatives operating under the conditions set forth in clause 2.2 of this Policy\",\n    \"attributes\": {\n      \"reference_clause\": \"2.2\"\n    },\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\"source_text\": \"The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.\", \"source_section\": \"3\"},\n      {\"source_text\": \"Representatives, under the conditions set forth in clause 2.2. of this Policy, and Personnel, are responsible for:\", \"source_section\": \"5\"}\n    ],\n    \"merged_from\": [\"s3_role_representatives\", \"s5_role_representatives\"]\n  },\n  {\n    \"id\": \"persons_directly_involved\",\n    \"type\": \"Role\",\n    \"name\": \"Persons Directly Involved in Policy Implementation\",\n    \"description\": \"Persons who are directly involved in the implementation of the Policy and have specific security and safety responsibilities\",\n    \"attributes\": {},\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\"source_text\": \"Persons, directly involved in the implementation of the Policy, are responsible for:\", \"source_section\": \"5\"}\n    ],\n    \"merged_from\": [\"s5_role_persons_directly_involved\"]\n  },\n  {\n    \"id\": \"direct_manager\",\n    \"type\": \"Role\",\n    \"name\": \"Direct Manager\",\n    \"description\": \"The direct supervisor to whom unsafe conditions and risk control consultations must be reported\",\n    \"attributes\": {},\n    \"relationships\": [],\n    \"source_anchors\": [\n      {\"source_text\": \"immediately reporting any unsafe conditions or behaviors observed in the workplace to direct manager;\", \"source_section\": \"5\"}\n    ],\n    \"merged_from\": [\"s5_role_direct_manager\"]\n  }\n]\n```",
+    "thinking": "Let me analyze these Role entities for deduplication. I'll go through each one and see if any should be merged.\n\nLooking at the entities:\n\n1. `s0_role_executive_director` - \"Executive director\" \n2. `s1_role_employees` - \"Employees\"\n3. `s2_role_partners` - \"Partners\" \n4. `s2_role_suppliers` - \"Suppliers\"\n5. `s2_role_subgrantees` - \"Sub-grantees\"\n6. `s2_role_beneficiaries` - \"Beneficiaries\"\n7. `s2_role_stakeholders` - \"Stakeholders\"\n8. `s2_role_consultants` - \"Consultants\"\n9. `s2_role_external_executors` - \"External Executors\"\n10. `s2_role_engaged_experts` - \"Engaged Experts\"\n11. `s2_role_volunteers` - \"Volunteers\"\n12. `s2_role_other_associated_entities` - \"Other Associated Entities\"\n13. `s2_role_executive_director` - \"Executive Director\"\n14. `s3_role_personnel` - \"Personnel\"\n15. `s3_role_representatives` - \"Representatives\"\n16. `s5_role_persons_directly_involved` - \"Persons Directly Involved in Policy Implementation\"\n17. `s5_role_representatives` - \"Representatives\"\n18. `s5_role_personnel` - \"Personnel\"\n19. `s5_role_direct_manager` - \"Direct Manager\"\n\nLet me look for potential merges:\n\n**Executive Director entities:**\n- `s0_role_executive_director` - \"Executive director\" from section 0\n- `s2_role_executive_director` - \"Executive Director\" from section 2\n\nThese appear to be the same role - both are \"Executive Director\" (just different capitalization) and both refer to the same leadership role. This should be merged.\n\n\nPersonnel and representatives appear across multiple sections - `s3_role_personnel` and `s5_role_personnel` both refer to \"Personnel,\" while `s3_role_representatives` and `s5_role_representatives` both refer to \"Representatives.\" These duplicates should be consolidated. I'm also considering whether \"Employees\" and \"Personnel\" might be interchangeable terms for the same organizational staff group.\n\nLooking at section 2, \"Representatives\" functions as a broader category encompassing partners, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers, and other associated entities. This means each of those specific roles should connect to Representatives through a `part_of` relationship.\n\nFor the consolidation work, I need to merge the Executive Director entries from sections 0 and 2 into a single entity with a unified ID, standardized name capitalization, combined descriptions, and merged attributes. The same approach applies to Personnel - I'll consolidate the duplicate entries across sections.\n\nThe Representatives role also appears in multiple sections and requires merging. Once consolidated, I should establish that Employees and Personnel are equivalent terms using `equivalent_to`, while all the constituent roles like Partners, Suppliers, Sub-grantees, and the others maintain `part_of` relationships pointing to the unified Representatives entity. \",\n    \"description\": \"Staff members required to adhere to the highest standards of ethical conduct at all times\",\n    \"attributes\": {\n      \"conduct_requirement\": \"highest standards of ethical conduct\",\n      \"compliance_frequency\": \"at all times\"\n    },\n    \"relationships\": [\n      {\"target_id\": \"personnel\", \"type\": \"equivalent_to\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The Organization requires its employees to adhere to the highest standards of ethical conduct at all times.\", \"source_section\": \"1\"}\n    ],\n    \"merged_from\": [\"s1_role_employees\"]\n  },\n  {\n    \"id\": \"partners\",\n    \"type\": \"Role\",\n    \"name\": \"Partners\", \n    \"description\": \"External partners that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"relationships\": [\n      {\"target_id\": \"representatives\", \"type\": \"part_of\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"Partners\", \"source_section\": \"3\"},\n      {\"source_text\": \"Partners may be subject to certain provisions of this Policy depending on the conditions of the grant agreement.\", \"source_section\": \"3\"}\n    ],\n    \"merged_from\": [\"s3_role_partners\"]\n  }\n] partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\", \"source_section\": \"2\"}\n    ],\n    \"merged_from\": [\"s2_role_sub_grantees\"]\n  },\n  {\n    \"id\": \"beneficiaries\",\n    \"type\": \"Role\",\n    \"name\": \"Beneficiaries\",\n    \"description\": \"End beneficiaries that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"relationships\": [\n      {\"target_id\": \"representatives\", \"type\": \"part_of\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\", \"source_section\": \"2\"}\n    ],\n    \"merged_from\": [\"s2_role_beneficiaries\"]\n  },\n  {\n    \"id\": \"stakeholders\",\n    \"type\": \"Role\",\n    \"name\": \"Stakeholders\",\n    \"description\": \"Stakeholders that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"relationships\": [\n      {\"target_id\": \"representatives\", \"type\": \"part_of\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\", \"source_section\": \"2\"}\n    ],\n    \"merged_from\": [\"s2_role_stakeholders\"]\n  },\n  {\n    \"id\": \"consultants\",\n    \"type\": \"Role\",\n    \"name\": \"Consultants\",\n    \"description\": \"Consultants that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"relationships\": [\n      {\"target_id\": \"representatives\", \"type\": \"part_of\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\", \"source_section\": \"2\"}\n    ],\n    \"merged_from\": [\"s2_role_consultants\"]\n  }\n] id\": \"representatives\", \"type\": \"part_of\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\", \"source_section\": \"2\"}\n    ],\n    \"merged_from\": [\"s2_role_consultants\"]\n  },\n  {\n    \"id\": \"external_executors\",\n    \"type\": \"Role\",\n    \"name\": \"External Executors\",\n    \"description\": \"External entities executing grant activities, subject to policy provisions based on agreement terms\",\n    \"attributes\": {},\n    \"relationships\": [\n      {\"target_id\": \"representatives\", \"type\": \"part_of\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\", \"source_section\": \"2\"}\n    ],\n    \"merged_from\": [\"s2_role_external_executors\"]\n  }\n]\n\nThe structure continues mapping various stakeholder categories—including engaged experts and volunteers—all classified as Representatives under the policy framework. Each role references the same foundational policy text from section 2, establishing that applicability depends on specific grant agreement conditions. ors\": [\n      {\"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\", \"source_section\": \"2\"}\n    ],\n    \"merged_from\": [\"s2_role_volunteers\"]\n  },\n  {\n    \"id\": \"other_associated_entities\",\n    \"type\": \"Role\",\n    \"name\": \"Other Associated Entities\",\n    \"description\": \"Other associated entities that may be subject to policy provisions depending on grant agreement conditions\",\n    \"attributes\": {},\n    \"relationships\": [\n      {\"target_id\": \"representatives\", \"type\": \"part_of\"}\n    ],\n    \"source_anchors\": [\n      {\"source_text\": \"The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\", \"source_section\": \"2\"}\n    ],\n    \"merged_from\": [\"s2_role_other_associated_entities\"]\n  }\n]\n\nThe personnel category encompasses organizational staff members who carry health, safety and security responsibilities. This role is treated as equivalent to employees and is defined in relation to the policy's aim of establishing safe working conditions for all staff and Representatives.\n\nRepresentatives constitute a distinct group operating under the specific conditions outlined in clause 2.2, with their inclusion in policy provisions dependent on particular grant agreement terms. Both Representatives and Personnel share responsibility for adhering to the policy requirements detailed in section 5.\n\nA separate category encompasses persons directly engaged in implementing the policy itself, who bear distinct security and safety obligations tied to their implementation role.\n\nThe direct manager role is also identified as a key stakeholder—specifically the supervisor to whom employees must report unsafe conditions and behavioral concerns observed in the workplace. All 19 original entities are accounted for in the merged_from arrays with no data loss. The output contains no remaining duplicates, and every target_id mapping is present—employees and personnel reference each other bidirectionally, while all other roles (partners, suppliers, subgrantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers, and other associated entities) correctly map to representatives. The equivalent_to relationships maintain bidirectional integrity throughout, and the JSON structure is syntactically valid.",
+    "output_count": 16,
+    "merges": 3,
+    "new_relationships": 12,
+    "llm_response": [
+      {
+        "id": "executive_director",
+        "type": "Role",
+        "name": "Executive Director",
+        "description": "Senior leadership role with policy approval authority. Leadership role directly involved in the implementation of the Policy",
+        "attributes": {
+          "role_in_policy": "implementation"
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "Executive director",
+            "source_section": "0"
+          },
+          {
+            "source_text": "Directly involved in the implementation of the Policy are: - General Meeting; - Executive director.",
+            "source_section": "2"
+          }
+        ],
+        "merged_from": [
+          "s0_role_executive_director",
+          "s2_role_executive_director"
+        ]
+      },
+      {
+        "id": "employees",
+        "type": "Role",
+        "name": "Employees",
+        "description": "Staff members required to adhere to the highest standards of ethical conduct at all times",
+        "attributes": {
+          "conduct_requirement": "highest standards of ethical conduct",
+          "compliance_frequency": "at all times"
+        },
+        "relationships": [
+          {
+            "target_id": "personnel",
+            "type": "equivalent_to"
+          }
+        ],
+        "source_anchors": [
+          {
+            "source_text": "The Organization requires its employees to adhere to the highest standards of ethical conduct at all times.",
+            "source_section": "1"
+          }
+        ],
+        "merged_from": [
+          "s1_role_employees"
+        ]
+      },
+      {
+        "id": "partners",
+        "type": "Role",
+        "name": "Partners",
+        "description": "External partners that may be subject to policy provisions depending on grant agreement conditions",
+        "attributes": {},
+        "relationships": [
+          {
+            "target_id": "representatives",
+            "type": "part_of"
+          }
+        ],
+        "source_anchors": [
+          {
+            "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+            "source_section": "2"
+          }
+        ],
+        "merged_from": [
+          "s2_role_partners"
+        ]
+      },
+      {
+        "id": "suppliers",
+        "type": "Role",
+        "name": "Suppliers",
+        "description": "External suppliers that may be subject to policy provisions depending on grant agreement conditions",
+        "attributes": {},
+        "relationships": [
+          {
+            "target_id": "representatives",
+            "type": "part_of"
+          }
+        ],
+        "source_anchors": [
+          {
+            "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+            "source_section": "2"
+          }
+        ],
+        "merged_from": [
+          "s2_role_suppliers"
+        ]
+      },
+      {
+        "id": "sub_grantees",
+        "type": "Role",
+        "name": "Sub-grantees",
+        "description": "Sub-grantees that may be subject to policy provisions depending on grant agreement conditions",
+        "attributes": {},
+        "relationships": [
+          {
+            "target_id": "representatives",
+            "type": "part_of"
+          }
+        ],
+        "source_anchors": [
+          {
+            "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+            "source_section": "2"
+          }
+        ],
+        "merged_from": [
+          "s2_role_subgrantees"
+        ]
+      },
+      {
+        "id": "beneficiaries",
+        "type": "Role",
+        "name": "Beneficiaries",
+        "description": "Program beneficiaries that may be subject to policy provisions depending on grant agreement conditions",
+        "attributes": {},
+        "relationships": [
+          {
+            "target_id": "representatives",
+            "type": "part_of"
+          }
+        ],
+        "source_anchors": [
+          {
+            "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+            "source_section": "2"
+          }
+        ],
+        "merged_from": [
+          "s2_role_beneficiaries"
+        ]
+      },
+      {
+        "id": "stakeholders",
+        "type": "Role",
+        "name": "Stakeholders",
+        "description": "Stakeholders that may be subject to policy provisions depending on grant agreement conditions",
+        "attributes": {},
+        "relationships": [
+          {
+            "target_id": "representatives",
+            "type": "part_of"
+          }
+        ],
+        "source_anchors": [
+          {
+            "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+            "source_section": "2"
+          }
+        ],
+        "merged_from": [
+          "s2_role_stakeholders"
+        ]
+      },
+      {
+        "id": "consultants",
+        "type": "Role",
+        "name": "Consultants",
+        "description": "External consultants that may be subject to policy provisions depending on grant agreement conditions",
+        "attributes": {},
+        "relationships": [
+          {
+            "target_id": "representatives",
+            "type": "part_of"
+          }
+        ],
+        "source_anchors": [
+          {
+            "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+            "source_section": "2"
+          }
+        ],
+        "merged_from": [
+          "s2_role_consultants"
+        ]
+      },
+      {
+        "id": "external_executors",
+        "type": "Role",
+        "name": "External Executors",
+        "description": "External executors that may be subject to policy provisions depending on grant agreement conditions",
+        "attributes": {},
+        "relationships": [
+          {
+            "target_id": "representatives",
+            "type": "part_of"
+          }
+        ],
+        "source_anchors": [
+          {
+            "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+            "source_section": "2"
+          }
+        ],
+        "merged_from": [
+          "s2_role_external_executors"
+        ]
+      },
+      {
+        "id": "engaged_experts",
+        "type": "Role",
+        "name": "Engaged Experts",
+        "description": "Engaged experts that may be subject to policy provisions depending on grant agreement conditions",
+        "attributes": {},
+        "relationships": [
+          {
+            "target_id": "representatives",
+            "type": "part_of"
+          }
+        ],
+        "source_anchors": [
+          {
+            "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+            "source_section": "2"
+          }
+        ],
+        "merged_from": [
+          "s2_role_engaged_experts"
+        ]
+      },
+      {
+        "id": "volunteers",
+        "type": "Role",
+        "name": "Volunteers",
+        "description": "Volunteers that may be subject to policy provisions depending on grant agreement conditions",
+        "attributes": {},
+        "relationships": [
+          {
+            "target_id": "representatives",
+            "type": "part_of"
+          }
+        ],
+        "source_anchors": [
+          {
+            "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+            "source_section": "2"
+          }
+        ],
+        "merged_from": [
+          "s2_role_volunteers"
+        ]
+      },
+      {
+        "id": "other_associated_entities",
+        "type": "Role",
+        "name": "Other Associated Entities",
+        "description": "Other associated entities that may be subject to policy provisions depending on grant agreement conditions",
+        "attributes": {},
+        "relationships": [
+          {
+            "target_id": "representatives",
+            "type": "part_of"
+          }
+        ],
+        "source_anchors": [
+          {
+            "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+            "source_section": "2"
+          }
+        ],
+        "merged_from": [
+          "s2_role_other_associated_entities"
+        ]
+      },
+      {
+        "id": "personnel",
+        "type": "Role",
+        "name": "Personnel",
+        "description": "Staff members of the organization covered by the policy. Personnel of the Organization with health, safety and security responsibilities",
+        "attributes": {
+          "includes": "staff"
+        },
+        "relationships": [
+          {
+            "target_id": "employees",
+            "type": "equivalent_to"
+          }
+        ],
+        "source_anchors": [
+          {
+            "source_text": "The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.",
+            "source_section": "3"
+          },
+          {
+            "source_text": "Representatives, under the conditions set forth in clause 2.2. of this Policy, and Personnel, are responsible for:",
+            "source_section": "5"
+          }
+        ],
+        "merged_from": [
+          "s3_role_personnel",
+          "s5_role_personnel"
+        ]
+      },
+      {
+        "id": "representatives",
+        "type": "Role",
+        "name": "Representatives",
+        "description": "Representatives of the organization covered by the policy. Representatives operating under the conditions set forth in clause 2.2 of this Policy",
+        "attributes": {
+          "reference_clause": "2.2"
+        },
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.",
+            "source_section": "3"
+          },
+          {
+            "source_text": "Representatives, under the conditions set forth in clause 2.2. of this Policy, and Personnel, are responsible for:",
+            "source_section": "5"
+          }
+        ],
+        "merged_from": [
+          "s3_role_representatives",
+          "s5_role_representatives"
+        ]
+      },
+      {
+        "id": "persons_directly_involved",
+        "type": "Role",
+        "name": "Persons Directly Involved in Policy Implementation",
+        "description": "Persons who are directly involved in the implementation of the Policy and have specific security and safety responsibilities",
+        "attributes": {},
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "Persons, directly involved in the implementation of the Policy, are responsible for:",
+            "source_section": "5"
+          }
+        ],
+        "merged_from": [
+          "s5_role_persons_directly_involved"
+        ]
+      },
+      {
+        "id": "direct_manager",
+        "type": "Role",
+        "name": "Direct Manager",
+        "description": "The direct supervisor to whom unsafe conditions and risk control consultations must be reported",
+        "attributes": {},
+        "relationships": [],
+        "source_anchors": [
+          {
+            "source_text": "immediately reporting any unsafe conditions or behaviors observed in the workplace to direct manager;",
+            "source_section": "5"
+          }
+        ],
+        "merged_from": [
+          "s5_role_direct_manager"
+        ]
+      }
+    ]
+  }
+]

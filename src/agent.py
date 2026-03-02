@@ -52,7 +52,7 @@ TOOLS = [
             "properties": {
                 "entity_type": {
                     "type": "string",
-                    "description": "The entity type to filter by (e.g., 'PolicyRule', 'RiskLevel', 'Role')",
+                    "description": "The entity type to filter by (e.g., 'Policy', 'RiskLevel', 'Role', 'Requirement')",
                 },
             },
             "required": ["entity_type"],

@@ -1,0 +1,121 @@
+[
+  {
+    "chunk_id": "chunk_001",
+    "header": "[Document Header and Approval Block]",
+    "section_number": "0",
+    "level": 0,
+    "text": "Kiyv, 2023\n\n## APPROVED\n\n## Executive director\n\n## Vasyl Zadvornyy\n\n## 03, April 2023\n\n## ___________________\n\n## APPROVED\n\n## Order № 2-Д from 03, April 2023\n\n## CONFIRMED\n\n## By decision of the General Meeting of NGO\n\n## TECHNOLOGY OF PROGRESS\n\n## the № 1-П from 02, April 2023\n\n# DUTY OF CARE POLICY",
+    "char_count": 302,
+    "source_offset": 0,
+    "parent_section": null,
+    "parent_header": null,
+    "hierarchical_path": [],
+    "enumerated_lists": []
+  },
+  {
+    "chunk_id": "chunk_002",
+    "header": "INTRODUCTION",
+    "section_number": "1",
+    "level": 1,
+    "text": "## 1. INTRODUCTION\n\n1.2 The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the \"Organization\") are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.\n\n1.2 The Organization is committed to the highest standards of integrity and professionalism, regardless of the environment in which it operates. The Organization requires its employees to adhere to the highest standards of ethical conduct at all times. To enable and facilitate the implementation of these commitments, the Organization has committed to providing a working environment that encourages high standards of productivity, professional and personal development, achieving organizational goals and prioritizing staff health and safety.",
+    "char_count": 761,
+    "source_offset": 302,
+    "parent_section": null,
+    "parent_header": null,
+    "hierarchical_path": [],
+    "enumerated_lists": []
+  },
+  {
+    "chunk_id": "chunk_003",
+    "header": "SCOPE",
+    "section_number": "2",
+    "level": 1,
+    "text": "## 2. SCOPE\n\n2.1 The policy applies to all staff and governance members of Organization (hereafter – named as Personnel).\n\n2.2 The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\n\n2.3 Directly involved in the implementation of the Policy are:\n\n- General Meeting;\n- Executive director.",
+    "char_count": 548,
+    "source_offset": 1067,
+    "parent_section": null,
+    "parent_header": null,
+    "hierarchical_path": [],
+    "enumerated_lists": [
+      {
+        "item_count": 2,
+        "list_type": "bulleted",
+        "preview": "General Meeting;"
+      }
+    ]
+  },
+  {
+    "chunk_id": "chunk_004",
+    "header": "AIM",
+    "section_number": "3",
+    "level": 1,
+    "text": "## 3. AIM\n\n3.1 The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.\n\n3.2 This document also provides an overview of how the Organization assesses, monitors and responds to security risks that may affect staff and program implementation.",
+    "char_count": 416,
+    "source_offset": 1616,
+    "parent_section": null,
+    "parent_header": null,
+    "hierarchical_path": [],
+    "enumerated_lists": []
+  },
+  {
+    "chunk_id": "chunk_005",
+    "header": "DEFINITIONS",
+    "section_number": "4",
+    "level": 1,
+    "text": "## 4. DEFINITIONS\n\n**Duty of Care:** Duty of care is a legal obligation of a person to take reasonable care to avoid harm or\n\ninjury to oneself and/or another person to whom they have responsibility.\n\n**Breach:** Breach of a duty of care occurs if a person acts unreasonably or fails to act where action could\n\nbe reasonably expected and harm is caused to a person.\n\n**Reasonable care:** The degree of caution and concern for the safety of himself/herself and others that\n\nan ordinarily prudent and rational person would use in the circumstances. Failure to exercise reasonable care is considered negligence.\n\n**Reasonable person:** (Read in conjunction with Definition of Reasonable care) another person in the\n\nsame situation would act in the same or a similar way.\n\n**Risk:** A situation exposing an individual to danger, harm or loss.\n\n**Harm:** means harm of any kind and includes—\n\na) injury or death; and b) damage to property; and c) economic loss\n\n**Injury:** means personal or bodily injury and includes—\n\na) psychological or psychiatric injury; and b) disease; and c) aggravation, acceleration or recurrence of an injury or disease",
+    "char_count": 1142,
+    "source_offset": 2034,
+    "parent_section": null,
+    "parent_header": null,
+    "hierarchical_path": [],
+    "enumerated_lists": [
+      {
+        "item_count": 3,
+        "list_type": "lettered",
+        "preview": "injury or death; and"
+      },
+      {
+        "item_count": 3,
+        "list_type": "lettered",
+        "preview": "psychological or psychiatric injury; and"
+      }
+    ]
+  },
+  {
+    "chunk_id": "chunk_006",
+    "header": "DIRECTIONS OF ACTIVITY AND AREAS OF COMPETENCE",
+    "section_number": "5",
+    "level": 1,
+    "text": "## 5. DIRECTIONS OF ACTIVITY AND AREAS OF COMPETENCE\n\n5.1 Persons, directly involved in the implementation of the Policy, are responsible for:\n\n- ensuring the physical safety of life and health of Personnel, including in cases of stay in high- risk areas;\n- ensuring information security of the Organization, including intellectual property;\n- ensuring information security of Personnel of the Organization;\n- ensuring the preservation of material assets of the Organization and Personnel within the activities of the Organization;\n- ensuring the financial security of the Organization;\n5.2 Representatives, under the conditions set forth in clause 2.2. of this Policy, and Personnel, are responsible for:\n\n- ensuring this policy is complied with, along with other related policies;\n- taking reasonable care in the course of their work and accepting a duty of care for their own health and safety, as well as for the health and safety of others within the workplace;\n- actively participate in building and maintaining a secure environment, through open communication, clear boundaries, managing complaints or disclosure, accurate documentation and notifying appropriate authorities of risk or harm in accordance with relevant procedures;\n- anticipating foreseeable harm and risks to self and/or others and immediately reporting any unsafe conditions or behaviors observed in the workplace to direct manager;\n- where foreseeable harm or risk is identified, implementing preventative and risk control measures in consultation with direct manager (where practical) and in line with relevant procedures;\n- taking the amount of care a reasonable person would expect.",
+    "char_count": 1661,
+    "source_offset": 3178,
+    "parent_section": null,
+    "parent_header": null,
+    "hierarchical_path": [],
+    "enumerated_lists": [
+      {
+        "item_count": 5,
+        "list_type": "bulleted",
+        "preview": "ensuring the physical safety of life and health of Personnel"
+      },
+      {
+        "item_count": 6,
+        "list_type": "bulleted",
+        "preview": "ensuring this policy is complied with"
+      }
+    ]
+  },
+  {
+    "chunk_id": "chunk_007",
+    "header": "RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION",
+    "section_number": "6",
+    "level": 1,
+    "text": "## 6. RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS\n\n## PROTECTION",
+    "char_count": 81,
+    "source_offset": 4840,
+    "parent_section": null,
+    "parent_header": null,
+    "hierarchical_path": [],
+    "enumerated_lists": []
+  }
+]

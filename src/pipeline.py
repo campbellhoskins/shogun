@@ -82,17 +82,20 @@ def extract_ontology(
             f"{len(se.entities)} entities, {len(se.relationships)} rels"
         )
 
-    # --- Stage 3: Deterministic Merge ---
-    print("\nStage 3: Merging and deduplicating...")
+    # --- Stage 3: Merge + LLM Deduplication ---
+    print("\nStage 3: Merging and deduplicating (LLM-based)...")
     stage_start = time.time()
-    ontology = merge_extractions(section_extractions, document_text, sections)
+    ontology, semantic_dedup_log = merge_extractions(
+        section_extractions, document_text, sections, client=client
+    )
     stage_timings["merge"] = round(time.time() - stage_start, 1)
 
     meta = ontology.extraction_metadata
     print(
         f"  {meta.final_entity_count} entities, "
         f"{meta.final_relationship_count} relationships "
-        f"({meta.deduplication_merges} duplicates merged) ({stage_timings['merge']}s)"
+        f"({meta.semantic_dedup_merges} semantic duplicates merged, "
+        f"{meta.semantic_dedup_api_calls} API calls) ({stage_timings['merge']}s)"
     )
 
     # --- Source anchoring stats ---
@@ -120,6 +123,7 @@ def extract_ontology(
         policy_name=policy_name,
         pipeline_elapsed=pipeline_elapsed,
         stage_timings=stage_timings,
+        semantic_dedup_log=semantic_dedup_log,
     )
 
     return ontology

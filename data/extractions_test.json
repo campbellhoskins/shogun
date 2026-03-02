@@ -1,0 +1,437 @@
+[
+  {
+    "chunk_id": "chunk_003",
+    "section_number": "2",
+    "entity_count": 15,
+    "relationship_count": 14,
+    "entities": [
+      {
+        "id": "s2_policy_main",
+        "type": "Policy",
+        "name": "The Policy",
+        "description": "The main policy document being described in this scope section",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "The policy applies to all staff and governance members of Organization (hereafter – named as Personnel).",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_org_main",
+        "type": "Organization",
+        "name": "Organization",
+        "description": "The organization that owns and implements the policy",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "The policy applies to all staff and governance members of Organization (hereafter – named as Personnel).",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_def_personnel",
+        "type": "Definition",
+        "name": "Personnel",
+        "description": "All staff and governance members of Organization",
+        "attributes": {
+          "includes": [
+            "staff",
+            "governance members"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "The policy applies to all staff and governance members of Organization (hereafter – named as Personnel).",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_def_representatives",
+        "type": "Definition",
+        "name": "Representatives",
+        "description": "Partners, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities",
+        "attributes": {
+          "includes": [
+            "partners",
+            "suppliers",
+            "sub-grantees",
+            "beneficiaries",
+            "stakeholders",
+            "consultants",
+            "external executors",
+            "engaged experts",
+            "volunteers",
+            "other associated entities"
+          ],
+          "conditional_application": "depending on specific clauses and conditions of the grant agreement"
+        },
+        "source_anchor": {
+          "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_role_partners",
+        "type": "Role",
+        "name": "Partners",
+        "description": "Partner organizations that may be subject to policy provisions depending on grant agreement conditions",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_role_suppliers",
+        "type": "Role",
+        "name": "Suppliers",
+        "description": "Supplier organizations that may be subject to policy provisions",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_role_sub_grantees",
+        "type": "Role",
+        "name": "Sub-grantees",
+        "description": "Sub-grantee organizations that may be subject to policy provisions",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_role_beneficiaries",
+        "type": "Role",
+        "name": "Beneficiaries",
+        "description": "Beneficiaries that may be subject to policy provisions",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_role_stakeholders",
+        "type": "Role",
+        "name": "Stakeholders",
+        "description": "Stakeholders that may be subject to policy provisions",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_role_consultants",
+        "type": "Role",
+        "name": "Consultants",
+        "description": "Consultants that may be subject to policy provisions",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_role_external_executors",
+        "type": "Role",
+        "name": "External Executors",
+        "description": "External executors that may be subject to policy provisions",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_role_engaged_experts",
+        "type": "Role",
+        "name": "Engaged Experts",
+        "description": "Engaged experts that may be subject to policy provisions",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_role_volunteers",
+        "type": "Role",
+        "name": "Volunteers",
+        "description": "Volunteers that may be subject to policy provisions",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_governance_general_meeting",
+        "type": "GovernanceBody",
+        "name": "General Meeting",
+        "description": "Governance body directly involved in the implementation of the Policy",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "Directly involved in the implementation of the Policy are: General Meeting; Executive director.",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s2_role_executive_director",
+        "type": "Role",
+        "name": "Executive Director",
+        "description": "Leadership role directly involved in the implementation of the Policy",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "Directly involved in the implementation of the Policy are: General Meeting; Executive director.",
+          "source_section": "2",
+          "source_offset": -1
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "s2_policy_main",
+        "target_id": "s2_def_personnel",
+        "type": "applies_to",
+        "description": "The policy applies to all personnel including staff and governance members",
+        "source_sections": [
+          "2"
+        ]
+      },
+      {
+        "source_id": "s2_policy_main",
+        "target_id": "s2_def_representatives",
+        "type": "applies_to",
+        "description": "The policy provisions may also be applied to representatives depending on specific conditions",
+        "source_sections": [
+          "2"
+        ]
+      },
+      {
+        "source_id": "s2_def_personnel",
+        "target_id": "s2_org_main",
+        "type": "part_of",
+        "description": "Personnel are staff and governance members of the Organization",
+        "source_sections": [
+          "2"
+        ]
+      },
+      {
+        "source_id": "s2_governance_general_meeting",
+        "target_id": "s2_policy_main",
+        "type": "responsible_for",
+        "description": "General Meeting is directly involved in the implementation of the Policy",
+        "source_sections": [
+          "2"
+        ]
+      },
+      {
+        "source_id": "s2_role_executive_director",
+        "target_id": "s2_policy_main",
+        "type": "responsible_for",
+        "description": "Executive director is directly involved in the implementation of the Policy",
+        "source_sections": [
+          "2"
+        ]
+      },
+      {
+        "source_id": "s2_role_partners",
+        "target_id": "s2_def_representatives",
+        "type": "part_of",
+        "description": "Partners are part of the Representatives group",
+        "source_sections": [
+          "2"
+        ]
+      },
+      {
+        "source_id": "s2_role_suppliers",
+        "target_id": "s2_def_representatives",
+        "type": "part_of",
+        "description": "Suppliers are part of the Representatives group",
+        "source_sections": [
+          "2"
+        ]
+      },
+      {
+        "source_id": "s2_role_sub_grantees",
+        "target_id": "s2_def_representatives",
+        "type": "part_of",
+        "description": "Sub-grantees are part of the Representatives group",
+        "source_sections": [
+          "2"
+        ]
+      },
+      {
+        "source_id": "s2_role_beneficiaries",
+        "target_id": "s2_def_representatives",
+        "type": "part_of",
+        "description": "Beneficiaries are part of the Representatives group",
+        "source_sections": [
+          "2"
+        ]
+      },
+      {
+        "source_id": "s2_role_stakeholders",
+        "target_id": "s2_def_representatives",
+        "type": "part_of",
+        "description": "Stakeholders are part of the Representatives group",
+        "source_sections": [
+          "2"
+        ]
+      },
+      {
+        "source_id": "s2_role_consultants",
+        "target_id": "s2_def_representatives",
+        "type": "part_of",
+        "description": "Consultants are part of the Representatives group",
+        "source_sections": [
+          "2"
+        ]
+      },
+      {
+        "source_id": "s2_role_external_executors",
+        "target_id": "s2_def_representatives",
+        "type": "part_of",
+        "description": "External executors are part of the Representatives group",
+        "source_sections": [
+          "2"
+        ]
+      },
+      {
+        "source_id": "s2_role_engaged_experts",
+        "target_id": "s2_def_representatives",
+        "type": "part_of",
+        "description": "Engaged experts are part of the Representatives group",
+        "source_sections": [
+          "2"
+        ]
+      },
+      {
+        "source_id": "s2_role_volunteers",
+        "target_id": "s2_def_representatives",
+        "type": "part_of",
+        "description": "Volunteers are part of the Representatives group",
+        "source_sections": [
+          "2"
+        ]
+      }
+    ]
+  },
+  {
+    "chunk_id": "chunk_004",
+    "section_number": "3",
+    "entity_count": 5,
+    "relationship_count": 2,
+    "entities": [
+      {
+        "id": "s3_doc_policy",
+        "type": "Policy",
+        "name": "Policy",
+        "description": "The organizational policy document that provides staff with understanding and safe working environment",
+        "attributes": {
+          "purpose": "provide staff with clear understanding of policies, procedures and practices and a healthy, safe working environment"
+        },
+        "source_anchor": {
+          "source_text": "The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s3_role_personnel",
+        "type": "Role",
+        "name": "Personnel",
+        "description": "Staff members covered by the policy",
+        "attributes": {
+          "includes": "staff"
+        },
+        "source_anchor": {
+          "source_text": "The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s3_role_representatives",
+        "type": "Role",
+        "name": "Representatives",
+        "description": "Representatives covered by the policy",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s3_org_organization",
+        "type": "Organization",
+        "name": "Organization",
+        "description": "The organization that assesses, monitors and responds to security risks",
+        "attributes": {
+          "functions": [
+            "assesses",
+            "monitors",
+            "responds to security risks"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "This document also provides an overview of how the Organization assesses, monitors and responds to security risks that may affect staff and program implementation.",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s3_doc_document",
+        "type": "Policy",
+        "name": "Document",
+        "description": "This document that provides an overview of organizational risk management processes",
+        "attributes": {
+          "provides": "overview of risk assessment, monitoring and response processes"
+        },
+        "source_anchor": {
+          "source_text": "This document also provides an overview of how the Organization assesses, monitors and responds to security risks that may affect staff and program implementation.",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "s3_doc_policy",
+        "target_id": "s3_role_personnel",
+        "type": "applies_to",
+        "description": "The policy provides clear understanding and safe working environment to Personnel",
+        "source_sections": [
+          "3"
+        ]
+      },
+      {
+        "source_id": "s3_doc_policy",
+        "target_id": "s3_role_representatives",
+        "type": "applies_to",
+        "description": "The policy provides clear understanding and safe working environment to Representatives",
+        "source_sections": [
+          "3"
+        ]
+      }
+    ]
+  }
+]

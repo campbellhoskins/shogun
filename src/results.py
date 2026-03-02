@@ -51,6 +51,7 @@ def save_run(
     policy_name: str,
     pipeline_elapsed: float,
     stage_timings: dict[str, float] | None = None,
+    semantic_dedup_log: list[dict] | None = None,
 ) -> Path:
     """Save a complete pipeline run.
 
@@ -60,6 +61,7 @@ def save_run(
         policy_name: Name/path of the source policy file.
         pipeline_elapsed: Total pipeline time in seconds.
         stage_timings: Optional dict of stage name -> elapsed seconds.
+        semantic_dedup_log: LLM dedup decisions per entity type.
 
     Returns:
         Path to the run directory.
@@ -85,6 +87,8 @@ def save_run(
         "final_entity_count": meta.final_entity_count,
         "final_relationship_count": meta.final_relationship_count,
         "deduplication_merges": meta.deduplication_merges,
+        "semantic_dedup_merges": meta.semantic_dedup_merges,
+        "semantic_dedup_api_calls": meta.semantic_dedup_api_calls,
         "source_anchoring": {
             "total_entities": len(ontology.entities),
             "anchored": sum(
@@ -138,14 +142,20 @@ def save_run(
     # --- entities.json (grouped by type, human-readable) ---
     by_type: dict[str, list[dict]] = defaultdict(list)
     for e in ontology.entities:
-        by_type[e.type].append({
+        entity_data: dict = {
             "id": e.id,
             "name": e.name,
             "description": e.description,
             "attributes": e.attributes,
             "source_section": e.source_anchor.source_section,
             "source_text": e.source_anchor.source_text,
-        })
+        }
+        if e.source_anchors:
+            entity_data["source_anchors"] = [
+                {"source_text": a.source_text, "source_section": a.source_section}
+                for a in e.source_anchors
+            ]
+        by_type[e.type].append(entity_data)
     entities_grouped = {
         "total": len(ontology.entities),
         "by_type": {
@@ -184,6 +194,15 @@ def save_run(
     }
     _write_json(run_dir / "relationships.json", rels_grouped)
 
+    # --- semantic_dedup.json ---
+    if semantic_dedup_log:
+        _write_json(run_dir / "semantic_dedup.json", {
+            "total_type_groups_analyzed": len(semantic_dedup_log),
+            "total_merges": meta.semantic_dedup_merges,
+            "total_api_calls": meta.semantic_dedup_api_calls,
+            "type_groups": semantic_dedup_log,
+        })
+
     # --- Update latest pointer ---
     latest_file = RESULTS_DIR / "latest.txt"
     latest_file.write_text(run_id, encoding="utf-8")
@@ -200,7 +219,7 @@ def load_run(run_id: str) -> dict:
         raise FileNotFoundError(f"Run not found: {run_dir}")
 
     result = {}
-    for name in ["run_meta", "sections", "extractions", "ontology", "entities", "relationships"]:
+    for name in ["run_meta", "sections", "extractions", "ontology", "entities", "relationships", "semantic_dedup"]:
         filepath = run_dir / f"{name}.json"
         if filepath.exists():
             result[name] = json.loads(filepath.read_text(encoding="utf-8"))

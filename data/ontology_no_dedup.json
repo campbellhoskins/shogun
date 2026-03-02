@@ -1,0 +1,1387 @@
+{
+  "entities": [
+    {
+      "id": "s0_org_technology_of_progress",
+      "type": "Organization",
+      "name": "TECHNOLOGY OF PROGRESS",
+      "description": "NGO organization that owns and governs the Duty of Care Policy",
+      "attributes": {
+        "organization_type": "NGO",
+        "location": "Kiyv",
+        "year": "2023"
+      },
+      "source_anchor": {
+        "source_text": "By decision of the General Meeting of NGO TECHNOLOGY OF PROGRESS",
+        "source_section": "0",
+        "source_offset": -1
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s0_person_vasyl_zadvornyy",
+      "type": "Person",
+      "name": "Vasyl Zadvornyy",
+      "description": "Executive director who approved the Duty of Care Policy",
+      "attributes": {
+        "approval_date": "03, April 2023"
+      },
+      "source_anchor": {
+        "source_text": "Executive director Vasyl Zadvornyy 03, April 2023",
+        "source_section": "0",
+        "source_offset": -1
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s0_role_executive_director",
+      "type": "Role",
+      "name": "Executive director",
+      "description": "Senior leadership role with policy approval authority",
+      "attributes": {},
+      "source_anchor": {
+        "source_text": "Executive director",
+        "source_section": "0",
+        "source_offset": 28
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s0_governance_general_meeting",
+      "type": "GovernanceBody",
+      "name": "General Meeting of NGO TECHNOLOGY OF PROGRESS",
+      "description": "Governing body that makes decisions for the NGO organization",
+      "attributes": {
+        "decision_number": "№ 1-П",
+        "decision_date": "02, April 2023"
+      },
+      "source_anchor": {
+        "source_text": "By decision of the General Meeting of NGO TECHNOLOGY OF PROGRESS the № 1-П from 02, April 2023",
+        "source_section": "0",
+        "source_offset": -1
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s0_policy_duty_of_care",
+      "type": "Policy",
+      "name": "DUTY OF CARE POLICY",
+      "description": "The organizational policy document establishing duty of care obligations",
+      "attributes": {
+        "approval_date": "03, April 2023",
+        "order_number": "№ 2-Д"
+      },
+      "source_anchor": {
+        "source_text": "DUTY OF CARE POLICY",
+        "source_section": "0",
+        "source_offset": 283
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s1_org_ngo_technology_progress",
+      "type": "Organization",
+      "name": "NGO TECHNOLOGY OF PROGRESS",
+      "description": "The organization whose activities are governed by this policy, committed to high standards of integrity and professionalism",
+      "attributes": {
+        "full_name": "NGO TECHNOLOGY OF PROGRESS",
+        "alias": "Organization"
+      },
+      "source_anchor": {
+        "source_text": "The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the \"Organization\") are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.",
+        "source_section": "1",
+        "source_offset": 314
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s1_role_employees",
+      "type": "Role",
+      "name": "Employees",
+      "description": "Staff members required to adhere to the highest standards of ethical conduct at all times",
+      "attributes": {
+        "conduct_requirement": "highest standards of ethical conduct",
+        "compliance_frequency": "at all times"
+      },
+      "source_anchor": {
+        "source_text": "The Organization requires its employees to adhere to the highest standards of ethical conduct at all times.",
+        "source_section": "1",
+        "source_offset": 666
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s1_value_activeness_care",
+      "type": "Definition",
+      "name": "Activeness and Care",
+      "description": "Core organizational value that forms the foundation of the Organization's activities",
+      "attributes": {
+        "value_type": "core_organizational_value"
+      },
+      "source_anchor": {
+        "source_text": "The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the \"Organization\") are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.",
+        "source_section": "1",
+        "source_offset": 314
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s1_value_association_cooperation",
+      "type": "Definition",
+      "name": "Association and Cooperation",
+      "description": "Core organizational value that forms the foundation of the Organization's activities",
+      "attributes": {
+        "value_type": "core_organizational_value"
+      },
+      "source_anchor": {
+        "source_text": "The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the \"Organization\") are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.",
+        "source_section": "1",
+        "source_offset": 314
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s1_value_responsibility_rule_of_law",
+      "type": "Definition",
+      "name": "Responsibility and the Rule of Law",
+      "description": "Core organizational value that forms the foundation of the Organization's activities",
+      "attributes": {
+        "value_type": "core_organizational_value"
+      },
+      "source_anchor": {
+        "source_text": "The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the \"Organization\") are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.",
+        "source_section": "1",
+        "source_offset": 314
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s1_standard_integrity_professionalism",
+      "type": "Definition",
+      "name": "Standards of Integrity and Professionalism",
+      "description": "The highest standards of integrity and professionalism that the Organization is committed to maintaining regardless of operating environment",
+      "attributes": {
+        "standard_level": "highest",
+        "applicability": "regardless of environment"
+      },
+      "source_anchor": {
+        "source_text": "The Organization is committed to the highest standards of integrity and professionalism, regardless of the environment in which it operates.",
+        "source_section": "1",
+        "source_offset": 525
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s1_environment_working",
+      "type": "Definition",
+      "name": "Working Environment",
+      "description": "Environment provided by the Organization that encourages high standards of productivity, professional and personal development, achieving organizational goals and prioritizing staff health and safety",
+      "attributes": {
+        "encourages": [
+          "high standards of productivity",
+          "professional and personal development",
+          "achieving organizational goals",
+          "staff health and safety priority"
+        ]
+      },
+      "source_anchor": {
+        "source_text": "To enable and facilitate the implementation of these commitments, the Organization has committed to providing a working environment that encourages high standards of productivity, professional and personal development, achieving organizational goals and prioritizing staff health and safety.",
+        "source_section": "1",
+        "source_offset": 774
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s2_policy_main",
+      "type": "Policy",
+      "name": "Organization Policy",
+      "description": "The main organizational policy document being defined in terms of scope",
+      "attributes": {},
+      "source_anchor": {
+        "source_text": "The policy applies to all staff and governance members of Organization (hereafter – named as Personnel).",
+        "source_section": "2",
+        "source_offset": 1084
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s2_definition_personnel",
+      "type": "Definition",
+      "name": "Personnel",
+      "description": "Defined as all staff and governance members of Organization",
+      "attributes": {
+        "includes": [
+          "staff",
+          "governance members"
+        ],
+        "organization_scope": "Organization"
+      },
+      "source_anchor": {
+        "source_text": "The policy applies to all staff and governance members of Organization (hereafter – named as Personnel).",
+        "source_section": "2",
+        "source_offset": 1084
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s2_definition_representatives",
+      "type": "Definition",
+      "name": "Representatives",
+      "description": "Defined as partners, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities",
+      "attributes": {
+        "includes": [
+          "partners",
+          "suppliers",
+          "sub-grantees",
+          "beneficiaries",
+          "stakeholders",
+          "consultants",
+          "external executors",
+          "engaged experts",
+          "volunteers",
+          "other associated entities"
+        ],
+        "application_condition": "depending on specific clauses and conditions of the grant agreement"
+      },
+      "source_anchor": {
+        "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+        "source_section": "2",
+        "source_offset": 1194
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s2_role_partners",
+      "type": "Role",
+      "name": "Partners",
+      "description": "External partners that may be subject to policy provisions depending on grant agreement conditions",
+      "attributes": {},
+      "source_anchor": {
+        "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+        "source_section": "2",
+        "source_offset": 1194
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s2_role_suppliers",
+      "type": "Role",
+      "name": "Suppliers",
+      "description": "External suppliers that may be subject to policy provisions depending on grant agreement conditions",
+      "attributes": {},
+      "source_anchor": {
+        "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+        "source_section": "2",
+        "source_offset": 1194
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s2_role_subgrantees",
+      "type": "Role",
+      "name": "Sub-grantees",
+      "description": "Sub-grantees that may be subject to policy provisions depending on grant agreement conditions",
+      "attributes": {},
+      "source_anchor": {
+        "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+        "source_section": "2",
+        "source_offset": 1194
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s2_role_beneficiaries",
+      "type": "Role",
+      "name": "Beneficiaries",
+      "description": "Program beneficiaries that may be subject to policy provisions depending on grant agreement conditions",
+      "attributes": {},
+      "source_anchor": {
+        "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+        "source_section": "2",
+        "source_offset": 1194
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s2_role_stakeholders",
+      "type": "Role",
+      "name": "Stakeholders",
+      "description": "Stakeholders that may be subject to policy provisions depending on grant agreement conditions",
+      "attributes": {},
+      "source_anchor": {
+        "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+        "source_section": "2",
+        "source_offset": 1194
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s2_role_consultants",
+      "type": "Role",
+      "name": "Consultants",
+      "description": "External consultants that may be subject to policy provisions depending on grant agreement conditions",
+      "attributes": {},
+      "source_anchor": {
+        "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+        "source_section": "2",
+        "source_offset": 1194
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s2_role_external_executors",
+      "type": "Role",
+      "name": "External Executors",
+      "description": "External executors that may be subject to policy provisions depending on grant agreement conditions",
+      "attributes": {},
+      "source_anchor": {
+        "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+        "source_section": "2",
+        "source_offset": 1194
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s2_role_engaged_experts",
+      "type": "Role",
+      "name": "Engaged Experts",
+      "description": "Engaged experts that may be subject to policy provisions depending on grant agreement conditions",
+      "attributes": {},
+      "source_anchor": {
+        "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+        "source_section": "2",
+        "source_offset": 1194
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s2_role_volunteers",
+      "type": "Role",
+      "name": "Volunteers",
+      "description": "Volunteers that may be subject to policy provisions depending on grant agreement conditions",
+      "attributes": {},
+      "source_anchor": {
+        "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+        "source_section": "2",
+        "source_offset": 1194
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s2_role_other_associated_entities",
+      "type": "Role",
+      "name": "Other Associated Entities",
+      "description": "Other associated entities that may be subject to policy provisions depending on grant agreement conditions",
+      "attributes": {},
+      "source_anchor": {
+        "source_text": "The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).",
+        "source_section": "2",
+        "source_offset": 1194
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s2_governance_general_meeting",
+      "type": "GovernanceBody",
+      "name": "General Meeting",
+      "description": "Governance body directly involved in the implementation of the Policy",
+      "attributes": {
+        "role_in_policy": "implementation"
+      },
+      "source_anchor": {
+        "source_text": "Directly involved in the implementation of the Policy are: - General Meeting; - Executive director.",
+        "source_section": "2",
+        "source_offset": 1496
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s2_role_executive_director",
+      "type": "Role",
+      "name": "Executive Director",
+      "description": "Leadership role directly involved in the implementation of the Policy",
+      "attributes": {
+        "role_in_policy": "implementation"
+      },
+      "source_anchor": {
+        "source_text": "Directly involved in the implementation of the Policy are: - General Meeting; - Executive director.",
+        "source_section": "2",
+        "source_offset": 1496
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s3_doc_policy",
+      "type": "Policy",
+      "name": "Policy",
+      "description": "The organizational policy document that provides staff understanding and safe working environment",
+      "attributes": {
+        "primary_purpose": "provide clear understanding of policies, procedures and practices and healthy, safe working environment",
+        "secondary_purpose": "provide overview of security risk assessment and response"
+      },
+      "source_anchor": {
+        "source_text": "The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.",
+        "source_section": "3",
+        "source_offset": 1631
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s3_role_personnel",
+      "type": "Role",
+      "name": "Personnel",
+      "description": "Staff members of the organization covered by the policy",
+      "attributes": {
+        "includes": "staff"
+      },
+      "source_anchor": {
+        "source_text": "The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.",
+        "source_section": "3",
+        "source_offset": 1631
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s3_role_representatives",
+      "type": "Role",
+      "name": "Representatives",
+      "description": "Representatives of the organization covered by the policy",
+      "attributes": {},
+      "source_anchor": {
+        "source_text": "The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.",
+        "source_section": "3",
+        "source_offset": 1631
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s3_org_organization",
+      "type": "Organization",
+      "name": "Organization",
+      "description": "The organization that owns the policy and assesses, monitors and responds to security risks",
+      "attributes": {
+        "security_activities": [
+          "assesses",
+          "monitors",
+          "responds"
+        ],
+        "risk_focus": "security risks affecting staff and program implementation"
+      },
+      "source_anchor": {
+        "source_text": "This document also provides an overview of how the Organization assesses, monitors and responds to security risks that may affect staff and program implementation.",
+        "source_section": "3",
+        "source_offset": 1869
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s4_def_duty_of_care",
+      "type": "Definition",
+      "name": "Duty of Care",
+      "description": "A legal obligation of a person to take reasonable care to avoid harm or injury to oneself and/or another person to whom they have responsibility",
+      "attributes": {
+        "obligation_type": "legal",
+        "scope": "self and others with responsibility"
+      },
+      "source_anchor": {
+        "source_text": "Duty of care is a legal obligation of a person to take reasonable care to avoid harm or injury to oneself and/or another person to whom they have responsibility.",
+        "source_section": "4",
+        "source_offset": 2047
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s4_def_breach",
+      "type": "Definition",
+      "name": "Breach",
+      "description": "Breach of a duty of care occurs if a person acts unreasonably or fails to act where action could be reasonably expected and harm is caused to a person",
+      "attributes": {
+        "triggers": [
+          "acts unreasonably",
+          "fails to act where action expected"
+        ],
+        "consequence": "harm is caused"
+      },
+      "source_anchor": {
+        "source_text": "Breach of a duty of care occurs if a person acts unreasonably or fails to act where action could be reasonably expected and harm is caused to a person.",
+        "source_section": "4",
+        "source_offset": 2221
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s4_def_reasonable_care",
+      "type": "Definition",
+      "name": "Reasonable Care",
+      "description": "The degree of caution and concern for the safety of himself/herself and others that an ordinarily prudent and rational person would use in the circumstances. Failure to exercise reasonable care is considered negligence",
+      "attributes": {
+        "standard": "ordinarily prudent and rational person",
+        "failure_consequence": "negligence"
+      },
+      "source_anchor": {
+        "source_text": "The degree of caution and concern for the safety of himself/herself and others that an ordinarily prudent and rational person would use in the circumstances. Failure to exercise reasonable care is considered negligence.",
+        "source_section": "4",
+        "source_offset": 2394
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s4_def_reasonable_person",
+      "type": "Definition",
+      "name": "Reasonable Person",
+      "description": "Another person in the same situation would act in the same or a similar way. Read in conjunction with Definition of Reasonable care",
+      "attributes": {
+        "cross_reference": "Reasonable care"
+      },
+      "source_anchor": {
+        "source_text": "another person in the same situation would act in the same or a similar way.",
+        "source_section": "4",
+        "source_offset": 2694
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s4_def_risk",
+      "type": "Definition",
+      "name": "Risk",
+      "description": "A situation exposing an individual to danger, harm or loss",
+      "attributes": {
+        "exposure_types": [
+          "danger",
+          "harm",
+          "loss"
+        ]
+      },
+      "source_anchor": {
+        "source_text": "A situation exposing an individual to danger, harm or loss.",
+        "source_section": "4",
+        "source_offset": 2813
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s4_def_harm",
+      "type": "Definition",
+      "name": "Harm",
+      "description": "Harm of any kind including injury or death, damage to property, and economic loss",
+      "attributes": {
+        "includes": [
+          "injury or death",
+          "damage to property",
+          "economic loss"
+        ]
+      },
+      "source_anchor": {
+        "source_text": "means harm of any kind and includes— a) injury or death; and b) damage to property; and c) economic loss",
+        "source_section": "4",
+        "source_offset": 2851
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s4_def_injury",
+      "type": "Definition",
+      "name": "Injury",
+      "description": "Personal or bodily injury including psychological or psychiatric injury, disease, and aggravation, acceleration or recurrence of an injury or disease",
+      "attributes": {
+        "includes": [
+          "psychological or psychiatric injury",
+          "disease",
+          "aggravation, acceleration or recurrence of an injury or disease"
+        ]
+      },
+      "source_anchor": {
+        "source_text": "means personal or bodily injury and includes— a) psychological or psychiatric injury; and b) disease; and c) aggravation, acceleration or recurrence of an injury or disease",
+        "source_section": "4",
+        "source_offset": 2968
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s5_role_persons_directly_involved",
+      "type": "Role",
+      "name": "Persons Directly Involved in Policy Implementation",
+      "description": "Persons who are directly involved in the implementation of the Policy and have specific security and safety responsibilities",
+      "attributes": {},
+      "source_anchor": {
+        "source_text": "Persons, directly involved in the implementation of the Policy, are responsible for:",
+        "source_section": "5",
+        "source_offset": 3236
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s5_role_representatives",
+      "type": "Role",
+      "name": "Representatives",
+      "description": "Representatives operating under the conditions set forth in clause 2.2 of this Policy",
+      "attributes": {
+        "reference_clause": "2.2"
+      },
+      "source_anchor": {
+        "source_text": "Representatives, under the conditions set forth in clause 2.2. of this Policy, and Personnel, are responsible for:",
+        "source_section": "5",
+        "source_offset": 3769
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s5_role_personnel",
+      "type": "Role",
+      "name": "Personnel",
+      "description": "Personnel of the Organization with health, safety and security responsibilities",
+      "attributes": {},
+      "source_anchor": {
+        "source_text": "Representatives, under the conditions set forth in clause 2.2. of this Policy, and Personnel, are responsible for:",
+        "source_section": "5",
+        "source_offset": 3769
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s5_role_organization",
+      "type": "Organization",
+      "name": "Organization",
+      "description": "The organization whose policy this document represents and whose assets and security must be protected",
+      "attributes": {},
+      "source_anchor": {
+        "source_text": "ensuring information security of the Organization, including intellectual property;",
+        "source_section": "5",
+        "source_offset": 3436
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s5_role_direct_manager",
+      "type": "Role",
+      "name": "Direct Manager",
+      "description": "The direct supervisor to whom unsafe conditions and risk control consultations must be reported",
+      "attributes": {},
+      "source_anchor": {
+        "source_text": "immediately reporting any unsafe conditions or behaviors observed in the workplace to direct manager;",
+        "source_section": "5",
+        "source_offset": 4484
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s5_requirement_physical_safety",
+      "type": "Requirement",
+      "name": "Physical Safety Responsibility",
+      "description": "Ensuring the physical safety of life and health of Personnel, including in cases of stay in high-risk areas",
+      "attributes": {
+        "includes_context": "high-risk areas"
+      },
+      "source_anchor": {
+        "source_text": "ensuring the physical safety of life and health of Personnel, including in cases of stay in high- risk areas;",
+        "source_section": "5",
+        "source_offset": 3324
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s5_requirement_org_info_security",
+      "type": "Requirement",
+      "name": "Organization Information Security Responsibility",
+      "description": "Ensuring information security of the Organization, including intellectual property",
+      "attributes": {
+        "includes": "intellectual property"
+      },
+      "source_anchor": {
+        "source_text": "ensuring information security of the Organization, including intellectual property;",
+        "source_section": "5",
+        "source_offset": 3436
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s5_requirement_personnel_info_security",
+      "type": "Requirement",
+      "name": "Personnel Information Security Responsibility",
+      "description": "Ensuring information security of Personnel of the Organization",
+      "attributes": {},
+      "source_anchor": {
+        "source_text": "ensuring information security of Personnel of the Organization;",
+        "source_section": "5",
+        "source_offset": 3522
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s5_requirement_material_assets",
+      "type": "Requirement",
+      "name": "Material Assets Preservation Responsibility",
+      "description": "Ensuring the preservation of material assets of the Organization and Personnel within the activities of the Organization",
+      "attributes": {},
+      "source_anchor": {
+        "source_text": "ensuring the preservation of material assets of the Organization and Personnel within the activities of the Organization;",
+        "source_section": "5",
+        "source_offset": 3588
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s5_requirement_financial_security",
+      "type": "Requirement",
+      "name": "Financial Security Responsibility",
+      "description": "Ensuring the financial security of the Organization",
+      "attributes": {},
+      "source_anchor": {
+        "source_text": "ensuring the financial security of the Organization;",
+        "source_section": "5",
+        "source_offset": 3712
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s5_requirement_policy_compliance",
+      "type": "Requirement",
+      "name": "Policy Compliance Responsibility",
+      "description": "Ensuring this policy is complied with, along with other related policies",
+      "attributes": {
+        "scope": "this policy and other related policies"
+      },
+      "source_anchor": {
+        "source_text": "ensuring this policy is complied with, along with other related policies;",
+        "source_section": "5",
+        "source_offset": 3887
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s5_requirement_reasonable_care",
+      "type": "Requirement",
+      "name": "Reasonable Care and Duty of Care Responsibility",
+      "description": "Taking reasonable care in the course of their work and accepting a duty of care for their own health and safety, as well as for the health and safety of others within the workplace",
+      "attributes": {
+        "scope": "own health and safety and others in workplace"
+      },
+      "source_anchor": {
+        "source_text": "taking reasonable care in the course of their work and accepting a duty of care for their own health and safety, as well as for the health and safety of others within the workplace;",
+        "source_section": "5",
+        "source_offset": 3963
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s5_requirement_secure_environment",
+      "type": "Requirement",
+      "name": "Secure Environment Participation Responsibility",
+      "description": "Actively participate in building and maintaining a secure environment, through open communication, clear boundaries, managing complaints or disclosure, accurate documentation and notifying appropriate authorities of risk or harm in accordance with relevant procedures",
+      "attributes": {
+        "methods": [
+          "open communication",
+          "clear boundaries",
+          "managing complaints or disclosure",
+          "accurate documentation",
+          "notifying appropriate authorities"
+        ]
+      },
+      "source_anchor": {
+        "source_text": "actively participate in building and maintaining a secure environment, through open communication, clear boundaries, managing complaints or disclosure, accurate documentation and notifying appropriate authorities of risk or harm in accordance with relevant procedures;",
+        "source_section": "5",
+        "source_offset": 4147
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s5_requirement_risk_reporting",
+      "type": "Requirement",
+      "name": "Risk Reporting Responsibility",
+      "description": "Anticipating foreseeable harm and risks to self and/or others and immediately reporting any unsafe conditions or behaviors observed in the workplace to direct manager",
+      "attributes": {
+        "immediacy": "immediately",
+        "scope": "self and/or others"
+      },
+      "source_anchor": {
+        "source_text": "anticipating foreseeable harm and risks to self and/or others and immediately reporting any unsafe conditions or behaviors observed in the workplace to direct manager;",
+        "source_section": "5",
+        "source_offset": 4418
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s5_requirement_risk_control",
+      "type": "Requirement",
+      "name": "Risk Control Implementation Responsibility",
+      "description": "Where foreseeable harm or risk is identified, implementing preventative and risk control measures in consultation with direct manager (where practical) and in line with relevant procedures",
+      "attributes": {
+        "condition": "where foreseeable harm or risk is identified",
+        "consultation_condition": "where practical"
+      },
+      "source_anchor": {
+        "source_text": "where foreseeable harm or risk is identified, implementing preventative and risk control measures in consultation with direct manager (where practical) and in line with relevant procedures;",
+        "source_section": "5",
+        "source_offset": 4588
+      },
+      "source_anchors": []
+    },
+    {
+      "id": "s5_requirement_reasonable_care_standard",
+      "type": "Requirement",
+      "name": "Reasonable Care Standard Responsibility",
+      "description": "Taking the amount of care a reasonable person would expect",
+      "attributes": {
+        "standard": "reasonable person expectation"
+      },
+      "source_anchor": {
+        "source_text": "taking the amount of care a reasonable person would expect.",
+        "source_section": "5",
+        "source_offset": 4780
+      },
+      "source_anchors": []
+    }
+  ],
+  "relationships": [
+    {
+      "source_id": "s0_governance_general_meeting",
+      "target_id": "s0_policy_duty_of_care",
+      "type": "applies_to",
+      "description": "The General Meeting confirmed the Duty of Care Policy through decision № 1-П",
+      "source_sections": [
+        "0"
+      ]
+    },
+    {
+      "source_id": "s0_person_vasyl_zadvornyy",
+      "target_id": "s0_policy_duty_of_care",
+      "type": "applies_to",
+      "description": "Vasyl Zadvornyy approved the Duty of Care Policy as Executive director",
+      "source_sections": [
+        "0"
+      ]
+    },
+    {
+      "source_id": "s0_person_vasyl_zadvornyy",
+      "target_id": "s0_role_executive_director",
+      "type": "part_of",
+      "description": "Vasyl Zadvornyy holds the position of Executive director",
+      "source_sections": [
+        "0"
+      ]
+    },
+    {
+      "source_id": "s0_governance_general_meeting",
+      "target_id": "s0_org_technology_of_progress",
+      "type": "part_of",
+      "description": "The General Meeting is the governing body of NGO TECHNOLOGY OF PROGRESS",
+      "source_sections": [
+        "0"
+      ]
+    },
+    {
+      "source_id": "s0_role_executive_director",
+      "target_id": "s0_org_technology_of_progress",
+      "type": "part_of",
+      "description": "The Executive director role is part of the TECHNOLOGY OF PROGRESS organizational structure",
+      "source_sections": [
+        "0"
+      ]
+    },
+    {
+      "source_id": "s1_org_ngo_technology_progress",
+      "target_id": "s1_value_activeness_care",
+      "type": "references",
+      "description": "The Organization's activities are based on the core value of activeness and care",
+      "source_sections": [
+        "1"
+      ]
+    },
+    {
+      "source_id": "s1_org_ngo_technology_progress",
+      "target_id": "s1_value_association_cooperation",
+      "type": "references",
+      "description": "The Organization's activities are based on the core value of association and cooperation",
+      "source_sections": [
+        "1"
+      ]
+    },
+    {
+      "source_id": "s1_org_ngo_technology_progress",
+      "target_id": "s1_value_responsibility_rule_of_law",
+      "type": "references",
+      "description": "The Organization's activities are based on the core value of responsibility and the rule of law",
+      "source_sections": [
+        "1"
+      ]
+    },
+    {
+      "source_id": "s1_org_ngo_technology_progress",
+      "target_id": "s1_standard_integrity_professionalism",
+      "type": "requires",
+      "description": "The Organization is committed to maintaining the highest standards of integrity and professionalism",
+      "source_sections": [
+        "1"
+      ]
+    },
+    {
+      "source_id": "s1_org_ngo_technology_progress",
+      "target_id": "s1_role_employees",
+      "type": "requires",
+      "description": "The Organization requires its employees to adhere to the highest standards of ethical conduct",
+      "source_sections": [
+        "1"
+      ]
+    },
+    {
+      "source_id": "s1_org_ngo_technology_progress",
+      "target_id": "s1_environment_working",
+      "type": "provides",
+      "description": "The Organization provides a working environment that encourages productivity, development, goal achievement and staff health and safety",
+      "source_sections": [
+        "1"
+      ]
+    },
+    {
+      "source_id": "s2_policy_main",
+      "target_id": "s2_definition_personnel",
+      "type": "applies_to",
+      "description": "The policy applies to all staff and governance members defined as Personnel",
+      "source_sections": [
+        "2"
+      ]
+    },
+    {
+      "source_id": "s2_role_partners",
+      "target_id": "s2_definition_representatives",
+      "type": "part_of",
+      "description": "Partners are part of the Representatives definition",
+      "source_sections": [
+        "2"
+      ]
+    },
+    {
+      "source_id": "s2_role_suppliers",
+      "target_id": "s2_definition_representatives",
+      "type": "part_of",
+      "description": "Suppliers are part of the Representatives definition",
+      "source_sections": [
+        "2"
+      ]
+    },
+    {
+      "source_id": "s2_role_subgrantees",
+      "target_id": "s2_definition_representatives",
+      "type": "part_of",
+      "description": "Sub-grantees are part of the Representatives definition",
+      "source_sections": [
+        "2"
+      ]
+    },
+    {
+      "source_id": "s2_role_beneficiaries",
+      "target_id": "s2_definition_representatives",
+      "type": "part_of",
+      "description": "Beneficiaries are part of the Representatives definition",
+      "source_sections": [
+        "2"
+      ]
+    },
+    {
+      "source_id": "s2_role_stakeholders",
+      "target_id": "s2_definition_representatives",
+      "type": "part_of",
+      "description": "Stakeholders are part of the Representatives definition",
+      "source_sections": [
+        "2"
+      ]
+    },
+    {
+      "source_id": "s2_role_consultants",
+      "target_id": "s2_definition_representatives",
+      "type": "part_of",
+      "description": "Consultants are part of the Representatives definition",
+      "source_sections": [
+        "2"
+      ]
+    },
+    {
+      "source_id": "s2_role_external_executors",
+      "target_id": "s2_definition_representatives",
+      "type": "part_of",
+      "description": "External executors are part of the Representatives definition",
+      "source_sections": [
+        "2"
+      ]
+    },
+    {
+      "source_id": "s2_role_engaged_experts",
+      "target_id": "s2_definition_representatives",
+      "type": "part_of",
+      "description": "Engaged experts are part of the Representatives definition",
+      "source_sections": [
+        "2"
+      ]
+    },
+    {
+      "source_id": "s2_role_volunteers",
+      "target_id": "s2_definition_representatives",
+      "type": "part_of",
+      "description": "Volunteers are part of the Representatives definition",
+      "source_sections": [
+        "2"
+      ]
+    },
+    {
+      "source_id": "s2_role_other_associated_entities",
+      "target_id": "s2_definition_representatives",
+      "type": "part_of",
+      "description": "Other associated entities are part of the Representatives definition",
+      "source_sections": [
+        "2"
+      ]
+    },
+    {
+      "source_id": "s2_governance_general_meeting",
+      "target_id": "s2_policy_main",
+      "type": "responsible_for",
+      "description": "General Meeting is directly involved in the implementation of the Policy",
+      "source_sections": [
+        "2"
+      ]
+    },
+    {
+      "source_id": "s2_role_executive_director",
+      "target_id": "s2_policy_main",
+      "type": "responsible_for",
+      "description": "Executive director is directly involved in the implementation of the Policy",
+      "source_sections": [
+        "2"
+      ]
+    },
+    {
+      "source_id": "s3_doc_policy",
+      "target_id": "s3_role_personnel",
+      "type": "applies_to",
+      "description": "The policy provides staff of Personnel with clear understanding of organizational policies, procedures and practices",
+      "source_sections": [
+        "3"
+      ]
+    },
+    {
+      "source_id": "s3_doc_policy",
+      "target_id": "s3_role_representatives",
+      "type": "applies_to",
+      "description": "The policy provides Representatives with clear understanding of organizational policies, procedures and practices",
+      "source_sections": [
+        "3"
+      ]
+    },
+    {
+      "source_id": "s4_def_reasonable_person",
+      "target_id": "s4_def_reasonable_care",
+      "type": "references",
+      "description": "Reasonable person definition is read in conjunction with the definition of reasonable care",
+      "source_sections": [
+        "4"
+      ]
+    },
+    {
+      "source_id": "s4_def_breach",
+      "target_id": "s4_def_duty_of_care",
+      "type": "references",
+      "description": "Breach is defined as a breach of duty of care specifically",
+      "source_sections": [
+        "4"
+      ]
+    },
+    {
+      "source_id": "s5_role_persons_directly_involved",
+      "target_id": "s5_requirement_physical_safety",
+      "type": "responsible_for",
+      "description": "Persons directly involved in policy implementation are responsible for ensuring physical safety of personnel",
+      "source_sections": [
+        "5"
+      ]
+    },
+    {
+      "source_id": "s5_role_persons_directly_involved",
+      "target_id": "s5_requirement_org_info_security",
+      "type": "responsible_for",
+      "description": "Persons directly involved in policy implementation are responsible for ensuring organization information security",
+      "source_sections": [
+        "5"
+      ]
+    },
+    {
+      "source_id": "s5_role_persons_directly_involved",
+      "target_id": "s5_requirement_personnel_info_security",
+      "type": "responsible_for",
+      "description": "Persons directly involved in policy implementation are responsible for ensuring personnel information security",
+      "source_sections": [
+        "5"
+      ]
+    },
+    {
+      "source_id": "s5_role_persons_directly_involved",
+      "target_id": "s5_requirement_material_assets",
+      "type": "responsible_for",
+      "description": "Persons directly involved in policy implementation are responsible for preserving material assets",
+      "source_sections": [
+        "5"
+      ]
+    },
+    {
+      "source_id": "s5_role_persons_directly_involved",
+      "target_id": "s5_requirement_financial_security",
+      "type": "responsible_for",
+      "description": "Persons directly involved in policy implementation are responsible for ensuring financial security",
+      "source_sections": [
+        "5"
+      ]
+    },
+    {
+      "source_id": "s5_role_representatives",
+      "target_id": "s5_requirement_policy_compliance",
+      "type": "responsible_for",
+      "description": "Representatives are responsible for ensuring policy compliance",
+      "source_sections": [
+        "5"
+      ]
+    },
+    {
+      "source_id": "s5_role_representatives",
+      "target_id": "s5_requirement_reasonable_care",
+      "type": "responsible_for",
+      "description": "Representatives are responsible for taking reasonable care and duty of care",
+      "source_sections": [
+        "5"
+      ]
+    },
+    {
+      "source_id": "s5_role_representatives",
+      "target_id": "s5_requirement_secure_environment",
+      "type": "responsible_for",
+      "description": "Representatives are responsible for participating in building and maintaining secure environment",
+      "source_sections": [
+        "5"
+      ]
+    },
+    {
+      "source_id": "s5_role_representatives",
+      "target_id": "s5_requirement_risk_reporting",
+      "type": "responsible_for",
+      "description": "Representatives are responsible for anticipating and reporting risks",
+      "source_sections": [
+        "5"
+      ]
+    },
+    {
+      "source_id": "s5_role_representatives",
+      "target_id": "s5_requirement_risk_control",
+      "type": "responsible_for",
+      "description": "Representatives are responsible for implementing risk control measures",
+      "source_sections": [
+        "5"
+      ]
+    },
+    {
+      "source_id": "s5_role_representatives",
+      "target_id": "s5_requirement_reasonable_care_standard",
+      "type": "responsible_for",
+      "description": "Representatives are responsible for taking reasonable care as expected by a reasonable person",
+      "source_sections": [
+        "5"
+      ]
+    },
+    {
+      "source_id": "s5_role_personnel",
+      "target_id": "s5_requirement_policy_compliance",
+      "type": "responsible_for",
+      "description": "Personnel are responsible for ensuring policy compliance",
+      "source_sections": [
+        "5"
+      ]
+    },
+    {
+      "source_id": "s5_role_personnel",
+      "target_id": "s5_requirement_reasonable_care",
+      "type": "responsible_for",
+      "description": "Personnel are responsible for taking reasonable care and duty of care",
+      "source_sections": [
+        "5"
+      ]
+    },
+    {
+      "source_id": "s5_role_personnel",
+      "target_id": "s5_requirement_secure_environment",
+      "type": "responsible_for",
+      "description": "Personnel are responsible for participating in building and maintaining secure environment",
+      "source_sections": [
+        "5"
+      ]
+    },
+    {
+      "source_id": "s5_role_personnel",
+      "target_id": "s5_requirement_risk_reporting",
+      "type": "responsible_for",
+      "description": "Personnel are responsible for anticipating and reporting risks",
+      "source_sections": [
+        "5"
+      ]
+    },
+    {
+      "source_id": "s5_role_personnel",
+      "target_id": "s5_requirement_risk_control",
+      "type": "responsible_for",
+      "description": "Personnel are responsible for implementing risk control measures",
+      "source_sections": [
+        "5"
+      ]
+    },
+    {
+      "source_id": "s5_role_personnel",
+      "target_id": "s5_requirement_reasonable_care_standard",
+      "type": "responsible_for",
+      "description": "Personnel are responsible for taking reasonable care as expected by a reasonable person",
+      "source_sections": [
+        "5"
+      ]
+    },
+    {
+      "source_id": "s5_requirement_risk_reporting",
+      "target_id": "s5_role_direct_manager",
+      "type": "requires_approval_from",
+      "description": "Risk reporting requires reporting unsafe conditions and behaviors to direct manager",
+      "source_sections": [
+        "5"
+      ]
+    },
+    {
+      "source_id": "s5_requirement_risk_control",
+      "target_id": "s5_role_direct_manager",
+      "type": "requires_approval_from",
+      "description": "Risk control implementation requires consultation with direct manager where practical",
+      "source_sections": [
+        "5"
+      ]
+    }
+  ],
+  "source_sections": [
+    {
+      "chunk_id": "chunk_001",
+      "header": "[Document Header and Approval Block]",
+      "section_number": "0",
+      "level": 0,
+      "text": "Kiyv, 2023\n\n## APPROVED\n\n## Executive director\n\n## Vasyl Zadvornyy\n\n## 03, April 2023\n\n## ___________________\n\n## APPROVED\n\n## Order № 2-Д from 03, April 2023\n\n## CONFIRMED\n\n## By decision of the General Meeting of NGO\n\n## TECHNOLOGY OF PROGRESS\n\n## the № 1-П from 02, April 2023\n\n# DUTY OF CARE POLICY",
+      "source_offset": 0,
+      "parent_section": null,
+      "parent_header": null,
+      "hierarchical_path": [],
+      "enumerated_lists": []
+    },
+    {
+      "chunk_id": "chunk_002",
+      "header": "INTRODUCTION",
+      "section_number": "1",
+      "level": 1,
+      "text": "## 1. INTRODUCTION\n\n1.2 The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the \"Organization\") are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.\n\n1.2 The Organization is committed to the highest standards of integrity and professionalism, regardless of the environment in which it operates. The Organization requires its employees to adhere to the highest standards of ethical conduct at all times. To enable and facilitate the implementation of these commitments, the Organization has committed to providing a working environment that encourages high standards of productivity, professional and personal development, achieving organizational goals and prioritizing staff health and safety.",
+      "source_offset": 302,
+      "parent_section": null,
+      "parent_header": null,
+      "hierarchical_path": [],
+      "enumerated_lists": []
+    },
+    {
+      "chunk_id": "chunk_003",
+      "header": "SCOPE",
+      "section_number": "2",
+      "level": 1,
+      "text": "## 2. SCOPE\n\n2.1 The policy applies to all staff and governance members of Organization (hereafter – named as Personnel).\n\n2.2 The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\n\n2.3 Directly involved in the implementation of the Policy are:\n\n- General Meeting;\n- Executive director.",
+      "source_offset": 1067,
+      "parent_section": null,
+      "parent_header": null,
+      "hierarchical_path": [],
+      "enumerated_lists": [
+        {
+          "item_count": 2,
+          "list_type": "bulleted",
+          "preview": "General Meeting;"
+        }
+      ]
+    },
+    {
+      "chunk_id": "chunk_004",
+      "header": "AIM",
+      "section_number": "3",
+      "level": 1,
+      "text": "## 3. AIM\n\n3.1 The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.\n\n3.2 This document also provides an overview of how the Organization assesses, monitors and responds to security risks that may affect staff and program implementation.",
+      "source_offset": 1616,
+      "parent_section": null,
+      "parent_header": null,
+      "hierarchical_path": [],
+      "enumerated_lists": []
+    },
+    {
+      "chunk_id": "chunk_005",
+      "header": "DEFINITIONS",
+      "section_number": "4",
+      "level": 1,
+      "text": "## 4. DEFINITIONS\n\n**Duty of Care:** Duty of care is a legal obligation of a person to take reasonable care to avoid harm or\n\ninjury to oneself and/or another person to whom they have responsibility.\n\n**Breach:** Breach of a duty of care occurs if a person acts unreasonably or fails to act where action could\n\nbe reasonably expected and harm is caused to a person.\n\n**Reasonable care:** The degree of caution and concern for the safety of himself/herself and others that\n\nan ordinarily prudent and rational person would use in the circumstances. Failure to exercise reasonable care is considered negligence.\n\n**Reasonable person:** (Read in conjunction with Definition of Reasonable care) another person in the\n\nsame situation would act in the same or a similar way.\n\n**Risk:** A situation exposing an individual to danger, harm or loss.\n\n**Harm:** means harm of any kind and includes—\n\na) injury or death; and b) damage to property; and c) economic loss\n\n**Injury:** means personal or bodily injury and includes—\n\na) psychological or psychiatric injury; and b) disease; and c) aggravation, acceleration or recurrence of an injury or disease",
+      "source_offset": 2034,
+      "parent_section": null,
+      "parent_header": null,
+      "hierarchical_path": [],
+      "enumerated_lists": [
+        {
+          "item_count": 3,
+          "list_type": "lettered",
+          "preview": "injury or death; and"
+        },
+        {
+          "item_count": 3,
+          "list_type": "lettered",
+          "preview": "psychological or psychiatric injury; and"
+        }
+      ]
+    },
+    {
+      "chunk_id": "chunk_006",
+      "header": "DIRECTIONS OF ACTIVITY AND AREAS OF COMPETENCE",
+      "section_number": "5",
+      "level": 1,
+      "text": "## 5. DIRECTIONS OF ACTIVITY AND AREAS OF COMPETENCE\n\n5.1 Persons, directly involved in the implementation of the Policy, are responsible for:\n\n- ensuring the physical safety of life and health of Personnel, including in cases of stay in high- risk areas;\n- ensuring information security of the Organization, including intellectual property;\n- ensuring information security of Personnel of the Organization;\n- ensuring the preservation of material assets of the Organization and Personnel within the activities of the Organization;\n- ensuring the financial security of the Organization;\n5.2 Representatives, under the conditions set forth in clause 2.2. of this Policy, and Personnel, are responsible for:\n\n- ensuring this policy is complied with, along with other related policies;\n- taking reasonable care in the course of their work and accepting a duty of care for their own health and safety, as well as for the health and safety of others within the workplace;\n- actively participate in building and maintaining a secure environment, through open communication, clear boundaries, managing complaints or disclosure, accurate documentation and notifying appropriate authorities of risk or harm in accordance with relevant procedures;\n- anticipating foreseeable harm and risks to self and/or others and immediately reporting any unsafe conditions or behaviors observed in the workplace to direct manager;\n- where foreseeable harm or risk is identified, implementing preventative and risk control measures in consultation with direct manager (where practical) and in line with relevant procedures;\n- taking the amount of care a reasonable person would expect.",
+      "source_offset": 3178,
+      "parent_section": null,
+      "parent_header": null,
+      "hierarchical_path": [],
+      "enumerated_lists": [
+        {
+          "item_count": 5,
+          "list_type": "bulleted",
+          "preview": "ensuring the physical safety of life and health of Personnel"
+        },
+        {
+          "item_count": 6,
+          "list_type": "bulleted",
+          "preview": "ensuring this policy is complied with"
+        }
+      ]
+    },
+    {
+      "chunk_id": "chunk_007",
+      "header": "RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS PROTECTION",
+      "section_number": "6",
+      "level": 1,
+      "text": "## 6. RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS\n\n## PROTECTION",
+      "source_offset": 4840,
+      "parent_section": null,
+      "parent_header": null,
+      "hierarchical_path": [],
+      "enumerated_lists": []
+    }
+  ],
+  "source_document": "Kiyv, 2023\n\n## APPROVED\n\n## Executive director\n\n## Vasyl Zadvornyy\n\n## 03, April 2023\n\n## ___________________\n\n## APPROVED\n\n## Order № 2-Д from 03, April 2023\n\n## CONFIRMED\n\n## By decision of the General Meeting of NGO\n\n## TECHNOLOGY OF PROGRESS\n\n## the № 1-П from 02, April 2023\n\n# DUTY OF CARE POLICY\n\n## 1. INTRODUCTION\n\n1.2 The activities of NGO TECHNOLOGY OF PROGRESS (hereafter – the “Organization”) are based on such values as activeness and care, association and cooperation, responsibility and the rule of law.\n\n1.2 The Organization is committed to the highest standards of integrity and professionalism, regardless of the environment in which it operates. The Organization requires its employees to adhere to the highest standards of ethical conduct at all times. To enable and facilitate the implementation of these commitments, the Organization has committed to providing a working environment that encourages high standards of productivity, professional and personal development, achieving organizational goals and prioritizing staff health and safety.\n\n## 2. SCOPE\n\n2.1 The policy applies to all staff and governance members of Organization (hereafter – named as Personnel).\n\n2.2 The provisions of this policy may also be applied to partners depending on specific clauses and conditions of the grant agreement, suppliers, sub-grantees, beneficiaries, stakeholders, consultants, external executors, engaged experts, volunteers and other associated entities (hereafter – named as Representatives).\n\n2.3 Directly involved in the implementation of the Policy are:\n\n- General Meeting;\n- Executive director.\n## 3. AIM\n\n3.1 The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.\n\n3.2 This document also provides an overview of how the Organization assesses, monitors and responds to security risks that may affect staff and program implementation.\n\n## 4. DEFINITIONS\n\n**Duty of Care:** Duty of care is a legal obligation of a person to take reasonable care to avoid harm or\n\ninjury to oneself and/or another person to whom they have responsibility.\n\n**Breach:** Breach of a duty of care occurs if a person acts unreasonably or fails to act where action could\n\nbe reasonably expected and harm is caused to a person.\n\n**Reasonable care:** The degree of caution and concern for the safety of himself/herself and others that\n\nan ordinarily prudent and rational person would use in the circumstances. Failure to exercise reasonable care is considered negligence.\n\n**Reasonable person:** (Read in conjunction with Definition of Reasonable care) another person in the\n\nsame situation would act in the same or a similar way.\n\n**Risk:** A situation exposing an individual to danger, harm or loss.\n\n**Harm:** means harm of any kind and includes—\n\na) injury or death; and b) damage to property; and c) economic loss\n\n**Injury:** means personal or bodily injury and includes—\n\na) psychological or psychiatric injury; and b) disease; and c) aggravation, acceleration or recurrence of an injury or disease\n\n## 5. DIRECTIONS OF ACTIVITY AND AREAS OF COMPETENCE\n\n5.1 Persons, directly involved in the implementation of the Policy, are responsible for:\n\n- ensuring the physical safety of life and health of Personnel, including in cases of stay in high- risk areas;\n- ensuring information security of the Organization, including intellectual property;\n- ensuring information security of Personnel of the Organization;\n- ensuring the preservation of material assets of the Organization and Personnel within the activities of the Organization;\n- ensuring the financial security of the Organization;\n5.2 Representatives, under the conditions set forth in clause 2.2. of this Policy, and Personnel, are responsible for:\n\n- ensuring this policy is complied with, along with other related policies;\n- taking reasonable care in the course of their work and accepting a duty of care for their own health and safety, as well as for the health and safety of others within the workplace;\n- actively participate in building and maintaining a secure environment, through open communication, clear boundaries, managing complaints or disclosure, accurate documentation and notifying appropriate authorities of risk or harm in accordance with relevant procedures;\n- anticipating foreseeable harm and risks to self and/or others and immediately reporting any unsafe conditions or behaviors observed in the workplace to direct manager;\n- where foreseeable harm or risk is identified, implementing preventative and risk control measures in consultation with direct manager (where practical) and in line with relevant procedures;\n- taking the amount of care a reasonable person would expect.\n## 6. RESPONSIBILITIES OF THE ORGANIZATION FOR SECURITY AND RIGHTS\n\n## PROTECTION\n\n### Physical security\n\n6.1. The Organization prioritizes the safety of life and health of its Personnel, taking all possible measures to ensure them. The Organization promotes and provides training, safety training, including the procedure for dealing with high-risk situations, first aid, and other activities, taking into account the financial capabilities of the Organization. The Organization has the right, by a decision of the Board, to determine certain trainings and exercises mandatory depending on the nature of work.\n\n6.2. Each member of the Personnel or the Representatives is responsible for reading and understanding the security plan and guidelines, including through updates. The specified persons are instructed in labor protection and safety, and training that allows them to make informed decisions about working in a particular field.\n\n6.3. Each member of the Personnel or the Representatives shall understand the responsibility for themselves and the team, as well as the risks to themselves, the team, and the tasks they perform.\n\n6.4. Each member of the Personnel or the Representatives is obliged to immediately report security incidents to the person performing security functions or the Executive director. While in the office, the specified persons personally report security threats. For remote work outside the office, should contact by phone or e-mail.\n\n6.5. The Organization shall take all measures regarding the Personnel or the Representatives in case they are on business trips, business trips to remote areas, high-risk areas by:\n\n- situation assessment (based on official information from public authorities and coordinating international organizations);\n- development of route and travel time;\n- informing about movement;\n- the necessary training of everyone;\n- providing a communication plan;\n- providing a plan of informing in case of emergencies;\n- instruction, including the provision of standard instructions for conduct in certain regions (such as checkpoints, areas of limited or restricted access) or under certain conditions (shelling, mines).\n6.6 The Organization cares about the safety of the Personnel or the Representatives, therefore, when choosing a project, first of all, the main emphasis is on assessing the risk to the health and safety of employees. The Organization tries not to involve the specified persons in the gray zone or the war zone, concentrating as much as possible, all activities in the office.\n\n6.7. To ensure safety, the office is equipped with a fire extinguisher, first aid kit, personal protective equipment, action plan (information about the nearest bomb shelter) in case of a missile threat.\n\n6.8 Before starting each project, the Organization assesses risks to identify threats and vulnerabilities, assess their likelihood and impact, and identifies opportunities to mitigate them. An introductory meeting is held, at which team members are informed about the progress of the project, risks and methods for mitigating them. And also working chats are created for the prompt transfer of information on the project. To do this, a number of steps are taken:\n\n- assessment of potential threats to employees at all stages of the project;\n- risk analysis and probability of their occurrence;\n- identification of possible steps to reduce risks;\n- making a decision based on the previous stage of the project evaluation;\n- further monitoring of threats during project implementation.\n### Non-Discrimination and equality\n\n6.9 The Organization, all the Personnel and the Representatives\n\n- take all reasonable steps to ensure that the work environment and work materials, actions and activities are free from discrimination, harassment, bullying, victimization, intimidation or other unfavorable and inappropriate behavior;\n- implementation of inclusive practices in the activities of the Organization, as well as members, employees, engaged experts, volunteers of the Organization;\n- conducting educational activities on non-discrimination and equality, implementation of trainings, programs, awareness raising projects for the Personnel, the Representatives, donors, society, government;\n- ensuring an effective procedure for filing and reviewing complaints based on the principles of fairness.\n6.10 The Organization constantly monitors the legal framework at the national and international levels on non-discrimination and equality issues.\n\n6.11 Universal corporate e-mail address of the Organization for proposals and complaints:\n\ninfo.technology.progress@gmail.com.\n\n### Protection against sexual exploitation and abuse (SEA)\n\n6.12 The Personnel and the Representatives, referred to in Article 2 of this Policy, shall fully comply with the principles set out below:\n\n- sexual activity with children (persons under the age of 18) is prohibited regardless of the age of majority or age of consent locally. Mistaken belief regarding the age of a child is not a defence;\n- exchange of money, employment, goods, or services for sex, including sexual favors or other forms of humiliating, degrading or exploitative behavior is prohibited;\n- any sexual relationship between the Personnel, the Representatives and other associated persons, that involves improper use of rank or position is prohibited;\n- where the Personnel or the Representative develops concerns or suspicions regarding sexual abuse or exploitation by a fellow worker, whether in the same agency or not, he or she must report such concerns via established reporting mechanisms;\n- the Personnel and the Representatives are obliged to create and maintain an environment which prevents sexual exploitation and abuse. Managers at all levels have particular responsibilities to support and develop systems which maintain this environment.\n6.13 The organization is committed to creating and maintaining a work environment that respects the dignity of all people, enabling them to reach their full potential and empowering them to achieve the best possible results for the people we work for.\n\n6.14 The Commissioner for countering SEA shall provide the Organization's Personnel and the Representatives with information materials, organize and facilitate training on SEA, and shall be the contact person for reporting SEA cases.\n\n### Legal protection\n\n6.15 The mode of work of the Personnel, including holidays, business trips, holidays are determined in accordance with current legislation of Ukraine and the approved Rules of Procedure. The organization independently determines the schedule of working hours in accordance with the areas of work and features of project implementation.\n\n6.16 The organization prioritizes the lives and health of the Personnel. The Organization fully contributes to this, including by providing a social package (public transport, insurance, rehabilitation, etc.) based on the financial capabilities of the Organization. The organization provides for the Personnel to contact the supervisor to change the mode of work, including temporary, nature of work, place of work (including remote), get a day off, special leave to avoid burnout and promoting the effective implementation of their work by employees.\n\n6.17 The Personnel are obliged to report any circumstances, including force majeure, that affect the person's employment to implement the Organization's Strategy by notifying the supervisor, except when this is impossible.\n\n6.18 The Organization promotes continuous professional development of the Personnel, including intellectual, professional, creative, sports qualities of staff individually and collectively. The Organization shall take all possible measures to develop its capacity, taking into account the financial capacity of the Organization.\n\n### Informational security\n\n6.19 The Organization determines the need to maintain adequate protection of information, software and technical resources while ensuring the integrity, confidentiality, legality, accessibility and monitoring. Information security includes information literacy, separation of powers, access to and transmission of information, privacy, intellectual property rights, preservation of archival copies.\n\n6.20 Information security applies to the Personnel and the Representatives.\n\n6.21 The Organization keeps records of information, software and technical resources belonging to the Organization, determines the procedure for creation, access, including the range of entities, the procedure for storing, amending and disposing of information.\n\n6.22 The Organization determines the need for proper storage, processing and transfer of personal data, information security of the Personnel and the Representatives.\n\n6.23 The organization determines the need for proper storage, processing and transfer of personal data of beneficiaries with notification of such actions.\n\n6.24 The organization determines the procedure for ensuring information security in cooperation with private information providers, donors, public authorities and local governments, international and non- governmental organizations, the media, and other individuals and legal entities.\n\n6.25 The organization promotes the observance of intellectual property rights, copyright and other related rights with respect to it and in relation to it, with the definition of responsibility in accordance with the current legislation.\n\n### Security in emergencies\n\n6.26 An emergency situation means danger of natural, man-made, socio-political or military nature, war, anti-terrorist operation, other measures of increased risk of national, regional, local nature, which may affect the implementation of the goals of the Organization, saving the lives and health of the Personnel and the Representatives.\n\n6.27 In accordance with the assessment of the emergency situation, the Organization shall take all measures to preserve the assets of the Organization and to preserve the life and health of the Personnel and the Representatives.\n\n6.28 In the event of a situation that could pose a potential threat to the life and health of the Personnel while in the office, a mechanism for remote organization of work has been developed. Equipment and algorithms allow you to continue working without losing its quality remotely. Each Personnel can be in a safe place for himself and perform all his tasks. Access to working documents is provided through the organization's Google drive. Coordination of work takes place using telephone or online means of communication: Zoom, Whats App, etc. During remote work, regular meetings of the Personnel and the Representatives are held and work is monitored.\n\n## 7. BREACHES OF THIS POLICY\n\n7.1 A duty of care is breached if the Personnel or the Representative:\n\n- Fails to do something a reasonable person in that person’s position would do in the same circumstances\n- Acts or fails to act in a way that causes harm to someone to whom the person owed a duty of care, including harm that is physical, an emotional injury or financial loss.\n7.2 Organization takes its duty of care extremely seriously. The Personnel or the Representatives who do not act in accordance with this policy or any other related policy or procedure will be subject to disciplinary action, or in the case of gross misconduct, their employment/placement may be terminated.\n\n## 8. ASSESSMENT OF INCIDENT\n\n8.1 Instances of breaches of Duty of Care shall be assessed for their significance using the following criteria:\n\n- **Low - **impacts the local environment and can be remedied with short term action and there are no ongoing consequences.\n- **Moderate - **has a broader impact than the local environment and remedies are readily available but take place over a period of time and/or involve a number of persons. There may be ongoing consequences, but these are manageable. There may be a requirement to notify regulators.\n- **High - **the instance has longer term ramifications of negligence, may require financial or legal restitution, may include data breach instances may result in short term reputational issues and will require regulators to be notified.\n- **Extreme - **the instance has major ramifications of negligence, will require financial restitution, will involve protracted legal action, may include significant data breach instances, will require regulators to be notified and there is the potential for long term reputational damage.\n8.2 Organization will follow all legislative requirements regarding Incident Reporting. Incident reporting is conducted in workplaces and within work practices to ensure that the safety risks of all parties are minimized. Where this does not happen, it may be a Breach of Duty of Care.\n\n## 9. NOTIFICATION OF INCIDENT\n\n9.1 The Executive Director will notify all instances of breaches of Duty of Care.\n",
+  "extraction_metadata": {
+    "document_char_count": 17691,
+    "section_count": 7,
+    "extraction_passes": 7,
+    "total_api_calls": 0,
+    "total_input_tokens": 0,
+    "total_output_tokens": 0,
+    "final_entity_count": 54,
+    "final_relationship_count": 47,
+    "deduplication_merges": 0,
+    "semantic_dedup_merges": 0,
+    "semantic_dedup_api_calls": 0
+  }
+}

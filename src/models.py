@@ -72,6 +72,8 @@ class ExtractionMetadata(BaseModel):
     final_entity_count: int = 0
     final_relationship_count: int = 0
     deduplication_merges: int = 0
+    semantic_dedup_merges: int = 0
+    semantic_dedup_api_calls: int = 0
 
 
 # --- Core Graph Models ---
@@ -84,6 +86,7 @@ class Entity(BaseModel):
     description: str
     attributes: dict[str, Any] = {}
     source_anchor: SourceAnchor = Field(default_factory=SourceAnchor)
+    source_anchors: list[SourceAnchor] = []  # All source references (populated during merge)
 
 
 class Relationship(BaseModel):

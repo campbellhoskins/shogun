@@ -1,0 +1,102 @@
+[
+  {
+    "chunk_id": "chunk_004",
+    "section_number": "3",
+    "entity_count": 5,
+    "relationship_count": 2,
+    "entities": [
+      {
+        "id": "s3_doc_policy",
+        "type": "Policy",
+        "name": "Policy",
+        "description": "The organizational policy document that provides staff with understanding and safe working environment",
+        "attributes": {
+          "purpose": "provide staff with clear understanding of policies, procedures and practices and a healthy, safe working environment"
+        },
+        "source_anchor": {
+          "source_text": "The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s3_role_personnel",
+        "type": "Role",
+        "name": "Personnel",
+        "description": "Staff members covered by the policy",
+        "attributes": {
+          "includes": "staff"
+        },
+        "source_anchor": {
+          "source_text": "The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s3_role_representatives",
+        "type": "Role",
+        "name": "Representatives",
+        "description": "Representatives covered by the policy",
+        "attributes": {},
+        "source_anchor": {
+          "source_text": "The purpose of this Policy is to provide the staff of the Personnel and Representatives with a clear understanding of the policies, procedures and practices used by the organization and a healthy, safe working environment for staff.",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s3_org_organization",
+        "type": "Organization",
+        "name": "Organization",
+        "description": "The organization that assesses, monitors and responds to security risks",
+        "attributes": {
+          "functions": [
+            "assesses",
+            "monitors",
+            "responds to security risks"
+          ]
+        },
+        "source_anchor": {
+          "source_text": "This document also provides an overview of how the Organization assesses, monitors and responds to security risks that may affect staff and program implementation.",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      },
+      {
+        "id": "s3_doc_document",
+        "type": "Policy",
+        "name": "Document",
+        "description": "This document that provides an overview of organizational risk management processes",
+        "attributes": {
+          "provides": "overview of risk assessment, monitoring and response processes"
+        },
+        "source_anchor": {
+          "source_text": "This document also provides an overview of how the Organization assesses, monitors and responds to security risks that may affect staff and program implementation.",
+          "source_section": "3",
+          "source_offset": -1
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "s3_doc_policy",
+        "target_id": "s3_role_personnel",
+        "type": "applies_to",
+        "description": "The policy provides clear understanding and safe working environment to Personnel",
+        "source_sections": [
+          "3"
+        ]
+      },
+      {
+        "source_id": "s3_doc_policy",
+        "target_id": "s3_role_representatives",
+        "type": "applies_to",
+        "description": "The policy provides clear understanding and safe working environment to Representatives",
+        "source_sections": [
+          "3"
+        ]
+      }
+    ]
+  }
+]

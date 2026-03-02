@@ -18,6 +18,9 @@ from typing import Any
 
 from anthropic import Anthropic, AsyncAnthropic
 
+# Thinking configuration for extraction calls
+_THINKING_CONFIG = {"type": "enabled", "budget_tokens": 32768}
+
 from src.models import (
     DocumentSection,
     Entity,
@@ -99,9 +102,10 @@ Before you begin, understand these fundamental principles:
 ## Principle 1: Entities Are Things, Relationships Are Assertions
 
 **Entities** represent discrete, identifiable things (nouns):
+- Organizations (e.g., "Mercy Corps")
 - Roles (e.g., "Executive Director", "Stakeholders")
-- Documents (e.g., "Grant Agreement", "Policy")
-- Organizational bodies (e.g., "General Meeting")
+- Policies (e.g., "Grant Agreement", "Duty of Care Policy")
+- Governance bodies (e.g., "General Meeting")
 - Procedures, thresholds, definitions
 - ANY named party type or category
 
@@ -118,11 +122,11 @@ WRONG: Create a "PolicyRule" entity with description "The policy applies to \
 Personnel"
 CORRECT: Create a direct relationship: (Policy) --[applies_to]--> (Personnel)
 
-**Exception for Complex Constraints**: Only create an entity to represent an \
+**Exception for Complex Requirements**: Only create an entity to represent an \
 assertion when the assertion is too complex to express as a single triple \
 (e.g., it has multiple simultaneous targets, conditional logic, or references \
-other rules). In such cases, use entity types like "Requirement" or \
-"Constraint", not "PolicyRule".
+other rules). In such cases, use the "Requirement" entity type with typed \
+relationships (see Special Handling for Requirements below), not "PolicyRule".
 
 ## Principle 2: List Members Must Be Individual Entity Nodes
 
@@ -143,15 +147,19 @@ string in an attribute array, that traversal path does not exist.
 ## Principle 3: Extract All Genuine Entities
 
 Always extract these as entity nodes when they appear:
-- Named organizational bodies (e.g., "General Meeting", "Board of Directors")
+- The owning organization (e.g., "Mercy Corps") as type Organization
+- Named governance bodies (e.g., "General Meeting", "Board of Directors") as \
+type GovernanceBody
 - Named roles (e.g., "Executive Director", "Travel Risk Manager", "Volunteers")
 - Defined terms and the groups they refer to (e.g., "Personnel", \
 "Representatives")
-- Referenced documents or instruments (e.g., "Grant Agreement", "Policy", \
-"Code of Conduct")
+- Referenced policies or instruments (e.g., "Grant Agreement", "Code of \
+Conduct") as type Policy
 - ANY named party type mentioned in a list, even if it appears only once
-- The Policy document itself (create an entity for "Policy" so relationships \
+- The Policy document itself (create an entity for the policy so relationships \
 like "applies_to" have a valid source)
+- Training programs and briefings (e.g., "Security Awareness Training") as \
+type Training
 
 # Processing Steps
 
@@ -210,13 +218,13 @@ yourself:
 (entity -> relationship -> entity) triple?
      - If YES: This will become a direct relationship, not an entity. Note the \
 subject, relationship type, and object.
-     - If NO (too complex): This may need to be reified as a Requirement or \
-Constraint entity. Note why it's complex.
+     - If NO (too complex): This may need to be reified as a Requirement \
+entity with typed relationships. Note why it's complex.
    - If NO: This describes a thing (genuine entity). Proceed to step 2.
 
 2. **If it's a genuine entity, what type is it?**
-   - Role, Definition, Procedure, Threshold, ApprovalRequirement, Person, \
-Vendor, Document, etc.
+   - Organization, Role, Person, GovernanceBody, Policy, Definition, \
+RiskLevel, Procedure, Incident, Threshold, Training, Requirement, etc.
 
 3. **Does this quote introduce a list of named entities?**
    - If YES: Note that you will create a separate entity node for EACH list \
@@ -284,7 +292,8 @@ verify:
 2. If YES: Convert it to a direct relationship. Do NOT create a PolicyRule \
 entity.
 3. If NO: Is it genuinely complex (multiple targets, conditional logic)?
-   - If YES: Reify as a Requirement or Constraint entity and explain why.
+   - If YES: Reify as a Requirement entity with typed relationships (see \
+Special Handling for Requirements) and explain why.
    - If NO: Convert it to a direct relationship.
 
 Write out your verification explicitly for any potential assertion-based \
@@ -313,8 +322,8 @@ Before moving to entity creation, verify:
 each member (not attribute arrays)
 - [ ] I have not created any "PolicyRule" entities for simple assertions that \
 can be expressed as direct relationships
-- [ ] I have extracted all genuine entities: roles, documents, organizational \
-bodies, the Policy itself
+- [ ] I have extracted all genuine entities: organizations, roles, policies, \
+governance bodies, training programs, the Policy itself
 - [ ] All my planned relationships are between entities within this section only
 - [ ] I have identified concrete attribute values where they exist in the text
 - [ ] I have linked each attribute value back to its source quote
@@ -327,33 +336,35 @@ After completing your analysis, create entity objects for the JSON output.
 
 Classify each entity using one of these types based on what the text describes:
 
-- **Definition**: A formally defined term
-- **RiskLevel**: A destination risk classification tier
-- **ApprovalRequirement**: Who must approve and under what conditions
-- **InsuranceRequirement**: Insurance coverage minimums
-- **VaccinationRequirement**: Required vaccinations
-- **Destination**: A country, region, or destination category
+- **Organization**: The organization that owns or is governed by the policy
 - **Role**: An organizational role or party type (Travel Risk Manager, CSO, \
-Stakeholders, Partners, etc.)
+Stakeholders, Partners, Volunteers, etc.)
 - **Person**: A named individual
-- **Vendor**: An approved vendor (airline, hotel, security firm)
+- **GovernanceBody**: Named governance bodies (General Meeting, Board, \
+Committee, etc.)
+- **Policy**: Referenced policies and documents (Grant Agreement, Duty of Care \
+Policy, Code of Conduct, etc.)
+- **Definition**: A formally defined term
+- **RiskLevel**: A destination or context risk classification tier
 - **Procedure**: A defined process or workflow
-- **IncidentCategory**: A classification of incidents
-- **CommunicationRequirement**: Check-in frequency or communication obligations
-- **Equipment**: Required equipment or technology
+- **Incident**: A classification of incidents or incident types
 - **Threshold**: Specific numeric thresholds or limits
-- **ContactInformation**: Email addresses, phone numbers, contact details
-- **BenefitOrPackage**: Social packages, work arrangements, programs
-- **Document**: Referenced documents (Grant Agreement, Policy, Code of Conduct, \
-etc.)
-- **OrganizationalBody**: Named bodies (General Meeting, Board, Committee, etc.)
-- **Requirement**: A complex constraint that cannot be expressed as a simple \
-triple (use sparingly)
-- **Constraint**: A complex condition with multiple parts (use sparingly)
+- **ContactInformation**: Email addresses, phone numbers, reporting channels
+- **Training**: Training programs, briefings, and certification requirements
+- **Equipment**: Required equipment or technology
+- **Location**: A country, region, destination, or location category
+- **Requirement**: A complex obligation that cannot be expressed as a simple \
+triple — use typed relationships (requires, requires_approval_from, specifies) \
+to connect it to roles, policies, and benefits
+- **BenefitOrPackage**: Insurance coverage, social packages, allowances, \
+programs
 
-**Note**: "PolicyRule" is NOT a valid entity type. If you find yourself wanting \
-to create a PolicyRule, convert it to a direct relationship instead (see \
-Principle 1).
+**IMPORTANT**: The following are NOT valid entity types — do not use them: \
+ApprovalRequirement, InsuranceRequirement, VaccinationRequirement, \
+CommunicationRequirement, Vendor, Constraint, Document, OrganizationalBody, \
+IncidentCategory, Destination, PolicyRule. Use the types listed above instead \
+(e.g., Document → Policy, OrganizationalBody → GovernanceBody, \
+IncidentCategory → Incident, Destination → Location).
 
 ### Entity Structure
 
@@ -409,11 +420,32 @@ explanations):
 When you encounter list items that are pure named entities (no verbs, no \
 standalone assertions):
 - Create a separate entity for EACH named entity in the list
-- Set the appropriate entity type (Role, Person, Vendor, OrganizationalBody, \
+- Set the appropriate entity type (Role, Person, GovernanceBody, Organization, \
 etc.)
 - For the description: reference the context from the parent sentence
 - For the source_anchor.source_text: use the complete parent sentence that \
 introduces the list
+
+### Special Handling for Requirements
+
+When you encounter complex obligations that involve approvals, insurance, \
+vaccinations, communications, or other multi-part rules, model them using a \
+generic **Requirement** entity connected via typed relationships:
+
+```
+RiskLevel("Level 3") --[requires]--> Requirement("Level 3 Travel Requirements")
+Requirement --[requires_approval_from]--> Role("VP")
+Requirement --[specifies]--> BenefitOrPackage("Travel Insurance")
+Requirement --[must_comply_with]--> Policy("Code of Conduct")
+```
+
+**Do NOT** create subtypes like ApprovalRequirement, InsuranceRequirement, \
+VaccinationRequirement, or CommunicationRequirement. Instead:
+- Create a single **Requirement** entity describing the obligation
+- Use **requires_approval_from** to link to the approving Role
+- Use **specifies** to link to specific BenefitOrPackage, Equipment, or \
+Training entities that fulfill the requirement
+- Use **must_comply_with** to link to referenced Policy entities
 
 ### Extraction Density Guidelines
 
@@ -430,10 +462,12 @@ PolicyRule entities)
 - Every defined term
 - Every procedure step
 - Every contact detail
-- Every approval requirement
+- Every training program or briefing
+- Every incident type or category
 - Every list item (whether complete claims or pure named entities)
+- The owning Organization
 - The Policy document itself
-- Any referenced documents
+- Any referenced policies or documents
 
 ## Step 3: Relationship Extraction
 
@@ -443,21 +477,27 @@ After creating entities, create relationship objects for the JSON output.
 
 Use these relationship types to describe how entities connect:
 
-- **requires**: Entity A requires Entity B
-- **applies_to**: Rule applies to a destination, role, or risk level
+- **requires**: Entity A requires Entity B (general dependency)
+- **applies_to**: Rule/policy applies to a location, role, or risk level
 - **triggers**: An event triggers a procedure or escalation
 - **escalates_to**: One role escalates to another
 - **prohibits**: A rule prohibits an action
 - **permits**: A rule permits an action
 - **provides**: An entity provides a service or coverage
-- **classified_as**: A destination is classified as a risk level
+- **classified_as**: A location is classified as a risk level
 - **managed_by**: A process is managed by a role
 - **part_of**: Entity is part of a larger entity (use this for list members!)
 - **references**: Entity references another entity
 - **implements**: A procedure implements a rule
-- **exceeds**: A value exceeds a threshold
 - **reports_to**: Role reports to another role
 - **responsible_for**: Role is responsible for a process or area
+- **specifies**: A requirement specifies a particular benefit, equipment, \
+training, or condition that must be met
+- **requires_approval_from**: A requirement or procedure requires approval \
+from a specific role
+- **must_comply_with**: An entity must comply with a policy or requirement
+- **mitigates**: A procedure, training, or equipment mitigates an incident \
+or risk level
 
 ### Relationship Structure
 
@@ -547,7 +587,7 @@ your actual output should be based on the section text):
     }},
     {{
       "id": "sec_01_doc_policy",
-      "type": "Document",
+      "type": "Policy",
       "name": "Travel Safety Policy",
       "description": "The organizational travel safety policy document",
       "attributes": {{
@@ -678,6 +718,14 @@ def _build_prompt(section: DocumentSection, all_sections: list[DocumentSection])
     return prompt
 
 
+def _extract_text_from_response(response) -> str:
+    """Extract the text content from a thinking-enabled API response."""
+    for block in response.content:
+        if block.type == "text":
+            return block.text
+    return ""
+
+
 def _parse_extraction_response(raw: str) -> dict:
     """Parse JSON from extraction response, stripping analysis tags and fences."""
     # Strip <extraction_analysis>...</extraction_analysis> thinking block
@@ -770,11 +818,12 @@ def extract_section(
 
     response = client.messages.create(
         model="claude-sonnet-4-20250514",
-        max_tokens=8192,
+        max_tokens=16384,
+        thinking=_THINKING_CONFIG,
         messages=[{"role": "user", "content": prompt}],
     )
 
-    raw = response.content[0].text
+    raw = _extract_text_from_response(response)
     data = _parse_extraction_response(raw)
     result = _build_section_extraction(data, section)
 
@@ -801,11 +850,12 @@ def _retry_extraction(
 
     response = client.messages.create(
         model="claude-sonnet-4-20250514",
-        max_tokens=8192,
+        max_tokens=16384,
+        thinking=_THINKING_CONFIG,
         messages=[{"role": "user", "content": retry_prefix + prompt}],
     )
 
-    raw = response.content[0].text
+    raw = _extract_text_from_response(response)
     data = _parse_extraction_response(raw)
     return _build_section_extraction(data, section)
 
@@ -824,7 +874,7 @@ async def _extract_section_async(
         _dbg(
             f"API CALL [{section.section_number}]",
             f"model: claude-sonnet-4-20250514\n"
-            f"max_tokens: 8192\n"
+            f"max_tokens: 16384 (thinking: {_THINKING_CONFIG['budget_tokens']})\n"
             f"prompt length: {len(prompt)} chars",
         )
 
@@ -833,7 +883,8 @@ async def _extract_section_async(
             try:
                 response = await client.messages.create(
                     model="claude-sonnet-4-20250514",
-                    max_tokens=8192,
+                    max_tokens=16384,
+                    thinking=_THINKING_CONFIG,
                     messages=[{"role": "user", "content": prompt}],
                 )
                 break
@@ -850,7 +901,7 @@ async def _extract_section_async(
                 else:
                     raise
 
-        raw = response.content[0].text
+        raw = _extract_text_from_response(response)
         _dbg(
             f"LLM RESPONSE [{section.section_number}] ({len(raw)} chars)",
             raw,
@@ -881,7 +932,8 @@ async def _extract_section_async(
                 try:
                     response = await client.messages.create(
                         model="claude-sonnet-4-20250514",
-                        max_tokens=8192,
+                        max_tokens=16384,
+                        thinking=_THINKING_CONFIG,
                         messages=[
                             {"role": "user", "content": retry_prefix + prompt}
                         ],
@@ -895,7 +947,7 @@ async def _extract_section_async(
                             raise
                     else:
                         raise
-            raw = response.content[0].text
+            raw = _extract_text_from_response(response)
             _dbg(
                 f"RETRY LLM RESPONSE [{section.section_number}] ({len(raw)} chars)",
                 raw,
