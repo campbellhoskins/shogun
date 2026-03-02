@@ -13,4 +13,6 @@ dependencies = [
     "pypdf>=6.7.4",
     "pymupdf>=1.27.1",
     "pymupdf4llm>=0.3.4",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
 ]

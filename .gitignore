@@ -16,6 +16,13 @@ output/graphs/
 
 # Keep output/parsed/ tracked (PDF-to-markdown conversions are useful to version)
 
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Screenshots (generated during testing)
+output/screenshot_*.png
+
 # OS files
 .DS_Store
 Thumbs.db

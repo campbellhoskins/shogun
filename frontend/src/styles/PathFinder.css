@@ -1,0 +1,192 @@
+.pathfinder {
+  padding: var(--panel-padding);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pathfinder-title {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+.pathfinder-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pathfinder-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.pathfinder-input-wrap {
+  position: relative;
+}
+
+.pathfinder-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.pathfinder-input::placeholder {
+  color: var(--text-muted);
+}
+
+.pathfinder-input:focus {
+  border-color: var(--accent-primary);
+}
+
+.pathfinder-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 2px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 50;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.pathfinder-dropdown-item {
+  padding: 6px 12px;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pathfinder-dropdown-item:hover {
+  background: var(--bg-highlight);
+}
+
+.pathfinder-dropdown-type {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.pathfinder-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.pathfinder-btn {
+  flex: 1;
+  height: 36px;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.pathfinder-btn-primary {
+  background: var(--accent-primary);
+  color: #fff;
+}
+
+.pathfinder-btn-primary:hover {
+  background: var(--accent-bright);
+  box-shadow: var(--glow-accent);
+}
+
+.pathfinder-btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pathfinder-btn-secondary {
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+}
+
+.pathfinder-btn-secondary:hover {
+  background: var(--bg-highlight);
+  color: var(--text-primary);
+}
+
+/* Path results */
+.pathfinder-results {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.pathfinder-result-header {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.pathfinder-no-paths {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 16px 0;
+}
+
+/* Single path */
+.path-result {
+  padding: 8px 10px;
+  background: var(--bg-elevated);
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+}
+
+.path-result-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.path-result-chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.path-result-arrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent-hot);
+}
+
+.path-result-rel {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent-primary);
+}
+
+.pathfinder-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  color: var(--text-muted);
+  font-size: 13px;
+}

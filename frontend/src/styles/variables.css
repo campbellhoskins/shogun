@@ -1,0 +1,43 @@
+:root {
+  /* Background layers */
+  --bg-void: #06070a;
+  --bg-primary: #0b0d14;
+  --bg-surface: #111422;
+  --bg-elevated: #171b2e;
+  --bg-highlight: #1e2340;
+
+  /* Text */
+  --text-primary: #e8e6e3;
+  --text-secondary: #8a8899;
+  --text-muted: #4e4d5e;
+
+  /* Accents */
+  --accent-primary: #818cf8;
+  --accent-bright: #a78bfa;
+  --accent-hot: #f59e0b;
+  --accent-danger: #ef4444;
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-accent: rgba(129, 140, 248, 0.3);
+
+  /* Glow effects */
+  --glow-accent: 0 0 15px rgba(129, 140, 248, 0.25);
+  --glow-hot: 0 0 15px rgba(245, 158, 11, 0.25);
+
+  /* Typography */
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Consolas', monospace;
+
+  /* Sizing */
+  --topbar-height: 48px;
+  --panel-left: 340px;
+  --panel-right: 380px;
+  --panel-padding: 16px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-medium: 300ms ease;
+  --transition-slide: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}

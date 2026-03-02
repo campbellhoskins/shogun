@@ -7,19 +7,22 @@ from pyvis.network import Network
 
 # Color palette by entity type
 TYPE_COLORS = {
-    "PolicyRule": "#4A90D9",
-    "RiskLevel": "#E74C3C",
-    "ApprovalRequirement": "#F39C12",
-    "InsuranceRequirement": "#2ECC71",
-    "VaccinationRequirement": "#9B59B6",
-    "Destination": "#1ABC9C",
+    "Organization": "#4A90D9",
     "Role": "#E67E22",
     "Person": "#D35400",
-    "Vendor": "#3498DB",
+    "GovernanceBody": "#3498DB",
+    "Policy": "#9B59B6",
+    "Definition": "#6C5CE7",
+    "RiskLevel": "#E74C3C",
     "Procedure": "#8E44AD",
-    "IncidentCategory": "#C0392B",
-    "CommunicationRequirement": "#16A085",
+    "Incident": "#C0392B",
+    "Threshold": "#F39C12",
+    "ContactInformation": "#16A085",
+    "Training": "#2ECC71",
     "Equipment": "#7F8C8D",
+    "Location": "#1ABC9C",
+    "Requirement": "#E84393",
+    "BenefitOrPackage": "#00CEC9",
 }
 
 DEFAULT_COLOR = "#95A5A6"

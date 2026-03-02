@@ -1,4 +1,6 @@
-# Shogun
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Why This Project Exists
 
@@ -14,16 +16,115 @@ The business thesis: Travel management companies run on **30% manual workflows**
 
 An engineer they hired from Amazon impressed Arjun by spending a weekend building an agent that ingests travel compliance data and constructs an ontology graph from it. I need to demonstrate the same kind of initiative — but go further. Instead of just parsing a document into a graph, this project shows the full pipeline:
 
-1. **Ingest** a real corporate duty of care policy document (PDF)
+1. **Ingest** a real corporate travel duty of care policy document (PDF)
 2. **Extract** a complete ontology graph — entities, relationships, attributes — that captures every rule, threshold, role, definition, and procedure
 3. **Reason** over the graph using an AI agent with tool-use that traverses the graph programmatically (not just dumping text into a prompt)
 4. **Evaluate** the quality of both the graph and the agent's answers against a ground-truth test set
 
 The sophistication matters because this mirrors what Shogun would actually deploy: take messy, unstructured policy documents from acquired TMCs and turn them into structured knowledge that agents can act on. If I can demonstrate this on duty of care policies, the same pattern extends to booking rules, fare rules, expense policies, and the PNR disruption workflows that are the core business opportunity.
 
+## Document Scope
+
+This project is exclusively focused on **travel duty of care** policies — documents from organizations (NGOs, international development orgs, corporations) that govern the safety, security, and wellbeing of personnel traveling or working in field locations, high-risk zones, and foreign countries. These documents contain travel-specific concepts like destination risk classifications, travel approval workflows, pre-travel security briefings, personnel tracking/check-in requirements, emergency evacuation procedures, and SEA (Sexual Exploitation and Abuse) compliance.
+
+**Not in scope:** Education/school duty of care policies (yard supervision, child safe standards, campus premises). These are a different document class with different entity types and have been removed from the data directory.
+
 ## The Bar
 
 Arjun specifically praised the Amazon engineer's initiative. The bar is not "interesting prototype" — it's "this person clearly understands the domain, the technical challenges, and can build production-quality tooling." Every piece of this project should reflect that standard.
+
+## Commands
+
+```bash
+# Setup
+uv sync                     # Install dependencies (uses uv, not pip)
+
+# Full pipeline: PDF -> ontology graph -> interactive Q&A
+uv run python -m src.main data/231123_Duty_of_Care_Policy.pdf
+
+# Individual pipeline stages (standalone CLIs)
+uv run python -m src.segmenter <input.md> -o <chunks.json>         # Stage 1: Semantic chunking
+uv run python -m src.extraction <chunks.json> -o <extractions.json> # Stage 2: Entity extraction
+uv run python -m src.extraction <chunks.json> --debug               # Stage 2 with full prompt/response tracing
+uv run python -m src.merge <extractions.json> <chunks.json> <source.md> -o <ontology.json>  # Stage 3: Merge
+
+# Legacy single-pass extraction (for A/B comparison)
+uv run python -m src.build_graph data/231123_Duty_of_Care_Policy.pdf --prompt 1
+uv run python -m src.build_graph --list
+
+# Graph validation (structural + coverage + source anchoring)
+uv run python -m src.validate data/231123_Duty_of_Care_Policy.pdf
+
+# Agent testing (verbose mode showing every tool call)
+uv run python -m src.test_agent --graph <graph_id>
+
+# Evaluation against Q&A test set
+uv run python -m src.eval --graph <graph_id> --qa data/231123_Duty_of_Care_Policy.qa.small.json
+
+# Generate Q&A test set from a policy document
+uv run python -m src.generate_qa data/231123_Duty_of_Care_Policy.pdf
+
+# Frontend: Interactive Ontology Explorer
+cd frontend && npm install && npm run build  # First time setup
+uv run python -m src.frontend --graph <path/to/ontology.json>  # Launch with specific graph
+uv run python -m src.frontend --latest                          # Launch with latest pipeline run
+uv run python -m src.frontend --graph data/extractions.json --port 8080  # Custom port
+
+# Frontend tests (Playwright — must have server running on :8789 first)
+cd frontend && npx playwright test                    # Run all tests
+cd frontend && npx playwright test --headed           # Run with visible browser
+cd frontend && npx playwright test zoom-controls      # Run specific test file
+cd frontend && npx playwright test --reporter=list    # Verbose output
+```
+
+## Architecture
+
+### Pipeline (Source-Anchored Extraction)
+
+The core pipeline is a three-stage process orchestrated by `src/pipeline.py`:
+
+```
+PDF → pdf_parser.py → markdown
+                         ↓
+                   [Stage 1] segmenter.py    → LLM semantic chunking → DocumentSection[]
+                         ↓
+                   [Stage 2] extraction.py   → Per-section entity extraction (async parallel) → SectionExtraction[]
+                         ↓
+                   [Stage 3] merge.py        → Deterministic dedup (union-find) → OntologyGraph
+                         ↓
+                   results.py saves to results/runs/{timestamp}_{policy}/
+```
+
+**Stage 1 (Segmenter):** Single LLM call breaks the document into semantic chunks with hierarchical metadata (parent sections, enumerated list detection). Post-hoc offset computation locates each chunk in the source document.
+
+**Stage 2 (Extraction):** Each chunk gets its own LLM call (async with semaphore-based concurrency control, default 2 concurrent). The extraction prompt enforces graph-first principles: entities are things, relationships are assertions, list members become individual nodes. Uses `<extraction_analysis>` chain-of-thought tags that get stripped before JSON parsing. Zero-entity results trigger an automatic retry with an aggressive prompt.
+
+**Stage 3 (Merge):** Deterministic deduplication using union-find over two tiers: exact base-ID match (after stripping section prefixes) and exact Name+Type match. Source offsets are verified against the original document using exact, normalized, and fuzzy (SequenceMatcher) matching.
+
+### Reasoning Agent
+
+`src/agent.py` implements a tool-use agent loop. The agent has NO access to the raw policy document — it can only query the ontology graph through six tools (`list_entity_types`, `find_entities`, `search_entities`, `get_entity`, `get_neighbors`, `find_paths`, `get_graph_summary`). This forces graph traversal rather than text retrieval, proving the graph's completeness.
+
+### Frontend (Ontology Explorer)
+
+`src/frontend.py` serves a React SPA (`frontend/`) via FastAPI. Three-panel layout: left (Path Finder + Agent Chat), center (vis-network force-directed graph), right (entity detail panel). The frontend talks to the graph exclusively through REST API endpoints (`/api/graph`, `/api/entity/{id}`, `/api/search`, `/api/paths`, `/api/agent/ask`). The agent chat calls the existing `ask()` function from `src/agent.py` via `run_in_threadpool`. Neo4j-ready architecture: swapping NetworkX for Neo4j later only changes backend endpoint implementations. API models live in `src/api_models.py`.
+
+### Evaluation
+
+`src/eval.py` runs the agent against a Q&A test set and uses a separate LLM judge call to score each answer on accuracy (0-3), completeness (0-2), and hallucination (0-1). Pass threshold is 4/6.
+
+### Data Models
+
+All Pydantic models live in `src/models.py`: `Entity`, `Relationship`, `OntologyGraph`, `DocumentSection`, `SectionExtraction`, `SourceAnchor`, `ExtractionMetadata`, `AgentResponse`. The `OntologyGraph` is the central model — it serializes to/from JSON and can be reconstructed via `OntologyGraph(**data)`.
+
+### Two Extraction Paths
+
+- **Current (pipeline):** `src/main.py` → `src/pipeline.py` → segmenter → extraction → merge. Multi-stage with source anchoring.
+- **Legacy (single-pass):** `src/build_graph.py` → `src/parser.py` (calls `parse_policy_legacy()`). Single LLM call, no source anchoring. Kept for A/B comparison. Saves to `output/graphs/`.
+
+### LLM Configuration
+
+All LLM calls use `claude-sonnet-4-20250514` via the Anthropic Python SDK except Q&A generation (`src/generate_qa.py`) which uses `claude-opus-4-20250514`. API key is loaded from `.env` via `python-dotenv`.
 
 ## Project Structure Conventions
 
@@ -91,12 +192,13 @@ Each file in a run directory has a fixed schema. Do not add ad-hoc files or chan
 | Data Type | Where It Lives |
 |-----------|---------------|
 | Source policy PDFs | `data/` |
-| PDF-to-markdown conversions | `output/parsed/` |
+| PDF-to-markdown conversions | `data/parser_1/`, `data/parser_2/` |
 | Q&A test sets | `data/*.qa.json` |
 | Pipeline run outputs (entities, relationships, ontology) | `results/runs/{run_id}/` |
 | Evaluation results (agent Q&A scoring) | `output/eval_results.json` |
 | Graph visualizations (interactive HTML) | `output/graph.html` |
 | Saved graphs (legacy format from `build_graph.py`) | `output/graphs/` |
+| Planning/design docs | `docs/` |
 
 ## Core Principles
 
@@ -104,3 +206,39 @@ Each file in a run directory has a fixed schema. Do not add ad-hoc files or chan
 - **Enterprise-grade quality.** Every decision should be evaluated as: "Would this hold up at scale with high-stakes compliance documents where errors have real consequences?"
 - **No shortcuts.** If a more robust solution exists — even if harder to implement — that is the correct choice.
 - **Correctness first, then performance.** A fast wrong answer is worthless. A slower correct answer is the standard.
+
+## Frontend Testing Standard (Mandatory)
+
+**Every frontend change MUST follow test-driven development with Playwright.**
+
+### Workflow (Red → Green)
+
+1. **Write the Playwright test first.** The test describes the desired behavior — what the UI should do after the change. Be specific: assert element visibility, click interactions, state transitions, visual regressions.
+2. **Run the test — it MUST FAIL.** This confirms the test is actually testing the new behavior, not something that already works. If it passes before you've made any code changes, the test is wrong.
+3. **Implement the frontend change.** Write the React/CSS code to make the feature work.
+4. **Run the test again — it MUST PASS.** If it doesn't, fix the implementation (not the test) until it does.
+5. **Run the full test suite** to confirm nothing else broke.
+
+### Test Infrastructure
+
+- Tests live in `frontend/tests/` as `*.spec.ts` files
+- Config: `frontend/playwright.config.ts`
+- Tests run against the frontend served at `http://localhost:8789` (start the server first)
+- Use `npx playwright test` from the `frontend/` directory
+
+### What to Test
+
+| Change Type | What to Assert |
+|-------------|---------------|
+| New UI component | Element exists, correct content, proper styling classes |
+| Interactive feature | Click/type triggers expected state change, correct elements appear/disappear |
+| Zoom/navigation | Scale changes, viewport shows expected nodes after action |
+| Panel open/close | Panel visibility, animation completion, content population |
+| API integration | Loading states, data rendering, error handling |
+
+### Rules
+
+1. **No frontend PR without tests.** Every frontend change must have a corresponding Playwright test.
+2. **Tests describe behavior, not implementation.** Test what the user sees and does, not internal React state.
+3. **Tests must be deterministic.** Use `waitFor` for async operations. Never rely on timing alone.
+4. **Test file naming:** `frontend/tests/{feature}.spec.ts` — one file per feature area.

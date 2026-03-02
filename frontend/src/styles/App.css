@@ -1,0 +1,55 @@
+.app {
+  display: grid;
+  grid-template-rows: var(--topbar-height) 1fr;
+  grid-template-columns: var(--panel-left) 1fr 0;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg-void);
+  transition: grid-template-columns var(--transition-slide);
+}
+
+.app.detail-open {
+  grid-template-columns: var(--panel-left) 1fr var(--panel-right);
+}
+
+.top-bar {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+
+.left-panel {
+  grid-row: 2;
+  grid-column: 1;
+  overflow: hidden;
+  background: var(--bg-surface);
+  border-right: 1px solid transparent;
+  border-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(129, 140, 248, 0.15) 30%,
+    rgba(129, 140, 248, 0.15) 70%,
+    transparent 100%
+  ) 1;
+}
+
+.graph-area {
+  grid-row: 2;
+  grid-column: 2;
+  position: relative;
+  overflow: hidden;
+}
+
+.right-panel {
+  grid-row: 2;
+  grid-column: 3;
+  overflow: hidden;
+  background: var(--bg-surface);
+  border-left: 1px solid transparent;
+  border-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(129, 140, 248, 0.15) 30%,
+    rgba(129, 140, 248, 0.15) 70%,
+    transparent 100%
+  ) 1;
+}

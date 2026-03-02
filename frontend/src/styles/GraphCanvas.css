@@ -1,0 +1,112 @@
+.graph-canvas-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: radial-gradient(ellipse at 50% 50%, #111422 0%, #08090d 70%);
+}
+
+.graph-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+/* Scanline overlay for heads-up display feel */
+.graph-canvas-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.008) 2px,
+    rgba(255, 255, 255, 0.008) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.graph-canvas .vis-network {
+  outline: none;
+}
+
+/* Loading state */
+.graph-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.graph-loading-text {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+}
+
+.graph-loading-text::after {
+  content: '';
+  animation: loading-dots 1.5s infinite;
+}
+
+@keyframes loading-dots {
+  0% { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+}
+
+/* Zoom controls */
+.zoom-controls {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: rgba(11, 13, 20, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.zoom-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.zoom-btn:hover {
+  background: var(--bg-highlight);
+  color: var(--text-primary);
+}
+
+.zoom-btn:active {
+  background: var(--accent-primary);
+  color: #fff;
+}
+
+.zoom-btn-fit {
+  font-size: 16px;
+}
+
+.zoom-divider {
+  height: 1px;
+  margin: 2px 4px;
+  background: var(--border-subtle);
+}
