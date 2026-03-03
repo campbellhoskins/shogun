@@ -29,6 +29,7 @@ from collections import defaultdict
 from src.models import (
     DocumentSection,
     ExtractionMetadata,
+    FirstPassResult,
     OntologyGraph,
     SectionExtraction,
 )
@@ -53,6 +54,7 @@ def save_run(
     pipeline_elapsed: float,
     stage_timings: dict[str, float] | None = None,
     semantic_dedup_log: list[dict] | None = None,
+    first_pass_result: FirstPassResult | None = None,
 ) -> Path:
     """Save a complete pipeline run.
 
@@ -90,6 +92,11 @@ def save_run(
         "deduplication_merges": meta.deduplication_merges,
         "semantic_dedup_merges": meta.semantic_dedup_merges,
         "semantic_dedup_api_calls": meta.semantic_dedup_api_calls,
+        "first_pass": {
+            "sections_identified": len(first_pass_result.document_map.sections),
+            "entities_pre_registered": len(first_pass_result.global_entity_pre_registration),
+            "cross_section_dependencies": len(first_pass_result.cross_section_dependencies),
+        } if first_pass_result else None,
         "source_anchoring": {
             "total_entities": len(ontology.entities),
             "anchored": sum(
@@ -123,6 +130,10 @@ def save_run(
             "enumerated_lists": [el.model_dump() for el in s.enumerated_lists],
         })
     _write_json(run_dir / "sections.json", sections_data)
+
+    # --- first_pass.json ---
+    if first_pass_result is not None:
+        _write_json(run_dir / "first_pass.json", first_pass_result.model_dump())
 
     # --- extractions.json ---
     extractions_data = []
@@ -220,7 +231,7 @@ def load_run(run_id: str) -> dict:
         raise FileNotFoundError(f"Run not found: {run_dir}")
 
     result = {}
-    for name in ["run_meta", "sections", "extractions", "ontology", "entities", "relationships", "semantic_dedup"]:
+    for name in ["run_meta", "sections", "first_pass", "extractions", "ontology", "entities", "relationships", "semantic_dedup"]:
         filepath = run_dir / f"{name}.json"
         if filepath.exists():
             result[name] = json.loads(filepath.read_text(encoding="utf-8"))

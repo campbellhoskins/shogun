@@ -5,6 +5,8 @@ export interface GraphNode {
   description: string;
   degree: number;
   color: string;
+  level: number;
+  group: string;
 }
 
 export interface GraphEdge {
@@ -19,6 +21,7 @@ export interface GraphData {
   edges: GraphEdge[];
   source_document: string;
   type_colors: Record<string, string>;
+  entity_groups: string[];
 }
 
 export interface GraphStats {
@@ -82,4 +85,20 @@ export interface ChatMessage {
   content: string;
   referenced_entities?: EntitySummary[];
   timestamp: number;
+}
+
+export interface CascadeStep {
+  node_id: string;
+  node_name: string;
+  node_type: string;
+  depth: number;
+  parent_node_id: string | null;
+  edge_type: string;
+}
+
+export interface CascadeResponse {
+  event_name: string;
+  steps: CascadeStep[];
+  node_ids: string[];
+  edge_keys: string[];
 }

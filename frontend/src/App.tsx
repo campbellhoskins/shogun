@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { api } from './api';
-import type { GraphData, GraphStats, EntityDetail, ChatMessage } from './types';
+import type { GraphData, GraphStats, EntityDetail, ChatMessage, CascadeResponse } from './types';
 import TopBar from './components/TopBar';
 import GraphCanvas, { type GraphCanvasHandle } from './components/GraphCanvas';
 import Legend from './components/Legend';
@@ -15,8 +15,10 @@ export default function App() {
   const [nodeDetail, setNodeDetail] = useState<EntityDetail | null>(null);
   const [highlightedNodeIds, setHighlightedNodeIds] = useState<Set<string>>(new Set());
   const [highlightedEdgeKeys, setHighlightedEdgeKeys] = useState<Set<string>>(new Set());
-  const [leftTab, setLeftTab] = useState<'pathfinder' | 'chat'>('pathfinder');
+  const [leftTab, setLeftTab] = useState<'pathfinder' | 'chat' | 'cascade'>('pathfinder');
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [cascade, setCascade] = useState<CascadeResponse | null>(null);
+  const [collapsedNodeIds, setCollapsedNodeIds] = useState<Set<string>>(new Set());
 
   const graphRef = useRef<GraphCanvasHandle>(null);
 
@@ -36,39 +38,109 @@ export default function App() {
       if (e.key === 'Escape') {
         setSelectedNodeId(null);
         setNodeDetail(null);
+        setHighlightedNodeIds(new Set());
+        setHighlightedEdgeKeys(new Set());
+        setCascade(null);
       }
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, []);
 
-  const handleNodeClick = useCallback(async (nodeId: string) => {
+  /** Compute the 1-hop neighborhood of a node from graphData. */
+  const computeNeighborHighlight = useCallback((nodeId: string) => {
+    if (!graphData) return { nodeIds: new Set<string>(), edgeKeys: new Set<string>() };
+
+    const nodeIds = new Set<string>([nodeId]);
+    const edgeKeys = new Set<string>();
+
+    for (const edge of graphData.edges) {
+      if (edge.from_id === nodeId) {
+        nodeIds.add(edge.to_id);
+        edgeKeys.add(`${edge.from_id}->${edge.to_id}`);
+      }
+      if (edge.to_id === nodeId) {
+        nodeIds.add(edge.from_id);
+        edgeKeys.add(`${edge.from_id}->${edge.to_id}`);
+      }
+    }
+
+    return { nodeIds, edgeKeys };
+  }, [graphData]);
+
+  /** Shared logic: load entity detail, highlight neighborhood, cascade for TravelEvents. */
+  const selectAndHighlight = useCallback(async (nodeId: string) => {
+    // If the node is already highlighted, just show its detail — don't recompute
+    if (highlightedNodeIds.has(nodeId) && highlightedNodeIds.size > 0) {
+      setSelectedNodeId(nodeId);
+      try {
+        const detail = await api.getEntity(nodeId);
+        setNodeDetail(detail);
+      } catch (err) {
+        console.error('Failed to load entity:', err);
+      }
+      return;
+    }
+
+    // New node not in current highlight — switch highlight to it
     setSelectedNodeId(nodeId);
+
     try {
       const detail = await api.getEntity(nodeId);
       setNodeDetail(detail);
+
+      // TravelEvent: use BFS cascade for deeper downstream tracing
+      if (detail.type === 'TravelEvent') {
+        try {
+          const cascadeResult = await api.getCascade(nodeId);
+          setCascade(cascadeResult);
+          setLeftTab('cascade');
+          setHighlightedNodeIds(new Set(cascadeResult.node_ids));
+          setHighlightedEdgeKeys(new Set(cascadeResult.edge_keys));
+        } catch (err) {
+          console.error('Failed to get cascade:', err);
+          // Fall back to 1-hop highlight
+          const { nodeIds, edgeKeys } = computeNeighborHighlight(nodeId);
+          setHighlightedNodeIds(nodeIds);
+          setHighlightedEdgeKeys(edgeKeys);
+        }
+      } else {
+        // All other entity types: 1-hop neighborhood highlight
+        setCascade(null);
+        const { nodeIds, edgeKeys } = computeNeighborHighlight(nodeId);
+        setHighlightedNodeIds(nodeIds);
+        setHighlightedEdgeKeys(edgeKeys);
+      }
     } catch (err) {
       console.error('Failed to load entity:', err);
     }
-  }, []);
+  }, [highlightedNodeIds, computeNeighborHighlight]);
+
+  const handleNodeClick = useCallback(async (nodeId: string) => {
+    await selectAndHighlight(nodeId);
+  }, [selectAndHighlight]);
 
   const handleBackgroundClick = useCallback(() => {
     setSelectedNodeId(null);
     setNodeDetail(null);
+    setHighlightedNodeIds(new Set());
+    setHighlightedEdgeKeys(new Set());
+    setCascade(null);
   }, []);
 
   const navigateToEntity = useCallback(async (entityId: string) => {
-    setSelectedNodeId(entityId);
     graphRef.current?.focusNode(entityId);
-    try {
-      const detail = await api.getEntity(entityId);
-      setNodeDetail(detail);
-    } catch (err) {
-      console.error('Failed to load entity:', err);
-    }
-  }, []);
+    await selectAndHighlight(entityId);
+  }, [selectAndHighlight]);
 
   const clearHighlights = useCallback(() => {
+    setHighlightedNodeIds(new Set());
+    setHighlightedEdgeKeys(new Set());
+    setCascade(null);
+  }, []);
+
+  const handleClearCascade = useCallback(() => {
+    setCascade(null);
     setHighlightedNodeIds(new Set());
     setHighlightedEdgeKeys(new Set());
   }, []);
@@ -78,9 +150,27 @@ export default function App() {
     setHighlightedEdgeKeys(edgeKeys);
   }, []);
 
+  const handleNodeDoubleClick = useCallback((nodeId: string) => {
+    if (!graphData) return;
+    const node = graphData.nodes.find((n) => n.id === nodeId);
+    if (!node) return;
+    // Only allow collapse on PolicySection and PolicyRule types
+    if (node.type === 'PolicySection' || node.type === 'PolicyRule') {
+      setCollapsedNodeIds((prev) => {
+        const next = new Set(prev);
+        if (next.has(nodeId)) next.delete(nodeId);
+        else next.add(nodeId);
+        return next;
+      });
+    }
+  }, [graphData]);
+
   const handleFitToScreen = useCallback(() => {
     setSelectedNodeId(null);
     setNodeDetail(null);
+    setHighlightedNodeIds(new Set());
+    setHighlightedEdgeKeys(new Set());
+    setCascade(null);
     graphRef.current?.fitToScreen();
   }, []);
 
@@ -108,6 +198,8 @@ export default function App() {
           onEntitySelect={navigateToEntity}
           chatMessages={chatMessages}
           onChatMessagesChange={setChatMessages}
+          cascade={cascade}
+          onClearCascade={handleClearCascade}
         />
       </div>
 
@@ -118,8 +210,10 @@ export default function App() {
           selectedNodeId={selectedNodeId}
           highlightedNodeIds={highlightedNodeIds}
           highlightedEdgeKeys={highlightedEdgeKeys}
+          collapsedNodeIds={collapsedNodeIds}
           onNodeClick={handleNodeClick}
           onBackgroundClick={handleBackgroundClick}
+          onNodeDoubleClick={handleNodeDoubleClick}
         />
         <Legend stats={stats} typeColors={typeColors} />
       </div>

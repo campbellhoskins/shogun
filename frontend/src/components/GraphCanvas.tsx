@@ -1,7 +1,7 @@
 import { useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { Network, DataSet } from 'vis-network/standalone';
 import type { GraphData } from '../types';
-import { TYPE_SHAPES, DEFAULT_SHAPE, PHYSICS_OPTIONS } from '../constants';
+import { TYPE_SHAPES, DEFAULT_SHAPE, PHYSICS_OPTIONS, LAYOUT_OPTIONS } from '../constants';
 import '../styles/GraphCanvas.css';
 
 interface Props {
@@ -9,8 +9,10 @@ interface Props {
   selectedNodeId: string | null;
   highlightedNodeIds: Set<string>;
   highlightedEdgeKeys: Set<string>;
+  collapsedNodeIds: Set<string>;
   onNodeClick: (nodeId: string) => void;
   onBackgroundClick: () => void;
+  onNodeDoubleClick: (nodeId: string) => void;
 }
 
 export interface GraphCanvasHandle {
@@ -23,8 +25,10 @@ const GraphCanvas = forwardRef<GraphCanvasHandle, Props>(({
   selectedNodeId,
   highlightedNodeIds,
   highlightedEdgeKeys,
+  collapsedNodeIds,
   onNodeClick,
   onBackgroundClick,
+  onNodeDoubleClick,
 }, ref) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const networkRef = useRef<Network | null>(null);
@@ -52,44 +56,76 @@ const GraphCanvas = forwardRef<GraphCanvasHandle, Props>(({
     },
   }));
 
+  // Compute which nodes/edges are hidden by collapsed ancestors
+  const getHiddenNodeIds = useCallback((data: GraphData, collapsed: Set<string>): Set<string> => {
+    if (collapsed.size === 0) return new Set();
+
+    // Build adjacency: for each node, find outgoing edge targets
+    const children = new Map<string, string[]>();
+    for (const e of data.edges) {
+      if (!children.has(e.from_id)) children.set(e.from_id, []);
+      children.get(e.from_id)!.push(e.to_id);
+    }
+
+    const hidden = new Set<string>();
+    // BFS from each collapsed node, hiding all descendants
+    for (const collapsedId of collapsed) {
+      const queue = children.get(collapsedId) || [];
+      for (const child of queue) {
+        if (hidden.has(child) || child === collapsedId) continue;
+        hidden.add(child);
+        const grandchildren = children.get(child) || [];
+        for (const gc of grandchildren) {
+          if (!hidden.has(gc)) queue.push(gc);
+        }
+      }
+    }
+    return hidden;
+  }, []);
+
   // Initialize network when graphData loads
   useEffect(() => {
     if (!containerRef.current || !graphData) return;
     graphDataRef.current = graphData;
 
     const nodes = new DataSet(
-      graphData.nodes.map((n) => ({
-        id: n.id,
-        label: n.name,
-        shape: TYPE_SHAPES[n.type] || DEFAULT_SHAPE,
-        color: {
-          background: n.color,
-          border: n.color,
-          highlight: { background: n.color, border: '#f59e0b' },
-          hover: { background: n.color, border: '#818cf8' },
-        },
-        size: Math.max(12, Math.min(36, 12 + n.degree * 2.5)),
-        font: {
-          color: '#e8e6e3',
-          size: 13,
-          face: "'IBM Plex Sans', system-ui, sans-serif",
-          strokeWidth: 3,
-          strokeColor: '#0b0d14',
-          vadjust: -2,
-        },
-        scaling: {
-          label: { enabled: true, min: 10, max: 16, drawThreshold: 8 },
-        },
-        borderWidth: 2,
-        borderWidthSelected: 3,
-        shadow: {
-          enabled: true,
-          color: n.color + '30',
-          size: 12,
-          x: 0,
-          y: 0,
-        },
-      })),
+      graphData.nodes.map((n) => {
+        const isTravelEvent = n.type === 'TravelEvent';
+        return {
+          id: n.id,
+          label: n.name,
+          title: `${n.name} [${n.type}]`,
+          level: n.level,
+          shape: TYPE_SHAPES[n.type] || DEFAULT_SHAPE,
+          color: {
+            background: n.color,
+            border: n.color,
+            highlight: { background: n.color, border: '#f59e0b' },
+            hover: { background: n.color, border: '#818cf8' },
+          },
+          size: isTravelEvent ? 28 : Math.max(12, Math.min(36, 12 + n.degree * 2.5)),
+          font: {
+            color: '#e8e6e3',
+            size: 13,
+            face: "'IBM Plex Sans', system-ui, sans-serif",
+            strokeWidth: 3,
+            strokeColor: '#0b0d14',
+            vadjust: -2,
+          },
+          scaling: {
+            label: { enabled: true, min: 10, max: 16, drawThreshold: 8 },
+          },
+          borderWidth: isTravelEvent ? 3 : 2,
+          borderWidthSelected: 3,
+          shadow: {
+            enabled: true,
+            color: n.color + '30',
+            size: 12,
+            x: 0,
+            y: 0,
+          },
+        };
+      }),
     );
 
     const edges = new DataSet(
@@ -103,15 +139,16 @@ const GraphCanvas = forwardRef<GraphCanvasHandle, Props>(({
         arrows: { to: { enabled: true, scaleFactor: 0.7 } },
         color: { color: '#3a3a5c', highlight: '#f59e0b', hover: '#555580' },
         font: {
-          size: 9,
-          color: '#5a5a7a',
+          size: 10,
+          color: '#6a6a8a',
           face: "'IBM Plex Sans', system-ui, sans-serif",
           align: 'middle',
           strokeWidth: 2,
           strokeColor: '#0b0d14',
+          background: '#0b0d14',
         },
-        smooth: { enabled: true, type: 'cubicBezier', roundness: 0.3 },
-        width: 1,
+        smooth: { enabled: true, type: 'curvedCW', roundness: 0.15 },
+        width: 1.2,
         hoverWidth: 0.5,
       })),
     );
@@ -133,9 +170,7 @@ const GraphCanvas = forwardRef<GraphCanvasHandle, Props>(({
           zoomView: true,
           dragView: true,
         },
-        layout: {
-          improvedLayout: true,
-        },
+        layout: LAYOUT_OPTIONS,
       },
     );
 
@@ -149,9 +184,11 @@ const GraphCanvas = forwardRef<GraphCanvasHandle, Props>(({
       }
     });
 
-    // Double-click on background to fit entire graph
+    // Double-click: on node -> toggle collapse, on background -> fit
     network.on('doubleClick', (params: any) => {
-      if (params.nodes.length === 0) {
+      if (params.nodes.length > 0) {
+        onNodeDoubleClick(params.nodes[0]);
+      } else {
         lastFocusedRef.current = null;
         network.fit({ animation: { duration: 500, easingFunction: 'easeInOutQuad' } });
       }
@@ -192,6 +229,129 @@ const GraphCanvas = forwardRef<GraphCanvasHandle, Props>(({
     });
     networkRef.current.selectNodes([selectedNodeId]);
   }, [selectedNodeId]);
+
+  // Handle collapsed node visibility
+  useEffect(() => {
+    if (!nodesRef.current || !edgesRef.current || !graphDataRef.current) return;
+
+    const hidden = getHiddenNodeIds(graphDataRef.current, collapsedNodeIds);
+    const allNodes = graphDataRef.current.nodes;
+    const allEdges = graphDataRef.current.edges;
+
+    // Compute child counts for collapsed nodes
+    const childCounts = new Map<string, number>();
+    if (collapsedNodeIds.size > 0) {
+      for (const cid of collapsedNodeIds) {
+        const h = getHiddenNodeIds(graphDataRef.current, new Set([cid]));
+        childCounts.set(cid, h.size);
+      }
+    }
+
+    // Update node visibility: remove hidden, add visible
+    const currentNodeIds = new Set(nodesRef.current.getIds() as string[]);
+    const visibleNodes = allNodes.filter((n) => !hidden.has(n.id));
+    const visibleNodeIds = new Set(visibleNodes.map((n) => n.id));
+
+    // Remove nodes that should be hidden
+    const toRemove = [...currentNodeIds].filter((id) => !visibleNodeIds.has(id));
+    if (toRemove.length > 0) nodesRef.current.remove(toRemove);
+
+    // Add nodes that should be visible but aren't
+    const toAdd = visibleNodes.filter((n) => !currentNodeIds.has(n.id));
+    if (toAdd.length > 0) {
+      nodesRef.current.add(toAdd.map((n) => {
+        const isTravelEvent = n.type === 'TravelEvent';
+        return {
+          id: n.id,
+          label: n.name,
+          title: `${n.name} [${n.type}]`,
+          level: n.level,
+          shape: TYPE_SHAPES[n.type] || DEFAULT_SHAPE,
+          color: {
+            background: n.color,
+            border: n.color,
+            highlight: { background: n.color, border: '#f59e0b' },
+            hover: { background: n.color, border: '#818cf8' },
+          },
+          size: isTravelEvent ? 28 : Math.max(12, Math.min(36, 12 + n.degree * 2.5)),
+          font: {
+            color: '#e8e6e3',
+            size: 13,
+            face: "'IBM Plex Sans', system-ui, sans-serif",
+            strokeWidth: 3,
+            strokeColor: '#0b0d14',
+            vadjust: -2,
+          },
+          borderWidth: isTravelEvent ? 3 : 2,
+          borderWidthSelected: 3,
+          shadow: { enabled: true, color: n.color + '30', size: 12, x: 0, y: 0 },
+        };
+      }));
+    }
+
+    // Update labels for collapsed nodes to show count badge
+    for (const [cid, count] of childCounts) {
+      const node = allNodes.find((n) => n.id === cid);
+      if (node && nodesRef.current.get(cid)) {
+        nodesRef.current.update({
+          id: cid,
+          label: `${node.name} [+${count}]`,
+        });
+      }
+    }
+
+    // Restore labels for uncollapsed nodes
+    for (const n of allNodes) {
+      if (!collapsedNodeIds.has(n.id) && nodesRef.current.get(n.id)) {
+        const current = nodesRef.current.get(n.id);
+        if (current && current.label !== n.name) {
+          nodesRef.current.update({ id: n.id, label: n.name });
+        }
+      }
+    }
+
+    // Update edges: remove edges involving hidden nodes, add back visible ones
+    const currentEdgeIds = new Set(edgesRef.current.getIds() as string[]);
+    const visibleEdges = allEdges.filter(
+      (e) => !hidden.has(e.from_id) && !hidden.has(e.to_id),
+    );
+    const visibleEdgeIds = new Set(visibleEdges.map((_, i) => `edge-${allEdges.indexOf(_)}`));
+
+    const edgesToRemove = [...currentEdgeIds].filter((id) => !visibleEdgeIds.has(id));
+    if (edgesToRemove.length > 0) edgesRef.current.remove(edgesToRemove);
+
+    const existingEdgeIds = new Set(edgesRef.current.getIds() as string[]);
+    const edgesToAdd = visibleEdges.filter((e) => {
+      const idx = allEdges.indexOf(e);
+      return !existingEdgeIds.has(`edge-${idx}`);
+    });
+    if (edgesToAdd.length > 0) {
+      edgesRef.current.add(edgesToAdd.map((e) => {
+        const idx = allEdges.indexOf(e);
+        return {
+          id: `edge-${idx}`,
+          from: e.from_id,
+          to: e.to_id,
+          label: e.type,
+          _fromId: e.from_id,
+          _toId: e.to_id,
+          arrows: { to: { enabled: true, scaleFactor: 0.7 } },
+          color: { color: '#3a3a5c', highlight: '#f59e0b', hover: '#555580' },
+          font: {
+            size: 9,
+            color: '#5a5a7a',
+            face: "'IBM Plex Sans', system-ui, sans-serif",
+            align: 'middle' as const,
+            strokeWidth: 2,
+            strokeColor: '#0b0d14',
+          },
+          smooth: { enabled: true, type: 'curvedCW' as const, roundness: 0.15 },
+          width: 1,
+          hoverWidth: 0.5,
+        };
+      }));
+    }
+  }, [collapsedNodeIds, getHiddenNodeIds]);
 
   // Update highlights for paths
   useEffect(() => {

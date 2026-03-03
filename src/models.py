@@ -38,6 +38,60 @@ class DocumentSection(BaseModel):
     parent_header: str | None = None
     hierarchical_path: list[HierarchyEntry] = []
     enumerated_lists: list[EnumeratedList] = []
+    section_id: str = ""  # SEC-XX from first pass (e.g. "SEC-04")
+    section_purpose: str = ""  # Functional classification from first pass
+    section_summary: str = ""  # One-sentence summary from first pass
+
+
+# --- First Pass Models ---
+
+
+class FirstPassSection(BaseModel):
+    """A section from the first pass document map."""
+
+    section_id: str = ""  # SEC-01, SEC-02, SEC-02a, etc.
+    section_name: str = ""  # Exact heading from document
+    section_order: int = 0  # Ordinal position (1-based)
+    section_purpose: str = ""  # 3-7 word functional description
+    section_summary: str = ""  # One sentence in context of full doc
+    beginning_text: str = ""  # First 40-60 words verbatim (for chunk location)
+
+
+class FirstPassDocumentMap(BaseModel):
+    """Document identity and section inventory from the first pass."""
+
+    document_title: str = ""
+    issuing_organization: str = ""
+    effective_date: str | None = None
+    document_purpose_summary: str = ""
+    sections: list[FirstPassSection] = []
+
+
+class FirstPassEntity(BaseModel):
+    """A pre-registered global entity from the first pass."""
+
+    entity_name: str = ""
+    candidate_types: list[str] = []
+    mentioned_in_sections: list[str] = []
+    brief_description: str = ""
+
+
+class FirstPassDependency(BaseModel):
+    """A cross-section dependency from the first pass."""
+
+    primary_section_id: str = ""
+    dependent_section_id: str = ""
+    dependency_type: str = ""  # MODIFIES|REFERENCES|CONDITIONALLY_APPLIES|DEFINES_TERM_USED_BY|OVERRIDES|REQUIRES_CONTEXT_FROM
+    dependency_description: str = ""
+
+
+class FirstPassResult(BaseModel):
+    """Complete output of the first pass document analysis."""
+
+    document_map: FirstPassDocumentMap = Field(default_factory=FirstPassDocumentMap)
+    global_entity_pre_registration: list[FirstPassEntity] = []
+    pre_registration_scope_note: str = ""
+    cross_section_dependencies: list[FirstPassDependency] = []
 
 
 # --- Core Graph Models ---

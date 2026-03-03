@@ -21,6 +21,8 @@ class GraphNode(BaseModel):
     description: str
     degree: int
     color: str
+    level: int = 5
+    group: str = ""
 
 
 class GraphEdge(BaseModel):
@@ -35,6 +37,7 @@ class GraphData(BaseModel):
     edges: list[GraphEdge]
     source_document: str
     type_colors: dict[str, str]
+    entity_groups: list[str] = []
 
 
 # --- GET /api/graph/stats ---
@@ -116,3 +119,27 @@ class AgentAnswer(BaseModel):
     answer: str
     referenced_entities: list[EntitySummary]
     reasoning_path: str
+
+
+# --- POST /api/cascade ---
+
+
+class CascadeRequest(BaseModel):
+    event_node_id: str
+    max_depth: int = 10
+
+
+class CascadeStep(BaseModel):
+    node_id: str
+    node_name: str
+    node_type: str
+    depth: int
+    parent_node_id: str | None = None
+    edge_type: str = ""
+
+
+class CascadeResponse(BaseModel):
+    event_name: str
+    steps: list[CascadeStep]
+    node_ids: list[str]
+    edge_keys: list[str]

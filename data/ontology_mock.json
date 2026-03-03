@@ -1,0 +1,845 @@
+{
+  "entities": [
+    {
+      "id": "policy-duty-of-care",
+      "type": "Policy",
+      "name": "Duty of Care Travel Policy",
+      "description": "Organization-wide policy governing safety, security, and wellbeing of personnel traveling internationally.",
+      "source_anchor": {"source_text": "Duty of Care Travel Policy v2.1", "source_section": "Cover", "source_offset": 0},
+      "version": "2.1",
+      "effective_date": "2023-11-23",
+      "issuing_organization": "Global Relief International",
+      "jurisdiction": "Global",
+      "last_reviewed_by": "Executive Director"
+    },
+    {
+      "id": "section-air-travel",
+      "type": "PolicySection",
+      "name": "Air Travel",
+      "description": "Section governing all air travel arrangements, booking requirements, and class-of-service rules.",
+      "source_anchor": {"source_text": "Section 4: Air Travel", "source_section": "4", "source_offset": 3200},
+      "section_order": 4,
+      "parent_policy_id": "policy-duty-of-care",
+      "topic": "Air Travel"
+    },
+    {
+      "id": "section-lodging",
+      "type": "PolicySection",
+      "name": "Lodging & Accommodation",
+      "description": "Section governing hotel bookings, rate limits, and accommodation standards.",
+      "source_anchor": {"source_text": "Section 5: Lodging", "source_section": "5", "source_offset": 5100},
+      "section_order": 5,
+      "parent_policy_id": "policy-duty-of-care",
+      "topic": "Lodging"
+    },
+    {
+      "id": "section-ground-transport",
+      "type": "PolicySection",
+      "name": "Ground Transportation",
+      "description": "Section governing rental cars, ride-shares, and ground transport options.",
+      "source_anchor": {"source_text": "Section 6: Ground Transportation", "source_section": "6", "source_offset": 7000},
+      "section_order": 6,
+      "parent_policy_id": "policy-duty-of-care",
+      "topic": "Ground Transportation"
+    },
+    {
+      "id": "section-meals",
+      "type": "PolicySection",
+      "name": "Meals & Entertainment",
+      "description": "Section governing meal allowances and entertainment expenses during travel.",
+      "source_anchor": {"source_text": "Section 7: Meals", "source_section": "7", "source_offset": 8500},
+      "section_order": 7,
+      "parent_policy_id": "policy-duty-of-care",
+      "topic": "Meals & Entertainment"
+    },
+    {
+      "id": "section-risk-zones",
+      "type": "PolicySection",
+      "name": "High-Risk Zone Travel",
+      "description": "Section governing travel to destinations classified as elevated or extreme risk.",
+      "source_anchor": {"source_text": "Section 8: High-Risk Zone Travel", "source_section": "8", "source_offset": 10200},
+      "section_order": 8,
+      "parent_policy_id": "policy-duty-of-care",
+      "topic": "High-Risk Zones"
+    },
+    {
+      "id": "section-emergency",
+      "type": "PolicySection",
+      "name": "Emergency Procedures",
+      "description": "Section governing emergency response, evacuation, and crisis management during travel.",
+      "source_anchor": {"source_text": "Section 9: Emergency Procedures", "source_section": "9", "source_offset": 12500},
+      "section_order": 9,
+      "parent_policy_id": "policy-duty-of-care",
+      "topic": "Emergency Procedures"
+    },
+    {
+      "id": "rule-economy-default",
+      "type": "PolicyRule",
+      "name": "Economy Class Default",
+      "description": "All domestic and international flights under 6 hours must be booked in economy class.",
+      "source_anchor": {"source_text": "All flights under 6 hours shall be booked in economy class", "source_section": "4.1", "source_offset": 3300},
+      "rule_text": "All flights under 6 hours shall be booked in economy class.",
+      "rule_type": "mandatory",
+      "enforcement_level": "strict",
+      "parent_section_id": "section-air-travel",
+      "is_default": true
+    },
+    {
+      "id": "rule-business-class-allowed",
+      "type": "PolicyRule",
+      "name": "Business Class for Long-Haul",
+      "description": "Flights over 6 hours may be booked in business class with manager pre-approval.",
+      "source_anchor": {"source_text": "Flights exceeding 6 hours may be booked in business class with prior manager approval", "source_section": "4.2", "source_offset": 3500},
+      "rule_text": "Flights exceeding 6 hours may be booked in business class with prior manager approval.",
+      "rule_type": "recommended",
+      "enforcement_level": "discretionary",
+      "parent_section_id": "section-air-travel",
+      "is_default": false
+    },
+    {
+      "id": "rule-advance-booking",
+      "type": "PolicyRule",
+      "name": "14-Day Advance Booking",
+      "description": "Air tickets should be purchased at least 14 days before departure to secure lowest fares.",
+      "source_anchor": {"source_text": "Tickets should be purchased at least 14 calendar days before departure", "source_section": "4.3", "source_offset": 3700},
+      "rule_text": "Tickets should be purchased at least 14 calendar days before departure.",
+      "rule_type": "recommended",
+      "enforcement_level": "discretionary",
+      "parent_section_id": "section-air-travel",
+      "is_default": false
+    },
+    {
+      "id": "rule-preferred-airline",
+      "type": "PolicyRule",
+      "name": "Preferred Airline Selection",
+      "description": "Travelers must use contracted preferred airlines unless the fare differential exceeds $200.",
+      "source_anchor": {"source_text": "Preferred airlines must be used unless fare differential exceeds $200", "source_section": "4.4", "source_offset": 3900},
+      "rule_text": "Preferred airlines must be used unless fare differential exceeds $200.",
+      "rule_type": "mandatory",
+      "enforcement_level": "strict",
+      "parent_section_id": "section-air-travel",
+      "is_default": false
+    },
+    {
+      "id": "rule-hotel-rate-cap",
+      "type": "PolicyRule",
+      "name": "Hotel Rate Cap",
+      "description": "Hotel bookings must not exceed the per-diem rate for the destination city as published by GSA.",
+      "source_anchor": {"source_text": "Hotel rates shall not exceed the published GSA per-diem rate", "source_section": "5.1", "source_offset": 5200},
+      "rule_text": "Hotel rates shall not exceed the published GSA per-diem rate for the destination city.",
+      "rule_type": "mandatory",
+      "enforcement_level": "strict",
+      "parent_section_id": "section-lodging",
+      "is_default": true
+    },
+    {
+      "id": "rule-safety-features",
+      "type": "PolicyRule",
+      "name": "Hotel Safety Features Required",
+      "description": "Hotels must have functioning door locks, in-room safes, and 24-hour front desk in high-risk zones.",
+      "source_anchor": {"source_text": "Hotels in high-risk zones must have functioning locks, safes, and 24-hour front desk", "source_section": "5.3", "source_offset": 5600},
+      "rule_text": "Hotels in high-risk zones must have functioning door locks, in-room safes, and 24-hour front desk.",
+      "rule_type": "mandatory",
+      "enforcement_level": "strict",
+      "parent_section_id": "section-lodging",
+      "is_default": false
+    },
+    {
+      "id": "rule-rental-car-size",
+      "type": "PolicyRule",
+      "name": "Compact/Mid-Size Default",
+      "description": "Rental cars must be compact or mid-size unless group travel or security requirements justify larger.",
+      "source_anchor": {"source_text": "Rental cars shall be compact or mid-size", "source_section": "6.1", "source_offset": 7100},
+      "rule_text": "Rental cars shall be compact or mid-size.",
+      "rule_type": "mandatory",
+      "enforcement_level": "discretionary",
+      "parent_section_id": "section-ground-transport",
+      "is_default": true
+    },
+    {
+      "id": "rule-meal-per-diem",
+      "type": "PolicyRule",
+      "name": "Meal Per Diem Limit",
+      "description": "Daily meal expenses must not exceed $75 domestic / $100 international without pre-approval.",
+      "source_anchor": {"source_text": "Meal expenses shall not exceed $75 domestic or $100 international per day", "source_section": "7.1", "source_offset": 8600},
+      "rule_text": "Meal expenses shall not exceed $75 domestic or $100 international per day.",
+      "rule_type": "mandatory",
+      "enforcement_level": "strict",
+      "parent_section_id": "section-meals",
+      "is_default": true
+    },
+    {
+      "id": "rule-high-risk-approval",
+      "type": "PolicyRule",
+      "name": "High-Risk Zone Pre-Approval",
+      "description": "Travel to countries classified as High or Extreme risk requires written approval from the Executive Director.",
+      "source_anchor": {"source_text": "Travel to High or Extreme risk destinations requires Executive Director written approval", "source_section": "8.1", "source_offset": 10300},
+      "rule_text": "Travel to High or Extreme risk destinations requires Executive Director written approval.",
+      "rule_type": "mandatory",
+      "enforcement_level": "strict",
+      "parent_section_id": "section-risk-zones",
+      "is_default": false
+    },
+    {
+      "id": "rule-security-briefing",
+      "type": "PolicyRule",
+      "name": "Pre-Travel Security Briefing",
+      "description": "All travelers to high-risk zones must complete a security briefing within 72 hours of departure.",
+      "source_anchor": {"source_text": "Security briefing must be completed within 72 hours of departure", "source_section": "8.2", "source_offset": 10600},
+      "rule_text": "Security briefing must be completed within 72 hours of departure for high-risk zone travel.",
+      "rule_type": "mandatory",
+      "enforcement_level": "strict",
+      "parent_section_id": "section-risk-zones",
+      "is_default": false
+    },
+    {
+      "id": "rule-checkin-protocol",
+      "type": "PolicyRule",
+      "name": "Daily Check-In Protocol",
+      "description": "Travelers in high-risk zones must check in with their manager or security focal point daily.",
+      "source_anchor": {"source_text": "Daily check-in with manager or security focal point is mandatory", "source_section": "8.3", "source_offset": 10900},
+      "rule_text": "Daily check-in with manager or security focal point is mandatory for high-risk zone travelers.",
+      "rule_type": "mandatory",
+      "enforcement_level": "strict",
+      "parent_section_id": "section-risk-zones",
+      "is_default": false
+    },
+    {
+      "id": "rule-evacuation-plan",
+      "type": "PolicyRule",
+      "name": "Emergency Evacuation Plan",
+      "description": "An evacuation plan must be filed with the Security Office before any high-risk zone travel commences.",
+      "source_anchor": {"source_text": "Evacuation plan must be filed with Security Office", "source_section": "9.1", "source_offset": 12600},
+      "rule_text": "An evacuation plan must be filed with the Security Office before high-risk zone travel.",
+      "rule_type": "mandatory",
+      "enforcement_level": "strict",
+      "parent_section_id": "section-emergency",
+      "is_default": false
+    },
+
+    {
+      "id": "exception-medical-upgrade",
+      "type": "PolicyException",
+      "name": "Medical Upgrade Exception",
+      "description": "Travelers with documented medical conditions may upgrade to business class on flights of any duration.",
+      "source_anchor": {"source_text": "Medical exceptions allow business class on all flights with documentation", "source_section": "4.5", "source_offset": 4100},
+      "exception_trigger": "Documented medical condition",
+      "overrides_rule_id": "rule-economy-default",
+      "approval_authority": "HR Director"
+    },
+    {
+      "id": "exception-emergency-booking",
+      "type": "PolicyException",
+      "name": "Emergency Booking Exception",
+      "description": "In emergencies, flights may be booked without the 14-day advance requirement with post-facto justification.",
+      "source_anchor": {"source_text": "Emergency bookings exempt from 14-day rule with post-facto justification", "source_section": "4.6", "source_offset": 4300},
+      "exception_trigger": "Emergency travel situation",
+      "overrides_rule_id": "rule-advance-booking",
+      "approval_authority": "Department Director"
+    },
+
+    {
+      "id": "role-traveler",
+      "type": "TravelerRole",
+      "name": "Traveler",
+      "description": "Any employee, contractor, or consultant traveling on behalf of the organization.",
+      "source_anchor": {"source_text": "Traveler means any employee, contractor, or consultant traveling on organization business", "source_section": "2.1", "source_offset": 800},
+      "role_scope": "All staff and contractors",
+      "typical_travel_frequency": "Varies",
+      "seniority_level": ""
+    },
+    {
+      "id": "role-executive",
+      "type": "TravelerRole",
+      "name": "Executive Director",
+      "description": "Senior leader who approves high-risk travel and policy exceptions.",
+      "source_anchor": {"source_text": "Executive Director approves all high-risk zone travel", "source_section": "2.2", "source_offset": 1000},
+      "role_scope": "Organization-wide",
+      "typical_travel_frequency": "Quarterly",
+      "seniority_level": "C-Suite"
+    },
+    {
+      "id": "role-travel-manager",
+      "type": "TravelerRole",
+      "name": "Travel Manager",
+      "description": "Manages day-to-day travel operations and booking approvals.",
+      "source_anchor": {"source_text": "Travel Manager oversees booking compliance and vendor relations", "source_section": "2.3", "source_offset": 1200},
+      "role_scope": "Travel operations",
+      "typical_travel_frequency": "Monthly",
+      "seniority_level": "Manager"
+    },
+
+    {
+      "id": "stakeholder-security-office",
+      "type": "Stakeholder",
+      "name": "Security Office",
+      "description": "Organizational unit responsible for travel risk assessment, security briefings, and evacuation planning.",
+      "source_anchor": {"source_text": "The Security Office is responsible for risk assessment and security briefings", "source_section": "3.1", "source_offset": 1800},
+      "responsibility_area": "Travel security and risk management",
+      "authority_level": "Management",
+      "stakeholder_category": "Internal"
+    },
+    {
+      "id": "stakeholder-hr",
+      "type": "Stakeholder",
+      "name": "Human Resources",
+      "description": "Handles medical exceptions, insurance enrollment, and duty of care compliance tracking.",
+      "source_anchor": {"source_text": "HR manages medical exceptions and insurance enrollment", "source_section": "3.2", "source_offset": 2000},
+      "responsibility_area": "Personnel welfare and insurance",
+      "authority_level": "Management",
+      "stakeholder_category": "Internal"
+    },
+    {
+      "id": "stakeholder-finance",
+      "type": "Stakeholder",
+      "name": "Finance Department",
+      "description": "Reviews and approves travel expense reports, enforces rate caps and per-diem limits.",
+      "source_anchor": {"source_text": "Finance reviews all travel expense reports", "source_section": "3.3", "source_offset": 2200},
+      "responsibility_area": "Financial compliance",
+      "authority_level": "Management",
+      "stakeholder_category": "Internal"
+    },
+
+    {
+      "id": "provider-airline-preferred",
+      "type": "ServiceProvider",
+      "name": "United Airlines (Preferred)",
+      "description": "Contracted preferred airline with negotiated corporate rates.",
+      "source_anchor": {"source_text": "United Airlines is the preferred carrier with negotiated corporate rates", "source_section": "4.4", "source_offset": 4000},
+      "service_type": "Airline",
+      "contract_status": "Active preferred vendor",
+      "coverage_area": "Domestic and international"
+    },
+    {
+      "id": "provider-hotel-chain",
+      "type": "ServiceProvider",
+      "name": "Marriott International (Preferred)",
+      "description": "Preferred hotel chain with negotiated government/NGO rates.",
+      "source_anchor": {"source_text": "Marriott is the preferred lodging provider", "source_section": "5.2", "source_offset": 5400},
+      "service_type": "Hotel",
+      "contract_status": "Active preferred vendor",
+      "coverage_area": "Global"
+    },
+    {
+      "id": "provider-travel-insurance",
+      "type": "ServiceProvider",
+      "name": "International SOS",
+      "description": "Global travel security and medical assistance provider.",
+      "source_anchor": {"source_text": "International SOS provides emergency medical evacuation and security assistance", "source_section": "9.3", "source_offset": 13000},
+      "service_type": "Other",
+      "contract_status": "Active",
+      "coverage_area": "Global"
+    },
+
+    {
+      "id": "transport-air",
+      "type": "TransportationMode",
+      "name": "Commercial Air",
+      "description": "Scheduled commercial airline flights.",
+      "source_anchor": {"source_text": "Commercial air travel", "source_section": "4", "source_offset": 3200},
+      "mode_category": "Air",
+      "booking_channel": "Preferred TMC or approved online booking tool",
+      "requires_preapproval": "Only for business class or above"
+    },
+    {
+      "id": "transport-rental-car",
+      "type": "TransportationMode",
+      "name": "Rental Car",
+      "description": "Self-drive rental vehicles for ground transportation.",
+      "source_anchor": {"source_text": "Rental cars", "source_section": "6", "source_offset": 7000},
+      "mode_category": "Ground",
+      "booking_channel": "Preferred TMC or direct with approved vendors",
+      "requires_preapproval": "No"
+    },
+    {
+      "id": "transport-rideshare",
+      "type": "TransportationMode",
+      "name": "Rideshare/Taxi",
+      "description": "On-demand ride services and taxis for local ground transportation.",
+      "source_anchor": {"source_text": "Rideshare and taxi services", "source_section": "6.2", "source_offset": 7300},
+      "mode_category": "Ground",
+      "booking_channel": "Direct",
+      "requires_preapproval": "No"
+    },
+
+    {
+      "id": "cos-economy",
+      "type": "ClassOfService",
+      "name": "Economy Class",
+      "description": "Standard economy class air travel — the default for all flights under 6 hours.",
+      "source_anchor": {"source_text": "Economy class is the default", "source_section": "4.1", "source_offset": 3300},
+      "service_tier": "Standard",
+      "applicable_modes": "Commercial Air",
+      "upgrade_conditions": "Medical exception or flight > 6 hours"
+    },
+    {
+      "id": "cos-business",
+      "type": "ClassOfService",
+      "name": "Business Class",
+      "description": "Business class air travel — permitted for flights over 6 hours with manager approval.",
+      "source_anchor": {"source_text": "Business class permitted for flights over 6 hours", "source_section": "4.2", "source_offset": 3500},
+      "service_tier": "Premium",
+      "applicable_modes": "Commercial Air",
+      "upgrade_conditions": "Flights > 6 hours with manager approval"
+    },
+
+    {
+      "id": "accommodation-hotel",
+      "type": "Accommodation",
+      "name": "Standard Hotel",
+      "description": "Standard hotel accommodation up to GSA per-diem rate.",
+      "source_anchor": {"source_text": "Standard hotel accommodation", "source_section": "5.1", "source_offset": 5200},
+      "accommodation_type": "Hotel",
+      "star_rating_range": "3-4 stars",
+      "rate_cap_source": "GSA per-diem tables"
+    },
+    {
+      "id": "accommodation-safe-house",
+      "type": "Accommodation",
+      "name": "Organizational Safe House",
+      "description": "Secure organizational accommodation in high-risk zones.",
+      "source_anchor": {"source_text": "Organizational safe houses in high-risk zones", "source_section": "8.4", "source_offset": 11200},
+      "accommodation_type": "Organizational facility",
+      "star_rating_range": "N/A",
+      "rate_cap_source": "No external cost"
+    },
+
+    {
+      "id": "context-conference",
+      "type": "BusinessContext",
+      "name": "Conference Attendance",
+      "description": "Travel for attending industry conferences, workshops, or training events.",
+      "source_anchor": {"source_text": "Conference attendance travel", "source_section": "3.4", "source_offset": 2500},
+      "context_category": "Professional development",
+      "typical_duration": "2-5 days",
+      "budget_source": "Department training budget"
+    },
+    {
+      "id": "context-field-mission",
+      "type": "BusinessContext",
+      "name": "Field Mission",
+      "description": "Travel to field offices or project sites, often in developing countries or conflict zones.",
+      "source_anchor": {"source_text": "Field mission travel to project sites", "source_section": "3.5", "source_offset": 2700},
+      "context_category": "Operations",
+      "typical_duration": "1-4 weeks",
+      "budget_source": "Project budget"
+    },
+    {
+      "id": "context-emergency-response",
+      "type": "BusinessContext",
+      "name": "Emergency Response Deployment",
+      "description": "Rapid deployment travel in response to humanitarian crises or natural disasters.",
+      "source_anchor": {"source_text": "Emergency response deployment", "source_section": "9.2", "source_offset": 12800},
+      "context_category": "Emergency",
+      "typical_duration": "Variable",
+      "budget_source": "Emergency fund"
+    },
+
+    {
+      "id": "event-flight-delay",
+      "type": "TravelEvent",
+      "name": "Flight Delay >4 Hours",
+      "description": "A scheduled flight is delayed by more than 4 hours, potentially requiring rebooking, hotel, and meal expenses.",
+      "source_anchor": {"source_text": "When a flight is delayed more than 4 hours", "source_section": "4.7", "source_offset": 4500},
+      "event_category": "Disruption",
+      "trigger_condition": "Airline-initiated delay exceeding 4 hours",
+      "typical_response": "Rebooking, hotel accommodation, meal per diem"
+    },
+    {
+      "id": "event-flight-cancellation",
+      "type": "TravelEvent",
+      "name": "Flight Cancellation",
+      "description": "A scheduled flight is cancelled, requiring immediate rebooking and possible accommodation.",
+      "source_anchor": {"source_text": "In the event of a flight cancellation", "source_section": "4.8", "source_offset": 4700},
+      "event_category": "Disruption",
+      "trigger_condition": "Airline cancels scheduled flight",
+      "typical_response": "Next available flight, emergency hotel if overnight"
+    },
+    {
+      "id": "event-security-incident",
+      "type": "TravelEvent",
+      "name": "Security Incident at Destination",
+      "description": "A security event (civil unrest, terrorist attack, natural disaster) occurs at or near the traveler's destination.",
+      "source_anchor": {"source_text": "Security incident at destination requiring evacuation assessment", "source_section": "9.4", "source_offset": 13200},
+      "event_category": "Security",
+      "trigger_condition": "Security advisory upgrade or incident report",
+      "typical_response": "Risk reassessment, potential evacuation, daily check-ins"
+    },
+    {
+      "id": "event-medical-emergency",
+      "type": "TravelEvent",
+      "name": "Medical Emergency During Travel",
+      "description": "Traveler experiences a medical emergency requiring immediate medical attention or evacuation.",
+      "source_anchor": {"source_text": "Medical emergency during travel", "source_section": "9.5", "source_offset": 13500},
+      "event_category": "Medical",
+      "trigger_condition": "Traveler medical incident",
+      "typical_response": "International SOS activation, medical evacuation, insurance claim"
+    },
+    {
+      "id": "event-missed-connection",
+      "type": "TravelEvent",
+      "name": "Missed Connection",
+      "description": "Traveler misses a connecting flight due to delay, requiring rebooking.",
+      "source_anchor": {"source_text": "Missed connections due to delay", "source_section": "4.9", "source_offset": 4900},
+      "event_category": "Disruption",
+      "trigger_condition": "Connecting flight missed due to inbound delay",
+      "typical_response": "Next available connection, hotel if overnight required"
+    },
+
+    {
+      "id": "geo-domestic",
+      "type": "GeographicScope",
+      "name": "Domestic (US)",
+      "description": "Travel within the United States and its territories.",
+      "source_anchor": {"source_text": "Domestic travel within the United States", "source_section": "2.4", "source_offset": 1400},
+      "region": "United States",
+      "risk_classification": "Low",
+      "applicable_regulations": "GSA per-diem rates"
+    },
+    {
+      "id": "geo-international-standard",
+      "type": "GeographicScope",
+      "name": "International (Standard Risk)",
+      "description": "Travel to countries with no elevated security advisory.",
+      "source_anchor": {"source_text": "International travel to standard-risk countries", "source_section": "2.5", "source_offset": 1600},
+      "region": "Global (non-elevated)",
+      "risk_classification": "Standard",
+      "applicable_regulations": "State Department advisories"
+    },
+    {
+      "id": "geo-high-risk",
+      "type": "GeographicScope",
+      "name": "High-Risk Zones",
+      "description": "Countries or regions with State Department Level 3-4 advisories or active conflict.",
+      "source_anchor": {"source_text": "High-risk zones as designated by State Department Level 3-4", "source_section": "8", "source_offset": 10200},
+      "region": "Conflict zones, Level 3-4 countries",
+      "risk_classification": "High/Extreme",
+      "applicable_regulations": "Executive Director approval, security briefing, daily check-in"
+    },
+
+    {
+      "id": "expense-airfare",
+      "type": "ExpenseCategory",
+      "name": "Airfare",
+      "description": "Cost of airline tickets including base fare, taxes, and seat selection fees.",
+      "source_anchor": {"source_text": "Airfare expenses", "source_section": "4", "source_offset": 3200},
+      "category_group": "Transportation",
+      "receipt_required": true,
+      "typical_approval_threshold": "$0 - all airfare requires receipt"
+    },
+    {
+      "id": "expense-lodging",
+      "type": "ExpenseCategory",
+      "name": "Lodging",
+      "description": "Hotel and accommodation costs during official travel.",
+      "source_anchor": {"source_text": "Lodging expenses", "source_section": "5", "source_offset": 5100},
+      "category_group": "Accommodation",
+      "receipt_required": true,
+      "typical_approval_threshold": "GSA per-diem rate"
+    },
+    {
+      "id": "expense-meals",
+      "type": "ExpenseCategory",
+      "name": "Meals",
+      "description": "Food and non-alcoholic beverage costs during travel.",
+      "source_anchor": {"source_text": "Meal expenses", "source_section": "7", "source_offset": 8500},
+      "category_group": "Subsistence",
+      "receipt_required": false,
+      "typical_approval_threshold": "Per diem - no receipt under $25"
+    },
+    {
+      "id": "expense-ground-transport",
+      "type": "ExpenseCategory",
+      "name": "Ground Transportation",
+      "description": "Rental car, taxi, rideshare, and parking costs.",
+      "source_anchor": {"source_text": "Ground transportation expenses", "source_section": "6", "source_offset": 7000},
+      "category_group": "Transportation",
+      "receipt_required": true,
+      "typical_approval_threshold": "Receipts required over $25"
+    },
+
+    {
+      "id": "limit-hotel-domestic",
+      "type": "ReimbursementLimit",
+      "name": "Domestic Hotel Cap",
+      "description": "Maximum reimbursable hotel rate for domestic travel per GSA tables.",
+      "source_anchor": {"source_text": "Domestic hotel reimbursement capped at GSA rate", "source_section": "5.1", "source_offset": 5200},
+      "amount": "GSA per-diem (varies by city)",
+      "currency": "USD",
+      "period": "Per night",
+      "applies_to_category": "Lodging"
+    },
+    {
+      "id": "limit-meals-domestic",
+      "type": "ReimbursementLimit",
+      "name": "Domestic Meal Per Diem",
+      "description": "Maximum daily meal reimbursement for domestic travel.",
+      "source_anchor": {"source_text": "$75 per day domestic meal limit", "source_section": "7.1", "source_offset": 8600},
+      "amount": "$75",
+      "currency": "USD",
+      "period": "Per day",
+      "applies_to_category": "Meals"
+    },
+    {
+      "id": "limit-meals-international",
+      "type": "ReimbursementLimit",
+      "name": "International Meal Per Diem",
+      "description": "Maximum daily meal reimbursement for international travel.",
+      "source_anchor": {"source_text": "$100 per day international meal limit", "source_section": "7.1", "source_offset": 8700},
+      "amount": "$100",
+      "currency": "USD",
+      "period": "Per day",
+      "applies_to_category": "Meals"
+    },
+
+    {
+      "id": "payment-corporate-card",
+      "type": "PaymentMethod",
+      "name": "Corporate Credit Card",
+      "description": "Organization-issued credit card — the required payment method for all travel expenses.",
+      "source_anchor": {"source_text": "Corporate credit card must be used for all travel expenses", "source_section": "10.1", "source_offset": 14000},
+      "method_type": "Corporate card",
+      "is_default": true,
+      "reconciliation_process": "Monthly statement reconciliation"
+    },
+    {
+      "id": "payment-personal-reimburse",
+      "type": "PaymentMethod",
+      "name": "Personal Card (Reimbursement)",
+      "description": "Personal payment method used when corporate card is unavailable — requires expense report.",
+      "source_anchor": {"source_text": "Personal card may be used if corporate card is unavailable", "source_section": "10.2", "source_offset": 14200},
+      "method_type": "Personal reimbursement",
+      "is_default": false,
+      "reconciliation_process": "Expense report within 30 days"
+    },
+
+    {
+      "id": "priority-airline-selection",
+      "type": "PriorityOrder",
+      "name": "Airline Selection Priority",
+      "description": "Priority order for selecting airlines: (1) Preferred carrier, (2) Star Alliance partner, (3) Lowest fare.",
+      "source_anchor": {"source_text": "Airline selection priority: preferred carrier first, then alliance partner, then lowest fare", "source_section": "4.4", "source_offset": 3950},
+      "priority_items": "1. Preferred carrier, 2. Star Alliance partner, 3. Lowest available fare",
+      "tie_breaking_rule": "Preferred carrier wins unless fare differential exceeds $200",
+      "context": "Air travel booking"
+    },
+
+    {
+      "id": "constraint-advance-booking",
+      "type": "Constraint",
+      "name": "14-Day Advance Booking Window",
+      "description": "Air tickets must be booked at least 14 calendar days before departure.",
+      "source_anchor": {"source_text": "14-day advance booking requirement", "source_section": "4.3", "source_offset": 3700},
+      "constraint_type": "temporal",
+      "threshold_value": "14 days",
+      "comparison_operator": ">=",
+      "applies_to": "Air ticket purchase date vs. departure date"
+    },
+    {
+      "id": "constraint-flight-duration",
+      "type": "Constraint",
+      "name": "6-Hour Flight Duration Threshold",
+      "description": "The 6-hour boundary that determines class of service eligibility.",
+      "source_anchor": {"source_text": "6-hour threshold for class upgrade eligibility", "source_section": "4.2", "source_offset": 3500},
+      "constraint_type": "quantitative",
+      "threshold_value": "6 hours",
+      "comparison_operator": ">",
+      "applies_to": "Total flight duration"
+    },
+    {
+      "id": "constraint-fare-differential",
+      "type": "Constraint",
+      "name": "$200 Fare Differential Threshold",
+      "description": "Maximum acceptable fare difference between preferred and non-preferred airlines.",
+      "source_anchor": {"source_text": "$200 fare differential threshold", "source_section": "4.4", "source_offset": 3900},
+      "constraint_type": "financial",
+      "threshold_value": "$200",
+      "comparison_operator": "<=",
+      "applies_to": "Price gap between preferred and lowest alternative fare"
+    },
+
+    {
+      "id": "requirement-security-briefing",
+      "type": "Requirement",
+      "name": "Pre-Travel Security Briefing",
+      "description": "Mandatory security briefing for all high-risk zone travel.",
+      "source_anchor": {"source_text": "Security briefing required for high-risk travel", "source_section": "8.2", "source_offset": 10600},
+      "requirement_type": "pre-travel",
+      "verification_method": "Briefing completion certificate",
+      "deadline": "72 hours before departure",
+      "responsible_party": "Security Office"
+    },
+    {
+      "id": "requirement-evacuation-plan",
+      "type": "Requirement",
+      "name": "Evacuation Plan Filing",
+      "description": "Mandatory evacuation plan submission before high-risk zone travel.",
+      "source_anchor": {"source_text": "Evacuation plan must be filed", "source_section": "9.1", "source_offset": 12600},
+      "requirement_type": "pre-travel",
+      "verification_method": "Filed plan on record",
+      "deadline": "Before travel commences",
+      "responsible_party": "Traveler + Security Office"
+    },
+    {
+      "id": "requirement-daily-checkin",
+      "type": "Requirement",
+      "name": "Daily Check-In",
+      "description": "Mandatory daily check-in for travelers in high-risk zones.",
+      "source_anchor": {"source_text": "Daily check-in mandatory in high-risk zones", "source_section": "8.3", "source_offset": 10900},
+      "requirement_type": "during-travel",
+      "verification_method": "Check-in log with timestamp",
+      "deadline": "Daily by 18:00 local time",
+      "responsible_party": "Traveler"
+    },
+    {
+      "id": "requirement-expense-report",
+      "type": "Requirement",
+      "name": "Post-Travel Expense Report",
+      "description": "All travel expenses must be submitted via expense report within 30 days of return.",
+      "source_anchor": {"source_text": "Expense reports due within 30 days of return", "source_section": "10.3", "source_offset": 14400},
+      "requirement_type": "post-travel",
+      "verification_method": "Submitted expense report with receipts",
+      "deadline": "30 days after return",
+      "responsible_party": "Traveler"
+    },
+
+    {
+      "id": "consequence-expense-denied",
+      "type": "Consequence",
+      "name": "Expense Reimbursement Denied",
+      "description": "Non-compliant expenses will not be reimbursed by the organization.",
+      "source_anchor": {"source_text": "Non-compliant expenses will not be reimbursed", "source_section": "10.4", "source_offset": 14600},
+      "consequence_type": "financial",
+      "severity": "Moderate",
+      "triggered_by": "Policy rule violation"
+    },
+    {
+      "id": "consequence-travel-suspended",
+      "type": "Consequence",
+      "name": "Travel Privileges Suspended",
+      "description": "Repeated policy violations may result in temporary suspension of travel privileges.",
+      "source_anchor": {"source_text": "Repeated violations may result in travel privilege suspension", "source_section": "10.5", "source_offset": 14800},
+      "consequence_type": "administrative",
+      "severity": "High",
+      "triggered_by": "Multiple policy violations"
+    },
+    {
+      "id": "consequence-evacuation-triggered",
+      "type": "Consequence",
+      "name": "Emergency Evacuation Triggered",
+      "description": "Security incident results in mandatory evacuation via International SOS.",
+      "source_anchor": {"source_text": "Security incidents may trigger mandatory evacuation", "source_section": "9.4", "source_offset": 13300},
+      "consequence_type": "operational",
+      "severity": "Critical",
+      "triggered_by": "Security incident at destination"
+    }
+  ],
+  "relationships": [
+    {"source_id": "policy-duty-of-care", "target_id": "section-air-travel", "type": "CONTAINS", "description": "Policy contains air travel section"},
+    {"source_id": "policy-duty-of-care", "target_id": "section-lodging", "type": "CONTAINS", "description": "Policy contains lodging section"},
+    {"source_id": "policy-duty-of-care", "target_id": "section-ground-transport", "type": "CONTAINS", "description": "Policy contains ground transport section"},
+    {"source_id": "policy-duty-of-care", "target_id": "section-meals", "type": "CONTAINS", "description": "Policy contains meals section"},
+    {"source_id": "policy-duty-of-care", "target_id": "section-risk-zones", "type": "CONTAINS", "description": "Policy contains high-risk zones section"},
+    {"source_id": "policy-duty-of-care", "target_id": "section-emergency", "type": "CONTAINS", "description": "Policy contains emergency procedures section"},
+
+    {"source_id": "section-air-travel", "target_id": "rule-economy-default", "type": "CONTAINS", "description": "Air travel section contains economy default rule"},
+    {"source_id": "section-air-travel", "target_id": "rule-business-class-allowed", "type": "CONTAINS", "description": "Air travel section contains business class rule"},
+    {"source_id": "section-air-travel", "target_id": "rule-advance-booking", "type": "CONTAINS", "description": "Air travel section contains advance booking rule"},
+    {"source_id": "section-air-travel", "target_id": "rule-preferred-airline", "type": "CONTAINS", "description": "Air travel section contains preferred airline rule"},
+    {"source_id": "section-lodging", "target_id": "rule-hotel-rate-cap", "type": "CONTAINS", "description": "Lodging section contains hotel rate cap rule"},
+    {"source_id": "section-lodging", "target_id": "rule-safety-features", "type": "CONTAINS", "description": "Lodging section contains safety features rule"},
+    {"source_id": "section-ground-transport", "target_id": "rule-rental-car-size", "type": "CONTAINS", "description": "Ground transport section contains rental car size rule"},
+    {"source_id": "section-meals", "target_id": "rule-meal-per-diem", "type": "CONTAINS", "description": "Meals section contains per diem rule"},
+    {"source_id": "section-risk-zones", "target_id": "rule-high-risk-approval", "type": "CONTAINS", "description": "Risk zones section contains approval rule"},
+    {"source_id": "section-risk-zones", "target_id": "rule-security-briefing", "type": "CONTAINS", "description": "Risk zones section contains security briefing rule"},
+    {"source_id": "section-risk-zones", "target_id": "rule-checkin-protocol", "type": "CONTAINS", "description": "Risk zones section contains check-in protocol rule"},
+    {"source_id": "section-emergency", "target_id": "rule-evacuation-plan", "type": "CONTAINS", "description": "Emergency section contains evacuation plan rule"},
+
+    {"source_id": "exception-medical-upgrade", "target_id": "rule-economy-default", "type": "OVERRIDES", "description": "Medical exception overrides economy default"},
+    {"source_id": "exception-emergency-booking", "target_id": "rule-advance-booking", "type": "OVERRIDES", "description": "Emergency exception overrides advance booking"},
+
+    {"source_id": "rule-economy-default", "target_id": "cos-economy", "type": "SPECIFIES_SERVICE", "description": "Economy default rule specifies economy class"},
+    {"source_id": "rule-business-class-allowed", "target_id": "cos-business", "type": "SPECIFIES_SERVICE", "description": "Long-haul rule permits business class"},
+    {"source_id": "rule-economy-default", "target_id": "transport-air", "type": "APPLIES_TO_MODE", "description": "Economy default applies to commercial air"},
+    {"source_id": "rule-business-class-allowed", "target_id": "transport-air", "type": "APPLIES_TO_MODE", "description": "Business class rule applies to commercial air"},
+    {"source_id": "rule-rental-car-size", "target_id": "transport-rental-car", "type": "APPLIES_TO_MODE", "description": "Car size rule applies to rental cars"},
+
+    {"source_id": "rule-preferred-airline", "target_id": "provider-airline-preferred", "type": "REQUIRES_PROVIDER", "description": "Preferred airline rule requires United Airlines"},
+    {"source_id": "rule-hotel-rate-cap", "target_id": "provider-hotel-chain", "type": "REQUIRES_PROVIDER", "description": "Hotel rule recommends Marriott"},
+    {"source_id": "rule-evacuation-plan", "target_id": "provider-travel-insurance", "type": "REQUIRES_PROVIDER", "description": "Evacuation plan involves International SOS"},
+
+    {"source_id": "rule-hotel-rate-cap", "target_id": "accommodation-hotel", "type": "SPECIFIES_SERVICE", "description": "Hotel rate cap applies to standard hotels"},
+    {"source_id": "rule-safety-features", "target_id": "accommodation-hotel", "type": "SPECIFIES_SERVICE", "description": "Safety features required for hotels"},
+    {"source_id": "rule-safety-features", "target_id": "accommodation-safe-house", "type": "SPECIFIES_SERVICE", "description": "Safe houses meet safety requirements"},
+
+    {"source_id": "rule-high-risk-approval", "target_id": "geo-high-risk", "type": "APPLIES_TO_SCOPE", "description": "High-risk approval rule applies to high-risk zones"},
+    {"source_id": "rule-security-briefing", "target_id": "geo-high-risk", "type": "APPLIES_TO_SCOPE", "description": "Security briefing required for high-risk zones"},
+    {"source_id": "rule-checkin-protocol", "target_id": "geo-high-risk", "type": "APPLIES_TO_SCOPE", "description": "Check-in protocol applies to high-risk zones"},
+    {"source_id": "rule-economy-default", "target_id": "geo-domestic", "type": "APPLIES_TO_SCOPE", "description": "Economy default applies to domestic travel"},
+    {"source_id": "rule-economy-default", "target_id": "geo-international-standard", "type": "APPLIES_TO_SCOPE", "description": "Economy default applies to standard international"},
+    {"source_id": "rule-meal-per-diem", "target_id": "geo-domestic", "type": "APPLIES_TO_SCOPE", "description": "Domestic meal per diem applies domestically"},
+    {"source_id": "rule-meal-per-diem", "target_id": "geo-international-standard", "type": "APPLIES_TO_SCOPE", "description": "International meal per diem applies internationally"},
+
+    {"source_id": "rule-economy-default", "target_id": "constraint-flight-duration", "type": "HAS_CONSTRAINT", "description": "Economy default constrained by 6-hour threshold"},
+    {"source_id": "rule-business-class-allowed", "target_id": "constraint-flight-duration", "type": "HAS_CONSTRAINT", "description": "Business class triggered by 6-hour threshold"},
+    {"source_id": "rule-advance-booking", "target_id": "constraint-advance-booking", "type": "HAS_CONSTRAINT", "description": "Advance booking rule has 14-day constraint"},
+    {"source_id": "rule-preferred-airline", "target_id": "constraint-fare-differential", "type": "HAS_CONSTRAINT", "description": "Preferred airline rule has $200 fare differential constraint"},
+
+    {"source_id": "rule-hotel-rate-cap", "target_id": "limit-hotel-domestic", "type": "HAS_LIMIT", "description": "Hotel rate cap enforces domestic hotel limit"},
+    {"source_id": "rule-meal-per-diem", "target_id": "limit-meals-domestic", "type": "HAS_LIMIT", "description": "Meal per diem enforces domestic meal limit"},
+    {"source_id": "rule-meal-per-diem", "target_id": "limit-meals-international", "type": "HAS_LIMIT", "description": "Meal per diem enforces international meal limit"},
+
+    {"source_id": "rule-economy-default", "target_id": "expense-airfare", "type": "INCURS_EXPENSE", "description": "Economy class incurs airfare expense"},
+    {"source_id": "rule-hotel-rate-cap", "target_id": "expense-lodging", "type": "INCURS_EXPENSE", "description": "Hotel booking incurs lodging expense"},
+    {"source_id": "rule-meal-per-diem", "target_id": "expense-meals", "type": "INCURS_EXPENSE", "description": "Meals incur meal expense"},
+    {"source_id": "rule-rental-car-size", "target_id": "expense-ground-transport", "type": "INCURS_EXPENSE", "description": "Car rental incurs ground transport expense"},
+    {"source_id": "expense-airfare", "target_id": "payment-corporate-card", "type": "PAID_VIA", "description": "Airfare paid via corporate card"},
+    {"source_id": "expense-lodging", "target_id": "payment-corporate-card", "type": "PAID_VIA", "description": "Lodging paid via corporate card"},
+
+    {"source_id": "rule-high-risk-approval", "target_id": "requirement-security-briefing", "type": "REQUIRES", "description": "High-risk approval triggers security briefing requirement"},
+    {"source_id": "rule-high-risk-approval", "target_id": "requirement-evacuation-plan", "type": "REQUIRES", "description": "High-risk approval triggers evacuation plan requirement"},
+    {"source_id": "rule-checkin-protocol", "target_id": "requirement-daily-checkin", "type": "REQUIRES", "description": "Check-in protocol triggers daily check-in requirement"},
+    {"source_id": "requirement-expense-report", "target_id": "stakeholder-finance", "type": "REVIEWED_BY", "description": "Expense reports reviewed by Finance"},
+
+    {"source_id": "rule-high-risk-approval", "target_id": "role-executive", "type": "APPROVED_BY", "description": "High-risk travel approved by Executive Director"},
+    {"source_id": "rule-business-class-allowed", "target_id": "role-travel-manager", "type": "APPROVED_BY", "description": "Business class approved by Travel Manager"},
+    {"source_id": "exception-medical-upgrade", "target_id": "stakeholder-hr", "type": "APPROVED_BY", "description": "Medical upgrades approved by HR"},
+    {"source_id": "requirement-security-briefing", "target_id": "stakeholder-security-office", "type": "CONDUCTED_BY", "description": "Security briefing conducted by Security Office"},
+    {"source_id": "requirement-evacuation-plan", "target_id": "stakeholder-security-office", "type": "MANAGED_BY", "description": "Evacuation plan managed by Security Office"},
+
+    {"source_id": "rule-economy-default", "target_id": "role-traveler", "type": "APPLIES_TO_ROLE", "description": "Economy default applies to all travelers"},
+    {"source_id": "rule-advance-booking", "target_id": "role-traveler", "type": "APPLIES_TO_ROLE", "description": "Advance booking applies to all travelers"},
+    {"source_id": "rule-hotel-rate-cap", "target_id": "role-traveler", "type": "APPLIES_TO_ROLE", "description": "Hotel rate cap applies to all travelers"},
+    {"source_id": "rule-preferred-airline", "target_id": "priority-airline-selection", "type": "FOLLOWS_PRIORITY", "description": "Preferred airline rule follows airline selection priority"},
+
+    {"source_id": "event-flight-delay", "target_id": "rule-economy-default", "type": "TRIGGERS_RULE", "description": "Flight delay may trigger rebooking under economy rules"},
+    {"source_id": "event-flight-delay", "target_id": "rule-hotel-rate-cap", "type": "TRIGGERS_RULE", "description": "Flight delay may require overnight hotel"},
+    {"source_id": "event-flight-delay", "target_id": "rule-meal-per-diem", "type": "TRIGGERS_RULE", "description": "Flight delay triggers meal per diem"},
+    {"source_id": "event-flight-cancellation", "target_id": "rule-economy-default", "type": "TRIGGERS_RULE", "description": "Cancellation triggers rebooking under air rules"},
+    {"source_id": "event-flight-cancellation", "target_id": "rule-hotel-rate-cap", "type": "TRIGGERS_RULE", "description": "Cancellation may require emergency hotel"},
+    {"source_id": "event-missed-connection", "target_id": "rule-economy-default", "type": "TRIGGERS_RULE", "description": "Missed connection triggers rebooking"},
+    {"source_id": "event-missed-connection", "target_id": "rule-hotel-rate-cap", "type": "TRIGGERS_RULE", "description": "Missed connection may require hotel"},
+    {"source_id": "event-security-incident", "target_id": "rule-high-risk-approval", "type": "TRIGGERS_RULE", "description": "Security incident reassesses risk approval"},
+    {"source_id": "event-security-incident", "target_id": "rule-evacuation-plan", "type": "TRIGGERS_RULE", "description": "Security incident activates evacuation plan"},
+    {"source_id": "event-security-incident", "target_id": "rule-checkin-protocol", "type": "TRIGGERS_RULE", "description": "Security incident enforces check-in protocol"},
+    {"source_id": "event-medical-emergency", "target_id": "rule-evacuation-plan", "type": "TRIGGERS_RULE", "description": "Medical emergency activates evacuation"},
+    {"source_id": "event-medical-emergency", "target_id": "provider-travel-insurance", "type": "ACTIVATES_PROVIDER", "description": "Medical emergency activates International SOS"},
+
+    {"source_id": "rule-economy-default", "target_id": "consequence-expense-denied", "type": "ON_VIOLATION", "description": "Violating economy default may result in denied reimbursement"},
+    {"source_id": "rule-advance-booking", "target_id": "consequence-expense-denied", "type": "ON_VIOLATION", "description": "Late booking may result in denied reimbursement"},
+    {"source_id": "consequence-expense-denied", "target_id": "consequence-travel-suspended", "type": "ESCALATES_TO", "description": "Repeated denied expenses may lead to travel suspension"},
+    {"source_id": "event-security-incident", "target_id": "consequence-evacuation-triggered", "type": "TRIGGERS_CONSEQUENCE", "description": "Security incident may trigger evacuation"},
+
+    {"source_id": "context-field-mission", "target_id": "geo-high-risk", "type": "TYPICALLY_IN", "description": "Field missions often occur in high-risk zones"},
+    {"source_id": "context-emergency-response", "target_id": "geo-high-risk", "type": "TYPICALLY_IN", "description": "Emergency responses often in high-risk zones"},
+    {"source_id": "context-conference", "target_id": "geo-domestic", "type": "TYPICALLY_IN", "description": "Conferences often domestic"},
+    {"source_id": "context-conference", "target_id": "geo-international-standard", "type": "TYPICALLY_IN", "description": "Conferences also international"}
+  ],
+  "source_sections": [],
+  "source_document": "mock_duty_of_care_policy.pdf",
+  "extraction_metadata": {
+    "section_count": 10,
+    "final_entity_count": 63,
+    "final_relationship_count": 75
+  }
+}

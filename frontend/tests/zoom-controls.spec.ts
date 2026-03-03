@@ -102,17 +102,18 @@ test.describe('Zoom In/Out via Node Selection', () => {
     // Detail panel should NOT be visible initially
     await expect(page.locator('.node-detail')).not.toBeVisible();
 
-    // Search for an entity
+    // Search for an entity — use "executive director" for precise match
     const searchInput = page.getByRole('textbox', { name: 'Search entities...' });
     await searchInput.click();
-    await searchInput.pressSequentially('executive', { delay: 50 });
+    await searchInput.pressSequentially('executive director', { delay: 50 });
 
     // Wait for dropdown results
     await expect(page.locator('.topbar-search-results')).toBeVisible();
     await expect(page.locator('.topbar-search-item').first()).toBeVisible();
 
-    // Click first result
-    await page.locator('.topbar-search-item').first().click();
+    // Click the result whose name is "Executive Director"
+    const targetResult = page.locator('.topbar-search-item', { has: page.locator('.topbar-search-item-name', { hasText: 'Executive Director' }) }).first();
+    await targetResult.click();
     await page.waitForTimeout(800);
 
     // Detail panel should now be open with entity name
@@ -124,7 +125,7 @@ test.describe('Zoom In/Out via Node Selection', () => {
     // Select a node via search
     const searchInput = page.getByRole('textbox', { name: 'Search entities...' });
     await searchInput.click();
-    await searchInput.pressSequentially('executive', { delay: 50 });
+    await searchInput.pressSequentially('executive director', { delay: 50 });
     await page.locator('.topbar-search-item').first().click();
     await page.waitForTimeout(800);
 
@@ -146,7 +147,7 @@ test.describe('Zoom In/Out via Node Selection', () => {
     // Select a node via search
     const searchInput = page.getByRole('textbox', { name: 'Search entities...' });
     await searchInput.click();
-    await searchInput.pressSequentially('executive', { delay: 50 });
+    await searchInput.pressSequentially('executive director', { delay: 50 });
     await page.locator('.topbar-search-item').first().click();
     await page.waitForTimeout(800);
 
@@ -168,7 +169,7 @@ test.describe('Zoom In/Out via Node Selection', () => {
     // Select a node via search
     const searchInput = page.getByRole('textbox', { name: 'Search entities...' });
     await searchInput.click();
-    await searchInput.pressSequentially('executive', { delay: 50 });
+    await searchInput.pressSequentially('executive director', { delay: 50 });
     await page.locator('.topbar-search-item').first().click();
     await page.waitForTimeout(800);
 
@@ -187,11 +188,12 @@ test.describe('Zoom In/Out via Node Selection', () => {
   });
 
   test('can zoom in to node, zoom out with Fit, then zoom in to a different node', async ({ page }) => {
-    // Zoom into first entity
+    // Zoom into first entity — use "executive director" for precise match
     const searchInput = page.getByRole('textbox', { name: 'Search entities...' });
     await searchInput.click();
-    await searchInput.pressSequentially('executive', { delay: 50 });
-    await page.locator('.topbar-search-item').first().click();
+    await searchInput.pressSequentially('executive director', { delay: 50 });
+    const targetResult = page.locator('.topbar-search-item', { has: page.locator('.topbar-search-item-name', { hasText: 'Executive Director' }) }).first();
+    await targetResult.click();
     await page.waitForTimeout(800);
     await expect(page.locator('.node-detail-name')).toContainText('Executive Director');
 

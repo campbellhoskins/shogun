@@ -68,3 +68,33 @@
   font-size: 11px;
   color: var(--text-muted);
 }
+
+.legend-group {
+  margin-bottom: 4px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.legend-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.legend-group-name {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.legend-group-toggle {
+  font-size: 9px;
+  color: var(--text-muted);
+}

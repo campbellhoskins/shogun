@@ -30,6 +30,9 @@ from src.agent import ask
 from src.api_models import (
     AgentAnswer,
     AgentQuestion,
+    CascadeRequest,
+    CascadeResponse,
+    CascadeStep,
     EntityDetail,
     EntitySummary,
     GraphData,
@@ -46,34 +49,93 @@ from src.models import OntologyGraph
 
 load_dotenv()
 
-# Entity type -> color mapping (cohesive Tailwind-400 palette)
+# Entity type -> color mapping (21 schema types, grouped by domain)
 TYPE_COLORS: dict[str, str] = {
+    # Group 1: Core Policy (indigo/blue)
+    "Policy": "#818cf8",
+    "PolicySection": "#6366f1",
     "PolicyRule": "#60a5fa",
-    "Policy": "#60a5fa",
-    "Role": "#f97316",
-    "Person": "#fb923c",
-    "Definition": "#a78bfa",
-    "Threshold": "#fbbf24",
-    "Procedure": "#34d399",
-    "RiskLevel": "#f87171",
-    "Destination": "#2dd4bf",
-    "Location": "#2dd4bf",
-    "ApprovalRequirement": "#e879f9",
-    "Requirement": "#e879f9",
-    "InsuranceRequirement": "#4ade80",
-    "VaccinationRequirement": "#c084fc",
-    "IncidentCategory": "#fb7185",
-    "Incident": "#fb7185",
-    "CommunicationRequirement": "#38bdf8",
-    "ContactInformation": "#94a3b8",
-    "Equipment": "#a1a1aa",
-    "Vendor": "#22d3ee",
-    "Organization": "#60a5fa",
-    "GovernanceBody": "#38bdf8",
-    "Training": "#4ade80",
-    "BenefitOrPackage": "#22d3ee",
+    "PolicyException": "#a78bfa",
+    # Group 2: Actors & Stakeholders (orange/amber)
+    "TravelerRole": "#f97316",
+    "Stakeholder": "#fb923c",
+    "ServiceProvider": "#fbbf24",
+    # Group 3: Travel Options & Context (teal/cyan/emerald)
+    "TransportationMode": "#2dd4bf",
+    "ClassOfService": "#34d399",
+    "Accommodation": "#4ade80",
+    "BusinessContext": "#22d3ee",
+    "TravelEvent": "#f43f5e",
+    "GeographicScope": "#38bdf8",
+    # Group 4: Financial (yellow/lime)
+    "ExpenseCategory": "#eab308",
+    "ReimbursementLimit": "#a3e635",
+    "PaymentMethod": "#facc15",
+    "PriorityOrder": "#d9f99d",
+    # Group 5: Compliance (pink/rose/violet)
+    "Constraint": "#e879f9",
+    "Requirement": "#f472b6",
+    "Consequence": "#fb7185",
 }
 DEFAULT_COLOR = "#6b7280"
+
+# Entity type -> hierarchy level (for hierarchical LR layout)
+TYPE_LEVELS: dict[str, int] = {
+    "TravelEvent": 0,
+    "Policy": 1,
+    "PolicySection": 2,
+    "PolicyRule": 3,
+    "PolicyException": 3,
+    "Constraint": 4,
+    "Requirement": 4,
+    "Consequence": 4,
+    "ReimbursementLimit": 4,
+    # All leaf entity types at level 5
+    "TravelerRole": 5,
+    "Stakeholder": 5,
+    "ServiceProvider": 5,
+    "TransportationMode": 5,
+    "ClassOfService": 5,
+    "Accommodation": 5,
+    "BusinessContext": 5,
+    "GeographicScope": 5,
+    "ExpenseCategory": 5,
+    "PaymentMethod": 5,
+    "PriorityOrder": 5,
+}
+
+# Entity type -> group name
+TYPE_GROUP_MAP: dict[str, str] = {
+    "Policy": "Core Policy",
+    "PolicySection": "Core Policy",
+    "PolicyRule": "Core Policy",
+    "PolicyException": "Core Policy",
+    "TravelerRole": "Actors & Stakeholders",
+    "Stakeholder": "Actors & Stakeholders",
+    "ServiceProvider": "Actors & Stakeholders",
+    "TransportationMode": "Travel Options",
+    "ClassOfService": "Travel Options",
+    "Accommodation": "Travel Options",
+    "BusinessContext": "Travel Options",
+    "TravelEvent": "Travel Options",
+    "GeographicScope": "Travel Options",
+    "ExpenseCategory": "Financial",
+    "ReimbursementLimit": "Financial",
+    "PaymentMethod": "Financial",
+    "PriorityOrder": "Financial",
+    "Constraint": "Compliance",
+    "Requirement": "Compliance",
+    "Consequence": "Compliance",
+}
+
+# Ordered list of groups for legend display
+ENTITY_GROUPS: list[str] = [
+    "Core Policy",
+    "Actors & Stakeholders",
+    "Travel Options",
+    "Financial",
+    "Compliance",
+]
 
 # Module-level state (set during startup)
 _ontology: OntologyGraph | None = None
@@ -105,13 +167,16 @@ def get_graph() -> GraphData:
 
     nodes = []
     for node_id, data in _graph.nodes(data=True):
+        entity_type = data.get("type", "Unknown")
         nodes.append(GraphNode(
             id=node_id,
-            type=data.get("type", "Unknown"),
+            type=entity_type,
             name=data.get("name", node_id),
             description=data.get("description", ""),
             degree=_graph.degree(node_id),
-            color=_get_color(data.get("type", "")),
+            color=_get_color(entity_type),
+            level=TYPE_LEVELS.get(entity_type, 5),
+            group=TYPE_GROUP_MAP.get(entity_type, ""),
         ))
 
     edges = []
@@ -128,6 +193,7 @@ def get_graph() -> GraphData:
         edges=edges,
         source_document=_graph.graph.get("source_document", ""),
         type_colors=TYPE_COLORS,
+        entity_groups=ENTITY_GROUPS,
     )
 
 
@@ -284,6 +350,60 @@ def find_paths(req: PathRequest) -> PathResponse:
     )
 
 
+@app.post("/api/cascade")
+def cascade_from_event(req: CascadeRequest) -> CascadeResponse:
+    """BFS from an event node following outgoing edges to find all reachable nodes."""
+    assert _graph is not None
+
+    if req.event_node_id not in _graph:
+        raise HTTPException(status_code=404, detail=f"Node '{req.event_node_id}' not found")
+
+    event_data = _graph.nodes[req.event_node_id]
+    event_name = event_data.get("name", req.event_node_id)
+
+    # BFS following outgoing edges
+    visited: set[str] = {req.event_node_id}
+    steps: list[CascadeStep] = [
+        CascadeStep(
+            node_id=req.event_node_id,
+            node_name=event_name,
+            node_type=event_data.get("type", "Unknown"),
+            depth=0,
+            parent_node_id=None,
+            edge_type="",
+        )
+    ]
+    edge_keys: list[str] = []
+    frontier = [(req.event_node_id, 0)]
+
+    while frontier:
+        current_id, depth = frontier.pop(0)
+        if depth >= req.max_depth:
+            continue
+
+        for _, target, edge_data in _graph.out_edges(current_id, data=True):
+            if target not in visited:
+                visited.add(target)
+                target_data = _graph.nodes[target]
+                steps.append(CascadeStep(
+                    node_id=target,
+                    node_name=target_data.get("name", target),
+                    node_type=target_data.get("type", "Unknown"),
+                    depth=depth + 1,
+                    parent_node_id=current_id,
+                    edge_type=edge_data.get("type", ""),
+                ))
+                edge_keys.append(f"{current_id}->{target}")
+                frontier.append((target, depth + 1))
+
+    return CascadeResponse(
+        event_name=event_name,
+        steps=steps,
+        node_ids=list(visited),
+        edge_keys=edge_keys,
+    )
+
+
 @app.post("/api/agent/ask")
 async def agent_ask(req: AgentQuestion) -> AgentAnswer:
     """Send a question to the reasoning agent."""
@@ -355,7 +475,38 @@ def _load_graph(args: argparse.Namespace) -> OntologyGraph:
 
     # Handle both OntologyGraph format and raw extractions format
     if isinstance(data, dict) and "entities" in data:
-        return OntologyGraph(**data)
+        try:
+            return OntologyGraph(**data)
+        except (ValueError, Exception) as e:
+            # Fall back to entity-by-entity validation for legacy ontology files
+            # with old entity types that don't match the current schema
+            print(f"Strict load failed ({e}), falling back to entity-level validation...")
+            from src.models import Relationship, ExtractionMetadata
+            from src.schemas import validate_entity
+            entities = []
+            relationships = []
+            for e_data in data.get("entities", []):
+                if "attributes" in e_data and isinstance(e_data["attributes"], dict):
+                    attrs = e_data.pop("attributes")
+                    for k, v in attrs.items():
+                        if k not in e_data:
+                            e_data[k] = v
+                entity, _ = validate_entity(e_data)
+                if entity is not None:
+                    entities.append(entity)
+            for r in data.get("relationships", []):
+                relationships.append(Relationship(**r))
+            return OntologyGraph(
+                entities=entities,
+                relationships=relationships,
+                source_document=data.get("source_document", str(graph_path)),
+                source_sections=[],
+                extraction_metadata=ExtractionMetadata(
+                    section_count=0,
+                    final_entity_count=len(entities),
+                    final_relationship_count=len(relationships),
+                ),
+            )
     elif isinstance(data, list):
         # Extractions format — flatten entities and relationships
         from src.models import Relationship, ExtractionMetadata

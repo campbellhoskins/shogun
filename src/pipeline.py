@@ -11,6 +11,7 @@ import time
 from anthropic import Anthropic
 
 from src.extraction import extract_all_sections
+from src.first_pass import run_first_pass
 from src.merge import merge_extractions
 from src.models import OntologyGraph
 from src.results import save_run
@@ -46,10 +47,25 @@ def extract_ontology(
     pipeline_start = time.time()
     stage_timings: dict[str, float] = {}
 
-    # --- Stage 1: Semantic Chunking ---
-    print("Stage 1: Chunking document...")
+    # --- Stage 0: First Pass ---
+    print("Stage 0: First pass document analysis...")
     stage_start = time.time()
-    sections = segment_document(document_text, client=client)
+    first_pass_result = run_first_pass(document_text, client=client)
+    stage_timings["first_pass"] = round(time.time() - stage_start, 1)
+    fp_map = first_pass_result.document_map
+    print(
+        f"  {len(fp_map.sections)} sections, "
+        f"{len(first_pass_result.global_entity_pre_registration)} pre-registered entities, "
+        f"{len(first_pass_result.cross_section_dependencies)} dependencies "
+        f"({stage_timings['first_pass']}s)"
+    )
+
+    # --- Stage 1: Deterministic Chunking ---
+    print("\nStage 1: Chunking document (deterministic)...")
+    stage_start = time.time()
+    sections = segment_document(
+        document_text, client=client, first_pass_result=first_pass_result
+    )
     stage_timings["segmentation"] = round(time.time() - stage_start, 1)
     print(f"  Found {len(sections)} chunks ({stage_timings['segmentation']}s)")
     for s in sections:
@@ -68,7 +84,9 @@ def extract_ontology(
     # --- Stage 2: Per-Section Extraction ---
     print("\nStage 2: Extracting entities per section...")
     stage_start = time.time()
-    section_extractions = extract_all_sections(sections, client=client)
+    section_extractions = extract_all_sections(
+        sections, client=client, first_pass_result=first_pass_result
+    )
     stage_timings["extraction"] = round(time.time() - stage_start, 1)
 
     total_entities = sum(len(se.entities) for se in section_extractions)
@@ -140,6 +158,7 @@ def extract_ontology(
         pipeline_elapsed=pipeline_elapsed,
         stage_timings=stage_timings,
         semantic_dedup_log=semantic_dedup_log,
+        first_pass_result=first_pass_result,
     )
 
     return ontology

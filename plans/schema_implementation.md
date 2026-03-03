@@ -1,5 +1,31 @@
 # Typed Entity Schemas for Ontology Extraction Pipeline
 
+## Status Summary
+
+| Step | Description | Status |
+|------|-------------|--------|
+| Step 1 | Create `src/schemas.py` — The Schema Framework | **DONE** |
+| Step 2 | Modify `src/models.py` — Replace Entity with Discriminated Union | **DONE** |
+| Step 3 | Modify `src/extraction.py` — Auto-Generated Prompt + Typed Parsing | **DONE** |
+| Step 4 | Modify `src/merge.py` — Typed Entity Handling in Dedup | **DONE** |
+| Step 5 | Modify `src/graph.py` — Typed Attribute Unpacking | **DONE** |
+| Step 6 | Modify `src/results.py` — Serialize Typed Attributes | **DONE** |
+| Step 7 | Modify `src/pipeline.py` — Validation Logging | **DONE** |
+| Step 8 | User Provides Schema Content | **DONE** |
+| Verification | End-to-end pipeline run, agent test, frontend test | **NOT DONE** |
+
+**All code changes are implemented but uncommitted.** Branch: `user/choskins/schema`. No end-to-end verification run has been performed yet.
+
+### Beyond-Plan Additions
+
+| Item | Description | Status |
+|------|-------------|--------|
+| `src/base_models.py` | Circular import breaker — `SourceAnchor` moved here (not anticipated in plan) | **DONE** |
+| `scripts/discover_schema.py` | LLM-based schema discovery CLI — analyzes policy docs to generate schema JSON | **DONE** |
+| `data/duty_of_care_schema.json` | LLM-discovered schema with 14 entity types, relationship types, frequency flags | **DONE** |
+
+---
+
 ## Context
 
 The extraction pipeline currently uses a single flat `Entity` class where all entities share the same structure: `id`, `type`, `name`, `description`, `attributes: dict[str, Any]`, and `source_anchor`. The `attributes` dict is completely untyped — the LLM puts whatever key-value pairs it deems relevant, with no validation or structure.
@@ -23,11 +49,13 @@ By introducing **typed entity schemas** — where each entity type has its own P
 
 ## Implementation Steps
 
-### Step 1: Create `src/schemas.py` — The Schema Framework
+### Step 1: Create `src/schemas.py` — The Schema Framework — DONE
 
 **New file.** This becomes the single source of truth for entity type definitions, relationship constraints, prompt generation, and validation.
 
-#### 1A: `BaseEntitySchema` base class
+**Implementation: 2,739 lines. All substeps complete.**
+
+#### 1A: `BaseEntitySchema` base class — DONE
 
 All typed entity subclasses inherit from this. Replaces the old `Entity` class entirely:
 
@@ -47,23 +75,21 @@ class BaseEntitySchema(BaseModel):
 
 All typed attribute fields on subclasses **must have defaults** (empty string, None, etc.) so partial LLM extraction (missing some attributes) doesn't fail validation.
 
-#### 1B: Typed entity subclasses (stubs — user fills in attributes)
+#### 1B: Typed entity subclasses — DONE (20 types with full attributes, not stubs)
 
-```python
-class RoleEntity(BaseEntitySchema):
-    """An organizational role or party type."""
-    type: Literal["Role"] = "Role"
-    # User adds typed attribute fields here
+The plan originally called for stubs that the user would fill in. Implementation went further — all 20 entity types have fully typed attribute fields with `Field(description=...)`, organized into 5 groups:
 
-class PolicyEntity(BaseEntitySchema):
-    """Referenced policies and documents."""
-    type: Literal["Policy"] = "Policy"
-    # User adds typed attribute fields here
+**Group 1 — Core Policy Entities (4 types):** `PolicyEntity`, `PolicySectionEntity`, `PolicyRuleEntity`, `PolicyExceptionEntity`
 
-# ... one subclass per entity type (user provides ~16 total)
-```
+**Group 2 — Actor & Stakeholder Entities (4 types):** `TravelerRoleEntity`, `StakeholderEntity`, `ServiceProviderEntity` + one more. Includes Enum constraints for role types, authority levels, service types.
 
-#### 1C: Discriminated union (`AnyEntity`)
+**Group 3 — Travel Option & Context Entities (6 types):** `TransportationModeEntity`, `ClassOfServiceEntity`, `AccommodationEntity`, `BusinessContextEntity`, `TravelEventEntity`, `GeographicScopeEntity`
+
+**Group 4 — Financial Entities (4 types):** `ExpenseCategoryEntity`, `ReimbursementLimitEntity`, `PaymentMethodEntity`, `PriorityOrderEntity`
+
+**Group 5 — Compliance Entities (2+ types):** `ConstraintEntity`, `RequirementEntity`, `ConsequenceEntity`
+
+#### 1C: Discriminated union (`AnyEntity`) — DONE
 
 Uses a custom discriminator function routing to typed subclasses. Since we don't need backward compat, unknown types are a validation error (logged as warning, entity skipped):
 
@@ -84,256 +110,191 @@ AnyEntity = Annotated[
 ]
 ```
 
-#### 1D: Entity type registry
+#### 1D: Entity type registry — DONE (with auto-discovery)
+
+Implementation uses auto-discovery rather than manual listing:
 
 ```python
-ENTITY_TYPE_CLASSES: list[type[BaseEntitySchema]] = [RoleEntity, PolicyEntity, ...]
+def _discover_entity_classes() -> list[type[BaseEntitySchema]]:
+    # Finds all concrete BaseEntitySchema subclasses by checking:
+    # - isinstance(obj, type) and issubclass(obj, BaseEntitySchema)
+    # - obj is not BaseEntitySchema
+    # - "type" field has Literal default (not None)
+
+ENTITY_TYPE_CLASSES: list[type[BaseEntitySchema]]  # Auto-discovered
 ENTITY_TYPE_MAP: dict[str, type[BaseEntitySchema]] = {cls.model_fields["type"].default: cls for cls in ENTITY_TYPE_CLASSES}
 VALID_ENTITY_TYPES: set[str] = set(ENTITY_TYPE_MAP.keys())
 ```
 
-#### 1E: `RelationshipSchema` model and registry
+#### 1E: `RelationshipSchema` model and registry — DONE (35 relationship types)
 
+The plan called for user-provided entries. Implementation defines 35 relationship types across 9 groups:
+
+- **Group 1 — Policy Structure (4):** `CONTAINS`, `HAS_EXCEPTION`, `GOVERNED_BY`, etc.
+- **Group 2 — Rule Applicability (4):** `APPLIES_TO_ROLE`, `APPLIES_TO_EXPENSE`, `APPLIES_TO_MODE`, `APPLIES_IN_CONTEXT`
+- **Group 3 — Constraint Logic (3):** `CONSTRAINED_BY`, `SCOPES`, `SATISFIES`
+- **Group 4 — Requirement & Fulfillment (2):** `HAS_REQUIREMENT`, `FULFILLED_BY`
+- **Groups 5-9 (~22):** Financial constraints, classification, conflict resolution, consequence mapping, cross-policy navigation
+
+Auto-discovery mechanism mirrors entity discovery:
 ```python
-class RelationshipSchema(BaseModel):
-    type: str
-    description: str
-    valid_source_types: list[str]   # Empty = any type allowed
-    valid_target_types: list[str]   # Empty = any type allowed
-    cardinality: str = "many_to_many"
-    is_directed: bool = True
-    mandatory: bool = False
-    inverse_type: str | None = None
-    agent_traversal_hint: str = ""
+def _discover_relationship_schemas() -> list[RelationshipSchema]:
+    # Finds all module-level RelationshipSchema instances
+    # Deduplicates by id(obj), sorts by type name
 
-RELATIONSHIP_SCHEMAS: list[RelationshipSchema] = [...]  # User provides entries
-RELATIONSHIP_TYPE_MAP: dict[str, RelationshipSchema] = {rs.type: rs for rs in RELATIONSHIP_SCHEMAS}
-VALID_RELATIONSHIP_TYPES: set[str] = set(RELATIONSHIP_TYPE_MAP.keys())
+RELATIONSHIP_SCHEMAS: list[RelationshipSchema]
+RELATIONSHIP_TYPE_MAP: dict[str, list[RelationshipSchema]]  # Multiple schemas per type (multi-variant)
+VALID_RELATIONSHIP_TYPES: set[str]
 ```
 
-#### 1F: Prompt auto-generation functions
+#### 1F: Prompt auto-generation functions — DONE (4 functions, not 3)
 
-Three functions that read the Pydantic schema models and produce prompt text:
+Four functions implemented (plan called for 3):
 
-- **`generate_entity_type_prompt_section()`** — Iterates `ENTITY_TYPE_CLASSES`, reads each class's `__doc__`, enumerates typed attribute fields (name, type, description from `Field(description=...)`), formats into the "Entity Types" prompt block. Replaces lines 337-367 of current extraction prompt.
+- **`generate_entity_type_prompt_section()`** — Entity types with typed attributes and forbidden aliases
+- **`generate_entity_structure_prompt_section(id_prefix, section_number)`** — JSON shape with per-type attributes
+- **`generate_relationship_type_prompt_section()`** — Relationship types with source/target constraints
+- **`generate_json_output_example()`** — Complete JSON output example (not in original plan)
 
-- **`generate_entity_structure_prompt_section(id_prefix, section_number)`** — Generates the "Entity Structure" block showing the JSON shape with per-type attributes. Replaces lines 369-397.
+Also includes `_python_type_to_json_type(annotation)` helper for mapping Python types to JSON type labels.
 
-- **`generate_relationship_type_prompt_section()`** — Iterates `RELATIONSHIP_SCHEMAS`, emits each type with description and valid source/target constraints. Replaces lines 476-501.
+#### 1G: `extra="allow"` inheritance behavior — DONE
 
-#### 1G: `extra="allow"` inheritance behavior
+As designed. Phase 2 will replace with structured handling.
 
-`model_config = ConfigDict(extra="allow")` on `BaseEntitySchema` is **inherited by all subclasses**. This is intentional for Phase 1: if the LLM returns an attribute that doesn't match any typed field, it silently goes to `__pydantic_extra__` rather than failing validation. This means:
+#### 1H: `get_typed_attributes()` helper — DONE
 
-```python
-# This succeeds silently — "misspelled_field" goes to __pydantic_extra__
-RoleEntity(id="R-001", type="Role", name="ED", description="...", misspelled_field="val")
-```
+As designed.
 
-`model_dump()` merges `__pydantic_extra__` content at the top level alongside typed fields. No key collisions with base fields are possible because Pydantic prevents extra keys from shadowing declared fields.
+#### 1I: `validate_entity()` — DONE
 
-Phase 2's 4-tier protocol replaces this permissive behavior with structured handling.
+As designed. Error handling contract matches the plan exactly.
 
-#### 1H: `get_typed_attributes()` helper
+#### 1J: `validate_relationship()` and `reconstruct_merged_entity()` — DONE
 
-Used by `graph.py` and `results.py` to extract type-specific fields from any entity subclass:
-
-```python
-def get_typed_attributes(entity: BaseEntitySchema) -> dict[str, Any]:
-    """Extract type-specific fields + any __pydantic_extra__ overflow.
-
-    model_dump() already merges __pydantic_extra__ at top level,
-    so we just exclude the base fields that every entity shares.
-    """
-    base_fields = set(BaseEntitySchema.model_fields.keys())
-    # base_fields = {"id", "type", "name", "description", "source_anchor", "source_anchors"}
-    return {
-        k: v
-        for k, v in entity.model_dump().items()
-        if k not in base_fields
-    }
-```
-
-This returns both typed attribute fields AND any extras the LLM added beyond the schema, all as a flat dict.
-
-#### 1I: `validate_entity()` — Error handling contract
-
-```python
-def validate_entity(entity_data: dict) -> tuple[BaseEntitySchema | None, list[str]]:
-```
-
-Explicit failure policy for each case:
-
-| Case | Behavior | Return |
-|------|----------|--------|
-| **Unknown type** (`entity_data["type"]` not in `VALID_ENTITY_TYPES`) | Entity skipped entirely | `(None, ["Unknown entity type: {type}"])` |
-| **Known type, missing required base fields** (name, description, id) | Attempt construction — Pydantic raises `ValidationError` | `(None, ["Missing required field: {field}"])` |
-| **Known type, field type mismatch** (e.g. `id=12345` instead of str) | Attempt Pydantic coercion first. If coercion fails, entity skipped | `(None, ["Type mismatch on {field}: ..."])` |
-| **Known type, all required fields present, extra fields** | Succeeds. Extras captured in `__pydantic_extra__` | `(entity, ["Extra field(s) not in schema: {fields}"])` — warnings only |
-| **Known type, missing optional typed attribute fields** | Succeeds. Missing fields get their defaults (empty string, None, etc.) | `(entity, [])` — clean |
-
-All callers (`extraction.py`, `merge.py`, `pipeline.py`) treat `None` as "skip this entity and log the warning."
-
-#### 1J: `validate_relationship()` and `reconstruct_merged_entity()`
-
-**`validate_relationship(rel, entity_type_lookup) -> list[str]`** — Checks source/target types against `RelationshipSchema` constraints. Returns list of warnings (empty = valid).
-
-**`reconstruct_merged_entity(merged_dict, source_entities) -> tuple[BaseEntitySchema | None, list[str]]`** — Specialized validator for the merge/dedup path. Wraps `validate_entity()` with additional merge-specific checks:
-
-1. **Dropped typed attributes**: Warns if a typed attribute field present in ALL source entities is absent from the merged dict (LLM dropped data during merge)
-2. **Type change detection**: Warns if `merged_dict["type"]` differs from the source entities' types (LLM changed the type — almost always wrong)
-3. **ID continuity**: Verifies the merged ID matches one of the source entity IDs or is a newly assigned canonical ID (prevents dangling relationship references)
+As designed. Multi-variant support added: relationships like `CONTAINS` can have multiple valid source/target patterns. A relationship is valid if ANY schema variant matches.
 
 ---
 
-### Step 2: Modify `src/models.py` — Replace Entity with Discriminated Union
+### Step 2: Modify `src/models.py` — Replace Entity with Discriminated Union — DONE
 
-**File: `src/models.py`** (lines 55-107)
+**File: `src/models.py`**
 
-Changes:
-1. **Remove the `Entity` class entirely** (lines 82-89). It is replaced by `BaseEntitySchema` and its typed subclasses from `schemas.py`.
-2. `OntologyGraph.entities` type changes from `list[Entity]` to `list[AnyEntity]`
-3. `SectionExtraction.entities` type changes from `list[Entity]` to `list[AnyEntity]`
-4. No migration validator needed — old data is stale and will be re-extracted
+Changes implemented:
+1. **`Entity` class removed entirely.** Replaced by `BaseEntitySchema` and typed subclasses from `schemas.py`.
+2. `OntologyGraph.entities` type changed to `list[AnyEntity]`
+3. `SectionExtraction.entities` type changed to `list[AnyEntity]`
+4. No migration validator needed — old data is stale
 
-Import note: `models.py` imports `AnyEntity` from `schemas.py`. `schemas.py` imports `SourceAnchor` from `models.py`. No circular dependency because `SourceAnchor` is defined at the top of `models.py` before `OntologyGraph`.
-
----
-
-### Step 3: Modify `src/extraction.py` — Auto-Generated Prompt + Typed Parsing
-
-**File: `src/extraction.py`**
-
-#### 3A: Replace hardcoded prompt sections
-
-The `EXTRACTION_SYSTEM_PROMPT` string (currently ~639 lines) becomes a template with placeholders:
-
-- `{entity_types_section}` — filled by `generate_entity_type_prompt_section()`
-- `{entity_structure_section}` — filled by `generate_entity_structure_prompt_section()`
-- `{relationship_types_section}` — filled by `generate_relationship_type_prompt_section()`
-
-Everything else in the prompt (principles, 4-step analysis, special handling rules, output format) stays as-is.
-
-The `_build_prompt()` function calls the generators and injects the results.
-
-#### 3B: Update entity construction in `_build_section_extraction()`
-
-Currently constructs `Entity(...)` with generic `attributes`. Changes to:
-1. For each entity dict from LLM response, call `validate_entity()` from schemas.py
-2. If valid: use the typed subclass
-3. If invalid (unknown type): log warning and skip the entity
-4. Collect validation warnings for pipeline-level reporting
-
-#### 3C: Update the forbidden entity types list
-
-Currently hardcoded in the prompt (lines 362-367). Move to `schemas.py` as a constant derived from the registry, auto-injected into the prompt by the generation function.
+**Implementation deviation:** `SourceAnchor` was moved to a new file `src/base_models.py` (circular import breaker). The plan assumed `SourceAnchor` could stay in `models.py` without circular imports, but in practice `schemas.py` importing from `models.py` while `models.py` imports from `schemas.py` required the breakout.
 
 ---
 
-### Step 4: Modify `src/merge.py` — Typed Entity Handling in Dedup
+### Step 3: Modify `src/extraction.py` — Auto-Generated Prompt + Typed Parsing — DONE
 
-**File: `src/merge.py`**
+**File: `src/extraction.py`** (979 lines)
 
-#### 4A: Entity serialization for dedup prompt (`_build_entities_block`)
+#### 3A: Replace hardcoded prompt sections — DONE
 
-Currently picks specific fields manually. Change to use `entity.model_dump()` which naturally includes all typed attribute fields. Exclude base fields that aren't needed for dedup comparison.
-
-#### 4B: Entity reconstruction from dedup output
-
-Currently constructs `Entity(...)` from LLM dedup response dicts. Change to use `reconstruct_merged_entity(merged_dict, source_entities)` from schemas.py. This wraps `validate_entity()` with merge-specific checks: warns on dropped typed attributes, type changes, and ID discontinuity. Source entities for each merge group must be passed in so the function can compare what went in vs what came out.
-
-#### 4C: Entity loading from extractions JSON (`_extractions_from_json`)
-
-Currently: `entities = [Entity(**e) for e in ext.get("entities", [])]`. Change to deserialize through the discriminated union.
-
-#### 4D: Grouping by type
-
-`by_type[entity.type].append(entity)` — works unchanged because every subclass has `type`.
-
----
-
-### Step 5: Modify `src/graph.py` — Typed Attribute Unpacking
-
-**File: `src/graph.py`** (line 20)
-
-Currently:
+Extraction prompt now dynamically generated from schema classes:
 ```python
-attrs = {k: str(v) for k, v in entity.attributes.items() if k not in reserved}
+EXTRACTION_SYSTEM_PROMPT = """\
+{entity_types_section}        # generate_entity_type_prompt_section()
+{entity_structure_section}    # generate_entity_structure_prompt_section()
+{relationship_types_section}  # generate_relationship_type_prompt_section()
+{json_output_example}         # generate_json_output_example()
+"""
 ```
 
-Changes to use `get_typed_attributes()` helper from schemas.py:
-```python
-from src.schemas import get_typed_attributes
-typed_attrs = get_typed_attributes(entity)
-attrs = {k: str(v) for k, v in typed_attrs.items() if k not in reserved}
-```
+#### 3B: Update entity construction in `_build_section_extraction()` — DONE
 
-This extracts type-specific fields + extra attributes, stringifies them for NetworkX. Rest of graph.py is unchanged.
+Uses `validate_entity()` from schemas.py. Invalid entities logged and skipped.
 
----
+#### 3C: Update the forbidden entity types list — DONE
 
-### Step 6: Modify `src/results.py` — Serialize Typed Attributes
-
-**File: `src/results.py`** (lines 142-166)
-
-#### 6A: `ontology.json` serialization (line 140)
-
-`ontology.model_dump()` — works automatically. Pydantic serializes the discriminated union correctly, including typed fields as top-level keys.
-
-#### 6B: `entities.json` grouped view (lines 142-166)
-
-Currently accesses `e.attributes` (line 149). Change to use `get_typed_attributes(e)` to collect the type-specific fields into the human-readable view:
-
-```python
-entity_data = {
-    "id": e.id,
-    "name": e.name,
-    "description": e.description,
-    "typed_attributes": get_typed_attributes(e),  # Replaces generic "attributes"
-    "source_section": e.source_anchor.source_section,
-    "source_text": e.source_anchor.source_text,
-}
-```
-
-#### 6C: `extractions.json` (line 134)
-
-`e.model_dump()` — works automatically for typed entities.
+Moved to `schemas.py` as `FORBIDDEN_TYPE_ALIASES` dict, auto-injected into prompt.
 
 ---
 
-### Step 7: Modify `src/pipeline.py` — Validation Logging
+### Step 4: Modify `src/merge.py` — Typed Entity Handling in Dedup — DONE
 
-**File: `src/pipeline.py`**
+**File: `src/merge.py`** (855 lines)
 
-Add post-merge validation pass:
-1. Build `entity_type_lookup: dict[str, str]` mapping entity IDs to their types
-2. Validate each relationship against `RelationshipSchema` constraints
-3. Log warnings to console and include validation summary in `run_meta.json`
+#### 4A: Entity serialization for dedup prompt — DONE
 
-This is advisory-only in Phase 1 (warnings, not errors).
+Uses `get_typed_attributes(e)` with legacy `attributes` dict flattening for backward compatibility.
+
+#### 4B: Entity reconstruction from dedup output — DONE
+
+Uses `reconstruct_merged_entity()` with source entity context. Warns on dropped attributes, type changes, ID discontinuity.
+
+#### 4C: Entity loading from extractions JSON — DONE
+
+Deserialization through the discriminated union.
+
+#### 4D: Grouping by type — DONE
+
+Works unchanged.
+
+**Additional feature (not in plan):** Dedup LLM can now infer new relationships between merged entities, which are integrated into the final graph.
 
 ---
 
-### Step 8: User Provides Schema Content
+### Step 5: Modify `src/graph.py` — Typed Attribute Unpacking — DONE
 
-User fills in:
-1. Typed attribute fields on each entity subclass (with `Field(description=...)`)
-2. Complete `RELATIONSHIP_SCHEMAS` registry entries
-3. Any forbidden type aliases
+**File: `src/graph.py`** (117 lines)
+
+Uses `get_typed_attributes()` as designed.
+
+---
+
+### Step 6: Modify `src/results.py` — Serialize Typed Attributes — DONE
+
+**File: `src/results.py`** (268 lines)
+
+#### 6A: `ontology.json` serialization — DONE
+#### 6B: `entities.json` grouped view — DONE (uses `get_typed_attributes()`)
+#### 6C: `extractions.json` — DONE
+
+---
+
+### Step 7: Modify `src/pipeline.py` — Validation Logging — DONE
+
+**File: `src/pipeline.py`** (146 lines)
+
+Post-merge relationship validation pass implemented:
+1. Builds `entity_type_lookup: dict[str, str]`
+2. Validates each relationship against `RelationshipSchema` constraints
+3. Logs warnings to console
+
+Advisory-only as designed.
+
+---
+
+### Step 8: User Provides Schema Content — DONE
+
+All schema content has been provided:
+1. 20 typed entity subclasses with full attribute definitions (with `Field(description=...)`)
+2. 35 `RelationshipSchema` registry entries with source/target constraints, cardinality, traversal hints
+3. `FORBIDDEN_TYPE_ALIASES` dict mapping invalid type names to corrections
 
 ---
 
 ## Files Modified (Summary)
 
-| File | Change Type | Key Changes |
-|------|------------|-------------|
-| `src/schemas.py` | **NEW** | BaseEntitySchema, typed subclasses (stubs), AnyEntity union, RelationshipSchema, prompt generators, validators |
-| `src/models.py` | Modify | Remove `Entity` class, OntologyGraph.entities -> `list[AnyEntity]`, SectionExtraction.entities -> `list[AnyEntity]` |
-| `src/extraction.py` | Modify | Template prompt with auto-generated sections, typed entity construction in `_build_section_extraction()` |
-| `src/merge.py` | Modify | Typed entity serialization/reconstruction in dedup, `_extractions_from_json` |
-| `src/graph.py` | Modify | Use `get_typed_attributes()` instead of `entity.attributes` (line 20) |
-| `src/results.py` | Modify | Use `get_typed_attributes()` in entities.json grouped view (lines 142-166) |
-| `src/pipeline.py` | Modify | Add relationship validation logging after merge |
+| File | Change Type | Status | Key Changes |
+|------|------------|--------|-------------|
+| `src/schemas.py` | **NEW** | **DONE** | BaseEntitySchema, 20 typed subclasses, AnyEntity union, 35 RelationshipSchemas, prompt generators, validators (2,739 lines) |
+| `src/base_models.py` | **NEW** (unplanned) | **DONE** | SourceAnchor class — circular import breaker |
+| `scripts/discover_schema.py` | **NEW** (unplanned) | **DONE** | LLM-based schema discovery CLI |
+| `data/duty_of_care_schema.json` | **NEW** (unplanned) | **DONE** | LLM-discovered schema (14 entity types, relationship types) |
+| `src/models.py` | Modify | **DONE** | Remove `Entity` class, OntologyGraph.entities -> `list[AnyEntity]`, SectionExtraction.entities -> `list[AnyEntity]` |
+| `src/extraction.py` | Modify | **DONE** | Template prompt with auto-generated sections, typed entity construction |
+| `src/merge.py` | Modify | **DONE** | Typed entity serialization/reconstruction in dedup, relationship discovery |
+| `src/graph.py` | Modify | **DONE** | Use `get_typed_attributes()` instead of `entity.attributes` |
+| `src/results.py` | Modify | **DONE** | Use `get_typed_attributes()` in entities.json grouped view |
+| `src/pipeline.py` | Modify | **DONE** | Relationship validation logging after merge |
+| `.gitignore` | Modify | **DONE** | Updated |
 
 ## Files NOT Modified
 
@@ -346,10 +307,26 @@ User fills in:
 - Frontend React code — Same API response shape
 - Playwright tests — Test UI behavior, not entity schemas
 
-## Verification
+## Verification — NOT DONE
+
+None of the verification steps have been executed yet. All code is written but untested end-to-end.
 
 1. **Prompt generation**: Call `generate_entity_type_prompt_section()` and verify it produces a well-formatted prompt section listing each type with its typed attributes and relationship constraints
 2. **Full pipeline run**: `uv run python -m src.main data/231123_Duty_of_Care_Policy.pdf` — extraction prompt includes auto-generated type sections, LLM output validates against typed schemas, merge handles typed entities, results save correctly with typed attribute fields
 3. **Validation reporting**: After merge, relationship validation warnings are logged for any type constraint violations
 4. **Agent**: `uv run python -m src.test_agent --graph <new_run>` — agent tools still work, typed attributes visible in `get_entity` output
 5. **Frontend**: `uv run python -m src.frontend --latest` — entities display correctly with typed attributes
+
+## What Remains
+
+### Immediate (to complete Phase 1)
+1. **End-to-end verification run** — Run the full pipeline and confirm everything works together
+2. **Commit all changes** — Everything is uncommitted on `user/choskins/schema`
+
+### Phase 2 (Deferred)
+- 4-tier unknown-attribute protocol (Remap/Extend/Misplace/Quarantine) — replaces current `extra="allow"`
+- Schema version tracking/migration
+- Custom validators on typed attributes
+- Enum constraints enforcement for attribute values
+- Cardinality enforcement (one_to_many vs many_to_many)
+- Mandatory relationship enforcement

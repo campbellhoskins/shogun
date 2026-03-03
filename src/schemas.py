@@ -49,6 +49,10 @@ class BaseEntitySchema(BaseModel):
     description: str
     source_anchor: SourceAnchor = Field(default_factory=SourceAnchor)
     source_anchors: list[SourceAnchor] = []
+    appears_in: list[str] = Field(
+        default=[],
+        description="Section IDs (SEC-XX) where this entity was extracted.",
+    )
 
 
 # ============================================================
@@ -327,12 +331,19 @@ class TravelerRoleEntity(BaseEntitySchema):
             "exclude this traveler category."
         ),
     )
+    receipt_required_for_all: bool = Field(
+        default=False,
+        description=(
+            "Whether receipts are required for ALL expenses regardless of amount. "
+            "When true, receipt_requirement_threshold is not evaluated."
+        ),
+    )
     receipt_requirement_threshold: Optional[float] = Field(
         default=None,
         description=(
             "The minimum expense amount in USD above which receipts are required "
-            "for this traveler role. None if all expenses require receipts regardless "
-            "of amount, as is the case for SiteVisitors."
+            "for this traveler role. Only evaluated when receipt_required_for_all "
+            "is false. None if no threshold applies."
         ),
     )
     expense_report_deadline_days: Optional[int] = Field(
@@ -1130,6 +1141,55 @@ class ConsequenceEntity(BaseEntitySchema):
             "Examples: Employee, SiteVisitor, BoardMember."
         ),
     )
+
+# ============================================================
+# GROUP 6: DOCUMENT ARTIFACT ENTITIES
+# ============================================================
+
+
+class ArtifactType(str, Enum):
+    EXPENSE_REPORT = "ExpenseReport"
+    RECEIPT_RECORD = "ReceiptRecord"
+    APPROVAL_FORM = "ApprovalForm"
+    CANCELLATION_RECORD = "CancellationRecord"
+    MILEAGE_LOG = "MileageLog"
+    CREDIT_CARD_STATEMENT = "CreditCardStatement"
+    OTHER = "Other"
+
+
+class DocumentArtifactEntity(BaseEntitySchema):
+    """A document, form, or record required by the travel policy.
+    Represents artifacts that travelers must produce, submit, or retain
+    as part of the compliance process — such as expense reports, receipts,
+    approval forms, cancellation records, mileage logs, or credit card
+    statements."""
+
+    type: Literal["DocumentArtifact"] = "DocumentArtifact"
+
+    artifact_name: str = Field(
+        default="",
+        description="Name of the document/form",
+    )
+    artifact_type: ArtifactType = Field(
+        default=ArtifactType.OTHER,
+        description=(
+            "Classification: ExpenseReport, ReceiptRecord, ApprovalForm, "
+            "CancellationRecord, MileageLog, CreditCardStatement, Other"
+        ),
+    )
+    required_by_role: list[str] = Field(
+        default=[],
+        description="Traveler roles required to produce this artifact",
+    )
+    submission_deadline_days: Optional[int] = Field(
+        default=None,
+        description="Days after travel to submit. Null if no deadline.",
+    )
+    submission_target: str = Field(
+        default="",
+        description="Party to whom artifact must be submitted",
+    )
+
 
 # ============================================================
 # ENTITY TYPE REGISTRY (auto-derived from BaseEntitySchema subclasses)
@@ -1954,8 +2014,8 @@ MANAGED_BY = RelationshipSchema(
 )
 
 
-RESPONSIBLE_FOR_TRAVELER_ROLE = RelationshipSchema(
-    type="RESPONSIBLE_FOR",
+HAS_DUTY_OF_CARE = RelationshipSchema(
+    type="HAS_DUTY_OF_CARE",
     description=(
         "A stakeholder holds organizational duty of care and oversight "
         "responsibility toward a category of traveler. Defines who is accountable "
@@ -1967,7 +2027,7 @@ RESPONSIBLE_FOR_TRAVELER_ROLE = RelationshipSchema(
     cardinality="many_to_many",
     is_directed=True,
     mandatory=False,
-    inverse_type="HAS_RESPONSIBLE_STAKEHOLDER",
+    inverse_type="CARE_PROVIDED_BY",
     agent_traversal_hint=(
         "Traverse when a traveler in a specific role experiences a disruption, "
         "submits an expense, or requires assistance. Use the result to identify "
@@ -1977,8 +2037,8 @@ RESPONSIBLE_FOR_TRAVELER_ROLE = RelationshipSchema(
 )
 
 
-RESPONSIBLE_FOR_POLICY_SECTION = RelationshipSchema(
-    type="RESPONSIBLE_FOR",
+MAINTAINS = RelationshipSchema(
+    type="MAINTAINS",
     description=(
         "A stakeholder owns and maintains a specific section of the corporate "
         "travel policy. Defines who is the authoritative interpreter of that "
@@ -1990,7 +2050,7 @@ RESPONSIBLE_FOR_POLICY_SECTION = RelationshipSchema(
     cardinality="many_to_many",
     is_directed=True,
     mandatory=False,
-    inverse_type="OWNED_BY",
+    inverse_type="MAINTAINED_BY",
     agent_traversal_hint=(
         "Traverse when a policy interpretation question or compliance dispute "
         "arises within a specific section. Use the result to surface the "
@@ -2041,10 +2101,10 @@ REPORTS_TO = RelationshipSchema(
     inverse_type="HAS_DIRECT_REPORT",
     agent_traversal_hint=(
         "Traverse when the immediately responsible stakeholder identified via "
-        "ENFORCED_BY, AUTHORIZED_TO_APPROVE, or RESPONSIBLE_FOR is unavailable "
-        "or lacks sufficient authority to resolve the current decision. Traverse "
-        "iteratively up the chain until a stakeholder with sufficient authority "
-        "is reached."
+        "ENFORCED_BY, AUTHORIZED_TO_APPROVE, HAS_DUTY_OF_CARE, or MAINTAINS is "
+        "unavailable or lacks sufficient authority to resolve the current decision. "
+        "Traverse iteratively up the chain until a stakeholder with sufficient "
+        "authority is reached."
     ),
 )
 
@@ -2313,15 +2373,11 @@ def generate_entity_type_prompt_section() -> str:
         }
 
         if typed_fields:
-            lines.append("  Typed attributes:")
-            for field_name, field_info in typed_fields.items():
-                type_str = _python_type_to_json_type(field_info.annotation)
-                desc = field_info.description or ""
-                required = field_info.is_required()
-                req_str = " (required)" if required else ""
-                lines.append(
-                    f"    - {field_name} ({type_str}{req_str}): {desc}"
-                )
+            attrs = ", ".join(
+                f"{fn} ({_python_type_to_json_type(fi.annotation)})"
+                for fn, fi in typed_fields.items()
+            )
+            lines.append(f"  Attributes: {attrs}")
 
         lines.append("")
 
@@ -2350,15 +2406,29 @@ def generate_entity_structure_prompt_section(
     Replaces the old generic attributes:{} structure with typed fields.
     """
     base_fields = set(BaseEntitySchema.model_fields.keys())
+
+    if id_prefix:
+        id_lines = [
+            "**id** (required)",
+            f"- Format: Start with the prefix `{id_prefix}_` followed by a "
+            "descriptive identifier",
+            "- Use lowercase with underscores",
+            "- Make it descriptive of the entity content",
+            f"- Example: `{id_prefix}_role_stakeholders` or "
+            f"`{id_prefix}_doc_policy`\n",
+        ]
+    else:
+        id_lines = [
+            "**id** (required)",
+            "- Use a plain descriptive identifier in lowercase with underscores",
+            "- Make it descriptive of the entity content",
+            "- Example: `coach_class_requirement` or "
+            "`executive_director`\n",
+        ]
+
     lines = [
         "Create each entity with the following fields:\n",
-        "**id** (required)",
-        f"- Format: Start with the prefix `{id_prefix}_` followed by a "
-        "descriptive identifier",
-        "- Use lowercase with underscores",
-        "- Make it descriptive of the entity content",
-        f"- Example: `{id_prefix}_role_stakeholders` or "
-        f"`{id_prefix}_doc_policy`\n",
+        *id_lines,
         "**type** (required)",
         "- Must be one of the entity types listed above\n",
         "**name** (required)",
@@ -2388,8 +2458,10 @@ def generate_entity_structure_prompt_section(
             "Populate the fields defined for that type."
         )
         lines.append(
-            "- If a value is not present in the source text, leave the "
-            "field as an empty string or empty list."
+            "- String fields not present in source text: use \"\" (empty string)\n"
+            "- Number/integer fields not present (optional): use null\n"
+            "- Boolean fields: always provide true or false\n"
+            "- Array fields not present: use [] (empty array)"
         )
         lines.append(
             "- Do NOT add arbitrary key-value attributes outside the "
@@ -2457,10 +2529,15 @@ def generate_json_output_example() -> str:
     if typed_fields:
         for i, (field_name, field_info) in enumerate(typed_fields.items()):
             type_str = _python_type_to_json_type(field_info.annotation)
+            is_optional = "optional" in type_str
             if "array" in type_str:
                 val = "[]"
-            elif type_str in ("integer", "number"):
-                val = '""'
+            elif is_optional:
+                val = "null"
+            elif "integer" in type_str or "number" in type_str:
+                val = "0"
+            elif "boolean" in type_str:
+                val = "false"
             else:
                 val = '""'
             comma = "," if i < len(typed_fields) - 1 else ","
@@ -2470,7 +2547,7 @@ def generate_json_output_example() -> str:
 
     lines.append('      "source_anchor": {')
     lines.append('        "source_text": "Exact verbatim quote",')
-    lines.append('        "source_section": "1"')
+    lines.append('        "source_section": "SEC-XX"')
     lines.append("      }")
     lines.append("    }")
     lines.append("  ],")
@@ -2486,6 +2563,83 @@ def generate_json_output_example() -> str:
     lines.append("```")
 
     return "\n".join(lines)
+
+
+def generate_example_entity(section_id: str = "SEC-XX") -> str:
+    """Generate a fake example entity JSON for injection into the extraction prompt.
+
+    Picks the first entity type class with typed attributes, creates a dict with
+    placeholder values for every field, and returns a formatted JSON string.
+    """
+    import json as _json
+
+    base_fields = set(BaseEntitySchema.model_fields.keys())
+
+    # Pick the first type with typed attributes
+    example_cls = ENTITY_TYPE_CLASSES[0]
+    for cls in ENTITY_TYPE_CLASSES:
+        typed_fields = {
+            k: v for k, v in cls.model_fields.items() if k not in base_fields
+        }
+        if typed_fields:
+            example_cls = cls
+            break
+
+    type_name = example_cls.model_fields["type"].default
+    typed_fields = {
+        k: v for k, v in example_cls.model_fields.items() if k not in base_fields
+    }
+
+    entity: dict = {
+        "id": f"example_{type_name.lower()}",
+        "type": type_name,
+        "name": f"Example {type_name}",
+        "description": "Description drawn from the policy text",
+    }
+
+    for field_name, field_info in typed_fields.items():
+        type_str = _python_type_to_json_type(field_info.annotation)
+        is_optional = "optional" in type_str
+        if "array" in type_str:
+            entity[field_name] = []
+        elif is_optional:
+            entity[field_name] = None
+        elif "integer" in type_str or "number" in type_str:
+            entity[field_name] = 0
+        elif "boolean" in type_str:
+            entity[field_name] = False
+        else:
+            entity[field_name] = ""
+
+    entity["source_anchor"] = {
+        "source_text": "Exact verbatim quote from section text",
+        "source_section": section_id,
+    }
+
+    return _json.dumps(entity, indent=4)
+
+
+def generate_example_relationship() -> str:
+    """Generate a fake example relationship JSON for injection into the extraction prompt.
+
+    Picks the first relationship schema and creates a placeholder relationship dict.
+    """
+    import json as _json
+
+    if RELATIONSHIP_SCHEMAS:
+        rs = RELATIONSHIP_SCHEMAS[0]
+        rel_type = rs.type
+    else:
+        rel_type = "CONTAINS"
+
+    rel = {
+        "source_id": "entity_a",
+        "target_id": "entity_b",
+        "type": rel_type,
+        "description": f"Entity A {rel_type.lower().replace('_', ' ')} Entity B",
+    }
+
+    return _json.dumps(rel, indent=4)
 
 
 def generate_relationship_type_prompt_section() -> str:
@@ -2512,20 +2666,20 @@ def generate_relationship_type_prompt_section() -> str:
         "on which entity types can be the source and target:\n"
     ]
 
+    # Deduplicate same-type relationships (e.g. two CONTAINS variants)
+    # by merging their source/target constraints into one line.
+    seen: dict[str, tuple[set[str], set[str]]] = {}
     for rs in RELATIONSHIP_SCHEMAS:
-        source_str = (
-            ", ".join(rs.valid_source_types)
-            if rs.valid_source_types
-            else "any"
-        )
-        target_str = (
-            ", ".join(rs.valid_target_types)
-            if rs.valid_target_types
-            else "any"
-        )
-        lines.append(f"- **{rs.type}**: {rs.description}")
-        lines.append(f"  Source: [{source_str}] → Target: [{target_str}]")
-        lines.append("")
+        if rs.type not in seen:
+            seen[rs.type] = (set(rs.valid_source_types), set(rs.valid_target_types))
+        else:
+            seen[rs.type][0].update(rs.valid_source_types)
+            seen[rs.type][1].update(rs.valid_target_types)
+
+    for rel_type, (sources, targets) in seen.items():
+        source_str = ", ".join(sorted(sources)) if sources else "any"
+        target_str = ", ".join(sorted(targets)) if targets else "any"
+        lines.append(f"- **{rel_type}**: [{source_str}] → [{target_str}]")
 
     return "\n".join(lines)
 

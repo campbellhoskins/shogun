@@ -1,4 +1,4 @@
-import type { GraphData, GraphStats, EntityDetail, EntitySummary, PathResponse, AgentAnswer } from './types';
+import type { GraphData, GraphStats, EntityDetail, EntitySummary, PathResponse, AgentAnswer, CascadeResponse } from './types';
 
 const BASE = '/api';
 
@@ -29,6 +29,15 @@ export const api = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question }),
+      },
+    ),
+  getCascade: (nodeId: string) =>
+    fetchJSON<CascadeResponse>(
+      `${BASE}/cascade`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event_node_id: nodeId }),
       },
     ),
 };

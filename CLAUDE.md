@@ -43,8 +43,11 @@ uv sync                     # Install dependencies (uses uv, not pip)
 uv run python -m src.main data/231123_Duty_of_Care_Policy.pdf
 
 # Individual pipeline stages (standalone CLIs)
+uv run python -m src.first_pass <input.md> -o <first_pass.json>     # Stage 0: First pass analysis
 uv run python -m src.segmenter <input.md> -o <chunks.json>         # Stage 1: Semantic chunking
+uv run python -m src.segmenter <input.md> --first-pass <first_pass.json>  # Stage 1 with first pass guidance
 uv run python -m src.extraction <chunks.json> -o <extractions.json> # Stage 2: Entity extraction
+uv run python -m src.extraction <chunks.json> --first-pass <first_pass.json>  # Stage 2 with global context
 uv run python -m src.extraction <chunks.json> --debug               # Stage 2 with full prompt/response tracing
 uv run python -m src.merge <extractions.json> <chunks.json> <source.md> -o <ontology.json>  # Stage 3: Merge
 
@@ -81,23 +84,27 @@ cd frontend && npx playwright test --reporter=list    # Verbose output
 
 ### Pipeline (Source-Anchored Extraction)
 
-The core pipeline is a three-stage process orchestrated by `src/pipeline.py`:
+The core pipeline is a four-stage process orchestrated by `src/pipeline.py`:
 
 ```
 PDF → pdf_parser.py → markdown
                          ↓
-                   [Stage 1] segmenter.py    → LLM semantic chunking → DocumentSection[]
+                   [Stage 0] first_pass.py   → Full-document structural analysis → FirstPassResult
                          ↓
-                   [Stage 2] extraction.py   → Per-section entity extraction (async parallel) → SectionExtraction[]
+                   [Stage 1] segmenter.py    → LLM semantic chunking (guided by Stage 0) → DocumentSection[]
+                         ↓
+                   [Stage 2] extraction.py   → Per-section entity extraction (async parallel, with global context) → SectionExtraction[]
                          ↓
                    [Stage 3] merge.py        → Deterministic dedup (union-find) → OntologyGraph
                          ↓
                    results.py saves to results/runs/{timestamp}_{policy}/
 ```
 
-**Stage 1 (Segmenter):** Single LLM call breaks the document into semantic chunks with hierarchical metadata (parent sections, enumerated list detection). Post-hoc offset computation locates each chunk in the source document.
+**Stage 0 (First Pass):** Single LLM call (with thinking enabled) analyzes the full document to produce a document map (section inventory with `beginning_text` for chunk location), global entity pre-registration (canonical names for cross-section consistency), and cross-section dependencies. This output flows into Stages 1 and 2.
 
-**Stage 2 (Extraction):** Each chunk gets its own LLM call (async with semaphore-based concurrency control, default 2 concurrent). The extraction prompt enforces graph-first principles: entities are things, relationships are assertions, list members become individual nodes. Uses `<extraction_analysis>` chain-of-thought tags that get stripped before JSON parsing. Zero-entity results trigger an automatic retry with an aggressive prompt.
+**Stage 1 (Segmenter):** Single LLM call breaks the document into semantic chunks with hierarchical metadata (parent sections, enumerated list detection). When Stage 0 output is available, the pre-identified section structure guides chunk boundary decisions. Post-hoc offset computation locates each chunk in the source document.
+
+**Stage 2 (Extraction):** Each chunk gets its own LLM call (async with semaphore-based concurrency control, default 2 concurrent). When Stage 0 output is available, each extraction call receives global document context, pre-registered entity names, and relevant cross-section dependencies. The extraction prompt enforces graph-first principles: entities are things, relationships are assertions, list members become individual nodes. Uses `<extraction_analysis>` chain-of-thought tags that get stripped before JSON parsing. Zero-entity results trigger an automatic retry with an aggressive prompt.
 
 **Stage 3 (Merge):** Deterministic deduplication using union-find over two tiers: exact base-ID match (after stripping section prefixes) and exact Name+Type match. Source offsets are verified against the original document using exact, normalized, and fuzzy (SequenceMatcher) matching.
 
@@ -156,6 +163,7 @@ results/
 ├── runs/                              # One subdirectory per pipeline run
 │   ├── {timestamp}_{policy_name}/     # Run ID = UTC timestamp + sanitized policy name
 │   │   ├── run_meta.json              # Run metadata, timings, counts, anchoring stats
+│   │   ├── first_pass.json            # Stage 0: First pass document analysis
 │   │   ├── sections.json              # Stage 1: LLM segmentation output
 │   │   ├── extractions.json           # Stage 2: per-section extraction (pre-merge)
 │   │   ├── ontology.json              # Stage 3: final merged OntologyGraph (reloadable)
@@ -172,6 +180,7 @@ Each file in a run directory has a fixed schema. Do not add ad-hoc files or chan
 | File | Purpose | Schema Owner |
 |------|---------|--------------|
 | `run_meta.json` | Pipeline config, timings, entity/relationship counts, source anchoring quality stats | `save_run()` in `src/results.py` |
+| `first_pass.json` | Stage 0 output: document_map, global_entity_pre_registration, cross_section_dependencies | `save_run()` — sourced from `FirstPassResult` model |
 | `sections.json` | Array of sections: header, section_number, level, char_count, enumerated_lists | `save_run()` — sourced from `DocumentSection` model |
 | `extractions.json` | Array of per-section results: section info + raw entities/relationships before merge | `save_run()` — sourced from `SectionExtraction` model |
 | `ontology.json` | Full `OntologyGraph.model_dump()` — reloadable via `OntologyGraph(**data)` | `save_run()` — sourced from `OntologyGraph` model |
