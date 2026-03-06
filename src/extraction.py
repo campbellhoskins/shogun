@@ -1,7 +1,8 @@
-"""Stage 2: Per-section entity and relationship extraction with source anchoring.
+"""Stage 2: Two-pass per-section extraction — entities first, then relationships.
 
-Extracts entities and relationships from each document section independently,
-with mandatory source text anchoring for every entity.
+Pass 1 extracts entities with base fields only (no typed attributes).
+Pass 2 receives validated entities and extracts relationships, constrained
+to reference only entity IDs that actually exist. 
 
 CLI usage:
     python -m src.extraction <chunks.json> -o <extractions.json>
@@ -36,9 +37,8 @@ from src.models import (
     SourceAnchor,
 )
 from src.schemas import (
-    generate_entity_structure_prompt_section,
-    generate_entity_type_prompt_section,
-    generate_example_entity,
+    BaseEntitySchema,
+    generate_entity_type_prompt_section_slim,
     generate_example_relationship,
     generate_relationship_type_prompt_section,
     validate_entity,
@@ -60,11 +60,14 @@ def _dbg(header: str, body: str = "", indent: int = 0) -> None:
         print(f"{prefix}{'=' * 60}")
 
 
-EXTRACTION_SYSTEM_PROMPT = """\
+# ============================================================
+# PASS 1: ENTITY-ONLY PROMPTS
+# ============================================================
+
+ENTITY_SYSTEM_PROMPT = """\
 You are an expert ontology knowledge graph extraction system specializing in \
 corporate travel policy documents. Your role is to perform exhaustive entity \
-and relationship extraction on a single designated section of a travel policy \
-document.
+extraction on a single designated section of a travel policy document.
 
 You are operating at STAGE 2 of a multi-stage pipeline. Your output will be \
 consumed by downstream stages as follows:
@@ -89,14 +92,14 @@ Global entity pre-registration — a seed list of entities that span multiple \
 sections, with canonical names you must use exactly. This list is intentionally \
 incomplete. Independent entity discovery is required.
 Section text — the raw text of the section you are extracting from. All \
-entities and relationships must be grounded in this text.
+entities must be grounded in this text.
 
 You must be precise, exhaustive, and consistent. Every output field you produce \
 will be consumed programmatically by downstream pipeline stages. Follow the \
 output schema exactly as specified."""
 
 
-EXTRACTION_USER_PROMPT = """\
+ENTITY_USER_PROMPT = """\
 ## PIPELINE CONTEXT
 
 You are processing section {section_id} of a travel policy document as part of \
@@ -155,8 +158,8 @@ present in this list through independent analysis of section text.
 
 ## SECTION TEXT
 
-Extract entities and relationships ONLY from the text below. Do not import \
-rules, thresholds, or relationships from other sections unless they are \
+Extract entities ONLY from the text below. Do not import \
+rules, thresholds, or entities from other sections unless they are \
 explicitly referenced within this text.
 
 --- BEGIN SECTION TEXT ---
@@ -167,18 +170,15 @@ explicitly referenced within this text.
 
 ## CRITICAL PRINCIPLES FOR KNOWLEDGE GRAPH CONSTRUCTION
 
-### Principle 1: Entities Are Things, Relationships Are Assertions
+### Principle 1: Entities Are Things
 
 **Entities** represent discrete, identifiable things (nouns): organizations, \
 roles, policies, governance bodies, procedures, thresholds, definitions, \
 service tiers, expense categories, named party types.
 
-**Relationships** express assertions (verbs) between entities: \
-"Policy APPLIES_TO_ROLE TravelerRole", "PolicyRule MANDATES_USE_OF ServiceProvider".
-
-**Critical Rule**: If you can express a statement as a simple \
-(entity → relationship → entity) triple, you MUST do so. Do NOT create an \
-entity to wrap the assertion.
+**Critical Rule**: Do NOT create an entity to wrap a simple assertion. If a \
+statement is just a relationship between two entities, it should be captured \
+as a relationship (in a later extraction pass), not as a standalone entity.
 
 **Exception**: Only create an entity to represent an assertion when it is too \
 complex for a single triple (multiple simultaneous targets, conditional logic, \
@@ -226,58 +226,138 @@ Create PolicyRule entities only when:
   single relationship
 - The rule needs to be independently referenceable by other parts of the graph
 
-### Step 2: Extract Attribute Values
-
-For each entity, populate its typed attributes from the text: numbers, dates, \
-thresholds, contact details, rates, conditions. Use null for optional \
-number/integer fields not present. Use "" for string fields not present. Use [] \
-for array fields not present. Always provide true or false for boolean fields.
-
-### Step 3: Map Relationships
-
-Identify the meaningful relationships between entities in this section. \
-Focus on relationships that capture how entities interact — what governs what, \
-what constrains what, what covers what, who approves what.
-
-CRITICAL: Only create relationships between entities within this section. \
-Cross-section relationships are handled by Stage 3.
-
-### Step 4: Verify
+### Step 2: Verify
 
 Before producing JSON, check:
 - [ ] Pre-registered entity names used character-for-character
 - [ ] Each list of named parties/roles has separate entity nodes (not arrays)
-- [ ] Concrete attribute values populated where text provides them
-- [ ] All relationship source_id/target_id reference entities in your output
+- [ ] Entity IDs are lowercase with underscores, descriptive of content
 
 ---
 
 ## REQUIRED OUTPUT SCHEMA
 
 After your `<extraction_analysis>`, produce a single valid JSON object with \
-exactly two top-level keys: "entities" and "relationships".
+exactly one top-level key: "entities".
 
-### OUTPUT 1: entities
+### Entity Types
 
 {entity_types_section}
 
-{entity_structure_section}
+### Entity Structure
+
+Create each entity with the following fields:
+
+**id** (required)
+- Use a plain descriptive identifier in lowercase with underscores
+- Make it descriptive of the entity content
+- Example: `coach_class_requirement` or `executive_director`
+
+**type** (required)
+- Must be one of the entity types listed above
+
+**name** (required)
+- A clear, human-readable name for this entity
+- Should be concise but descriptive
+
+**description** (required)
+- A brief description of what this entity represents
+- Draw this from the policy text
+- For named entities from lists, reference the parent sentence context
+
+**source_anchor** (required)
+- This is a mandatory object with two fields:
+  - **source_text**: The EXACT verbatim quote from the section text that \
+supports this entity. Copy character-for-character from the source. Do NOT \
+paraphrase. For named entities from lists, use the complete parent sentence \
+that introduces the list.
+  - **source_section**: Must be set to `{section_id}`
 
 Example entity:
 ```json
-{entity_example}
+{{
+    "id": "example_entity",
+    "type": "TravelerRole",
+    "name": "International Traveler",
+    "description": "Staff member traveling to international destinations",
+    "source_anchor": {{
+        "source_text": "International travelers must comply with...",
+        "source_section": "{section_id}"
+    }}
+}}
 ```
 
-### OUTPUT 2: relationships
+---
+
+## FINAL INSTRUCTIONS
+
+1. Read the section text in its entirety before writing any output.
+2. Wrap your analysis in `<extraction_analysis>` tags.
+3. After the closing `</extraction_analysis>` tag, produce ONLY the JSON object.
+4. The output must be valid, parseable JSON with one key: "entities".
+5. Focus on the key entities. Prefer fewer, well-described entities over many \
+   thin ones.
+6. Create separate entity nodes for each list member — do not collapse into \
+   attribute arrays.
+
+Begin your analysis now.
+"""
+
+
+# ============================================================
+# PASS 2: RELATIONSHIP-ONLY PROMPTS
+# ============================================================
+
+RELATIONSHIP_SYSTEM_PROMPT = """\
+You are an expert ontology knowledge graph extraction system. Your role is to \
+extract relationships between entities that have already been identified in a \
+section of a corporate travel policy document.
+
+You will receive the section text and a list of validated entities. Your task \
+is to identify the meaningful relationships between these entities."""
+
+
+RELATIONSHIP_USER_PROMPT = """\
+## SECTION TEXT
+
+--- BEGIN SECTION TEXT ---
+{section_text}
+--- END SECTION TEXT ---
+
+---
+
+## EXTRACTED ENTITIES
+
+The following entities have been validated and exist in the graph. You MUST \
+only create relationships between these entities.
+
+```json
+{entities_json}
+```
+
+---
+
+## RELATIONSHIP TYPES
 
 {relationship_types_section}
 
+---
+
+## REQUIRED OUTPUT SCHEMA
+
+Complete your analysis inside `<extraction_analysis>` tags, then produce a \
+single valid JSON object with exactly one top-level key: "relationships".
+
 Each relationship must have:
-- **source_id**: Must match an entity ID in your entities array
-- **target_id**: Must match an entity ID in your entities array
+- **source_id**: MUST exactly match an entity id from the EXTRACTED ENTITIES list above
+- **target_id**: MUST exactly match an entity id from the EXTRACTED ENTITIES list above
 - **type**: One of the relationship types listed above
 - **description**: A specific description of HOW these entities relate, drawn \
   from the section text
+
+**HARD CONSTRAINT**: Every source_id and target_id MUST exactly match an id \
+from the EXTRACTED ENTITIES list. Do NOT invent new entity IDs. If you cannot \
+find a valid source or target entity for a relationship, skip that relationship.
 
 CRITICAL: Create relationships ONLY between entities within this section. Do \
 NOT create relationships to entities in other sections.
@@ -291,19 +371,20 @@ Example relationship:
 
 ## FINAL INSTRUCTIONS
 
-1. Read the section text in its entirety before writing any output.
+1. Read the section text and entities list before writing any output.
 2. Wrap your analysis in `<extraction_analysis>` tags.
 3. After the closing `</extraction_analysis>` tag, produce ONLY the JSON object.
-4. All entity IDs referenced in relationships must match entity IDs in the \
-   entities array.
-5. The output must be valid, parseable JSON.
-6. Focus on the key entities, their attributes, and the relationships between \
-   them. Prefer fewer, well-attributed entities over many thin ones.
-7. Create separate entity nodes for each list member — do not collapse into \
-   attribute arrays.
+4. The output must be valid, parseable JSON with one key: "relationships".
+5. Focus on meaningful relationships that capture how entities interact — \
+   what governs what, what constrains what, what covers what, who approves what.
 
 Begin your analysis now.
 """
+
+
+# ============================================================
+# PROMPT BUILDERS
+# ============================================================
 
 
 def _build_entity_pre_registration(
@@ -344,12 +425,15 @@ def _build_entity_pre_registration(
     return result
 
 
-def _build_prompt(
+def _build_entity_prompt(
     section: DocumentSection,
     all_sections: list[DocumentSection],
     first_pass_result: FirstPassResult,
 ) -> tuple[str, str]:
-    """Build the system + user extraction prompts for a section.
+    """Build the system + user prompts for Pass 1 (entity extraction).
+
+    Uses the slim entity type list (type names + descriptions only, no
+    typed attribute fields) to minimize prompt size.
 
     Returns:
         Tuple of (system_prompt, user_prompt).
@@ -358,16 +442,15 @@ def _build_prompt(
     dm = fp.document_map
 
     _dbg(
-        f"_build_prompt [{section.section_number}] {section.header}",
+        f"_build_entity_prompt [{section.section_number}] {section.header}",
         f"section_id: {section.section_id}\n"
         f"section_text length: {len(section.text)} chars\n"
-        f"Building sub-components...",
+        f"Building entity prompt...",
     )
 
-    # Build the entity pre-registration block
     pre_reg_text = _build_entity_pre_registration(section, first_pass_result)
 
-    user_prompt = EXTRACTION_USER_PROMPT.format(
+    user_prompt = ENTITY_USER_PROMPT.format(
         section_id=section.section_id or section.section_number,
         document_title=dm.document_title,
         issuing_organization=dm.issuing_organization,
@@ -378,28 +461,73 @@ def _build_prompt(
         section_summary=section.section_summary or "Not summarized",
         global_entity_pre_registration=pre_reg_text,
         section_text=section.text,
-        # Auto-generated schema sections
-        entity_types_section=generate_entity_type_prompt_section(),
-        entity_structure_section=generate_entity_structure_prompt_section(
-            "", section.section_id or section.section_number
-        ),
+        entity_types_section=generate_entity_type_prompt_section_slim(),
+    )
+
+    _dbg(
+        f"ENTITY SYSTEM PROMPT ({len(ENTITY_SYSTEM_PROMPT)} chars)",
+        ENTITY_SYSTEM_PROMPT,
+    )
+    _dbg(
+        f"ENTITY USER PROMPT → LLM [{section.section_number}] ({len(user_prompt)} chars)",
+        user_prompt,
+    )
+
+    return (ENTITY_SYSTEM_PROMPT, user_prompt)
+
+
+def _build_relationship_prompt(
+    section: DocumentSection,
+    validated_entities: list[BaseEntitySchema],
+) -> tuple[str, str]:
+    """Build the system + user prompts for Pass 2 (relationship extraction).
+
+    Serializes validated entities to compact JSON and includes the full
+    relationship type list with source/target constraints.
+
+    Returns:
+        Tuple of (system_prompt, user_prompt).
+    """
+    # Compact entity representation for the relationship prompt
+    entities_compact = [
+        {
+            "id": e.id,
+            "type": e.type,
+            "name": e.name,
+            "description": e.description,
+        }
+        for e in validated_entities
+    ]
+    entities_json = json.dumps(entities_compact, indent=2)
+
+    _dbg(
+        f"_build_relationship_prompt [{section.section_number}]",
+        f"entities: {len(validated_entities)}\n"
+        f"entities_json length: {len(entities_json)} chars",
+    )
+
+    user_prompt = RELATIONSHIP_USER_PROMPT.format(
+        section_text=section.text,
+        entities_json=entities_json,
         relationship_types_section=generate_relationship_type_prompt_section(),
-        entity_example=generate_example_entity(
-            section_id=section.section_id or section.section_number
-        ),
         relationship_example=generate_example_relationship(),
     )
 
     _dbg(
-        f"SYSTEM PROMPT ({len(EXTRACTION_SYSTEM_PROMPT)} chars)",
-        EXTRACTION_SYSTEM_PROMPT,
+        f"REL SYSTEM PROMPT ({len(RELATIONSHIP_SYSTEM_PROMPT)} chars)",
+        RELATIONSHIP_SYSTEM_PROMPT,
     )
     _dbg(
-        f"USER PROMPT → LLM [{section.section_number}] ({len(user_prompt)} chars)",
+        f"REL USER PROMPT → LLM [{section.section_number}] ({len(user_prompt)} chars)",
         user_prompt,
     )
 
-    return (EXTRACTION_SYSTEM_PROMPT, user_prompt)
+    return (RELATIONSHIP_SYSTEM_PROMPT, user_prompt)
+
+
+# ============================================================
+# RESPONSE PARSING
+# ============================================================
 
 
 def _extract_text_from_response(response) -> str:
@@ -434,13 +562,18 @@ def _parse_extraction_response(raw: str) -> dict:
         raise
 
 
-def _build_section_extraction(
-    data: dict, section: DocumentSection
-) -> SectionExtraction:
-    """Build a SectionExtraction from parsed JSON data.
+# ============================================================
+# VALIDATION HELPERS
+# ============================================================
 
-    Uses validate_entity() from schemas.py to construct typed entity subclasses.
-    Entities with unknown types or validation failures are skipped with warnings.
+
+def _build_validated_entities(
+    data: dict, section: DocumentSection
+) -> list[BaseEntitySchema]:
+    """Validate raw entity dicts from LLM output into typed entity objects.
+
+    Uses validate_entity() from schemas.py. Entities with unknown types or
+    validation failures are skipped with warnings.
     """
     entities = []
     for e in data.get("entities", []):
@@ -463,7 +596,6 @@ def _build_section_extraction(
 
         # Carry over all other fields from LLM output (typed attributes,
         # or legacy "attributes" dict flattened to top-level).
-        # If LLM returns old-style {"attributes": {...}}, flatten them.
         if "attributes" in e and isinstance(e["attributes"], dict):
             for k, v in e["attributes"].items():
                 if k not in entity_dict:
@@ -484,23 +616,109 @@ def _build_section_extraction(
                 entity.appears_in = [section.section_id]
             entities.append(entity)
 
+    return entities
+
+
+def _build_validated_relationships(
+    data: dict,
+    entities: list[BaseEntitySchema],
+    section: DocumentSection,
+) -> list[Relationship]:
+    """Validate raw relationship dicts with referential integrity checking.
+
+    Relationships with source_id or target_id not matching any validated
+    entity are skipped with a warning.
+    """
+    entity_ids = {e.id for e in entities}
     relationships = []
+    dangling_count = 0
+
     for r in data.get("relationships", []):
+        source_id = str(r.get("source_id", ""))
+        target_id = str(r.get("target_id", ""))
+
+        # Referential integrity check
+        if source_id not in entity_ids or target_id not in entity_ids:
+            dangling_count += 1
+            missing = []
+            if source_id not in entity_ids:
+                missing.append(f"source_id={source_id}")
+            if target_id not in entity_ids:
+                missing.append(f"target_id={target_id}")
+            _dbg(
+                f"DANGLING REL [{section.section_number}]",
+                f"Skipping relationship {r.get('type', '?')}: {', '.join(missing)}",
+                indent=2,
+            )
+            continue
+
         relationships.append(
             Relationship(
-                source_id=str(r["source_id"]),
-                target_id=str(r["target_id"]),
-                type=str(r["type"]),
+                source_id=source_id,
+                target_id=target_id,
+                type=str(r.get("type", "")),
                 description=str(r.get("description", "")),
                 source_sections=[section.section_id or section.section_number],
             )
         )
 
-    return SectionExtraction(
-        section=section,
-        entities=entities,
-        relationships=relationships,
-    )
+    total = dangling_count + len(relationships)
+    if dangling_count and total > 0:
+        pct = dangling_count / total * 100
+        print(
+            f"    [WARN] Section {section.section_number}: "
+            f"{dangling_count}/{total} relationships dangling ({pct:.0f}%)"
+        )
+
+    return relationships
+
+
+# ============================================================
+# RATE-LIMITED API CALL HELPER
+# ============================================================
+
+
+async def _api_call_with_retry(
+    client: AsyncAnthropic,
+    system_prompt: str,
+    user_prompt: str,
+    section_number: str,
+    max_retries: int = 3,
+    pass_name: str = "extraction",
+) -> Any:
+    """Make an async API call with rate-limit retry logic.
+
+    Returns the raw API response object.
+    """
+    for attempt in range(max_retries):
+        try:
+            response = await client.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=16384,
+                system=system_prompt,
+                thinking=_THINKING_CONFIG,
+                messages=[{"role": "user", "content": user_prompt}],
+            )
+            return response
+        except Exception as e:
+            if "rate_limit" in str(e).lower() or "429" in str(e):
+                wait = 2 ** attempt * 15  # 15s, 30s, 60s
+                print(
+                    f"    Rate limited on {pass_name} for section {section_number}, "
+                    f"retrying in {wait}s (attempt {attempt + 1}/{max_retries})"
+                )
+                await asyncio.sleep(wait)
+                if attempt == max_retries - 1:
+                    raise
+            else:
+                raise
+    # Should not reach here, but satisfy type checker
+    raise RuntimeError(f"All {max_retries} retries exhausted for {pass_name}")
+
+
+# ============================================================
+# SYNC EXTRACTION (single section)
+# ============================================================
 
 
 def extract_section(
@@ -509,7 +727,10 @@ def extract_section(
     client: Anthropic | None = None,
     first_pass_result: FirstPassResult | None = None,
 ) -> SectionExtraction:
-    """Extract entities and relationships from a single section.
+    """Extract entities and relationships from a single section (two-pass).
+
+    Pass 1: Extract entities only.
+    Pass 2: Extract relationships constrained to validated entity IDs.
 
     Args:
         section: The section to extract from.
@@ -526,41 +747,63 @@ def extract_section(
     if first_pass_result is None:
         first_pass_result = FirstPassResult()
 
-    system_prompt, user_prompt = _build_prompt(section, all_sections, first_pass_result)
+    # Pass 1: Entity extraction
+    entity_sys, entity_user = _build_entity_prompt(section, all_sections, first_pass_result)
 
     response = client.messages.create(
         model=_EXTRACTION_MODEL,
         max_tokens=16000,
-        system=system_prompt,
+        system=entity_sys,
         thinking=_THINKING_CONFIG,
-        messages=[{"role": "user", "content": user_prompt}],
+        messages=[{"role": "user", "content": entity_user}],
     )
 
     raw = _extract_text_from_response(response)
     data = _parse_extraction_response(raw)
-    result = _build_section_extraction(data, section)
+    entities = _build_validated_entities(data, section)
 
-    # If zero entities, retry with aggressive prompt
-    if not result.entities and len(section.text.strip()) > 100:
-        result = _retry_extraction(
+    # Retry if zero entities
+    if not entities and len(section.text.strip()) > 100:
+        entities = _retry_entity_extraction(
             section, all_sections, client,
             first_pass_result=first_pass_result,
         )
 
-    return result
+    # Pass 2: Relationship extraction (skip if no entities)
+    relationships: list[Relationship] = []
+    if entities:
+        rel_sys, rel_user = _build_relationship_prompt(section, entities)
+
+        response = client.messages.create(
+            model=_EXTRACTION_MODEL,
+            max_tokens=16000,
+            system=rel_sys,
+            thinking=_THINKING_CONFIG,
+            messages=[{"role": "user", "content": rel_user}],
+        )
+
+        raw = _extract_text_from_response(response)
+        rel_data = _parse_extraction_response(raw)
+        relationships = _build_validated_relationships(rel_data, entities, section)
+
+    return SectionExtraction(
+        section=section,
+        entities=entities,
+        relationships=relationships,
+    )
 
 
-def _retry_extraction(
+def _retry_entity_extraction(
     section: DocumentSection,
     all_sections: list[DocumentSection],
     client: Anthropic,
     first_pass_result: FirstPassResult | None = None,
-) -> SectionExtraction:
-    """Retry extraction with a more aggressive prompt."""
+) -> list[BaseEntitySchema]:
+    """Retry entity extraction with a more aggressive prompt."""
     if first_pass_result is None:
         first_pass_result = FirstPassResult()
 
-    system_prompt, user_prompt = _build_prompt(section, all_sections, first_pass_result)
+    entity_sys, entity_user = _build_entity_prompt(section, all_sections, first_pass_result)
     retry_prefix = (
         "IMPORTANT: Your previous extraction of this section produced ZERO entities. "
         "This section MUST contain at least one extractable fact. Look for: "
@@ -571,14 +814,19 @@ def _retry_extraction(
     response = client.messages.create(
         model=_EXTRACTION_MODEL,
         max_tokens=16000,
-        system=system_prompt,
+        system=entity_sys,
         thinking=_THINKING_CONFIG,
-        messages=[{"role": "user", "content": retry_prefix + user_prompt}],
+        messages=[{"role": "user", "content": retry_prefix + entity_user}],
     )
 
     raw = _extract_text_from_response(response)
     data = _parse_extraction_response(raw)
-    return _build_section_extraction(data, section)
+    return _build_validated_entities(data, section)
+
+
+# ============================================================
+# ASYNC EXTRACTION (single section, two-pass)
+# ============================================================
 
 
 async def _extract_section_async(
@@ -589,109 +837,118 @@ async def _extract_section_async(
     max_retries: int = 3,
     first_pass_result: FirstPassResult | None = None,
 ) -> SectionExtraction:
-    """Extract a single section asynchronously with retry on rate limits."""
+    """Extract a single section asynchronously with two-pass approach.
+
+    Both passes are sequential within the semaphore (pass 2 depends on pass 1).
+    Different sections still run in parallel via asyncio.gather.
+    """
     if first_pass_result is None:
         first_pass_result = FirstPassResult()
 
     async with semaphore:
-        system_prompt, user_prompt = _build_prompt(
+        # ---- Pass 1: Entity extraction ----
+        entity_sys, entity_user = _build_entity_prompt(
             section, all_sections, first_pass_result
         )
 
         _dbg(
-            f"API CALL [{section.section_number}]",
+            f"ENTITY API CALL [{section.section_number}]",
             f"model: {_EXTRACTION_MODEL}\n"
-            f"max_tokens: 16000 (thinking: {_THINKING_CONFIG['budget_tokens']})\n"
-            f"system prompt length: {len(system_prompt)} chars\n"
-            f"user prompt length: {len(user_prompt)} chars",
+            f"max_tokens: 16384 (thinking: {_THINKING_CONFIG['budget_tokens']})\n"
+            f"system prompt length: {len(entity_sys)} chars\n"
+            f"user prompt length: {len(entity_user)} chars",
         )
 
-        # Retry loop for rate limit errors
-        for attempt in range(max_retries):
-            try:
-                response = await client.messages.create(
-                    model="claude-sonnet-4-20250514",
-                    max_tokens=16384,
-                    system=system_prompt,
-                    thinking=_THINKING_CONFIG,
-                    messages=[{"role": "user", "content": user_prompt}],
-                )
-                break
-            except Exception as e:
-                if "rate_limit" in str(e).lower() or "429" in str(e):
-                    wait = 2 ** attempt * 15  # 15s, 30s, 60s
-                    print(
-                        f"    Rate limited on section {section.section_number}, "
-                        f"retrying in {wait}s (attempt {attempt + 1}/{max_retries})"
-                    )
-                    await asyncio.sleep(wait)
-                    if attempt == max_retries - 1:
-                        raise
-                else:
-                    raise
+        response = await _api_call_with_retry(
+            client, entity_sys, entity_user,
+            section.section_number, max_retries, pass_name="entity pass",
+        )
 
         raw = _extract_text_from_response(response)
         _dbg(
-            f"LLM RESPONSE [{section.section_number}] ({len(raw)} chars)",
+            f"ENTITY RESPONSE [{section.section_number}] ({len(raw)} chars)",
             raw,
         )
 
         data = _parse_extraction_response(raw)
-        result = _build_section_extraction(data, section)
+        entities = _build_validated_entities(data, section)
 
         _dbg(
-            f"PARSED RESULT [{section.section_number}]",
-            f"entities: {len(result.entities)}\n"
-            f"relationships: {len(result.relationships)}",
+            f"ENTITY RESULT [{section.section_number}]",
+            f"entities: {len(entities)}",
         )
 
-        # If zero entities, retry with aggressive prompt
-        if not result.entities and len(section.text.strip()) > 100:
+        # Retry if zero entities
+        if not entities and len(section.text.strip()) > 100:
             retry_prefix = (
                 "IMPORTANT: Your previous extraction produced ZERO entities. "
                 "This section MUST contain at least one extractable fact.\n\n"
             )
 
             _dbg(
-                f"RETRY API CALL [{section.section_number}] (zero entities)",
-                f"Prepending retry prefix ({len(retry_prefix)} chars) to user prompt",
+                f"ENTITY RETRY [{section.section_number}] (zero entities)",
+                f"Prepending retry prefix ({len(retry_prefix)} chars)",
             )
 
-            for attempt in range(max_retries):
-                try:
-                    response = await client.messages.create(
-                        model="claude-sonnet-4-20250514",
-                        max_tokens=16384,
-                        system=system_prompt,
-                        thinking=_THINKING_CONFIG,
-                        messages=[
-                            {"role": "user", "content": retry_prefix + user_prompt}
-                        ],
-                    )
-                    break
-                except Exception as e:
-                    if "rate_limit" in str(e).lower() or "429" in str(e):
-                        wait = 2 ** attempt * 15
-                        await asyncio.sleep(wait)
-                        if attempt == max_retries - 1:
-                            raise
-                    else:
-                        raise
+            response = await _api_call_with_retry(
+                client, entity_sys, retry_prefix + entity_user,
+                section.section_number, max_retries, pass_name="entity retry",
+            )
+
             raw = _extract_text_from_response(response)
             _dbg(
-                f"RETRY LLM RESPONSE [{section.section_number}] ({len(raw)} chars)",
+                f"ENTITY RETRY RESPONSE [{section.section_number}] ({len(raw)} chars)",
                 raw,
             )
             data = _parse_extraction_response(raw)
-            result = _build_section_extraction(data, section)
+            entities = _build_validated_entities(data, section)
 
             _dbg(
-                f"RETRY PARSED RESULT [{section.section_number}]",
-                f"entities: {len(result.entities)}\n"
-                f"relationships: {len(result.relationships)}",
+                f"ENTITY RETRY RESULT [{section.section_number}]",
+                f"entities: {len(entities)}",
             )
 
-        return result
+        # ---- Pass 2: Relationship extraction (skip if no entities) ----
+        relationships: list[Relationship] = []
+        if entities:
+            rel_sys, rel_user = _build_relationship_prompt(section, entities)
+
+            _dbg(
+                f"REL API CALL [{section.section_number}]",
+                f"entities provided: {len(entities)}\n"
+                f"system prompt length: {len(rel_sys)} chars\n"
+                f"user prompt length: {len(rel_user)} chars",
+            )
+
+            response = await _api_call_with_retry(
+                client, rel_sys, rel_user,
+                section.section_number, max_retries, pass_name="relationship pass",
+            )
+
+            raw = _extract_text_from_response(response)
+            _dbg(
+                f"REL RESPONSE [{section.section_number}] ({len(raw)} chars)",
+                raw,
+            )
+
+            rel_data = _parse_extraction_response(raw)
+            relationships = _build_validated_relationships(rel_data, entities, section)
+
+            _dbg(
+                f"REL RESULT [{section.section_number}]",
+                f"relationships: {len(relationships)}",
+            )
+
+        return SectionExtraction(
+            section=section,
+            entities=entities,
+            relationships=relationships,
+        )
+
+
+# ============================================================
+# BATCH EXTRACTION
+# ============================================================
 
 
 def extract_all_sections(
@@ -758,6 +1015,11 @@ def extract_all_sections(
         return extractions
 
     return asyncio.run(_run())
+
+
+# ============================================================
+# UTILITIES
+# ============================================================
 
 
 def _sections_from_chunks(chunks: list[dict]) -> list[DocumentSection]:
@@ -839,6 +1101,11 @@ def serialize_extractions(extractions: list[SectionExtraction]) -> list[dict]:
             "relationships": [r.model_dump() for r in se.relationships],
         })
     return out
+
+
+# ============================================================
+# CLI ENTRY POINT
+# ============================================================
 
 
 def main(argv: list[str] | None = None) -> None:

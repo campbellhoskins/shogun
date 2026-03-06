@@ -131,7 +131,13 @@ All Pydantic models live in `src/models.py`: `Entity`, `Relationship`, `Ontology
 
 ### LLM Configuration
 
-All LLM calls use `claude-sonnet-4-20250514` via the Anthropic Python SDK except Q&A generation (`src/generate_qa.py`) which uses `claude-opus-4-20250514`. API key is loaded from `.env` via `python-dotenv`.
+The `.env` file defines two model variables:
+- `TEST_MODEL` — cheap/fast model for development and iteration (`claude-haiku-4-5-20251001`)
+- `BEST_MODEL` — high-quality model for production runs (`claude-sonnet-4-20250514`)
+
+**When Claude Code runs any pipeline stage, service, or LLM call, always use `TEST_MODEL`.** This applies to all invocations: `src.main`, `src.first_pass`, `src.segmenter`, `src.extraction`, `src.merge`, `src.agent`, `src.eval`, `src.frontend`, `src.generate_qa`, and any new modules. Only switch to `BEST_MODEL` when the user explicitly requests it.
+
+API key is loaded from `.env` via `python-dotenv`.
 
 ## Project Structure Conventions
 

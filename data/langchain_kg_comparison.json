@@ -1,0 +1,232 @@
+{
+  "summary": {
+    "whole_doc_schema_free": {
+      "mode": "structured_output",
+      "elapsed_seconds": 39.77,
+      "documents": 1,
+      "nodes": 26,
+      "relationships": 28,
+      "node_types": 13,
+      "rel_types": 19,
+      "density": 0.0431,
+      "avg_props_per_node": 1.65
+    },
+    "whole_doc_schema_guided": {
+      "mode": "structured_output",
+      "elapsed_seconds": 54.7,
+      "documents": 1,
+      "nodes": 38,
+      "relationships": 38,
+      "node_types": 8,
+      "rel_types": 11,
+      "density": 0.027,
+      "avg_props_per_node": 1.53
+    },
+    "chunked_schema_free": {
+      "mode": "structured_output",
+      "elapsed_seconds": 316.23,
+      "documents": 19,
+      "nodes": 302,
+      "relationships": 406,
+      "node_types": 65,
+      "rel_types": 143,
+      "density": 0.0045,
+      "avg_props_per_node": 0.15
+    },
+    "chunked_schema_guided": {
+      "mode": "structured_output",
+      "elapsed_seconds": 394.34,
+      "documents": 19,
+      "nodes": 358,
+      "relationships": 416,
+      "node_types": 21,
+      "rel_types": 31,
+      "density": 0.0033,
+      "avg_props_per_node": 0.38
+    }
+  },
+  "node_type_jaccard": {
+    "whole_doc_schema_free vs whole_doc_schema_guided": 0.0,
+    "whole_doc_schema_free vs chunked_schema_free": 0.2,
+    "whole_doc_schema_free vs chunked_schema_guided": 0.0,
+    "whole_doc_schema_guided vs chunked_schema_free": 0.028,
+    "whole_doc_schema_guided vs chunked_schema_guided": 0.381,
+    "chunked_schema_free vs chunked_schema_guided": 0.024
+  },
+  "rel_type_jaccard": {
+    "whole_doc_schema_free vs whole_doc_schema_guided": 0.034,
+    "whole_doc_schema_free vs chunked_schema_free": 0.102,
+    "whole_doc_schema_free vs chunked_schema_guided": 0.02,
+    "whole_doc_schema_guided vs chunked_schema_free": 0.027,
+    "whole_doc_schema_guided vs chunked_schema_guided": 0.312,
+    "chunked_schema_free vs chunked_schema_guided": 0.03
+  },
+  "shogun_type_coverage": {
+    "whole_doc_schema_free": {
+      "entity_types_matched": [],
+      "entity_coverage_pct": 0.0,
+      "relationship_types_matched": [
+        "TRIGGERS"
+      ],
+      "relationship_coverage_pct": 2.9
+    },
+    "whole_doc_schema_guided": {
+      "entity_types_matched": [
+        "Constraint",
+        "Policy",
+        "Requirement",
+        "Stakeholder"
+      ],
+      "entity_coverage_pct": 19.0,
+      "relationship_types_matched": [
+        "CONSTRAINED_BY",
+        "CONTAINS",
+        "FULFILLED_BY",
+        "GOVERNED_BY",
+        "HAS_REQUIREMENT",
+        "LIMITS",
+        "MAINTAINS",
+        "MANDATES_USE_OF",
+        "REQUIRES_ACTION_FROM",
+        "SATISFIES",
+        "TRIGGERS"
+      ],
+      "relationship_coverage_pct": 32.4
+    },
+    "chunked_schema_free": {
+      "entity_types_matched": [
+        "Policy",
+        "Requirement"
+      ],
+      "entity_coverage_pct": 9.5,
+      "relationship_types_matched": [
+        "AFFECTS",
+        "CONTAINS",
+        "GOVERNED_BY",
+        "MAINTAINS",
+        "TRIGGERS"
+      ],
+      "relationship_coverage_pct": 14.7
+    },
+    "chunked_schema_guided": {
+      "entity_types_matched": [
+        "Accommodation",
+        "Consequence",
+        "Constraint",
+        "Policy",
+        "Requirement",
+        "Stakeholder"
+      ],
+      "entity_coverage_pct": 28.6,
+      "relationship_types_matched": [
+        "AFFECTS",
+        "APPLIES_IN_CONTEXT",
+        "APPLIES_TO_EXPENSE",
+        "APPLIES_TO_MODE",
+        "APPLIES_TO_ROLE",
+        "AUTHORIZED_TO_APPROVE",
+        "CONSTRAINED_BY",
+        "CONTAINS",
+        "COVERS",
+        "ENFORCED_BY",
+        "FULFILLED_BY",
+        "GOVERNED_BY",
+        "HAS_DUTY_OF_CARE",
+        "HAS_EXCEPTION",
+        "HAS_PRIORITY_ORDER",
+        "HAS_REQUIREMENT",
+        "MAINTAINS",
+        "MANAGED_BY",
+        "MANDATES_USE_OF",
+        "PAID_THROUGH",
+        "PRODUCED_BY",
+        "PROHIBITS",
+        "RANKED_IN",
+        "REPORTS_TO",
+        "REQUIRES_ACTION_FROM",
+        "RESULTS_IN",
+        "SATISFIES",
+        "SCOPES",
+        "SUPERSEDES",
+        "TRIGGERS",
+        "TRIGGERS_REQUIREMENT"
+      ],
+      "relationship_coverage_pct": 91.2
+    }
+  },
+  "graph_density": {
+    "whole_doc_schema_free": 0.0431,
+    "whole_doc_schema_guided": 0.027,
+    "chunked_schema_free": 0.0045,
+    "chunked_schema_guided": 0.0033
+  },
+  "avg_properties_per_node": {
+    "whole_doc_schema_free": 1.65,
+    "whole_doc_schema_guided": 1.53,
+    "chunked_schema_free": 0.15,
+    "chunked_schema_guided": 0.38
+  },
+  "shogun_schema_info": {
+    "entity_type_count": 21,
+    "entity_types": [
+      "Accommodation",
+      "BusinessContext",
+      "ClassOfService",
+      "Consequence",
+      "Constraint",
+      "DocumentArtifact",
+      "ExpenseCategory",
+      "GeographicScope",
+      "PaymentMethod",
+      "Policy",
+      "PolicyException",
+      "PolicyRule",
+      "PolicySection",
+      "PriorityOrder",
+      "ReimbursementLimit",
+      "Requirement",
+      "ServiceProvider",
+      "Stakeholder",
+      "TransportationMode",
+      "TravelEvent",
+      "TravelerRole"
+    ],
+    "relationship_type_count": 34,
+    "relationship_types": [
+      "AFFECTS",
+      "APPLIES_IN_CONTEXT",
+      "APPLIES_TO_EXPENSE",
+      "APPLIES_TO_MODE",
+      "APPLIES_TO_ROLE",
+      "AUTHORIZED_TO_APPROVE",
+      "CASCADES_TO",
+      "CONSTRAINED_BY",
+      "CONTAINS",
+      "COVERS",
+      "ENFORCED_BY",
+      "FULFILLED_BY",
+      "GOVERNED_BY",
+      "HAS_DUTY_OF_CARE",
+      "HAS_EXCEPTION",
+      "HAS_PRIORITY_ORDER",
+      "HAS_REQUIREMENT",
+      "LIMITS",
+      "MAINTAINS",
+      "MANAGED_BY",
+      "MANDATES_USE_OF",
+      "PAID_THROUGH",
+      "PRODUCED_BY",
+      "PROHIBITS",
+      "RANKED_IN",
+      "REPORTS_TO",
+      "REQUIRES_ACTION_FROM",
+      "RESOLVED_BY",
+      "RESULTS_IN",
+      "SATISFIES",
+      "SCOPES",
+      "SUPERSEDES",
+      "TRIGGERS",
+      "TRIGGERS_REQUIREMENT"
+    ]
+  }
+}

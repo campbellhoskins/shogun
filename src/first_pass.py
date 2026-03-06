@@ -125,8 +125,6 @@ the document into section-level chunks.
 INSTRUCTIONS FOR document_map:
 - Every discrete section of the document must be captured, including any introductory \
 sections, preambles, or quick reference sections.
-- Sub-sections that appear under a parent section heading should each receive their own \
-section entry. Use section_id format SEC-02a, SEC-02b for sub-sections of SEC-02.
 - Section order must be strictly sequential based on physical order in the document.
 - The beginning_text must be verbatim from the document. Do not paraphrase.
 - If the document contains a table of contents, do not treat it as a content section \

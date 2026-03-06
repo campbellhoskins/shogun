@@ -1,0 +1,695 @@
+{
+  "entities": [
+    {
+      "id": "Direct Travel, Inc.",
+      "type": "Organization",
+      "name": "Direct Travel, Inc.",
+      "properties": {}
+    },
+    {
+      "id": "Client",
+      "type": "Organization",
+      "name": "Client",
+      "properties": {}
+    },
+    {
+      "id": "Travel Services Agreement",
+      "type": "Document",
+      "name": "Travel Services Agreement",
+      "properties": {}
+    },
+    {
+      "id": "Duty Of Care Services",
+      "type": "Service",
+      "name": "Duty Of Care Services",
+      "properties": {}
+    },
+    {
+      "id": "Travel Risk Management",
+      "type": "Service",
+      "name": "Travel Risk Management",
+      "properties": {}
+    },
+    {
+      "id": "Traveler",
+      "type": "Person",
+      "name": "Traveler",
+      "properties": {}
+    },
+    {
+      "id": "Risk Intelligence Platform",
+      "type": "Technology",
+      "name": "Risk Intelligence Platform",
+      "properties": {}
+    },
+    {
+      "id": "Crisis24 Horizon",
+      "type": "Technology",
+      "name": "Crisis24 Horizon",
+      "properties": {}
+    },
+    {
+      "id": "Incident",
+      "type": "Concept",
+      "name": "Incident",
+      "properties": {}
+    },
+    {
+      "id": "Severity Level 1",
+      "type": "Classification",
+      "name": "Severity Level 1",
+      "properties": {}
+    },
+    {
+      "id": "Severity Level 2",
+      "type": "Classification",
+      "name": "Severity Level 2",
+      "properties": {}
+    },
+    {
+      "id": "Severity Level 3",
+      "type": "Classification",
+      "name": "Severity Level 3",
+      "properties": {}
+    },
+    {
+      "id": "Severity Level 4",
+      "type": "Classification",
+      "name": "Severity Level 4",
+      "properties": {}
+    },
+    {
+      "id": "Approved Channels",
+      "type": "Concept",
+      "name": "Approved Channels",
+      "properties": {}
+    },
+    {
+      "id": "Off-Channel Booking",
+      "type": "Concept",
+      "name": "Off-Channel Booking",
+      "properties": {}
+    },
+    {
+      "id": "Itinerary Visibility",
+      "type": "Service",
+      "name": "Itinerary Visibility",
+      "properties": {}
+    },
+    {
+      "id": "Traveler Locate",
+      "type": "Service",
+      "name": "Traveler Locate",
+      "properties": {}
+    },
+    {
+      "id": "Risk Intelligence And Monitoring",
+      "type": "Service",
+      "name": "Risk Intelligence And Monitoring",
+      "properties": {}
+    },
+    {
+      "id": "Pre-Trip Services",
+      "type": "Service",
+      "name": "Pre-Trip Services",
+      "properties": {}
+    },
+    {
+      "id": "In-Trip Monitoring And Alerts",
+      "type": "Service",
+      "name": "In-Trip Monitoring And Alerts",
+      "properties": {}
+    },
+    {
+      "id": "Incident Response And Traveler Assistance",
+      "type": "Service",
+      "name": "Incident Response And Traveler Assistance",
+      "properties": {}
+    },
+    {
+      "id": "Post-Incident Reporting",
+      "type": "Service",
+      "name": "Post-Incident Reporting",
+      "properties": {}
+    },
+    {
+      "id": "Welfare Check",
+      "type": "Service",
+      "name": "Welfare Check",
+      "properties": {}
+    },
+    {
+      "id": "Traveler Data",
+      "type": "Concept",
+      "name": "Traveler Data",
+      "properties": {}
+    },
+    {
+      "id": "Data Processing Agreement",
+      "type": "Document",
+      "name": "Data Processing Agreement",
+      "properties": {}
+    },
+    {
+      "id": "Crisis Bridge",
+      "type": "Concept",
+      "name": "Crisis Bridge",
+      "properties": {}
+    },
+    {
+      "id": "Specialist Provider",
+      "type": "Organization",
+      "name": "Specialist Provider",
+      "properties": {}
+    },
+    {
+      "id": "Crisis24",
+      "type": "Organization",
+      "name": "Crisis24",
+      "properties": {}
+    },
+    {
+      "id": "International Sos",
+      "type": "Organization",
+      "name": "International Sos",
+      "properties": {}
+    },
+    {
+      "id": "Escalation Roster",
+      "type": "Document",
+      "name": "Escalation Roster",
+      "properties": {}
+    },
+    {
+      "id": "Statement Of Work",
+      "type": "Document",
+      "name": "Statement Of Work",
+      "properties": {}
+    },
+    {
+      "id": "Osha General Duty Clause",
+      "type": "Regulation",
+      "name": "Osha General Duty Clause",
+      "properties": {}
+    },
+    {
+      "id": "Health And Safety At Work Act 1974",
+      "type": "Regulation",
+      "name": "Health And Safety At Work Act 1974",
+      "properties": {}
+    },
+    {
+      "id": "Management Of Health And Safety At Work Regulations 1999",
+      "type": "Regulation",
+      "name": "Management Of Health And Safety At Work Regulations 1999",
+      "properties": {}
+    },
+    {
+      "id": "Corporate Manslaughter And Corporate Homicide Act 2007",
+      "type": "Regulation",
+      "name": "Corporate Manslaughter And Corporate Homicide Act 2007",
+      "properties": {}
+    },
+    {
+      "id": "Framework Directive 89/391/Eec",
+      "type": "Regulation",
+      "name": "Framework Directive 89/391/Eec",
+      "properties": {}
+    },
+    {
+      "id": "Iso 31030:2021",
+      "type": "Standard",
+      "name": "Iso 31030:2021",
+      "properties": {}
+    },
+    {
+      "id": "General Data Protection Regulation",
+      "type": "Regulation",
+      "name": "General Data Protection Regulation",
+      "properties": {}
+    },
+    {
+      "id": "Eu Package Travel Directive 2015/2302",
+      "type": "Regulation",
+      "name": "Eu Package Travel Directive 2015/2302",
+      "properties": {}
+    },
+    {
+      "id": "Uk Package Travel And Linked Travel Arrangements Regulations 2018",
+      "type": "Regulation",
+      "name": "Uk Package Travel And Linked Travel Arrangements Regulations 2018",
+      "properties": {}
+    },
+    {
+      "id": "Destination Risk Ratings",
+      "type": "Service",
+      "name": "Destination Risk Ratings",
+      "properties": {}
+    },
+    {
+      "id": "Pre-Trip Advisories",
+      "type": "Service",
+      "name": "Pre-Trip Advisories",
+      "properties": {}
+    },
+    {
+      "id": "High-Risk Destination Approval",
+      "type": "Service",
+      "name": "High-Risk Destination Approval",
+      "properties": {}
+    },
+    {
+      "id": "Travel Insurance Verification",
+      "type": "Service",
+      "name": "Travel Insurance Verification",
+      "properties": {}
+    },
+    {
+      "id": "Real-Time Alerts",
+      "type": "Service",
+      "name": "Real-Time Alerts",
+      "properties": {}
+    },
+    {
+      "id": "Rebooking And Disruption Support",
+      "type": "Service",
+      "name": "Rebooking And Disruption Support",
+      "properties": {}
+    },
+    {
+      "id": "Client Escalation",
+      "type": "Service",
+      "name": "Client Escalation",
+      "properties": {}
+    },
+    {
+      "id": "Traveler Profile Data",
+      "type": "Concept",
+      "name": "Traveler Profile Data",
+      "properties": {}
+    },
+    {
+      "id": "Pnr",
+      "type": "Concept",
+      "name": "Pnr",
+      "properties": {}
+    },
+    {
+      "id": "Legitimate Interest Assessment",
+      "type": "Document",
+      "name": "Legitimate Interest Assessment",
+      "properties": {}
+    },
+    {
+      "id": "Data Protection Impact Assessment",
+      "type": "Document",
+      "name": "Data Protection Impact Assessment",
+      "properties": {}
+    },
+    {
+      "id": "Corporate Travel Policy",
+      "type": "Document",
+      "name": "Corporate Travel Policy",
+      "properties": {}
+    },
+    {
+      "id": "Quarterly Business Review",
+      "type": "Process",
+      "name": "Quarterly Business Review",
+      "properties": {}
+    },
+    {
+      "id": "Post-Incident Review",
+      "type": "Process",
+      "name": "Post-Incident Review",
+      "properties": {}
+    }
+  ],
+  "relationships": [
+    {
+      "source_id": "Travel Services Agreement",
+      "target_id": "Duty Of Care Services",
+      "type": "INCORPORATES",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel, Inc.",
+      "target_id": "Duty Of Care Services",
+      "type": "PROVIDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "target_id": "Duty Of Care Services",
+      "type": "RECEIVES",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "target_id": "Travel Risk Management",
+      "type": "SUPPORTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "target_id": "Traveler",
+      "type": "PROTECTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Risk Intelligence Platform",
+      "target_id": "Crisis24 Horizon",
+      "type": "IMPLEMENTED_BY",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel, Inc.",
+      "target_id": "Risk Intelligence Platform",
+      "type": "USES",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident",
+      "target_id": "Severity Level 1",
+      "type": "CLASSIFIED_AS",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident",
+      "target_id": "Severity Level 2",
+      "type": "CLASSIFIED_AS",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident",
+      "target_id": "Severity Level 3",
+      "type": "CLASSIFIED_AS",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident",
+      "target_id": "Severity Level 4",
+      "type": "CLASSIFIED_AS",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler",
+      "target_id": "Approved Channels",
+      "type": "BOOKS_THROUGH",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler",
+      "target_id": "Off-Channel Booking",
+      "type": "MAY_USE",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "target_id": "Itinerary Visibility",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "target_id": "Traveler Locate",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "target_id": "Risk Intelligence And Monitoring",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "target_id": "Pre-Trip Services",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "target_id": "In-Trip Monitoring And Alerts",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "target_id": "Incident Response And Traveler Assistance",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "target_id": "Post-Incident Reporting",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident Response And Traveler Assistance",
+      "target_id": "Welfare Check",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident Response And Traveler Assistance",
+      "target_id": "Rebooking And Disruption Support",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident Response And Traveler Assistance",
+      "target_id": "Client Escalation",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel, Inc.",
+      "target_id": "Traveler Data",
+      "type": "PROCESSES",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler Data",
+      "target_id": "Data Processing Agreement",
+      "type": "GOVERNED_BY",
+      "properties": {}
+    },
+    {
+      "source_id": "Severity Level 4",
+      "target_id": "Crisis Bridge",
+      "type": "TRIGGERS",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel, Inc.",
+      "target_id": "Specialist Provider",
+      "type": "COORDINATES_WITH",
+      "properties": {}
+    },
+    {
+      "source_id": "Specialist Provider",
+      "target_id": "Crisis24",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Specialist Provider",
+      "target_id": "International Sos",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "target_id": "Escalation Roster",
+      "type": "MAINTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Travel Services Agreement",
+      "target_id": "Statement Of Work",
+      "type": "REFERENCES",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "target_id": "Osha General Duty Clause",
+      "type": "SUBJECT_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "target_id": "Health And Safety At Work Act 1974",
+      "type": "SUBJECT_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "target_id": "Management Of Health And Safety At Work Regulations 1999",
+      "type": "SUBJECT_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "target_id": "Corporate Manslaughter And Corporate Homicide Act 2007",
+      "type": "SUBJECT_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "target_id": "Framework Directive 89/391/Eec",
+      "type": "SUBJECT_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Travel Risk Management",
+      "target_id": "Iso 31030:2021",
+      "type": "COMPLIES_WITH",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler Data",
+      "target_id": "General Data Protection Regulation",
+      "type": "GOVERNED_BY",
+      "properties": {}
+    },
+    {
+      "source_id": "Travel Services Agreement",
+      "target_id": "Eu Package Travel Directive 2015/2302",
+      "type": "SUBJECT_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Travel Services Agreement",
+      "target_id": "Uk Package Travel And Linked Travel Arrangements Regulations 2018",
+      "type": "SUBJECT_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Pre-Trip Services",
+      "target_id": "Destination Risk Ratings",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Pre-Trip Services",
+      "target_id": "Pre-Trip Advisories",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Pre-Trip Services",
+      "target_id": "High-Risk Destination Approval",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Pre-Trip Services",
+      "target_id": "Travel Insurance Verification",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "In-Trip Monitoring And Alerts",
+      "target_id": "Real-Time Alerts",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler",
+      "target_id": "Traveler Profile Data",
+      "type": "ASSOCIATED_WITH",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler Profile Data",
+      "target_id": "Pnr",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "target_id": "Legitimate Interest Assessment",
+      "type": "CONDUCTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "target_id": "Data Protection Impact Assessment",
+      "type": "CONDUCTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "target_id": "Corporate Travel Policy",
+      "type": "ESTABLISHES",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "target_id": "Quarterly Business Review",
+      "type": "PARTICIPATES_IN",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel, Inc.",
+      "target_id": "Quarterly Business Review",
+      "type": "PARTICIPATES_IN",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident",
+      "target_id": "Post-Incident Review",
+      "type": "TRIGGERS",
+      "properties": {}
+    }
+  ],
+  "metadata": {
+    "entity_count": 54,
+    "relationship_count": 53,
+    "entity_types": [
+      "Classification",
+      "Concept",
+      "Document",
+      "Organization",
+      "Person",
+      "Process",
+      "Regulation",
+      "Service",
+      "Standard",
+      "Technology"
+    ],
+    "relationship_types": [
+      "ASSOCIATED_WITH",
+      "BOOKS_THROUGH",
+      "CLASSIFIED_AS",
+      "COMPLIES_WITH",
+      "CONDUCTS",
+      "COORDINATES_WITH",
+      "ESTABLISHES",
+      "GOVERNED_BY",
+      "IMPLEMENTED_BY",
+      "INCLUDES",
+      "INCORPORATES",
+      "MAINTAINS",
+      "MAY_USE",
+      "PARTICIPATES_IN",
+      "PROCESSES",
+      "PROTECTS",
+      "PROVIDES",
+      "RECEIVES",
+      "REFERENCES",
+      "SUBJECT_TO",
+      "SUPPORTS",
+      "TRIGGERS",
+      "USES"
+    ],
+    "mode": "free",
+    "strategy": "whole_doc",
+    "chunk_size": null,
+    "model": "claude-haiku-4-5-20251001",
+    "extraction_time_seconds": 23.56,
+    "document": "direct_travel_duty_of_care.md"
+  }
+}
