@@ -72,7 +72,7 @@ Read the full document from beginning to end, noting the structure, the sections
 key entities mentioned throughout, and the ways in which different sections reference, \
 modify, or depend upon one another.
 
-Once you have read the full document, produce the following three outputs in valid JSON \
+Once you have read the full document, produce the following outputs in valid JSON \
 format. Do not produce any output outside of the JSON structure.
 
 ---
@@ -85,11 +85,10 @@ format. Do not produce any output outside of the JSON structure.
 
 ## REQUIRED OUTPUT SCHEMA
 
-Produce a single valid JSON object with exactly four top-level keys:
+Produce a single valid JSON object with exactly three top-level keys:
 1. "document_map"
 2. "global_entity_pre_registration"
-3. "pre_registration_scope_note"
-4. "cross_section_dependencies"
+3. "cross_section_dependencies"
 
 The complete schema for each is defined below.
 
@@ -115,7 +114,7 @@ the document into section-level chunks.
         "section_order": "integer — the ordinal position of this section in the document, starting at 1",
         "section_purpose": "string — a short descriptive name (3-7 words) describing what functional purpose this section serves within the document. This is NOT the section title — it is your functional classification of what the section achieves. Examples: 'Defines air travel booking rules', 'Establishes reimbursement submission process'",
         "section_summary": "string — exactly one sentence describing what this section covers and how it relates to the document as a whole. This sentence must be written in the context of the full document, not in isolation.",
-        "beginning_text": "string — copy the first 40-60 words of this section verbatim from the document. This will be used by the downstream chunking system to locate and extract this section from the raw document text. Begin with the first word that appears under the section heading."
+        "beginning_text": "string — copy the first 40-60 words of this section IMMEDIATELY after the section's main heading line (the line starting with ## or ###). If the first line after the heading is a subheading (e.g., ### 1.1 Purpose), include that subheading text as the start of beginning_text. Do NOT skip past subheadings or numbered items to reach body paragraphs. The text must start at the very first content line after the section heading. This will be used by the downstream chunking system to locate this section."
       }}
     ]
   }}
@@ -181,19 +180,7 @@ plausible entity types. Stage 2 will make the final classification decision base
 contextual analysis of the section text.
 ---
 
-### OUTPUT 3: pre_registration_scope_note
-
-This is a fixed string that must appear verbatim in the output. Copy it exactly:
-
-```json
-{{
-  "pre_registration_scope_note": "This list is a known-incomplete seed whose sole purpose is cross-section entity naming coordination. It does not represent all entities in the document. Stage 2 extractors are required to discover and register additional entities not present in this list through independent analysis of section text. The absence of an entity from this list carries no implication about its importance or relevance to the ontology graph."
-}}
-```
-
----
-
-### OUTPUT 4: cross_section_dependencies
+### OUTPUT 3: cross_section_dependencies
 
 Identify all pairs of sections where a meaningful dependency or modification relationship \
 exists between them. A dependency exists when:

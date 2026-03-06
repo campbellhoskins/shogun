@@ -17,7 +17,7 @@ import re
 import sys
 import unicodedata
 
-from src.models import DocumentSection, EnumeratedList, FirstPassResult, FirstPassSection, HierarchyEntry
+from src.models import DocumentSection, FirstPassResult, FirstPassSection
 
 
 class SegmenterError(Exception):
@@ -121,7 +121,8 @@ def _find_heading_start(doc: str, body_offset: int) -> int:
     Scans backward through lines:
       - Skip blank lines immediately before the body
       - Collect consecutive lines starting with '#'
-      - Stop at the first non-blank, non-heading line
+      - If stopped by a non-heading line, continue scanning backward
+        (up to ~500 chars) looking for markdown headings (^#{1,4} )
 
     Returns the character offset of the first heading line, or body_offset
     if no heading lines are found.
@@ -153,8 +154,41 @@ def _find_heading_start(doc: str, body_offset: int) -> int:
             i -= 1
             continue
 
-        # Non-blank, non-heading line — stop
-        break
+        # Non-blank, non-heading line — if we already found headings, stop.
+        # Otherwise, continue scanning backward (up to ~500 chars) to find
+        # a markdown heading that the LLM's beginning_text may have skipped past.
+        if in_heading_zone:
+            break
+
+        # Extended backward scan: skip past non-heading content lines
+        # (e.g., **2.1** bold items) to find the ## heading above
+        chars_scanned = 0
+        j = i
+        while j >= 0 and chars_scanned < 500:
+            scan_line = lines[j].strip()
+            chars_scanned += len(lines[j]) + 1
+
+            if not scan_line:
+                j -= 1
+                continue
+
+            if re.match(r"^#{1,4}\s", scan_line):
+                # Found a heading — update heading_start to include it
+                in_heading_zone = True
+                heading_line_start = sum(len(l) + 1 for l in lines[:j])
+                # Continue walking backward to capture any parent headings
+                i = j - 1
+                break
+
+            j -= 1
+        else:
+            # Extended scan exhausted without finding a heading — stop
+            break
+
+        if not in_heading_zone:
+            break
+
+        continue
 
     return heading_line_start
 
@@ -251,116 +285,6 @@ def _compute_section_boundaries(
     return boundaries
 
 
-# ---------------------------------------------------------------------------
-# Step 4: Detect enumerated lists (regex)
-# ---------------------------------------------------------------------------
-
-def _detect_enumerated_lists(text: str) -> list[EnumeratedList]:
-    """Detect enumerated lists in section text using regex patterns."""
-    lists: list[EnumeratedList] = []
-
-    # Bulleted lists: lines starting with -, *, +
-    bullet_pattern = re.compile(r"^[ \t]*[-*+]\s+(.+)", re.MULTILINE)
-    bullet_matches = list(bullet_pattern.finditer(text))
-    bullet_groups = _group_consecutive_matches(bullet_matches, text)
-    for group in bullet_groups:
-        if len(group) >= 2:
-            lists.append(EnumeratedList(
-                item_count=len(group),
-                list_type="bulleted",
-                preview=group[0].group(1).strip()[:60],
-            ))
-
-    # Numbered lists: lines starting with digits followed by . or )
-    numbered_pattern = re.compile(r"^[ \t]*\d+[.)]\s+(.+)", re.MULTILINE)
-    numbered_matches = list(numbered_pattern.finditer(text))
-    numbered_groups = _group_consecutive_matches(numbered_matches, text)
-    for group in numbered_groups:
-        if len(group) >= 2:
-            lists.append(EnumeratedList(
-                item_count=len(group),
-                list_type="numbered",
-                preview=group[0].group(1).strip()[:60],
-            ))
-
-    # Lettered lists: lines starting with a-z/A-Z followed by . or )
-    lettered_pattern = re.compile(r"^[ \t]*[a-zA-Z][.)]\s+(.+)", re.MULTILINE)
-    lettered_matches = list(lettered_pattern.finditer(text))
-    lettered_groups = _group_consecutive_matches(lettered_matches, text)
-    for group in lettered_groups:
-        if len(group) >= 2:
-            lists.append(EnumeratedList(
-                item_count=len(group),
-                list_type="lettered",
-                preview=group[0].group(1).strip()[:60],
-            ))
-
-    return lists
-
-
-def _group_consecutive_matches(
-    matches: list[re.Match], text: str
-) -> list[list[re.Match]]:
-    """Group regex matches that are consecutive list items.
-
-    Two matches are consecutive if the text between them contains no heading
-    and no non-whitespace body text (blank lines alone are OK — markdown
-    parsers often insert them between list items).
-    """
-    if not matches:
-        return []
-
-    groups: list[list[re.Match]] = [[matches[0]]]
-
-    for prev, curr in zip(matches, matches[1:]):
-        between = text[prev.end():curr.start()]
-        # Split between-text into lines and check for non-list content
-        has_heading = bool(re.search(r"^#+\s", between, re.MULTILINE))
-        # Check if there are any non-blank, non-whitespace-only lines
-        # that aren't themselves list items between the matches
-        has_body_text = any(
-            line.strip() and not re.match(r"^[ \t]*[-*+\d]\s", line.strip())
-            for line in between.split("\n")
-        )
-
-        if has_heading or has_body_text:
-            groups.append([curr])
-        else:
-            groups[-1].append(curr)
-
-    return groups
-
-
-# ---------------------------------------------------------------------------
-# Step 5: Derive hierarchy from section_id
-# ---------------------------------------------------------------------------
-
-def _derive_level_and_parent(section_id: str) -> tuple[int, str | None]:
-    """Parse SEC-NNx format to derive level and parent_id.
-
-    Examples:
-        SEC-01   → (1, None)
-        SEC-02a  → (2, "SEC-02")
-        SEC-02a1 → (3, "SEC-02a")
-    """
-    m = re.match(r"^SEC-(\d+)([a-z]?)(\d*)$", section_id)
-    if not m:
-        return (1, None)
-
-    _num, letter, sub = m.groups()
-
-    if sub:
-        # Level 3: has number + letter + sub-number
-        parent = f"SEC-{_num}{letter}"
-        return (3, parent)
-    elif letter:
-        # Level 2: has number + letter
-        parent = f"SEC-{_num}"
-        return (2, parent)
-    else:
-        # Level 1: just number
-        return (1, None)
-
 
 def _section_id_to_number(section_id: str) -> str:
     """Convert SEC-NNx to a dotted section number.
@@ -387,34 +311,6 @@ def _section_id_to_number(section_id: str) -> str:
 
     return f"{num}.{letter_offset}.{int(sub)}"
 
-
-def _build_hierarchical_path(
-    section_id: str,
-    lookup: dict[str, tuple[str, str]],
-) -> list[HierarchyEntry]:
-    """Walk parent chain to build full hierarchical path.
-
-    Args:
-        section_id: The section to build the path for.
-        lookup: Map of section_id → (section_number, header).
-
-    Returns:
-        List of HierarchyEntry from root to immediate parent (excludes self).
-    """
-    path: list[HierarchyEntry] = []
-    current = section_id
-
-    while True:
-        _level, parent_id = _derive_level_and_parent(current)
-        if parent_id is None or parent_id not in lookup:
-            break
-        sec_num, header = lookup[parent_id]
-        path.append(HierarchyEntry(section_number=sec_num, header=header))
-        current = parent_id
-
-    # Reverse so it goes root → immediate parent
-    path.reverse()
-    return path
 
 
 # ---------------------------------------------------------------------------
@@ -454,68 +350,57 @@ def segment_document(
     # Compute boundaries
     boundaries = _compute_section_boundaries(text, fp_sections)
 
-    # Build lookup for hierarchy resolution
-    # section_id → (section_number, section_name)
-    hierarchy_lookup: dict[str, tuple[str, str]] = {}
-    for fps in fp_sections:
-        sec_num = _section_id_to_number(fps.section_id)
-        hierarchy_lookup[fps.section_id] = (sec_num, fps.section_name)
-
     sections: list[DocumentSection] = []
-    chunk_index = 0
 
     # Emit preamble if there's significant text before first section
     first_heading_start = boundaries[0][0] if boundaries else len(text)
     preamble_text = text[:first_heading_start].strip()
     if len(preamble_text) > 50:
-        chunk_index += 1
         sections.append(DocumentSection(
-            chunk_id=f"chunk_{chunk_index:03d}",
+            section_id="SEC-00",
             header="[Preamble]",
             section_number="0",
-            level=1,
             text=text[:first_heading_start].rstrip("\n") + "\n",
             source_offset=0,
-            parent_section=None,
-            parent_header=None,
-            hierarchical_path=[],
-            enumerated_lists=_detect_enumerated_lists(preamble_text),
         ))
 
     # Build sections from boundaries
     for heading_start, body_start, section_end, fps in boundaries:
-        chunk_index += 1
         section_text = text[heading_start:section_end]
 
-        # Derive hierarchy
-        level, parent_id = _derive_level_and_parent(fps.section_id)
+        # Post-processing: trim trailing next-section headers that bled through.
+        # Catches patterns like "\n---\n\n## N. HEADING\n" or just "\n## N. HEADING\n"
+        # at the end of a section's text.
+        trail_match = re.search(
+            r"\n(?:---\s*\n\s*)?\n*(?=#{1,4}\s+\S)",
+            section_text,
+            re.MULTILINE,
+        )
+        if trail_match:
+            # Only trim if the matched heading is near the end (last 20% of text)
+            # to avoid trimming legitimate sub-headings within the section
+            match_pos = trail_match.start()
+            remaining_after = len(section_text) - match_pos
+            # Check if what follows is a top-level heading (## N.) not a sub-heading
+            # belonging to this section
+            after_text = section_text[match_pos:].strip()
+            is_next_section_heading = bool(
+                re.match(r"(?:---\s*\n\s*)?#{1,3}\s+\d+[\.\)]\s", after_text)
+            )
+            if is_next_section_heading and remaining_after < len(section_text) * 0.25:
+                section_text = section_text[:match_pos].rstrip("\n") + "\n"
+
         sec_num = _section_id_to_number(fps.section_id)
-        parent_section = None
-        parent_header = None
-        if parent_id and parent_id in hierarchy_lookup:
-            parent_section = hierarchy_lookup[parent_id][0]
-            parent_header = hierarchy_lookup[parent_id][1]
-
-        hier_path = _build_hierarchical_path(fps.section_id, hierarchy_lookup)
-
-        # Detect enumerated lists
-        enum_lists = _detect_enumerated_lists(section_text)
 
         if not section_text.strip():
             print(f"  WARNING: Section {fps.section_id} ({fps.section_name!r}) has empty text after slicing.")
 
         sections.append(DocumentSection(
-            chunk_id=f"chunk_{chunk_index:03d}",
+            section_id=fps.section_id,
             header=fps.section_name,
             section_number=sec_num,
-            level=level,
             text=section_text,
             source_offset=heading_start,
-            parent_section=parent_section,
-            parent_header=parent_header,
-            hierarchical_path=hier_path,
-            enumerated_lists=enum_lists,
-            section_id=fps.section_id,
             section_purpose=fps.section_purpose,
             section_summary=fps.section_summary,
         ))
@@ -547,20 +432,12 @@ def serialize_sections(sections: list[DocumentSection]) -> list[dict]:
     out = []
     for s in sections:
         out.append({
-            "chunk_id": s.chunk_id,
+            "section_id": s.section_id,
             "header": s.header,
             "section_number": s.section_number,
-            "level": s.level,
             "text": s.text,
             "char_count": len(s.text),
             "source_offset": s.source_offset,
-            "parent_section": s.parent_section,
-            "parent_header": s.parent_header,
-            "hierarchical_path": [
-                entry.model_dump() for entry in s.hierarchical_path
-            ],
-            "enumerated_lists": [el.model_dump() for el in s.enumerated_lists],
-            "section_id": s.section_id,
             "section_purpose": s.section_purpose,
             "section_summary": s.section_summary,
         })
