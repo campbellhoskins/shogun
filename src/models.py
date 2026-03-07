@@ -10,35 +10,14 @@ from src.base_models import SourceAnchor  # noqa: F401
 # --- Document Structure ---
 
 
-class EnumeratedList(BaseModel):
-    """An enumerated list detected within a document section."""
-
-    item_count: int
-    list_type: str = ""  # "numbered", "lettered", "bulleted"
-    preview: str = ""  # First few words of the list for identification
-
-
-class HierarchyEntry(BaseModel):
-    """A single entry in a section's hierarchical path from document root."""
-
-    section_number: str = ""
-    header: str = ""
-
-
 class DocumentSection(BaseModel):
     """A logical section of a document identified by the segmenter."""
 
-    chunk_id: str = ""  # Stable ID for RAG retrieval (e.g., "chunk_001")
+    section_id: str = ""  # SEC-XX from first pass (e.g. "SEC-04")
     header: str = ""
     section_number: str = ""
-    level: int = 1
     text: str
     source_offset: int = 0
-    parent_section: str | None = None
-    parent_header: str | None = None
-    hierarchical_path: list[HierarchyEntry] = []
-    enumerated_lists: list[EnumeratedList] = []
-    section_id: str = ""  # SEC-XX from first pass (e.g. "SEC-04")
     section_purpose: str = ""  # Functional classification from first pass
     section_summary: str = ""  # One-sentence summary from first pass
 
@@ -90,7 +69,6 @@ class FirstPassResult(BaseModel):
 
     document_map: FirstPassDocumentMap = Field(default_factory=FirstPassDocumentMap)
     global_entity_pre_registration: list[FirstPassEntity] = []
-    pre_registration_scope_note: str = ""
     cross_section_dependencies: list[FirstPassDependency] = []
 
 
@@ -128,6 +106,8 @@ class ExtractionMetadata(BaseModel):
     deduplication_merges: int = 0
     semantic_dedup_merges: int = 0
     semantic_dedup_api_calls: int = 0
+    cross_section_relationship_count: int = 0
+    cross_section_api_calls: int = 0
 
 
 class SectionExtraction(BaseModel):

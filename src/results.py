@@ -55,6 +55,7 @@ def save_run(
     stage_timings: dict[str, float] | None = None,
     semantic_dedup_log: list[dict] | None = None,
     first_pass_result: FirstPassResult | None = None,
+    cross_section_log: dict | None = None,
 ) -> Path:
     """Save a complete pipeline run.
 
@@ -65,6 +66,8 @@ def save_run(
         pipeline_elapsed: Total pipeline time in seconds.
         stage_timings: Optional dict of stage name -> elapsed seconds.
         semantic_dedup_log: LLM dedup decisions per entity type.
+        first_pass_result: Stage 0 output.
+        cross_section_log: Stage 3a cross-section extraction log.
 
     Returns:
         Path to the run directory.
@@ -109,6 +112,10 @@ def save_run(
                 and e.source_anchor.source_offset >= 0
             ),
         },
+        "cross_section": {
+            "relationship_count": meta.cross_section_relationship_count,
+            "api_calls": meta.cross_section_api_calls,
+        } if cross_section_log else None,
     }
     _write_json(run_dir / "run_meta.json", run_meta)
 
@@ -116,18 +123,11 @@ def save_run(
     sections_data = []
     for s in ontology.source_sections:
         sections_data.append({
-            "chunk_id": s.chunk_id,
+            "section_id": s.section_id,
             "section_number": s.section_number,
             "header": s.header,
-            "level": s.level,
             "source_offset": s.source_offset,
-            "parent_section": s.parent_section,
-            "parent_header": s.parent_header,
-            "hierarchical_path": [
-                entry.model_dump() for entry in s.hierarchical_path
-            ],
             "char_count": len(s.text),
-            "enumerated_lists": [el.model_dump() for el in s.enumerated_lists],
         })
     _write_json(run_dir / "sections.json", sections_data)
 
@@ -215,6 +215,10 @@ def save_run(
             "type_groups": semantic_dedup_log,
         })
 
+    # --- cross_section.json ---
+    if cross_section_log:
+        _write_json(run_dir / "cross_section.json", cross_section_log)
+
     # --- Update latest pointer ---
     latest_file = RESULTS_DIR / "latest.txt"
     latest_file.write_text(run_id, encoding="utf-8")
@@ -231,7 +235,7 @@ def load_run(run_id: str) -> dict:
         raise FileNotFoundError(f"Run not found: {run_dir}")
 
     result = {}
-    for name in ["run_meta", "sections", "first_pass", "extractions", "ontology", "entities", "relationships", "semantic_dedup"]:
+    for name in ["run_meta", "sections", "first_pass", "extractions", "ontology", "entities", "relationships", "semantic_dedup", "cross_section"]:
         filepath = run_dir / f"{name}.json"
         if filepath.exists():
             result[name] = json.loads(filepath.read_text(encoding="utf-8"))

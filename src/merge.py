@@ -220,6 +220,7 @@ def merge_extractions(
     source_document: str,
     sections: list[DocumentSection],
     client: Anthropic | None = None,
+    cross_section_relationships: list[Relationship] | None = None,
 ) -> tuple[OntologyGraph, list[dict]]:
     """Merge all per-section extractions into a single OntologyGraph.
 
@@ -231,6 +232,7 @@ def merge_extractions(
         source_document: The full original document text.
         sections: The document sections from segmentation.
         client: Anthropic client for LLM dedup calls.
+        cross_section_relationships: Relationships from Stage 3a (cross-section extraction).
 
     Returns:
         Tuple of (OntologyGraph, dedup_log for result storage).
@@ -243,7 +245,16 @@ def merge_extractions(
         all_entities.extend(se.entities)
         all_relationships.extend(se.relationships)
 
-    print(f"    Collected {len(all_entities)} entities, {len(all_relationships)} relationships from {len(section_extractions)} sections")
+    if cross_section_relationships:
+        all_relationships.extend(cross_section_relationships)
+
+    cross_section_count = len(cross_section_relationships) if cross_section_relationships else 0
+    print(
+        f"    Collected {len(all_entities)} entities, "
+        f"{len(all_relationships)} relationships "
+        f"({cross_section_count} cross-section) "
+        f"from {len(section_extractions)} sections"
+    )
 
     # Run LLM-based deduplication
     if client is not None:
@@ -286,6 +297,7 @@ def merge_extractions(
     _compute_source_offsets(merged_entities, source_document)
 
     # Build metadata
+    cross_section_count = len(cross_section_relationships) if cross_section_relationships else 0
     metadata = ExtractionMetadata(
         document_char_count=len(source_document),
         section_count=len(sections),
@@ -295,6 +307,8 @@ def merge_extractions(
         final_relationship_count=len(merged_relationships),
         semantic_dedup_merges=merge_count,
         semantic_dedup_api_calls=api_calls,
+        cross_section_relationship_count=cross_section_count,
+        cross_section_api_calls=1 if cross_section_count > 0 else 0,
     )
 
     ontology = OntologyGraph(
@@ -695,28 +709,14 @@ def _compute_source_offsets(entities: list[BaseEntitySchema], source_document: s
 
 def _sections_from_chunks(chunks: list[dict]) -> list[DocumentSection]:
     """Reconstruct DocumentSection objects from chunks.json dicts."""
-    from src.models import EnumeratedList, HierarchyEntry
-
     sections = []
     for c in chunks:
-        enum_lists = []
-        for el in c.get("enumerated_lists", []):
-            enum_lists.append(EnumeratedList(**el))
-        hier_path = [
-            HierarchyEntry(**entry)
-            for entry in c.get("hierarchical_path", [])
-        ]
         sections.append(DocumentSection(
-            chunk_id=c["chunk_id"],
+            section_id=c.get("section_id", c.get("chunk_id", "")),
             header=c.get("header", ""),
             section_number=c.get("section_number", ""),
-            level=c.get("level", 1),
             text=c["text"],
             source_offset=c.get("source_offset", 0),
-            parent_section=c.get("parent_section"),
-            parent_header=c.get("parent_header"),
-            hierarchical_path=hier_path,
-            enumerated_lists=enum_lists,
         ))
     return sections
 
@@ -725,12 +725,12 @@ def _extractions_from_json(
     extractions_data: list[dict], sections: list[DocumentSection]
 ) -> list[SectionExtraction]:
     """Reconstruct SectionExtraction objects from extractions.json + sections."""
-    section_by_chunk_id = {s.chunk_id: s for s in sections}
+    section_by_id = {s.section_id: s for s in sections}
 
     results = []
     for ext in extractions_data:
-        chunk_id = ext.get("chunk_id", "")
-        section = section_by_chunk_id.get(chunk_id)
+        sid = ext.get("section_id", ext.get("chunk_id", ""))
+        section = section_by_id.get(sid)
         if section is None:
             # Fall back to matching by section_number
             sec_num = ext.get("section_number", "")
@@ -741,7 +741,7 @@ def _extractions_from_json(
             if section is None:
                 # Create a minimal placeholder section
                 section = DocumentSection(
-                    chunk_id=chunk_id,
+                    section_id=sid,
                     section_number=ext.get("section_number", ""),
                     text="",
                 )

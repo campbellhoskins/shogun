@@ -10,6 +10,7 @@ import time
 
 from anthropic import Anthropic
 
+from src.cross_section import extract_cross_section_relationships
 from src.extraction import extract_all_sections
 from src.first_pass import run_first_pass
 from src.merge import merge_extractions
@@ -69,16 +70,10 @@ def extract_ontology(
     stage_timings["segmentation"] = round(time.time() - stage_start, 1)
     print(f"  Found {len(sections)} chunks ({stage_timings['segmentation']}s)")
     for s in sections:
-        list_info = ""
-        if s.enumerated_lists:
-            list_counts = [
-                f"{el.item_count} {el.list_type}" for el in s.enumerated_lists
-            ]
-            list_info = f" [lists: {', '.join(list_counts)}]"
         print(
-            f"    {'  ' * (s.level - 1)}{s.chunk_id} "
+            f"    {s.section_id} "
             f"{s.section_number}: {s.header} "
-            f"({len(s.text)} chars){list_info}"
+            f"({len(s.text)} chars)"
         )
 
     # --- Stage 2: Per-Section Extraction ---
@@ -101,11 +96,24 @@ def extract_ontology(
             f"{len(se.entities)} entities, {len(se.relationships)} rels"
         )
 
-    # --- Stage 3: Merge + LLM Deduplication ---
-    print("\nStage 3: Merging and deduplicating (LLM-based)...")
+    # --- Stage 3a: Cross-Section Relationship Extraction ---
+    print("\nStage 3a: Extracting cross-section relationships...")
+    stage_start = time.time()
+    cross_section_rels, cross_section_log = extract_cross_section_relationships(
+        section_extractions, client=client
+    )
+    stage_timings["cross_section"] = round(time.time() - stage_start, 1)
+    print(
+        f"  {len(cross_section_rels)} cross-section relationships "
+        f"({stage_timings['cross_section']}s)"
+    )
+
+    # --- Stage 3b: Merge + LLM Deduplication ---
+    print("\nStage 3b: Merging and deduplicating (LLM-based)...")
     stage_start = time.time()
     ontology, semantic_dedup_log = merge_extractions(
-        section_extractions, document_text, sections, client=client
+        section_extractions, document_text, sections, client=client,
+        cross_section_relationships=cross_section_rels,
     )
     stage_timings["merge"] = round(time.time() - stage_start, 1)
 
@@ -159,6 +167,7 @@ def extract_ontology(
         stage_timings=stage_timings,
         semantic_dedup_log=semantic_dedup_log,
         first_pass_result=first_pass_result,
+        cross_section_log=cross_section_log,
     )
 
     return ontology
