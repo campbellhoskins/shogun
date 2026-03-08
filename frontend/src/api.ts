@@ -1,4 +1,4 @@
-import type { GraphData, GraphStats, EntityDetail, EntitySummary, PathResponse, AgentAnswer, CascadeResponse } from './types';
+import type { GraphData, GraphStats, GraphListItem, EntityDetail, EntitySummary, PathResponse, AgentAnswer, CascadeResponse, ScenariosResponse, Scenario } from './types';
 
 const BASE = '/api';
 
@@ -9,6 +9,16 @@ async function fetchJSON<T>(url: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  listGraphs: () => fetchJSON<GraphListItem[]>(`${BASE}/graphs`),
+  loadGraph: (filename: string) =>
+    fetchJSON<GraphStats>(
+      `${BASE}/graphs/load`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename }),
+      },
+    ),
   getGraph: () => fetchJSON<GraphData>(`${BASE}/graph`),
   getStats: () => fetchJSON<GraphStats>(`${BASE}/graph/stats`),
   getEntity: (id: string) => fetchJSON<EntityDetail>(`${BASE}/entity/${encodeURIComponent(id)}`),
@@ -38,6 +48,16 @@ export const api = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ event_node_id: nodeId }),
+      },
+    ),
+  getScenarios: () => fetchJSON<ScenariosResponse>(`${BASE}/scenarios`),
+  runWalkthrough: (prompt: string) =>
+    fetchJSON<Scenario>(
+      `${BASE}/agent/walkthrough`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
       },
     ),
 };

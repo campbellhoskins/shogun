@@ -38,6 +38,7 @@ from src.models import (
 )
 from src.schemas import (
     BaseEntitySchema,
+    generate_entity_type_prompt_section,
     generate_entity_type_prompt_section_slim,
     generate_relationship_type_prompt_section,
     validate_entity,
@@ -77,10 +78,25 @@ Your output feeds directly into:
   merge conflicts.
 </pipeline_integration>
 
+<graph_purpose>
+This knowledge graph will be used by TMC agents during live incident
+response to answer operational questions such as:
+- "A Level 3 security incident just occurred — what are my timing
+  obligations and who do I escalate to?"
+- "The traveler replied NEED ASSISTANCE — what do I do next and
+  how quickly?"
+- "This booking was made off-channel — what services can I provide?"
+- "It has been 90 minutes with no response — what is my next step?"
+
+Prioritize extracting entities and relationships that support these
+real-time decisions. Document-structural facts (which section defines
+a term, which agreement incorporates another) are lower priority.
+</graph_purpose>
+
 <entity_model>
 WHAT ENTITIES ARE
 Entities are discrete, identifiable things (nouns): organizations, roles,
-regulations, services, platforms, agreements, defined terms. 
+regulations, services, platforms, agreements, defined terms.
 
 WHAT ENTITIES ARE NOT
 Do not create an entity to wrap a simple assertion. If a statement is fully captured as a relationship between two existing entities, it is a relationship, not an entity.
@@ -93,23 +109,87 @@ GRANULARITY CALIBRATION
 A typical 2000-character section yields 5–15 entities. Significantly more suggests you are wrapping simple assertions as entities. Significantly fewer suggests you are collapsing list members or missing genuine entities.
 </entity_model>
 
+<decomposition_rules>
+SEVERITY LEVELS: If the document defines multiple severity levels
+(e.g., Level 1 through Level 4), create a SEPARATE entity for each
+level. Each level carries distinct obligations and must be
+independently addressable in the graph.
+
+ALERT TEMPLATES: If the document provides message templates per
+severity level and per channel, extract each template as a separate
+Alert entity with severity_level, channel, and channel_priority_order
+populated.
+
+TRAVELER RESPONSE STATUSES: Extract each status as a separate entity
+with tmc_action, action_time_target, closes_outreach, and
+triggers_escalation populated from the document's response action
+tables.
+
+CONTACT ROLES: Extract each escalation roster role with
+escalation_severity_levels and escalation_condition populated
+from the escalation tables and procedures.
+</decomposition_rules>
+
+<procedural_sequences>
+WORKFLOWS: When the document describes a named multi-step procedure
+(e.g., welfare check outreach sequence, Crisis Bridge establishment
+protocol, escalation procedure), extract a Workflow entity with
+trigger_condition, step_count, and time_constraint populated.
+
+The individual steps of the workflow should be extracted as their
+own entities (Service, Alert, Obligation) and will be connected to
+the Workflow via STEP_OF and FOLLOWED_BY relationships in the
+relationship extraction pass.
+</procedural_sequences>
+
 <entity_types>
 {entity_types}
 </entity_types>
+
+<attribute_quality>
+ATTRIBUTE POPULATION IS MANDATORY for typed entity schemas.
+
+When extracting a SeverityLevel entity, leaving alert_time_target
+empty when the document specifies "within 60 minutes" is a critical
+extraction failure — it forces downstream consumers to parse the
+description string, defeating the purpose of typed attributes.
+
+Rule: If the document text provides a value that maps to a typed
+attribute field, that field MUST be populated. The description field
+captures context and nuance; typed attributes capture queryable facts.
+
+ANTI-PATTERN: Putting "SLO for outreach is within 30 minutes" in
+description while leaving alert_time_target="" empty.
+
+CORRECT: alert_time_target="within 30 minutes" AND description
+captures additional context like exceptions or conditions.
+</attribute_quality>
+
+<attribute_grounding>
+Only populate a typed attribute if the CURRENT SECTION TEXT provides
+a specific value for it. Do not infer or extrapolate attribute values
+from context, from knowledge of other sections, or from the entity's
+description in a pre-registration block.
+
+If this section references a severity level but does not state its
+SLO timing, leave alert_time_target empty. The defining section will
+provide the authoritative value and the merge step will fill it in.
+</attribute_grounding>
 
 <output_schema>
 Produce a single JSON object with one key: "entities" containing an array.
 
 Each entity requires:
-- id: lowercase_with_underscores, descriptive (e.g., "osha_general_duty_clause")
+- id: lowercase_with_underscores, descriptive
 - type: one of the types above
 - name: concise human-readable name
 - description: what this entity represents, grounded in section text
-- source_anchor: object with:
-    - source_text: EXACT verbatim quote from section text (no paraphrase)
-    - source_section: the section ID provided in the user message
+- source_anchor: object with source_text and source_section
+- All typed attributes defined for the entity's type (see entity_types
+  above). Populate every attribute for which the section text provides
+  a value.
 
-Produce ONLY the JSON object. No preamble, no commentary, no markdown fences.
+Produce ONLY the JSON object.
 </output_schema>
 
 <pre_registration_rules>
@@ -160,6 +240,21 @@ Stage 2a (entity extraction) has already identified and validated all entities i
 Stage 3 receives entity and relationship sets from all sections simultaneously and resolves cross-section connections. Your relationship output must reference only entity IDs provided in the input. Any fabricated ID will create a dangling edge that breaks Stage 3 graph assembly.
 </pipeline_context>
 
+<graph_purpose>
+This knowledge graph will be used by TMC agents during live incident
+response to answer operational questions such as:
+- "A Level 3 security incident just occurred — what are my timing
+  obligations and who do I escalate to?"
+- "The traveler replied NEED ASSISTANCE — what do I do next and
+  how quickly?"
+- "This booking was made off-channel — what services can I provide?"
+- "It has been 90 minutes with no response — what is my next step?"
+
+Prioritize extracting entities and relationships that support these
+real-time decisions. Document-structural facts (which section defines
+a term, which agreement incorporates another) are lower priority.
+</graph_purpose>
+
 <extraction_principles>
 WHAT RELATIONSHIPS ARE
 A relationship captures a specific, stated connection between two entities as evidenced by the section text. It represents how entities interact: governance, enablement, constraint, containment, classification, assignment, provision.
@@ -176,6 +271,49 @@ Each relationship type specifies permitted source and target entity types. Befor
 NO ENTITY FABRICATION
 Every source_id and target_id must exactly match an id from the provided entity list. If a valid relationship would require an entity that does not exist in the list, skip that relationship entirely. Do not create placeholder or implicit entities.
 </extraction_principles>
+
+<operational_priority>
+EXTRACTION PRIORITY ORDER:
+1. HIGHEST — Operational relationships: ACTIVATED_AT, ESCALATED_TO,
+   TRIGGERS_ACTION, REQUIRES_AUTHORIZATION_FROM, SENT_TO, TRIGGERED_BY
+2. HIGH — Service delivery: PROVIDES, ENABLED_BY, ENABLES_COVERAGE,
+   REQUIRES_DATA, RESPONDS_WITH
+3. MEDIUM — Classification: CLASSIFIED_AS, CATEGORIZED_AS, IMPACTS,
+   BOOKED_THROUGH, HAS_BOOKING, ENGAGES
+4. LOWER — Structural: DEFINED_IN, PARTY_TO, INCORPORATES,
+   COMPLIES_WITH, ASSIGNED_TO, DESIGNATED_BY, RELATES_TO, OPERATES
+
+Extract ALL valid relationships, but if you find yourself generating
+many DEFINED_IN or PARTY_TO relationships without corresponding
+operational relationships from the same text, re-read for operational
+content you may have missed.
+</operational_priority>
+
+<attribute_awareness>
+Entity schemas carry typed attributes that encode many operational
+facts (SLO timing, activation thresholds, channel priority, TMC
+actions, conditional triggers). Do NOT create relationships solely
+to duplicate information already captured in entity attributes.
+
+Focus relationships on connections BETWEEN entities that attributes
+cannot capture: which services activate at which severity levels,
+which contact roles receive escalations at which levels, which
+incidents impact which travelers, which response statuses trigger
+which services, which booking channels enable which services.
+</attribute_awareness>
+
+<procedural_sequences>
+When the document describes ordered steps (e.g., "first SMS, then
+Email, then Push Notification, then Voice Call"), extract FOLLOWED_BY
+relationships between the sequential steps.
+
+When an action is conditional (e.g., "Corporate Security is contacted
+only for security-related incidents at Level 3+"), extract a
+CONDITIONAL_ON relationship from the action/role to the condition entity.
+
+When a Workflow entity exists and the section describes its component
+steps, extract STEP_OF relationships from each step to the Workflow.
+</procedural_sequences>
 
 <relationship_types>
 Use ONLY the types below. The Source Type and Target Type columns are hard constraints — the entity referenced by source_id must have the listed type, and likewise for target_id.
@@ -322,7 +460,7 @@ def _build_entity_prompt(
     )
 
     system_prompt = ENTITY_SYSTEM_PROMPT.format(
-        entity_types=generate_entity_type_prompt_section_slim(),
+        entity_types=generate_entity_type_prompt_section(),
     )
 
     _dbg(

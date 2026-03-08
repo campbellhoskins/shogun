@@ -40,8 +40,23 @@ class GraphData(BaseModel):
     nodes: list[GraphNode]
     edges: list[GraphEdge]
     source_document: str
+    graph_title: str = ""
     type_colors: dict[str, str]
     entity_groups: list[str] = []
+
+
+# --- GET /api/graphs ---
+
+
+class GraphListItem(BaseModel):
+    filename: str
+    graph_title: str
+    entity_count: int
+    relationship_count: int
+
+
+class LoadGraphRequest(BaseModel):
+    filename: str
 
 
 # --- GET /api/graph/stats ---
@@ -147,3 +162,37 @@ class CascadeResponse(BaseModel):
     steps: list[CascadeStep]
     node_ids: list[str]
     edge_keys: list[str]
+
+
+# --- GET /api/scenarios ---
+
+
+class ScenarioLogLine(BaseModel):
+    type: str  # query, traverse, attr, decision, warning, dim
+    text: str
+
+
+class ScenarioStep(BaseModel):
+    title: str
+    description: str
+    highlight_nodes: list[str]
+    highlight_edges: list[str]
+    focus_node: str | None = None
+    log: list[ScenarioLogLine]
+
+
+class Scenario(BaseModel):
+    id: str
+    name: str
+    steps: list[ScenarioStep]
+
+
+class ScenariosResponse(BaseModel):
+    scenarios: list[Scenario]
+
+
+# --- POST /api/agent/walkthrough ---
+
+
+class WalkthroughRequest(BaseModel):
+    prompt: str

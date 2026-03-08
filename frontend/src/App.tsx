@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { api } from './api';
-import type { GraphData, GraphStats, EntityDetail, ChatMessage, CascadeResponse } from './types';
+import type { GraphData, GraphStats, EntityDetail, ChatMessage, CascadeResponse, Scenario } from './types';
 import TopBar from './components/TopBar';
 import GraphCanvas, { type GraphCanvasHandle } from './components/GraphCanvas';
 import Legend from './components/Legend';
 import LeftPanel from './components/LeftPanel';
+import type { LeftTabType } from './components/LeftPanel';
 import NodeDetailPanel from './components/NodeDetailPanel';
 import './styles/App.css';
 
@@ -15,22 +16,50 @@ export default function App() {
   const [nodeDetail, setNodeDetail] = useState<EntityDetail | null>(null);
   const [highlightedNodeIds, setHighlightedNodeIds] = useState<Set<string>>(new Set());
   const [highlightedEdgeKeys, setHighlightedEdgeKeys] = useState<Set<string>>(new Set());
-  const [leftTab, setLeftTab] = useState<'pathfinder' | 'chat' | 'cascade'>('pathfinder');
+  const [leftTab, setLeftTab] = useState<LeftTabType>('pathfinder');
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [cascade, setCascade] = useState<CascadeResponse | null>(null);
   const [collapsedNodeIds, setCollapsedNodeIds] = useState<Set<string>>(new Set());
+  const [scenarios, setScenarios] = useState<Scenario[]>([]);
 
   const graphRef = useRef<GraphCanvasHandle>(null);
 
-  // Load graph data on mount
-  useEffect(() => {
-    Promise.all([api.getGraph(), api.getStats()])
-      .then(([graph, graphStats]) => {
+  const resetState = useCallback(() => {
+    setSelectedNodeId(null);
+    setNodeDetail(null);
+    setHighlightedNodeIds(new Set());
+    setHighlightedEdgeKeys(new Set());
+    setCascade(null);
+    setChatMessages([]);
+    setCollapsedNodeIds(new Set());
+    setScenarios([]);
+  }, []);
+
+  const loadCurrentGraph = useCallback(() => {
+    return Promise.all([api.getGraph(), api.getStats(), api.getScenarios()])
+      .then(([graph, graphStats, scenariosResp]) => {
         setGraphData(graph);
         setStats(graphStats);
-      })
-      .catch((err) => console.error('Failed to load graph:', err));
+        setScenarios(scenariosResp.scenarios);
+      });
   }, []);
+
+  // Load graph data on mount
+  useEffect(() => {
+    loadCurrentGraph().catch((err) => console.error('Failed to load graph:', err));
+  }, [loadCurrentGraph]);
+
+  const handleGraphSwitch = useCallback(async (filename: string) => {
+    resetState();
+    setGraphData(null);
+    setStats(null);
+    try {
+      await api.loadGraph(filename);
+      await loadCurrentGraph();
+    } catch (err) {
+      console.error('Failed to switch graph:', err);
+    }
+  }, [resetState, loadCurrentGraph]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -182,9 +211,11 @@ export default function App() {
       <TopBar
         stats={stats}
         typeColors={typeColors}
+        graphTitle={graphData?.graph_title || ''}
         onEntitySelect={navigateToEntity}
         onFitToScreen={handleFitToScreen}
         onClearHighlights={clearHighlights}
+        onGraphSwitch={handleGraphSwitch}
       />
 
       <div className="left-panel">
@@ -200,6 +231,9 @@ export default function App() {
           onChatMessagesChange={setChatMessages}
           cascade={cascade}
           onClearCascade={handleClearCascade}
+          scenarios={scenarios}
+          onHighlight={handlePathsFound}
+          onClearHighlights={clearHighlights}
         />
       </div>
 

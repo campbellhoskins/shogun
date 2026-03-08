@@ -1,0 +1,52 @@
+[
+  {
+    "section_id": "SEC-01",
+    "header": "PURPOSE AND LEGAL CONTEXT",
+    "section_number": "1",
+    "text": "## 1. PURPOSE AND LEGAL CONTEXT\n\n### 1.1 Purpose\n\nThis Exhibit defines (a) the Duty of Care services Direct Travel will provide to support Client's travel risk management (\"**TRM**\") program, (b) Severity Level classifications and corresponding service level objectives, (c) roles and responsibilities of each party, (d) data handling and privacy requirements, (e) escalation and crisis communication protocols, and (f) limitations applicable to such services.\n\n### 1.2 Regulatory Background\n\nThe services described herein are designed to assist Client in meeting its obligations as an employer under applicable health and safety, employment, and common-law duty of care frameworks, which may include:\n\n- **United States** — OSHA General Duty Clause, Section 5(a)(1) of the Occupational Safety and ",
+    "char_count": 800,
+    "source_offset": 477,
+    "section_purpose": "Establishes legal framework and service scope",
+    "section_summary": "This section defines the purpose of the Duty of Care services, establishes the regulatory background including international legal frameworks, and sets the standard of care Direct Travel will provide while clarifying that Client retains primary responsibility for duty of care obligations."
+  },
+  {
+    "section_id": "SEC-02",
+    "header": "DEFINITIONS",
+    "section_number": "2",
+    "text": "## 2. DEFINITIONS\n\n**2.1** \"**Approved Channels**\" means bookings made through (a) Client's designated online booking tool(s) as provided by Direct Travel, (b) Direct Travel agent-assisted channels (phone, email, online chat), and (c) any other booking channels expressly approved in writing by Client and integrated into the TMC's itinerary data feed.\n\n**2.2** \"**After-Hours**\" means times outside Business Hours, as defined in the SOW, including applicable time zone(s). Direct Travel maintains follow-the-sun global service teams providing 24/7/365 coverage.\n\n**2.3** \"**Business Hours**\" means the hours defined in the SOW during which Client's primary service team is staffed, including applicable time zone(s).\n\n**2.4** \"**Crisis Bridge**\" means a real-time conference line and/or digital coll",
+    "char_count": 800,
+    "source_offset": 3120,
+    "section_purpose": "Defines key terms and concepts",
+    "section_summary": "This section provides comprehensive definitions for all key terms used throughout the document, including technical concepts, service categories, platform components, and operational classifications essential for interpreting the agreement."
+  },
+  {
+    "section_id": "SEC-03",
+    "header": "SCOPE OF DUTY OF CARE SERVICES",
+    "section_number": "3",
+    "text": "## 3. SCOPE OF DUTY OF CARE SERVICES\n\n### 3.1 Itinerary Visibility and Traveler Locate\n\n**(a)** Direct Travel will capture and maintain itinerary records for all travel booked through Approved Channels, including air, hotel, rail, car rental, and ground transportation segments, regardless of airline distribution channel.\n\n**(b)** Direct Travel will provide Client with access to reporting dashboards showing active Travelers by destination, travel dates, and booking status. Where included in the SOW, Direct Travel will provide access to an interactive global map displaying Traveler locations (based on itinerary data) overlaid with destination risk ratings and active threat alerts.\n\n**(c)** When an Incident occurs, Direct Travel will, using available itinerary data, identify Travelers who are",
+    "char_count": 800,
+    "source_offset": 6833,
+    "section_purpose": "Details core service offerings and capabilities",
+    "section_summary": "This section comprehensively describes the specific Duty of Care services Direct Travel will provide, including itinerary visibility, risk intelligence monitoring, pre-trip services, in-trip monitoring and alerts, incident response procedures, and post-incident reporting requirements."
+  },
+  {
+    "section_id": "SEC-05",
+    "header": "SEVERITY LEVELS AND SERVICE LEVEL OBJECTIVES",
+    "section_number": "5",
+    "text": "## 5. SEVERITY LEVELS AND SERVICE LEVEL OBJECTIVES\n\n### 5.1 Severity Level Definitions\n\n| Level | Classification | Description | Examples |\n|-------|---------------|-------------|----------|\n| **Level 1** | Advisory | Minor disruption with limited direct impact on Travelers; informational alert only | Localized weather warning, minor transportation delay, low-level protest in non-traveler area |\n| **Level 2** | Monitor | Moderate disruption that may impact Travelers; targeted alerts issued; optional welfare check | Significant weather event approaching, regional transportation strike announced, elevated security alert in destination city |\n| **Level 3** | Action Required | Significant disruption likely impacting one or more Travelers; proactive outreach required | Major weather event (hurr",
+    "char_count": 800,
+    "source_offset": 14873,
+    "section_purpose": "Defines incident classification and response standards",
+    "section_summary": "This section establishes the four-tier severity level classification system (Level 1-4) for incidents, defines corresponding service level objectives and response timeframes, and specifies traveler outreach standards and exception conditions."
+  },
+  {
+    "section_id": "SEC-06",
+    "header": "ESCALATION AND COMMUNICATIONS",
+    "section_number": "6",
+    "text": "## 6. ESCALATION AND COMMUNICATIONS\n\n### 6.1 Client Escalation Roster\n\nClient shall provide Direct Travel with a **24/7 escalation roster** containing, at minimum:\n\n| Role | Required Information | Purpose |\n|------|---------------------|---------|\n| **Primary Travel Program Owner** | Name, title, phone (mobile), email | First point of contact for all Incidents |\n| **Alternate Travel Program Contact** | Name, title, phone (mobile), email | Backup when primary is unavailable |\n| **After-Hours Duty Contact** | Name, title, phone (mobile), email | Contact for Incidents occurring outside Client Business Hours |\n| **Corporate Security** (if applicable) | Name, title, phone (mobile), email | Contact for security-related Incidents (Level 3–4) |\n| **Human Resources Duty Contact** (if applicable) ",
+    "char_count": 800,
+    "source_offset": 19451,
+    "section_purpose": "Establishes client communication protocols",
+    "section_summary": "This section defines the escalation roster requirements, non-responsive traveler escalation procedures, and crisis bridge activation protocols for Level 4 incidents, establishing clear communication chains and response procedures."
+  }
+]

@@ -51,11 +51,10 @@ _DEBUG = False
 def _dbg(header: str, body: str = "") -> None:
     if not _DEBUG:
         return
-    safe = lambda s: s.encode(sys.stdout.encoding or "utf-8", errors="replace").decode(sys.stdout.encoding or "utf-8", errors="replace")
-    print(f"\n[DEBUG] {safe(header)}")
+    print(f"\n[DEBUG] {header}")
     if body:
         print("=" * 60)
-        print(safe(body))
+        print(body)
         print("=" * 60)
 
 
@@ -90,6 +89,24 @@ NOT DUPLICATES — do not merge:
 - Entities with different types representing genuinely different concepts (e.g., a "Service" and an "Obligation" about that service).
 - Entities sharing keywords but describing fundamentally different things.
 </rules>
+
+<critical_anti_merge_rules>
+NUMBERED OR LEVELED ENTITIES: Entities that represent different
+levels, tiers, or ranks within a classification system are NEVER
+duplicates, even though they share the same type and similar
+descriptions.
+  - severity_level_1 through severity_level_4 are FOUR DISTINCT entities
+  - alert_level_3_sms and alert_level_4_sms are DISTINCT
+
+CHANNEL-SPECIFIC ENTITIES: Entities of the same type that differ
+by communication channel are NEVER duplicates:
+  - alert_level_3_sms and alert_level_3_email are DISTINCT
+
+PARAMETERIZED INSTANCES: If two entities have the same type but
+different values in any typed attribute field (level, channel,
+severity_level, classification, escalation_severity_levels),
+they are NOT duplicates regardless of name or description similarity.
+</critical_anti_merge_rules>
 
 <output-format>
 Return ONLY a JSON array of remapping objects. Each object has exactly three fields:
@@ -191,7 +208,9 @@ def _merge_entity_group(group: list[BaseEntitySchema]) -> BaseEntitySchema:
         if len(unique_values) == 1:
             entity_dict[k] = unique_values[0]
         else:
-            entity_dict[k] = unique_values
+            # Concatenate all unique values with semicolons instead of storing
+            # as a list (which violates Pydantic str field types).
+            entity_dict[k] = "; ".join(str(v) for v in unique_values)
 
     # Validate via typed schema
     entity, warnings = validate_entity(entity_dict)
@@ -386,15 +405,15 @@ def _build_entities_block(entities: list[BaseEntitySchema]) -> str:
             "id": e.id,
             "type": e.type,
             "name": e.name,
-            "description": e.description,
+            "description": e.description[:200],
             "appears_in": e.appears_in,
-            "appears_in_count": len(e.appears_in),
-            "source_text": e.source_anchor.source_text,
-            "source_section": e.source_anchor.source_section,
         }
-        typed_attrs = get_typed_attributes(e)
-        if typed_attrs:
-            item["typed_attributes"] = typed_attrs
+        typed = get_typed_attributes(e)
+        if typed:
+            item["attributes"] = {
+                k: v for k, v in typed.items()
+                if v is not None and v != "" and v != []
+            }
         items.append(item)
     return json.dumps(items, indent=2, ensure_ascii=False)
 

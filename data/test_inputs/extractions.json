@@ -1,0 +1,1099 @@
+[
+  {
+    "section_id": "SEC-01",
+    "section_number": "1",
+    "entity_count": 9,
+    "relationship_count": 1,
+    "entities": [
+      {
+        "id": "direct_travel_inc",
+        "type": "Organization",
+        "name": "Direct Travel, Inc.",
+        "description": "The travel management company providing Duty of Care services to support Client's travel risk management program under the terms of the Agreement.",
+        "source_anchor": {
+          "source_text": "This Exhibit defines (a) the Duty of Care services Direct Travel will provide to support Client's travel risk management",
+          "source_section": "SEC-01",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ]
+      },
+      {
+        "id": "client",
+        "type": "Organization",
+        "name": "Client",
+        "description": "The organization contracting for duty of care and travel risk management services. Client retains primary responsibility for its duty of care obligations as an employer and uses Direct Travel's servic",
+        "source_anchor": {
+          "source_text": "This Exhibit defines (a) the Duty of Care services Direct Travel will provide to support Client's travel risk management",
+          "source_section": "SEC-01",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ]
+      },
+      {
+        "id": "duty_of_care_services",
+        "type": "Service",
+        "name": "Duty of Care Services",
+        "description": "The services Direct Travel provides to support Client's travel risk management program, including Severity Level classifications, service level objectives, roles and responsibilities, data handling, e",
+        "source_anchor": {
+          "source_text": "This Exhibit defines (a) the Duty of Care services Direct Travel will provide to support Client's travel risk management",
+          "source_section": "SEC-01",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ]
+      },
+      {
+        "id": "osha_general_duty_clause",
+        "type": "Regulation",
+        "name": "OSHA General Duty Clause",
+        "description": "Section 5(a)(1) of the Occupational Safety and Health Act of 1970 (United States), requiring employers to furnish a place of employment free from recognized hazards causing or likely to cause death or",
+        "source_anchor": {
+          "source_text": "OSHA General Duty Clause, Section 5(a)(1) of the Occupational Safety and Health Act of 1970, requiring employers to furnish a place of employment free",
+          "source_section": "SEC-01",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ]
+      },
+      {
+        "id": "health_and_safety_at_work_act_1974",
+        "type": "Regulation",
+        "name": "Health and Safety at Work Act 1974",
+        "description": "United Kingdom regulation requiring employers to ensure employees' health, safety, and welfare so far as is reasonably practicable. One of the employer duty of care frameworks that Direct Travel's ser",
+        "source_anchor": {
+          "source_text": "Health and Safety at Work Act 1974, requiring employers to ensure employees' health, safety, and welfare so far as is reasonably practicable",
+          "source_section": "SEC-01",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ]
+      },
+      {
+        "id": "management_of_health_and_safety_at_work_regulations_1999",
+        "type": "Regulation",
+        "name": "Management of Health and Safety at Work Regulations 1999",
+        "description": "United Kingdom regulation requiring employers to conduct risk assessments and provide relevant employee information and training. One of the employer duty of care frameworks that Direct Travel's servi",
+        "source_anchor": {
+          "source_text": "Management of Health and Safety at Work Regulations 1999, requiring risk assessments and relevant employee information and training",
+          "source_section": "SEC-01",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ]
+      },
+      {
+        "id": "corporate_manslaughter_and_corporate_homicide_act_2007",
+        "type": "Regulation",
+        "name": "Corporate Manslaughter and Corporate Homicide Act 2007",
+        "description": "United Kingdom regulation establishing corporate liability for manslaughter and homicide. One of the employer duty of care frameworks applicable to Client.",
+        "source_anchor": {
+          "source_text": "the Corporate Manslaughter and Corporate Homicide Act 2007",
+          "source_section": "SEC-01",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ]
+      },
+      {
+        "id": "framework_directive_89_391_eec",
+        "type": "Regulation",
+        "name": "Framework Directive 89/391/EEC",
+        "description": "European Union regulation obligating employers to ensure the safety and health of workers in every aspect related to work, including risk assessment and preventive measures. One of the employer duty o",
+        "source_anchor": {
+          "source_text": "Framework Directive 89/391/EEC, obligating employers to ensure the safety and health of workers in every aspect related to work, including risk assess",
+          "source_section": "SEC-01",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ]
+      },
+      {
+        "id": "iso_31030_2021",
+        "type": "Regulation",
+        "name": "ISO 31030:2021",
+        "description": "International Standard for Travel Risk Management, derived from ISO 31000, providing a structured framework for travel risk management covering policy development, threat identification, risk assessme",
+        "source_anchor": {
+          "source_text": "ISO 31030:2021 (Travel Risk Management), the first international standard for travel risk management, derived from ISO 31000, providing a structured f",
+          "source_section": "SEC-01",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "direct_travel_inc",
+        "target_id": "duty_of_care_services",
+        "type": "PROVIDES",
+        "description": "Direct Travel provides Duty of Care services to support Client's travel risk management program, as stated: 'the Duty of Care services Direct Travel will provide to support Client's travel risk manage",
+        "source_sections": [
+          "SEC-01"
+        ]
+      }
+    ]
+  },
+  {
+    "section_id": "SEC-02",
+    "section_number": "2",
+    "entity_count": 10,
+    "relationship_count": 2,
+    "entities": [
+      {
+        "id": "approved_channels",
+        "type": "BookingChannel",
+        "name": "Approved Channels",
+        "description": "Bookings made through Client's designated online booking tool(s) as provided by Direct Travel, Direct Travel agent-assisted channels (phone, email, online chat), or any other booking channels expressl",
+        "source_anchor": {
+          "source_text": "\"Approved Channels\" means bookings made through (a) Client's designated online booking tool(s) as provided by Direct Travel, (b) Direct Travel agent-a",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      },
+      {
+        "id": "crisis_bridge",
+        "type": "Service",
+        "name": "Crisis Bridge",
+        "description": "A real-time conference line and/or digital collaboration channel established during Level 4 Incidents to coordinate response actions between Direct Travel, Client, and applicable Specialist Providers.",
+        "source_anchor": {
+          "source_text": "\"Crisis Bridge\" means a real-time conference line and/or digital collaboration channel established during Level 4 Incidents to coordinate response act",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ],
+        "activation_severity_threshold": 4,
+        "requires_client_authorization": false,
+        "authorization_details": ""
+      },
+      {
+        "id": "risk_intelligence_platform",
+        "type": "Platform",
+        "name": "Risk Intelligence Platform",
+        "description": "The third-party risk management platform designated by Direct Travel (currently Crisis24 Horizon) providing global threat monitoring, traveler locate capabilities, and mass communication, which may be",
+        "source_anchor": {
+          "source_text": "\"Risk Intelligence Platform\" means the third-party risk management platform designated by Direct Travel (currently Crisis24 Horizon) providing global ",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      },
+      {
+        "id": "incident",
+        "type": "Incident",
+        "name": "Incident",
+        "description": "An event that may reasonably impact Traveler safety, security, health, or ability to continue travel, including natural disasters and severe weather events; civil unrest, political instability, and te",
+        "source_anchor": {
+          "source_text": "\"Incident\" means an event that may reasonably impact Traveler safety, security, health, or ability to continue travel, including without limitation: n",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      },
+      {
+        "id": "off_channel_booking",
+        "type": "Booking",
+        "name": "Off-Channel Booking",
+        "description": "Any travel booking made by or on behalf of a Traveler outside of Approved Channels, including direct bookings on consumer travel sites, airline or hotel websites, or personal travel agency arrangement",
+        "source_anchor": {
+          "source_text": "\"Off-Channel Booking\" means any travel booking made by or on behalf of a Traveler outside of Approved Channels, including direct bookings on consumer ",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ],
+        "pnr_id": "",
+        "segments": [],
+        "status": "",
+        "destinations": [],
+        "capture_method": ""
+      },
+      {
+        "id": "severity_level",
+        "type": "SeverityLevel",
+        "name": "Severity Level",
+        "description": "The Level 1 through Level 4 classification system for incidents that determines the urgency of response, service level objectives, and escalation requirements, as detailed in Section 5.",
+        "source_anchor": {
+          "source_text": "\"Severity Level\" means the Level 1 through Level 4 classification described in Section 5.",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ],
+        "level": 0,
+        "classification": "",
+        "alert_time_target": "",
+        "client_escalation_time_target": "",
+        "status_update_cadence": "",
+        "crisis_bridge_required": null
+      },
+      {
+        "id": "specialist_provider",
+        "type": "Organization",
+        "name": "Specialist Provider",
+        "description": "A third-party provider of security, medical, insurance, evacuation, or other specialized risk management services engaged by Client or by Direct Travel on Client's behalf, including without limitation",
+        "source_anchor": {
+          "source_text": "\"Specialist Provider\" means a third-party provider of security, medical, insurance, evacuation, or other specialized risk management services engaged ",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      },
+      {
+        "id": "traveler",
+        "type": "Traveler",
+        "name": "Traveler",
+        "description": "A Client employee or other person authorized by Client (including but not limited to contractors, consultants, candidates, board members, and guests) traveling on Client business whose itinerary is bo",
+        "source_anchor": {
+          "source_text": "\"Traveler\" means a Client employee or other person authorized by Client (including but not limited to contractors, consultants, candidates, board memb",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      },
+      {
+        "id": "traveler_data",
+        "type": "DataElement",
+        "name": "Traveler Data",
+        "description": "Personal data related to Travelers processed by Direct Travel in connection with providing services under the Agreement, including itinerary details, contact information, profile data, location inform",
+        "source_anchor": {
+          "source_text": "\"Traveler Data\" means personal data related to Travelers processed by Direct Travel in connection with providing services under the Agreement, includi",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      },
+      {
+        "id": "statement_of_work",
+        "type": "Agreement",
+        "name": "SOW",
+        "description": "Statement of Work document that defines Client-specific service configurations, including Business Hours, After-Hours definitions, specific Specialist Providers, and customized service parameters refe",
+        "source_anchor": {
+          "source_text": "After-Hours\" means times outside Business Hours, as defined in the SOW",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "incident",
+        "target_id": "traveler",
+        "type": "IMPACTS",
+        "description": "An Incident may reasonably impact a Traveler's safety, security, health, or ability to continue travel, as defined in Section 2.7.",
+        "source_sections": [
+          "SEC-02"
+        ]
+      },
+      {
+        "source_id": "crisis_bridge",
+        "target_id": "severity_level",
+        "type": "ACTIVATED_AT",
+        "description": "The Crisis Bridge service is established during Level 4 Incidents, meaning it is activated when incidents reach the highest severity level to coordinate real-time response actions.",
+        "source_sections": [
+          "SEC-02"
+        ]
+      }
+    ]
+  },
+  {
+    "section_id": "SEC-03",
+    "section_number": "3",
+    "entity_count": 10,
+    "relationship_count": 7,
+    "entities": [
+      {
+        "id": "direct_travel_inc",
+        "type": "Organization",
+        "name": "Direct Travel, Inc.",
+        "description": "The travel management company providing Duty of Care services, responsible for capturing itinerary records, maintaining risk monitoring, delivering alerts, conducting welfare checks, and coordinating ",
+        "source_anchor": {
+          "source_text": "Direct Travel will capture and maintain itinerary records for all travel booked through Approved Channels",
+          "source_section": "SEC-03",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "sow",
+        "type": "Agreement",
+        "name": "SOW",
+        "description": "Statement of Work containing client-specific service configurations including optional map display, pre-trip briefing, alert delivery channels, approval thresholds, authorization exceptions, and extra",
+        "source_anchor": {
+          "source_text": "Where included in the SOW, Direct Travel will provide access to an interactive global map",
+          "source_section": "SEC-03",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "traveler",
+        "type": "Traveler",
+        "name": "Traveler",
+        "description": "A Client employee or authorized person traveling on Client business through Approved Channels, subject to itinerary visibility, risk monitoring, alerts, welfare checks, and incident response services.",
+        "source_anchor": {
+          "source_text": "identification of potentially impacted Travelers based on available itinerary and location data",
+          "source_section": "SEC-03",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "incident",
+        "type": "Incident",
+        "name": "Incident",
+        "description": "A discrete event that may reasonably impact Traveler safety, security, health, or ability to continue travel, triggering itinerary impact assessment, risk intelligence triage, Traveler identification,",
+        "source_anchor": {
+          "source_text": "When an Incident occurs, Direct Travel will, using available itinerary data, identify Travelers who are in or near the affected area",
+          "source_section": "SEC-03",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "risk_intelligence_platform",
+        "type": "Platform",
+        "name": "Risk Intelligence Platform",
+        "description": "Third-party risk management platform aggregating commercially available data with global geographic and linguistic coverage, providing continuous monitoring, event triage, severity classification, and",
+        "source_anchor": {
+          "source_text": "using the Risk Intelligence Platform's intelligence capabilities, which aggregate data from commercially available sources with broad geographic and l",
+          "source_section": "SEC-03",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "approved_channels",
+        "type": "BookingChannel",
+        "name": "Approved Channels",
+        "description": "Bookings made through Client's designated online booking tools, Direct Travel agent-assisted channels, or other expressly approved channels; required for itinerary visibility and duty of care service ",
+        "source_anchor": {
+          "source_text": "Direct Travel will capture and maintain itinerary records for all travel booked through Approved Channels, including air, hotel, rail, car rental, and",
+          "source_section": "SEC-03",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "off_channel_booking",
+        "type": "Booking",
+        "name": "Off-Channel Booking",
+        "description": "Any travel booking made outside of Approved Channels; subject to data ingestion efforts but not automatically visible to Direct Travel, limiting visibility and assistance capabilities unless Client de",
+        "source_anchor": {
+          "source_text": "Direct Travel will use commercially reasonable efforts to ingest itinerary data from Off-Channel Bookings where Client has deployed itinerary capture ",
+          "source_section": "SEC-03",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ],
+        "pnr_id": "",
+        "segments": [],
+        "status": "",
+        "destinations": [],
+        "capture_method": ""
+      },
+      {
+        "id": "severity_level",
+        "type": "SeverityLevel",
+        "name": "Severity Level",
+        "description": "Tiered classification (Level 1-4) determining incident response obligations, service levels, escalation requirements, and post-incident reporting triggers; Level 2+ incidents trigger comprehensive ass",
+        "source_anchor": {
+          "source_text": "During Incidents classified at Severity Level 2 or above, Direct Travel will provide the following services",
+          "source_section": "SEC-03",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ],
+        "level": 0,
+        "classification": "",
+        "alert_time_target": "within applicable SLO window",
+        "client_escalation_time_target": "",
+        "status_update_cadence": "",
+        "crisis_bridge_required": null
+      },
+      {
+        "id": "safe",
+        "type": "TravelerResponseStatus",
+        "name": "SAFE",
+        "description": "Welfare check response status indicating the traveler is not in immediate danger and does not require assistance.",
+        "source_anchor": {
+          "source_text": "Welfare checks — Outreach to potentially impacted Travelers to confirm status (SAFE / NEED ASSISTANCE / NOT IN AREA / NO RESPONSE)",
+          "source_section": "SEC-03",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ],
+        "tmc_action": "Log status; no further action required",
+        "action_time_target": "",
+        "closes_outreach": true,
+        "triggers_escalation": false
+      },
+      {
+        "id": "itinerary_visibility_and_traveler_locate",
+        "type": "Service",
+        "name": "Itinerary Visibility and Traveler Locate",
+        "description": "Service encompassing capture of itinerary records for approved bookings, provision of reporting dashboards with Traveler location visualization, impact zone identification during incidents, and suppor",
+        "source_anchor": {
+          "source_text": "3.1 Itinerary Visibility and Traveler Locate",
+          "source_section": "SEC-03",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "incident",
+        "target_id": "severity_level",
+        "type": "CLASSIFIED_AS",
+        "description": "Incidents are classified into severity levels: 'Monitoring includes: event triage and severity classification' and 'Incidents classified at Severity Level 2 or above, Direct Travel will provide the fo",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "itinerary_visibility_and_traveler_locate",
+        "target_id": "risk_intelligence_platform",
+        "type": "ENABLED_BY",
+        "description": "Itinerary Visibility and Traveler Locate service is enabled by the Risk Intelligence Platform: 'global map displaying Traveler locations (based on itinerary data) overlaid with destination risk rating",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "approved_channels",
+        "target_id": "itinerary_visibility_and_traveler_locate",
+        "type": "ENABLES_COVERAGE",
+        "description": "Approved Channels enable coverage of Itinerary Visibility and Traveler Locate services: 'Direct Travel will capture and maintain itinerary records for all travel booked through Approved Channels.'",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "incident",
+        "target_id": "traveler",
+        "type": "IMPACTS",
+        "description": "Incidents impact Travelers: 'identify Travelers who are in or near the affected area' and 'identification of potentially impacted Travelers based on available itinerary and location data.'",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "direct_travel_inc",
+        "target_id": "sow",
+        "type": "PARTY_TO",
+        "description": "Direct Travel, Inc. is a party to the SOW as the service provider.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "direct_travel_inc",
+        "target_id": "itinerary_visibility_and_traveler_locate",
+        "type": "PROVIDES",
+        "description": "Direct Travel provides Itinerary Visibility and Traveler Locate services: 'Direct Travel will capture and maintain itinerary records for all travel booked through Approved Channels.'",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "traveler",
+        "target_id": "safe",
+        "type": "RESPONDS_WITH",
+        "description": "Travelers respond with SAFE status during welfare checks: 'Outreach to potentially impacted Travelers to confirm status (SAFE / NEED ASSISTANCE / NOT IN AREA / NO RESPONSE).'",
+        "source_sections": [
+          "SEC-03"
+        ]
+      }
+    ]
+  },
+  {
+    "section_id": "SEC-05",
+    "section_number": "5",
+    "entity_count": 10,
+    "relationship_count": 7,
+    "entities": [
+      {
+        "id": "direct_travel_inc",
+        "type": "Organization",
+        "name": "Direct Travel, Inc.",
+        "description": "The travel management company responsible for severity determination, SLO management, and incident response operations using commercially reasonable judgment.",
+        "source_anchor": {
+          "source_text": "Severity determination is made by Direct Travel using commercially reasonable judgment informed by the Risk Intelligence Platform.",
+          "source_section": "SEC-05",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-05"
+        ]
+      },
+      {
+        "id": "traveler",
+        "type": "Traveler",
+        "name": "Traveler",
+        "description": "Client employee or authorized person whose welfare status is monitored during incidents through standardized outreach and response framework.",
+        "source_anchor": {
+          "source_text": "Travelers will be asked to confirm status using a standardized response framework",
+          "source_section": "SEC-05",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-05"
+        ]
+      },
+      {
+        "id": "incident",
+        "type": "Incident",
+        "name": "Incident",
+        "description": "A discrete event affecting Traveler safety, security, health, or ability to continue travel; classified into one of four severity levels and managed through service level objectives.",
+        "source_anchor": {
+          "source_text": "The following service level objectives ('SLOs') apply from the time Direct Travel determines an Incident requires action under this Exhibit",
+          "source_section": "SEC-05",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-05"
+        ]
+      },
+      {
+        "id": "risk_intelligence_platform",
+        "type": "Platform",
+        "name": "Risk Intelligence Platform",
+        "description": "Third-party risk management platform used by Direct Travel to inform commercially reasonable severity determinations and incident classification decisions.",
+        "source_anchor": {
+          "source_text": "Severity determination is made by Direct Travel using commercially reasonable judgment informed by the Risk Intelligence Platform.",
+          "source_section": "SEC-05",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-05"
+        ]
+      },
+      {
+        "id": "off_channel_booking",
+        "type": "Booking",
+        "name": "Off-Channel Booking",
+        "description": "Travel bookings made outside Approved Channels for which itinerary data may be unavailable, constituting an exception to Service Level Objectives.",
+        "source_anchor": {
+          "source_text": "Off-Channel Bookings for which itinerary data is unavailable",
+          "source_section": "SEC-05",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-05"
+        ],
+        "pnr_id": "",
+        "segments": [],
+        "status": "",
+        "destinations": [],
+        "capture_method": ""
+      },
+      {
+        "id": "severity_level",
+        "type": "SeverityLevel",
+        "name": "Severity Level",
+        "description": "Four-tier incident classification system (Level 1 Advisory through Level 4 Crisis) that determines response urgency, service level objectives, escalation requirements, and resource allocation.",
+        "source_anchor": {
+          "source_text": "Severity Level Definitions",
+          "source_section": "SEC-05",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-05"
+        ],
+        "level": 0,
+        "classification": "",
+        "alert_time_target": "within 60 minutes of incident detection",
+        "client_escalation_time_target": "",
+        "status_update_cadence": "60 minutes for Level 3; 15 minutes for Level 4",
+        "crisis_bridge_required": null
+      },
+      {
+        "id": "crisis_bridge",
+        "type": "Service",
+        "name": "Crisis Bridge",
+        "description": "Real-time conference line and/or digital collaboration channel established for Level 4 Incidents; Client escalation roster must be contacted within 60 minutes of incident determination.",
+        "source_anchor": {
+          "source_text": "Contact Client escalation roster within 30 minutes; Crisis Bridge within 60 minutes",
+          "source_section": "SEC-05",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-05"
+        ],
+        "activation_severity_threshold": 4,
+        "requires_client_authorization": false,
+        "authorization_details": "established within 60 minutes of Level 4 classification"
+      },
+      {
+        "id": "safe_response",
+        "type": "TravelerResponseStatus",
+        "name": "SAFE",
+        "description": "Standardized welfare-check response status indicating the traveler is not in immediate danger and does not require assistance; results in status logging with no further action unless conditions change",
+        "source_anchor": {
+          "source_text": "**SAFE** | Traveler is not in immediate danger and does not require assistance | Log status; no further action unless conditions change",
+          "source_section": "SEC-05",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-05"
+        ],
+        "tmc_action": "Log SAFE status and close outreach for this traveler",
+        "action_time_target": "",
+        "closes_outreach": true,
+        "triggers_escalation": false
+      },
+      {
+        "id": "traveler_outreach_standards",
+        "type": "Obligation",
+        "name": "Traveler Outreach Standards",
+        "description": "Direct Travel's binding obligation to conduct welfare checks via configured channels in priority order (SMS, email, mobile application push notification, voice call), log all attempts with timestamp a",
+        "source_anchor": {
+          "source_text": "Welfare checks will be attempted via channels configured in the SOW, in the following default priority order unless otherwise specified: (1) SMS, (2) ",
+          "source_section": "SEC-05",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-05"
+        ],
+        "section_reference": "",
+        "obligation_type": "",
+        "obligated_party": "",
+        "conditionality": ""
+      },
+      {
+        "id": "client",
+        "type": "Organization",
+        "name": "Client",
+        "description": "The contracting organization that receives incident escalation notifications and may request changes to incident severity classification.",
+        "source_anchor": {
+          "source_text": "Client may request a change to classification at any time; Direct Travel will consider such requests promptly and document the outcome.",
+          "source_section": "SEC-05",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-05"
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "incident",
+        "target_id": "severity_level",
+        "type": "CLASSIFIED_AS",
+        "description": "Incidents are classified into one of four severity levels (Level 1 Advisory through Level 4 Crisis) based on direct impact to Travelers and disruption scope.",
+        "source_sections": [
+          "SEC-05"
+        ]
+      },
+      {
+        "source_id": "incident",
+        "target_id": "traveler",
+        "type": "IMPACTS",
+        "description": "Incidents have direct and varying impacts on Travelers depending on severity level, from limited impact (Level 1) to immediate life safety risk (Level 4).",
+        "source_sections": [
+          "SEC-05"
+        ]
+      },
+      {
+        "source_id": "direct_travel_inc",
+        "target_id": "risk_intelligence_platform",
+        "type": "OPERATES",
+        "description": "Direct Travel uses the Risk Intelligence Platform to inform commercially reasonable severity determinations and incident classification decisions.",
+        "source_sections": [
+          "SEC-05"
+        ]
+      },
+      {
+        "source_id": "direct_travel_inc",
+        "target_id": "client",
+        "type": "ENGAGES",
+        "description": "Direct Travel engages with Client for severity classification review, escalation notifications at different severity levels, and status updates during incidents.",
+        "source_sections": [
+          "SEC-05"
+        ]
+      },
+      {
+        "source_id": "traveler",
+        "target_id": "safe_response",
+        "type": "RESPONDS_WITH",
+        "description": "Traveler can confirm SAFE status via standardized response framework, indicating no immediate danger and no required assistance.",
+        "source_sections": [
+          "SEC-05"
+        ]
+      },
+      {
+        "source_id": "traveler_outreach_standards",
+        "target_id": "direct_travel_inc",
+        "type": "ASSIGNED_TO",
+        "description": "Traveler Outreach Standards obligation is assigned to Direct Travel, requiring welfare checks via configured channels in priority order, response logging, and live contact for assistance requests.",
+        "source_sections": [
+          "SEC-05"
+        ]
+      },
+      {
+        "source_id": "crisis_bridge",
+        "target_id": "severity_level",
+        "type": "ACTIVATED_AT",
+        "description": "Crisis Bridge real-time conference channel is activated when Level 4 Crisis severity is determined, requiring Client escalation roster contact within 60 minutes.",
+        "source_sections": [
+          "SEC-05"
+        ]
+      }
+    ]
+  },
+  {
+    "section_id": "SEC-06",
+    "section_number": "6",
+    "entity_count": 10,
+    "relationship_count": 10,
+    "entities": [
+      {
+        "id": "direct_travel_inc",
+        "type": "Organization",
+        "name": "Direct Travel, Inc.",
+        "description": "The travel management company providing Duty of Care services and incident response capabilities, responsible for establishing Crisis Bridges, performing escalations, and delivering SITREPs to the Cli",
+        "source_anchor": {
+          "source_text": "Client shall provide Direct Travel with a **24/7 escalation roster**",
+          "source_section": "SEC-06",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-06"
+        ]
+      },
+      {
+        "id": "sow",
+        "type": "Agreement",
+        "name": "SOW",
+        "description": "Statement of Work document containing client-specific service configurations, including Crisis Bridge activation triggers and SITREP cadence preferences.",
+        "source_anchor": {
+          "source_text": "where configured in the SOW",
+          "source_section": "SEC-06",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-06"
+        ]
+      },
+      {
+        "id": "traveler",
+        "type": "Traveler",
+        "name": "Traveler",
+        "description": "A Client employee or authorized person traveling on Client business whose location and welfare status is subject to Direct Travel escalation and outreach procedures during incidents.",
+        "source_anchor": {
+          "source_text": "For Level 3 and Level 4 Incidents, if a Traveler does not respond to welfare check outreach",
+          "source_section": "SEC-06",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-06"
+        ]
+      },
+      {
+        "id": "incident",
+        "type": "Incident",
+        "name": "Incident",
+        "description": "A discrete event triggering escalation and communication protocols, classified by severity level and determining escalation roster contacts and response timelines.",
+        "source_anchor": {
+          "source_text": "First point of contact for all Incidents",
+          "source_section": "SEC-06",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-06"
+        ]
+      },
+      {
+        "id": "severity_level",
+        "type": "SeverityLevel",
+        "name": "Severity Level",
+        "description": "The Level 1 through Level 4 classification system for incidents, with Level 3 and Level 4 triggering specific escalation procedures and Level 4 requiring Crisis Bridge activation.",
+        "source_anchor": {
+          "source_text": "For Level 3 and Level 4 Incidents",
+          "source_section": "SEC-06",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-06"
+        ],
+        "level": 0,
+        "classification": "",
+        "alert_time_target": "initiate Traveler outreach within 60 minutes",
+        "client_escalation_time_target": "",
+        "status_update_cadence": "",
+        "crisis_bridge_required": true
+      },
+      {
+        "id": "crisis_bridge",
+        "type": "Service",
+        "name": "Crisis Bridge",
+        "description": "A real-time conference line and/or digital collaboration channel established during Level 4 Incidents, including Direct Travel incident coordinators, Client escalation contacts, and Specialist Provide",
+        "source_anchor": {
+          "source_text": "Direct Travel will establish a Crisis Bridge within sixty (60) minutes of Level 4 determination",
+          "source_section": "SEC-06",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-06"
+        ]
+      },
+      {
+        "id": "primary_travel_program_owner",
+        "type": "ContactRole",
+        "name": "Primary Travel Program Owner",
+        "description": "First point of contact on the Client's escalation roster for all Incidents, required to provide name, title, mobile phone, and email.",
+        "source_anchor": {
+          "source_text": "**Primary Travel Program Owner** | Name, title, phone (mobile), email | First point of contact for all Incidents",
+          "source_section": "SEC-06",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-06"
+        ],
+        "escalation_severity_levels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "escalation_condition": "all Incidents",
+        "roster_position": "Primary"
+      },
+      {
+        "id": "escalation_roster_maintenance",
+        "type": "Obligation",
+        "name": "Escalation Roster Maintenance",
+        "description": "Client's obligation to provide and maintain a current 24/7 escalation roster with minimum six contact roles, updating Direct Travel of any changes within five (5) business days. Direct Travel is not r",
+        "source_anchor": {
+          "source_text": "Client shall provide Direct Travel with a **24/7 escalation roster** containing, at minimum:... Client will keep the roster current and notify Direct ",
+          "source_section": "SEC-06",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-06"
+        ],
+        "section_reference": "",
+        "obligation_type": "",
+        "obligated_party": "",
+        "conditionality": ""
+      },
+      {
+        "id": "client",
+        "type": "Organization",
+        "name": "Client",
+        "description": "The organization contracting for duty of care services, responsible for maintaining an updated 24/7 escalation roster and responding to escalations from Direct Travel.",
+        "source_anchor": {
+          "source_text": "Client shall provide Direct Travel with a **24/7 escalation roster** containing, at minimum:",
+          "source_section": "SEC-06",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-06"
+        ]
+      },
+      {
+        "id": "specialist_provider",
+        "type": "Organization",
+        "name": "Specialist Provider",
+        "description": "Third-party providers of security, medical, evacuation, or other specialized risk management services who may participate in Crisis Bridges and assist with on-ground locate efforts.",
+        "source_anchor": {
+          "source_text": "where applicable, Specialist Provider representatives",
+          "source_section": "SEC-06",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-06"
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "primary_travel_program_owner",
+        "target_id": "client",
+        "type": "DESIGNATED_BY",
+        "description": "The Primary Travel Program Owner contact role is designated by the Client as part of the required 24/7 escalation roster.",
+        "source_sections": [
+          "SEC-06"
+        ]
+      },
+      {
+        "source_id": "escalation_roster_maintenance",
+        "target_id": "client",
+        "type": "ASSIGNED_TO",
+        "description": "The obligation to maintain a current 24/7 escalation roster and notify Direct Travel of changes within five business days is assigned to the Client.",
+        "source_sections": [
+          "SEC-06"
+        ]
+      },
+      {
+        "source_id": "escalation_roster_maintenance",
+        "target_id": "sow",
+        "type": "DEFINED_IN",
+        "description": "The escalation roster maintenance requirements and notification procedures are defined in the SOW.",
+        "source_sections": [
+          "SEC-06"
+        ]
+      },
+      {
+        "source_id": "incident",
+        "target_id": "severity_level",
+        "type": "CLASSIFIED_AS",
+        "description": "Incidents are classified according to the Level 1 through Level 4 severity classification system, which determines escalation procedures and contact responsibilities.",
+        "source_sections": [
+          "SEC-06"
+        ]
+      },
+      {
+        "source_id": "severity_level",
+        "target_id": "primary_travel_program_owner",
+        "type": "ESCALATED_TO",
+        "description": "Incidents are escalated to the Primary Travel Program Owner, who serves as the first point of contact for all incidents regardless of severity.",
+        "source_sections": [
+          "SEC-06"
+        ]
+      },
+      {
+        "source_id": "direct_travel_inc",
+        "target_id": "specialist_provider",
+        "type": "ENGAGES",
+        "description": "Direct Travel engages Specialist Providers for on-ground locate assistance in support of non-responsive traveler escalation efforts.",
+        "source_sections": [
+          "SEC-06"
+        ]
+      },
+      {
+        "source_id": "direct_travel_inc",
+        "target_id": "crisis_bridge",
+        "type": "PROVIDES",
+        "description": "Direct Travel provides the Crisis Bridge service, establishing real-time communication channels during Level 4 incidents.",
+        "source_sections": [
+          "SEC-06"
+        ]
+      },
+      {
+        "source_id": "incident",
+        "target_id": "traveler",
+        "type": "IMPACTS",
+        "description": "Incidents impact Travelers; escalation and communication procedures are triggered when incidents affect traveler welfare and safety.",
+        "source_sections": [
+          "SEC-06"
+        ]
+      },
+      {
+        "source_id": "direct_travel_inc",
+        "target_id": "sow",
+        "type": "PARTY_TO",
+        "description": "Direct Travel is a party to the Statement of Work governing the provision of duty of care services.",
+        "source_sections": [
+          "SEC-06"
+        ]
+      },
+      {
+        "source_id": "client",
+        "target_id": "sow",
+        "type": "PARTY_TO",
+        "description": "The Client is a party to the Statement of Work that defines escalation roster requirements and service configurations.",
+        "source_sections": [
+          "SEC-06"
+        ]
+      }
+    ]
+  }
+]

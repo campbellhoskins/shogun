@@ -24,8 +24,16 @@ export interface GraphData {
   nodes: GraphNode[];
   edges: GraphEdge[];
   source_document: string;
+  graph_title: string;
   type_colors: Record<string, string>;
   entity_groups: string[];
+}
+
+export interface GraphListItem {
+  filename: string;
+  graph_title: string;
+  entity_count: number;
+  relationship_count: number;
 }
 
 export interface GraphStats {
@@ -105,4 +113,28 @@ export interface CascadeResponse {
   steps: CascadeStep[];
   node_ids: string[];
   edge_keys: string[];
+}
+
+export interface ScenarioLogLine {
+  type: string;  // query, traverse, attr, decision, warning, dim
+  text: string;
+}
+
+export interface ScenarioStep {
+  title: string;
+  description: string;
+  highlight_nodes: string[];
+  highlight_edges: string[];
+  focus_node: string | null;
+  log: ScenarioLogLine[];
+}
+
+export interface Scenario {
+  id: string;
+  name: string;
+  steps: ScenarioStep[];
+}
+
+export interface ScenariosResponse {
+  scenarios: Scenario[];
 }

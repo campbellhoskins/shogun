@@ -1,0 +1,807 @@
+[
+  {
+    "section_id": "SEC-01",
+    "section_number": "1",
+    "entity_count": 5,
+    "relationship_count": 1,
+    "entities": [
+      {
+        "id": "direct_travel_inc",
+        "type": "Organization",
+        "name": "Direct Travel, Inc.",
+        "description": "The travel management company providing Duty of Care services to support Client's travel risk management program.",
+        "source_anchor": {
+          "source_text": "the Duty of Care services Direct Travel will provide to support Client's travel risk management",
+          "source_section": "SEC-01",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ]
+      },
+      {
+        "id": "client",
+        "type": "Organization",
+        "name": "Client",
+        "description": "The organization contracting for Duty of Care services and responsible for meeting its own duty of care obligations as an employer.",
+        "source_anchor": {
+          "source_text": "to support Client's travel risk management program",
+          "source_section": "SEC-01",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ]
+      },
+      {
+        "id": "duty_of_care_services",
+        "type": "Service",
+        "name": "Duty of Care Services",
+        "description": "Services provided by Direct Travel that include severity level classifications, service level objectives, escalation protocols, crisis communication procedures, and data handling requirements to support Client's travel risk management.",
+        "source_anchor": {
+          "source_text": "This Exhibit defines (a) the Duty of Care services Direct Travel will provide to support Client's travel risk management",
+          "source_section": "SEC-01",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ],
+        "activation_severity_threshold": null,
+        "requires_client_authorization": null,
+        "authorization_details": ""
+      },
+      {
+        "id": "travel_risk_management",
+        "type": "Service",
+        "name": "Travel Risk Management",
+        "description": "Client's travel risk management (TRM) program for which Direct Travel provides supporting Duty of Care services.",
+        "source_anchor": {
+          "source_text": "Client's travel risk management (\"TRM\") program",
+          "source_section": "SEC-01",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ],
+        "activation_severity_threshold": null,
+        "requires_client_authorization": null,
+        "authorization_details": ""
+      },
+      {
+        "id": "osha_general_duty_clause",
+        "type": "Regulation",
+        "name": "OSHA General Duty Clause",
+        "description": "A regulatory framework under Section 5(a)(1) of Occupational Safety legislation establishing employer health and safety obligations that Client's Duty of Care services are designed to assist in meeting.",
+        "source_anchor": {
+          "source_text": "OSHA General Duty Clause, Section 5(a)(1) of the Occupational Safety and",
+          "source_section": "SEC-01",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "direct_travel_inc",
+        "target_id": "duty_of_care_services",
+        "type": "PROVIDES",
+        "description": "Direct Travel will provide Duty of Care services to support Client's travel risk management program, including severity level classifications, service level objectives, escalation protocols, and crisis communication procedures.",
+        "source_sections": [
+          "SEC-01"
+        ]
+      }
+    ]
+  },
+  {
+    "section_id": "SEC-02",
+    "section_number": "2",
+    "entity_count": 5,
+    "relationship_count": 0,
+    "entities": [
+      {
+        "id": "direct_travel_inc",
+        "type": "Organization",
+        "name": "Direct Travel, Inc.",
+        "description": "The travel management company (TMC) providing Duty of Care services through online booking tools, agent-assisted channels (phone, email, online chat), and 24/7/365 follow-the-sun global service team coverage.",
+        "source_anchor": {
+          "source_text": "Direct Travel agent-assisted channels (phone, email, online chat) and Direct Travel maintains follow-the-sun global service teams providing 24/7/365 coverage",
+          "source_section": "SEC-02, Definitions 2.1 and 2.2",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      },
+      {
+        "id": "client",
+        "type": "Organization",
+        "name": "Client",
+        "description": "The organization contracting for travel management and duty of care services, with authority to designate approved booking channels and define Business Hours and time zones in the SOW.",
+        "source_anchor": {
+          "source_text": "Client's designated online booking tool(s) as provided by Direct Travel and Client's primary service team is staffed",
+          "source_section": "SEC-02, Definitions 2.1 and 2.3",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      },
+      {
+        "id": "sow",
+        "type": "Agreement",
+        "name": "SOW",
+        "description": "Statement of Work document that defines client-specific service configurations, including designation of Business Hours, After-Hours time zones, and applicable coverage parameters for duty of care service delivery.",
+        "source_anchor": {
+          "source_text": "as defined in the SOW",
+          "source_section": "SEC-02, Definitions 2.2 and 2.3",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      },
+      {
+        "id": "approved_channels",
+        "type": "BookingChannel",
+        "name": "Approved Channels",
+        "description": "Authorized bookings made through: (a) Client's designated online booking tools provided by Direct Travel, (b) Direct Travel agent-assisted channels (phone, email, online chat), or (c) other booking channels expressly approved in writing by Client and integrated into the TMC's itinerary data feed. These channels enable TMC visibility and duty of care service delivery.",
+        "source_anchor": {
+          "source_text": "\"Approved Channels\" means bookings made through (a) Client's designated online booking tool(s) as provided by Direct Travel, (b) Direct Travel agent-assisted channels (phone, email, online chat), and (c) any other booking channels expressly approved in writing by Client and integrated into the TMC's itinerary data feed",
+          "source_section": "SEC-02, Definition 2.1",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      },
+      {
+        "id": "crisis_bridge",
+        "type": "Service",
+        "name": "Crisis Bridge",
+        "description": "A real-time conference line and/or digital collaboration channel established during Level 4 incidents to enable coordinated incident response communication among Client, Direct Travel, Specialist Providers, and affected travelers.",
+        "source_anchor": {
+          "source_text": "\"Crisis Bridge\" means a real-time conference line and/or digital coll",
+          "source_section": "SEC-02, Definition 2.4",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ],
+        "activation_severity_threshold": null,
+        "requires_client_authorization": null,
+        "authorization_details": ""
+      }
+    ],
+    "relationships": []
+  },
+  {
+    "section_id": "SEC-03",
+    "section_number": "3",
+    "entity_count": 10,
+    "relationship_count": 11,
+    "entities": [
+      {
+        "id": "direct_travel_inc",
+        "type": "Organization",
+        "name": "Direct Travel, Inc.",
+        "description": "The travel management company providing Duty of Care services, responsible for capturing and maintaining traveler itineraries and delivering visibility tools and incident response.",
+        "source_anchor": {
+          "source_text": "Direct Travel will capture and maintain itinerary records for all travel booked through Approved Channels",
+          "source_section": "SEC-03",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "client",
+        "type": "Organization",
+        "name": "Client",
+        "description": "The organization contracting for Duty of Care services and receiving access to traveler visibility dashboards, mapping tools, and incident notifications.",
+        "source_anchor": {
+          "source_text": "Direct Travel will provide Client with access to reporting dashboards",
+          "source_section": "SEC-03",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "approved_channels",
+        "type": "BookingChannel",
+        "name": "Approved Channels",
+        "description": "Booking methods through which travel must be booked to enable itinerary capture and Duty of Care service delivery, including Client's designated OBT and Direct Travel agent-assisted channels.",
+        "source_anchor": {
+          "source_text": "all travel booked through Approved Channels, including air, hotel, rail, car rental, and ground transportation segments",
+          "source_section": "SEC-03",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "traveler",
+        "type": "Traveler",
+        "name": "Traveler",
+        "description": "Individual authorized by Client traveling on Client business whose itinerary is captured, monitored, and actively managed under the Duty of Care program.",
+        "source_anchor": {
+          "source_text": "active Travelers by destination, travel dates, and booking status",
+          "source_section": "SEC-03",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "sow",
+        "type": "Agreement",
+        "name": "SOW",
+        "description": "Statement of Work specifying Client-specific service configurations, including the optional inclusion of interactive global map access for traveler location visibility.",
+        "source_anchor": {
+          "source_text": "Where included in the SOW, Direct Travel will provide access to an interactive global map",
+          "source_section": "SEC-03",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "incident",
+        "type": "Incident",
+        "name": "Incident",
+        "description": "An event that may reasonably impact traveler safety, security, health, or ability to continue travel, triggering incident response procedures and traveler identification processes.",
+        "source_anchor": {
+          "source_text": "When an Incident occurs, Direct Travel will, using available itinerary data, identify Travelers who are",
+          "source_section": "SEC-03",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "duty_of_care_services",
+        "type": "Service",
+        "name": "Duty of Care Services",
+        "description": "The comprehensive program of services defined in Section 3, encompassing itinerary visibility, risk monitoring, pre-trip preparation, in-trip monitoring, incident response, and post-incident reporting.",
+        "source_anchor": {
+          "source_text": "SCOPE OF DUTY OF CARE SERVICES",
+          "source_section": "SEC-03",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ],
+        "activation_severity_threshold": null,
+        "requires_client_authorization": null,
+        "authorization_details": ""
+      },
+      {
+        "id": "itinerary_visibility_and_traveler_locate",
+        "type": "Service",
+        "name": "Itinerary Visibility and Traveler Locate",
+        "description": "A foundational Duty of Care service providing Client with real-time visibility of active travelers through reporting dashboards (showing status by destination, travel dates, and booking status) and an optional interactive geospatial map displaying locations with risk ratings and threat alerts.",
+        "source_anchor": {
+          "source_text": "### 3.1 Itinerary Visibility and Traveler Locate",
+          "source_section": "SEC-03",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ],
+        "activation_severity_threshold": null,
+        "requires_client_authorization": null,
+        "authorization_details": "Interactive global map component is included where specified in the SOW"
+      },
+      {
+        "id": "reporting_dashboard",
+        "type": "Platform",
+        "name": "Reporting Dashboard",
+        "description": "A technology platform providing Client access to real-time visibility of active travelers, filterable and sortable by destination, travel dates, and booking status.",
+        "source_anchor": {
+          "source_text": "reporting dashboards showing active Travelers by destination, travel dates, and booking status",
+          "source_section": "SEC-03",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "interactive_global_map",
+        "type": "Platform",
+        "name": "Interactive Global Map",
+        "description": "A geospatial visualization platform displaying traveler locations based on itinerary data, overlaid with destination-level risk ratings and active threat alerts, available conditionally based on SOW agreement.",
+        "source_anchor": {
+          "source_text": "interactive global map displaying Traveler locations (based on itinerary data) overlaid with destination risk ratings and active threat alerts",
+          "source_section": "SEC-03",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "direct_travel_inc",
+        "target_id": "duty_of_care_services",
+        "type": "PROVIDES",
+        "description": "Direct Travel provides the comprehensive Duty of Care Services program, encompassing itinerary visibility, risk monitoring, and incident response capabilities.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "direct_travel_inc",
+        "target_id": "itinerary_visibility_and_traveler_locate",
+        "type": "PROVIDES",
+        "description": "Direct Travel provides the Itinerary Visibility and Traveler Locate service, including capture, maintenance, and reporting of traveler itinerary data.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "approved_channels",
+        "target_id": "itinerary_visibility_and_traveler_locate",
+        "type": "ENABLES_COVERAGE",
+        "description": "Travel booked through Approved Channels enables Direct Travel to capture itinerary data required to deliver the Itinerary Visibility and Traveler Locate service.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "approved_channels",
+        "target_id": "duty_of_care_services",
+        "type": "ENABLES_COVERAGE",
+        "description": "Use of Approved Channels for all travel bookings enables the full Duty of Care Services program to function effectively.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "itinerary_visibility_and_traveler_locate",
+        "target_id": "reporting_dashboard",
+        "type": "ENABLED_BY",
+        "description": "The Itinerary Visibility service is delivered through the Reporting Dashboard platform, which provides Client with real-time visibility of active travelers by destination, date, and booking status.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "itinerary_visibility_and_traveler_locate",
+        "target_id": "interactive_global_map",
+        "type": "ENABLED_BY",
+        "description": "The Itinerary Visibility service includes an optional interactive global map platform that displays traveler locations with destination risk ratings and threat alerts, available where included in the SOW.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "direct_travel_inc",
+        "target_id": "reporting_dashboard",
+        "type": "OPERATES",
+        "description": "Direct Travel operates and maintains the Reporting Dashboard platform providing Client access to traveler visibility information.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "direct_travel_inc",
+        "target_id": "interactive_global_map",
+        "type": "OPERATES",
+        "description": "Direct Travel operates and maintains the Interactive Global Map platform displaying traveler locations and destination risk intelligence.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "client",
+        "target_id": "sow",
+        "type": "PARTY_TO",
+        "description": "Client is a party to the Statement of Work which specifies which services and platforms (including optional Interactive Global Map access) are included in the Duty of Care engagement.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "direct_travel_inc",
+        "target_id": "sow",
+        "type": "PARTY_TO",
+        "description": "Direct Travel is a party to the Statement of Work which defines Client-specific service configurations and optional service modules.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "incident",
+        "target_id": "traveler",
+        "type": "IMPACTS",
+        "description": "When an Incident occurs, Direct Travel uses available itinerary data to identify which Travelers are impacted and require assistance or information.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      }
+    ]
+  },
+  {
+    "section_id": "SEC-05",
+    "section_number": "5",
+    "entity_count": 4,
+    "relationship_count": 0,
+    "entities": [
+      {
+        "id": "traveler",
+        "type": "Traveler",
+        "name": "Traveler",
+        "description": "A Client employee or other authorized person traveling on Client business, referenced throughout Section 5.1 in the context of incident impact assessments across severity levels.",
+        "source_anchor": {
+          "source_text": "limited direct impact on Travelers; ... may impact Travelers; ... likely impacting one or more Travelers",
+          "source_section": "SEC-05, Section 5.1 Severity Level Definitions table",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-05"
+        ]
+      },
+      {
+        "id": "severity_level_1",
+        "type": "SeverityLevel",
+        "name": "Level 1",
+        "description": "Advisory classification for minor disruption with limited direct impact on Travelers; informational alert only. Examples: Localized weather warning, minor transportation delay, low-level protest in non-traveler area.",
+        "source_anchor": {
+          "source_text": "Level 1 | Advisory | Minor disruption with limited direct impact on Travelers; informational alert only | Localized weather warning, minor transportation delay, low-level protest in non-traveler area",
+          "source_section": "SEC-05, Section 5.1 Severity Level Definitions table",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-05"
+        ],
+        "level": 1,
+        "classification": "Advisory",
+        "alert_time_target": "",
+        "client_escalation_time_target": "",
+        "status_update_cadence": "",
+        "crisis_bridge_required": null
+      },
+      {
+        "id": "severity_level_2",
+        "type": "SeverityLevel",
+        "name": "Level 2",
+        "description": "Monitor classification for moderate disruption that may impact Travelers; targeted alerts issued; optional welfare check. Examples: Significant weather event approaching, regional transportation strike announced, elevated security alert in destination city.",
+        "source_anchor": {
+          "source_text": "Level 2 | Monitor | Moderate disruption that may impact Travelers; targeted alerts issued; optional welfare check | Significant weather event approaching, regional transportation strike announced, elevated security alert in destination city",
+          "source_section": "SEC-05, Section 5.1 Severity Level Definitions table",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-05"
+        ],
+        "level": 2,
+        "classification": "Monitor",
+        "alert_time_target": "",
+        "client_escalation_time_target": "",
+        "status_update_cadence": "",
+        "crisis_bridge_required": null
+      },
+      {
+        "id": "severity_level_3",
+        "type": "SeverityLevel",
+        "name": "Level 3",
+        "description": "Action Required classification for significant disruption likely impacting one or more Travelers; proactive outreach required. Section text incomplete; visible example: Major weather event.",
+        "source_anchor": {
+          "source_text": "Level 3 | Action Required | Significant disruption likely impacting one or more Travelers; proactive outreach required | Major weather event (hurr",
+          "source_section": "SEC-05, Section 5.1 Severity Level Definitions table",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-05"
+        ],
+        "level": 3,
+        "classification": "Action Required",
+        "alert_time_target": "",
+        "client_escalation_time_target": "",
+        "status_update_cadence": "",
+        "crisis_bridge_required": null
+      }
+    ],
+    "relationships": []
+  },
+  {
+    "section_id": "SEC-06",
+    "section_number": "6",
+    "entity_count": 10,
+    "relationship_count": 7,
+    "entities": [
+      {
+        "id": "client_escalation_roster_obligation",
+        "type": "Obligation",
+        "name": "Client Escalation Roster Provision",
+        "description": "Client must provide Direct Travel with a 24/7 escalation roster containing specified roles (Primary Travel Program Owner, Alternate Contact, After-Hours Duty Contact, and conditionally Corporate Security and HR Duty Contact) with name, title, mobile phone, and email contact information.",
+        "source_anchor": {
+          "source_text": "Client shall provide Direct Travel with a **24/7 escalation roster** containing, at minimum:",
+          "source_section": "SEC-06.1",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-06"
+        ],
+        "section_reference": "SEC-06.1",
+        "obligation_type": "Service Provision",
+        "obligated_party": "Client",
+        "conditionality": "Mandatory; roster must provide 24/7 coverage with specified roles and contact details"
+      },
+      {
+        "id": "primary_travel_program_owner",
+        "type": "ContactRole",
+        "name": "Primary Travel Program Owner",
+        "description": "Primary escalation contact on Client's 24/7 roster for all Incidents; first point of contact with responsibility for initiating Client response to incidents affecting travelers.",
+        "source_anchor": {
+          "source_text": "**Primary Travel Program Owner** | Name, title, phone (mobile), email | First point of contact for all Incidents",
+          "source_section": "SEC-06.1",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-06"
+        ],
+        "escalation_severity_levels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "escalation_condition": "First point of contact for all Incidents",
+        "roster_position": "Primary Travel Program Owner"
+      },
+      {
+        "id": "alternate_travel_program_contact",
+        "type": "ContactRole",
+        "name": "Alternate Travel Program Contact",
+        "description": "Backup escalation contact on Client's 24/7 roster who assumes responsibility when the Primary Travel Program Owner is unavailable.",
+        "source_anchor": {
+          "source_text": "**Alternate Travel Program Contact** | Name, title, phone (mobile), email | Backup when primary is unavailable",
+          "source_section": "SEC-06.1",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-06"
+        ],
+        "escalation_severity_levels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "escalation_condition": "Backup when primary is unavailable",
+        "roster_position": "Alternate Travel Program Contact"
+      },
+      {
+        "id": "after_hours_duty_contact",
+        "type": "ContactRole",
+        "name": "After-Hours Duty Contact",
+        "description": "Escalation contact on Client's 24/7 roster designated to handle Incidents occurring outside Client's normal business hours.",
+        "source_anchor": {
+          "source_text": "**After-Hours Duty Contact** | Name, title, phone (mobile), email | Contact for Incidents occurring outside Client Business Hours",
+          "source_section": "SEC-06.1",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-06"
+        ],
+        "escalation_severity_levels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "escalation_condition": "Contact for Incidents occurring outside Client Business Hours",
+        "roster_position": "After-Hours Duty Contact"
+      },
+      {
+        "id": "corporate_security_contact",
+        "type": "ContactRole",
+        "name": "Corporate Security",
+        "description": "Security-specialized escalation contact on Client's 24/7 roster (if applicable) responsible for security-related Incidents classified as Level 3 or Level 4 severity.",
+        "source_anchor": {
+          "source_text": "**Corporate Security** (if applicable) | Name, title, phone (mobile), email | Contact for security-related Incidents (Level 3–4)",
+          "source_section": "SEC-06.1",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-06"
+        ],
+        "escalation_severity_levels": [
+          3,
+          4
+        ],
+        "escalation_condition": "Contact for security-related Incidents (Level 3–4)",
+        "roster_position": "Corporate Security"
+      },
+      {
+        "id": "human_resources_duty_contact",
+        "type": "ContactRole",
+        "name": "Human Resources Duty Contact",
+        "description": "HR-specialized escalation contact on Client's 24/7 roster (if applicable) for Incidents with human resources, employee welfare, or workforce implications.",
+        "source_anchor": {
+          "source_text": "**Human Resources Duty Contact** (if applicable)",
+          "source_section": "SEC-06.1",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-06"
+        ],
+        "escalation_severity_levels": [],
+        "escalation_condition": "Contact for applicable situations (if applicable)",
+        "roster_position": "Human Resources Duty Contact"
+      },
+      {
+        "id": "direct_travel_inc",
+        "type": "Organization",
+        "name": "Direct Travel, Inc.",
+        "description": "The travel management company providing Duty of Care services and acting as recipient of Client's escalation roster.",
+        "source_anchor": {
+          "source_text": "Client shall provide Direct Travel with a **24/7 escalation roster**",
+          "source_section": "SEC-06.1",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-06"
+        ]
+      },
+      {
+        "id": "client",
+        "type": "Organization",
+        "name": "Client",
+        "description": "The organization contracting for Duty of Care services; obligated to provide a 24/7 escalation roster to Direct Travel.",
+        "source_anchor": {
+          "source_text": "Client shall provide Direct Travel with a **24/7 escalation roster**",
+          "source_section": "SEC-06.1",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-06"
+        ]
+      },
+      {
+        "id": "incident",
+        "type": "Incident",
+        "name": "Incident",
+        "description": "A discrete event that may reasonably impact traveler safety, security, health, or ability to continue travel; referenced throughout Section 6.1 as the trigger for Client escalation roster activation.",
+        "source_anchor": {
+          "source_text": "First point of contact for all Incidents",
+          "source_section": "SEC-06.1",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-06"
+        ]
+      },
+      {
+        "id": "severity_level",
+        "type": "SeverityLevel",
+        "name": "Severity Level",
+        "description": "The Level 1 through Level 4 tiered classification system for incidents; Section 6.1 references Levels 3–4 as the trigger for escalation to Corporate Security.",
+        "source_anchor": {
+          "source_text": "Contact for security-related Incidents (Level 3–4)",
+          "source_section": "SEC-06.1",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-06"
+        ],
+        "level": null,
+        "classification": "",
+        "alert_time_target": "",
+        "client_escalation_time_target": "",
+        "status_update_cadence": "",
+        "crisis_bridge_required": null
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "client_escalation_roster_obligation",
+        "target_id": "client",
+        "type": "ASSIGNED_TO",
+        "description": "Client is assigned the obligation to provide Direct Travel with a 24/7 escalation roster containing specified contact roles with required information.",
+        "source_sections": [
+          "SEC-06"
+        ]
+      },
+      {
+        "source_id": "primary_travel_program_owner",
+        "target_id": "client",
+        "type": "DESIGNATED_BY",
+        "description": "Primary Travel Program Owner role is designated by Client as the first point of contact for all incidents on the escalation roster.",
+        "source_sections": [
+          "SEC-06"
+        ]
+      },
+      {
+        "source_id": "alternate_travel_program_contact",
+        "target_id": "client",
+        "type": "DESIGNATED_BY",
+        "description": "Alternate Travel Program Contact role is designated by Client to serve as backup when the Primary Travel Program Owner is unavailable.",
+        "source_sections": [
+          "SEC-06"
+        ]
+      },
+      {
+        "source_id": "after_hours_duty_contact",
+        "target_id": "client",
+        "type": "DESIGNATED_BY",
+        "description": "After-Hours Duty Contact role is designated by Client to handle incidents occurring outside normal Client business hours.",
+        "source_sections": [
+          "SEC-06"
+        ]
+      },
+      {
+        "source_id": "corporate_security_contact",
+        "target_id": "client",
+        "type": "DESIGNATED_BY",
+        "description": "Corporate Security contact role is designated by Client to handle security-related incidents classified as Level 3 or Level 4 severity.",
+        "source_sections": [
+          "SEC-06"
+        ]
+      },
+      {
+        "source_id": "human_resources_duty_contact",
+        "target_id": "client",
+        "type": "DESIGNATED_BY",
+        "description": "Human Resources Duty Contact role is designated by Client to handle incidents with human resources, employee welfare, or workforce implications.",
+        "source_sections": [
+          "SEC-06"
+        ]
+      },
+      {
+        "source_id": "severity_level",
+        "target_id": "corporate_security_contact",
+        "type": "ESCALATED_TO",
+        "description": "Incidents classified as Level 3 or Level 4 severity in security context escalate to the Corporate Security contact on the escalation roster.",
+        "source_sections": [
+          "SEC-06"
+        ]
+      }
+    ]
+  }
+]
