@@ -127,8 +127,13 @@ the document into section-level chunks.
 ```
 
 INSTRUCTIONS FOR document_map:
-- Every discrete section of the document must be captured, including any introductory \
-sections, preambles, or quick reference sections.
+- Sections should be TOP-LEVEL sections only (e.g., "1. PURPOSE AND LEGAL CONTEXT", \
+"2. DEFINITIONS", "3. SERVICE OVERVIEW"). Do NOT create separate entries for \
+subsections (e.g., 3.1, 3.2, 6.1, 6.2). Subsections are part of their parent section \
+and will be handled by the downstream chunking system. A typical policy document should \
+produce 10-25 sections, not 50+.
+- Every discrete top-level section of the document must be captured, including any \
+introductory sections, preambles, or quick reference sections.
 - Section order must be strictly sequential based on physical order in the document.
 - The beginning_text must be verbatim from the document. Do not paraphrase.
 - If the document contains a table of contents, do not treat it as a content section \
@@ -183,6 +188,17 @@ remove it.
 - The candidate_types field provides provisional type suggestions. List one to three \
 plausible entity types. Stage 2 will make the final classification decision based on \
 contextual analysis of the section text.
+
+<pre_registration_decomposition>
+When the document defines a multi-level classification (e.g., four
+severity levels), pre-register each level as a separate entity with
+a consistent naming pattern (severity_level_1, severity_level_2,
+severity_level_3, severity_level_4).
+
+When the document provides templates per level and per channel,
+pre-register each combination (alert_level_3_sms,
+alert_level_3_email, alert_level_4_sms, etc.).
+</pre_registration_decomposition>
 ---
 
 ### OUTPUT 3: cross_section_dependencies
@@ -266,12 +282,20 @@ def _parse_json_response(raw: str) -> dict:
             lines = lines[:-1]  # remove closing fence line
         cleaned = "\n".join(lines)
 
+    def _try_parse(text: str) -> dict:
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError:
+            # Fix invalid \escape sequences from LLM (e.g., \S, \s, \d)
+            fixed = re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', text)
+            return json.loads(fixed)
+
     try:
-        return json.loads(cleaned)
+        return _try_parse(cleaned)
     except json.JSONDecodeError:
         match = re.search(r"\{[\s\S]*\}", cleaned)
         if match:
-            return json.loads(match.group())
+            return _try_parse(match.group())
         raise
 
 

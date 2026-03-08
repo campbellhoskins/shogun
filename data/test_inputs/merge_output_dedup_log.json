@@ -1,0 +1,51 @@
+[
+  {
+    "input_count": 26,
+    "input_ids": [
+      "direct_travel_inc",
+      "client",
+      "duty_of_care_services",
+      "osha_general_duty_clause",
+      "health_and_safety_at_work_act_1974",
+      "management_of_health_and_safety_at_work_regulations_1999",
+      "corporate_manslaughter_and_corporate_homicide_act_2007",
+      "framework_directive_89_391_eec",
+      "iso_31030_2021",
+      "approved_channels",
+      "crisis_bridge",
+      "risk_intelligence_platform",
+      "incident",
+      "off_channel_booking",
+      "severity_level",
+      "specialist_provider",
+      "traveler",
+      "traveler_data",
+      "statement_of_work",
+      "sow",
+      "safe",
+      "itinerary_visibility_and_traveler_locate",
+      "safe_response",
+      "traveler_outreach_standards",
+      "primary_travel_program_owner",
+      "escalation_roster_maintenance"
+    ],
+    "input_tokens": 4043,
+    "output_tokens": 1820,
+    "raw_response": "```json\n[\n  {\n    \"old_id\": \"sow\",\n    \"new_id\": \"statement_of_work\",\n    \"reason\": \"Both entities represent the same Statement of Work document (Agreement type). 'statement_of_work' is the more descriptive and specific ID per canonical selection rules.\"\n  },\n  {\n    \"old_id\": \"safe\",\n    \"new_id\": \"safe_response\",\n    \"reason\": \"Both entities represent the same welfare-check response status (TravelerResponseStatus type). 'safe_response' is more descriptive and specific than 'safe'.\"\n  }\n]\n```",
+    "thinking": "Let me analyze this entity list for semantic duplicates:\n\n1. **direct_travel_inc** vs **client**: Different organizations - not duplicates\n2. **duty_of_care_services**: A service provided\n3. Various regulations: All different regulations - not duplicates\n4. **approved_channels**: Booking channels\n5. **crisis_bridge**: Service for Level 4 incidents\n6. **risk_intelligence_platform**: Platform (Crisis24 Horizon)\n7. **incident**: Incident type\n8. **off_channel_booking**: Booking made outside approved channels\n9. **severity_level**: SeverityLevel classification (Levels 1-4)\n10. **specialist_provider**: Third-party provider\n11. **traveler**: Client employee/authorized person traveling\n12. **traveler_data**: Personal data of travelers\n13. **statement_of_work** (id: \"statement_of_work\") vs **sow** (id: \"sow\"): Both are \"SOW\" with type Agreement\n    - statement_of_work appears in SEC-02\n    - sow appears in SEC-03, SEC-06\n    - Both describe Statement of Work\n    - According to rule: Prefer the more descriptive ID (\"statement_of_work\" vs \"sow\")\n    - This is a duplicate!\n\n14. **safe** (id: \"safe\") vs **safe_response** (id: \"safe_response\"): Both are \"SAFE\" with type TravelerResponseStatus\n    - safe appears in SEC-03\n    - safe_response appears in SEC-05\n    - Both describe the same welfare check response status\n    - They have the same attributes describing the same action\n    - This is a duplicate!\n    - \"safe_response\" is more descriptive, so per the rules we should prefer that one\n    - Actually, let me reconsider: the rule says \"Prefer the more descriptive and specific ID\" - \"safe_response\" is more descriptive than \"safe\"\n    - So old_id: \"safe\", new_id: \"safe_response\"\n\n15. **itinerary_visibility_and_traveler_locate**: Service\n16. **traveler_outreach_standards**: Obligation\n17. **primary_travel_program_owner**: ContactRole\n18. **escalation_roster_maintenance**: Obligation\n\nChecking the \"statement_of_work\" and \"sow\" pair again - both reference the same concept with identical type and name, appearing across different sections. The longer ID is more explicit, making it the preferred identifier.\n\nFor \"safe\" versus \"safe_response\", both are TravelerResponseStatus types with matching attributes and tmc_action values. The more descriptive variant should replace the shorter one, so old_id becomes \"safe\".\n\nScanning for other duplicates, I need to verify the anti-merge rules aren't being violated. The severity_level entity describes a tiered classification system (Level 1-4) but appears as a single entity rather than multiple numbered variants, so no conflict there. I don't see distinct channel-specific entities either. Looking more closely at severity_level's attributes, the structure seems unusual with \"level\": 0, but this doesn't indicate a duplication issue—it's just one entity describing the classification framework itself.\n\nThe actual duplicates I've identified are statement_of_work and sow, which both reference the same SOW document with matching names and types, plus safe and safe_response, which both represent the same SAFE welfare check status. For statement_of_work versus sow specifically, the descriptions are nearly identical—both detail client-specific service configurations within a Statement of Work—making them clear candidates for consolidation.\n\nWhen deciding which ID to retain, I need to weigh the criteria: statement_of_work is more descriptive and follows fuller naming conventions, while sow appears across more sections (2 versus 1). The priority rules favor descriptiveness first, so statement_of_work should be the retained ID despite sow's broader section coverage.\n\nFor the safe/safe_response pair, both represent the same entity with identical names and types. The descriptions are functionally equivalent, but safe_response uses more explicit language (\"Standardized welfare-check response status\" versus just \"Welfare check response status\"). Since both appear in only one section each, the tiebreaker is specificity—safe_response wins out as the more precise identifier.",
+    "remappings": [
+      {
+        "old_id": "sow",
+        "new_id": "statement_of_work",
+        "reason": "Both entities represent the same Statement of Work document (Agreement type). 'statement_of_work' is the more descriptive and specific ID per canonical selection rules."
+      },
+      {
+        "old_id": "safe",
+        "new_id": "safe_response",
+        "reason": "Both entities represent the same welfare-check response status (TravelerResponseStatus type). 'safe_response' is more descriptive and specific than 'safe'."
+      }
+    ],
+    "output_count": 24,
+    "merges": 2
+  }
+]

@@ -152,6 +152,29 @@ class ServiceEntity(BaseEntitySchema):
 
     type: Literal["Service"] = "Service"
 
+    activation_severity_threshold: Optional[int] = Field(
+        default=None,
+        description=(
+            "Minimum severity level at which this service activates "
+            "(e.g., 2 for Incident Response, 4 for Crisis Bridge). "
+            "None if always active."
+        ),
+    )
+    requires_client_authorization: Optional[bool] = Field(
+        default=None,
+        description=(
+            "Whether this service requires express Client authorization "
+            "before the TMC may proceed."
+        ),
+    )
+    authorization_details: str = Field(
+        default="",
+        description=(
+            "Specific actions within this service that require authorization "
+            "and any SOW exceptions."
+        ),
+    )
+
 
 class RegulationEntity(BaseEntitySchema):
     """A law, directive, standard, or regulatory framework that governs
@@ -196,6 +219,28 @@ class ContactRoleEntity(BaseEntitySchema):
 
     type: Literal["ContactRole"] = "ContactRole"
 
+    escalation_severity_levels: list[int] = Field(
+        default=[],
+        description=(
+            "Severity levels at which this contact role is engaged "
+            "(e.g., [3, 4] for Corporate Security)."
+        ),
+    )
+    escalation_condition: str = Field(
+        default="",
+        description=(
+            "Additional condition beyond severity level that triggers "
+            "engagement (e.g., 'security-related incidents', 'outside "
+            "Business Hours', 'employee welfare, injury, or fatality')."
+        ),
+    )
+    roster_position: str = Field(
+        default="",
+        description=(
+            "Role in escalation sequence: Primary | Backup | Conditional | CrisisOnly"
+        ),
+    )
+
 
 class DataElementEntity(BaseEntitySchema):
     """A specific field of traveler profile data required for effective
@@ -212,6 +257,36 @@ class TravelerResponseStatusEntity(BaseEntitySchema):
     AREA, or No Response."""
 
     type: Literal["TravelerResponseStatus"] = "TravelerResponseStatus"
+
+    tmc_action: str = Field(
+        default="",
+        description=(
+            "The specific follow-up action the TMC must take when a traveler "
+            "returns this status (e.g., 'Attempt live contact within 15 minutes; "
+            "provide assistance per Section 3.5')."
+        ),
+    )
+    action_time_target: str = Field(
+        default="",
+        description=(
+            "Time constraint on the TMC's follow-up action, if any "
+            "(e.g., '15 minutes' for NEED ASSISTANCE live contact)."
+        ),
+    )
+    closes_outreach: Optional[bool] = Field(
+        default=None,
+        description=(
+            "Whether this response removes the traveler from active outreach "
+            "for this incident (True for SAFE and NOT IN AREA)."
+        ),
+    )
+    triggers_escalation: Optional[bool] = Field(
+        default=None,
+        description=(
+            "Whether this status triggers escalation to Client contacts "
+            "(True for NO RESPONSE after outreach window)."
+        ),
+    )
 
 
 class ObligationEntity(BaseEntitySchema):
@@ -255,9 +330,24 @@ class AlertEntity(BaseEntitySchema):
         default="",
         description="Advisory | WelfareCheck | EscalationNotification | SITREP",
     )
+    severity_level: Optional[int] = Field(
+        default=None,
+        description=(
+            "The severity level this alert template corresponds to (1-4), "
+            "enabling direct lookup of which alert type applies at which severity."
+        ),
+    )
     channel: str = Field(
         default="",
         description="SMS | Email | VoiceCall | MobileAppPush",
+    )
+    channel_priority_order: Optional[int] = Field(
+        default=None,
+        description=(
+            "Priority rank of this channel in the outreach sequence "
+            "(1=highest priority, attempted first). Default order: "
+            "1=SMS, 2=Email, 3=MobileAppPush, 4=VoiceCall."
+        ),
     )
     attempt_number: Optional[int] = Field(
         default=None,
@@ -301,6 +391,33 @@ class BookingEntity(BaseEntitySchema):
         default="",
         description=(
             "DirectBooking | EmailParsing | SupplierFeed | ExpenseIntegration"
+        ),
+    )
+
+
+class WorkflowEntity(BaseEntitySchema):
+    """A named multi-step procedure defined in the policy — such as
+    the welfare check outreach sequence, the escalation procedure,
+    or the Crisis Bridge establishment protocol."""
+
+    type: Literal["Workflow"] = "Workflow"
+
+    trigger_condition: str = Field(
+        default="",
+        description=(
+            "Condition that initiates this workflow "
+            "(e.g., 'Incident classified at Level 3 or higher')."
+        ),
+    )
+    step_count: Optional[int] = Field(
+        default=None,
+        description="Number of sequential steps in this workflow.",
+    )
+    time_constraint: str = Field(
+        default="",
+        description=(
+            "Overall time constraint or SLO for the workflow "
+            "(e.g., 'Crisis Bridge established within 60 minutes')."
         ),
     )
 
@@ -814,6 +931,68 @@ SENT_TO = RelationshipSchema(
         "Traverse from Alert to find all travelers it was sent to, or from "
         "Traveler to find all alerts received. Enables tracking of outreach "
         "attempts, channels, and outcomes per Appendix C."
+    ),
+)
+
+FOLLOWED_BY = RelationshipSchema(
+    type="FOLLOWED_BY",
+    description=(
+        "One step in a procedure is followed by another step in sequence. "
+        "Used to model ordered workflows such as the welfare check outreach "
+        "sequence (SMS → Email → Push → Voice) or escalation chains."
+    ),
+    valid_source_types=[
+        "Service", "Alert", "TravelerResponseStatus", "Obligation", "Workflow",
+    ],
+    valid_target_types=[
+        "Service", "Alert", "TravelerResponseStatus", "Obligation", "Workflow",
+    ],
+    cardinality="many_to_many",
+    is_directed=True,
+    mandatory=False,
+    agent_traversal_hint=(
+        "Traverse to determine the ordered sequence of steps in a procedure. "
+        "Follow the FOLLOWED_BY chain from the first step to enumerate the "
+        "complete workflow in order."
+    ),
+)
+
+CONDITIONAL_ON = RelationshipSchema(
+    type="CONDITIONAL_ON",
+    description=(
+        "An action, service, or escalation is conditional on a specific "
+        "criterion being met — such as a severity level threshold, a "
+        "traveler response status, an incident type, or a time condition."
+    ),
+    valid_source_types=[
+        "Service", "ContactRole", "Obligation", "Alert", "Workflow",
+    ],
+    valid_target_types=[
+        "SeverityLevel", "TravelerResponseStatus", "Incident", "RiskCategory",
+    ],
+    cardinality="many_to_many",
+    is_directed=True,
+    mandatory=False,
+    agent_traversal_hint=(
+        "Traverse to find what conditions must be met for an action to apply. "
+        "From a Service or ContactRole, follow CONDITIONAL_ON to find the "
+        "severity levels, response statuses, or incident types that gate it."
+    ),
+)
+
+STEP_OF = RelationshipSchema(
+    type="STEP_OF",
+    description=(
+        "A service, alert, or obligation is a step within a named workflow."
+    ),
+    valid_source_types=["Service", "Alert", "Obligation"],
+    valid_target_types=["Workflow"],
+    cardinality="many_to_one",
+    is_directed=True,
+    mandatory=False,
+    agent_traversal_hint=(
+        "Traverse from a workflow step to its parent workflow, or from a "
+        "Workflow to enumerate all its component steps."
     ),
 )
 
