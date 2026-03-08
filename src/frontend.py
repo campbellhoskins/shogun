@@ -141,6 +141,48 @@ ENTITY_GROUPS: list[str] = [
 _ontology: OntologyGraph | None = None
 _graph: nx.DiGraph | None = None
 _client: Anthropic | None = None
+_metrics: dict[str, dict[str, float]] = {}
+
+
+def _compute_metrics(g: nx.DiGraph) -> dict[str, dict[str, float]]:
+    """Compute centrality metrics for all nodes.
+
+    Returns dict mapping node_id -> {importance, betweenness, pagerank, degree_centrality}.
+    """
+    if g.number_of_nodes() == 0:
+        return {}
+
+    # Compute raw metrics
+    undirected = g.to_undirected()
+    betweenness_raw = nx.betweenness_centrality(undirected)
+    pagerank_raw = nx.pagerank(g, max_iter=200)
+    degree_raw = nx.degree_centrality(g)
+
+    def _min_max_normalize(values: dict[str, float]) -> dict[str, float]:
+        vals = list(values.values())
+        lo, hi = min(vals), max(vals)
+        if hi - lo < 1e-12:
+            return {k: 0.5 for k in values}
+        return {k: (v - lo) / (hi - lo) for k, v in values.items()}
+
+    betweenness_norm = _min_max_normalize(betweenness_raw)
+    pagerank_norm = _min_max_normalize(pagerank_raw)
+    degree_norm = _min_max_normalize(degree_raw)
+
+    result: dict[str, dict[str, float]] = {}
+    for node_id in g.nodes:
+        b = betweenness_norm[node_id]
+        p = pagerank_norm[node_id]
+        d = degree_norm[node_id]
+        importance = 0.40 * b + 0.35 * p + 0.25 * d
+        result[node_id] = {
+            "importance": round(importance, 4),
+            "betweenness": round(b, 4),
+            "pagerank": round(p, 4),
+            "degree_centrality": round(d, 4),
+        }
+
+    return result
 
 app = FastAPI(title="Shogun Ontology Explorer")
 
@@ -168,6 +210,7 @@ def get_graph() -> GraphData:
     nodes = []
     for node_id, data in _graph.nodes(data=True):
         entity_type = data.get("type", "Unknown")
+        m = _metrics.get(node_id, {})
         nodes.append(GraphNode(
             id=node_id,
             type=entity_type,
@@ -177,6 +220,10 @@ def get_graph() -> GraphData:
             color=_get_color(entity_type),
             level=TYPE_LEVELS.get(entity_type, 5),
             group=TYPE_GROUP_MAP.get(entity_type, ""),
+            importance=m.get("importance", 0.0),
+            betweenness=m.get("betweenness", 0.0),
+            pagerank=m.get("pagerank", 0.0),
+            degree_centrality=m.get("degree_centrality", 0.0),
         ))
 
     edges = []
@@ -542,7 +589,7 @@ def _load_graph(args: argparse.Namespace) -> OntologyGraph:
 
 
 def main():
-    global _ontology, _graph, _client
+    global _ontology, _graph, _client, _metrics
 
     parser = argparse.ArgumentParser(description="Shogun Ontology Explorer")
     group = parser.add_mutually_exclusive_group(required=True)
@@ -556,6 +603,7 @@ def main():
     # Load graph
     _ontology = _load_graph(args)
     _graph = build_graph(_ontology)
+    _metrics = _compute_metrics(_graph)
     _client = Anthropic()
 
     entity_count = _graph.number_of_nodes()

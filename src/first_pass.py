@@ -17,10 +17,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 
 from anthropic import Anthropic
+from dotenv import load_dotenv
+
+load_dotenv()
+TEST_MODEL = os.environ.get("TEST_MODEL", "claude-haiku-4-5-20251001")
 
 from src.models import FirstPassResult
 from src.schemas import VALID_ENTITY_TYPES
@@ -142,7 +147,7 @@ for entities that span multiple sections.
 {{
   "global_entity_pre_registration": [
     {{
-      "entity_name": "string — the canonical name for this entity. Choose the most complete and specific name used in the document. This name will be used as the consistent identifier across all pipeline stages.",
+      "entity_name": "string — the canonical name for this entity. Choose the most complete and specific name used in the document. It should be lowercase_with_underscores, descriptive (e.g., "direct_travel_inc")",
       "candidate_types": "array of one to three strings from the permitted entity type list — these are provisional suggestions for Stage 2 to confirm, revise, or override based on contextual analysis. Stage 2 is not bound by these suggestions.",
       "mentioned_in_sections": "array of strings — every section_id in which this entity is referenced. Must match section_ids defined in the document_map. List in order of appearance.",
       "brief_description": "string — identity and disambiguation context ONLY: the entity's full name, any abbreviations or aliases used in the document, and the section where it first appears. Do NOT describe what the entity does, governs, or how it relates to other entities — that is Stage 2's job."
@@ -305,7 +310,7 @@ def run_first_pass(
     )
     _dbg(
         "API CALL",
-        f"model: claude-haiku-4-5-20251001\n"
+        f"model: {TEST_MODEL}\n"
         f"max_tokens: 49152 (thinking: {_THINKING_CONFIG['budget_tokens']})\n"
         f"user_prompt length: {len(user_prompt)} chars",
     )
@@ -314,7 +319,7 @@ def run_first_pass(
     collected_thinking = ""
     collected_text = ""
     with client.messages.stream(
-        model="claude-sonnet-4-20250514",
+        model=TEST_MODEL,
         max_tokens=49152,
         thinking=_THINKING_CONFIG,
         system=FIRST_PASS_SYSTEM_PROMPT,

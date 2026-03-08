@@ -1,10 +1,15 @@
 from __future__ import annotations
 
 import json
+import os
 from typing import Any
 
 import networkx as nx
 from anthropic import Anthropic
+from dotenv import load_dotenv
+
+load_dotenv()
+TEST_MODEL = os.environ.get("TEST_MODEL", "claude-haiku-4-5-20251001")
 
 from src.models import AgentResponse
 
@@ -316,7 +321,7 @@ def ask(question: str, g: nx.DiGraph, client: Anthropic | None = None, max_turns
         turn_count += 1
 
         response = client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model=TEST_MODEL,
             max_tokens=4096,
             system=SYSTEM_PROMPT,
             tools=TOOLS,

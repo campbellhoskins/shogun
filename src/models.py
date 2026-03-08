@@ -104,10 +104,15 @@ class ExtractionMetadata(BaseModel):
     final_entity_count: int = 0
     final_relationship_count: int = 0
     deduplication_merges: int = 0
+    exact_id_dedup_merges: int = 0
     semantic_dedup_merges: int = 0
     semantic_dedup_api_calls: int = 0
     cross_section_relationship_count: int = 0
     cross_section_api_calls: int = 0
+    stage4_relationship_count: int = 0
+    stage4_invalid_count: int = 0
+    stage4_dedup_count: int = 0
+    stage4_api_calls: int = 0
 
 
 class SectionExtraction(BaseModel):

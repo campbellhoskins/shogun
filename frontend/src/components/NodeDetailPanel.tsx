@@ -1,15 +1,16 @@
-import type { EntityDetail } from '../types';
+import type { EntityDetail, GraphNode } from '../types';
 import EntityChip from './EntityChip';
 import '../styles/NodeDetailPanel.css';
 
 interface Props {
   detail: EntityDetail | null;
+  graphNode?: GraphNode;
   typeColors: Record<string, string>;
   onClose: () => void;
   onEntitySelect: (entityId: string) => void;
 }
 
-export default function NodeDetailPanel({ detail, typeColors, onClose, onEntitySelect }: Props) {
+export default function NodeDetailPanel({ detail, graphNode, typeColors, onClose, onEntitySelect }: Props) {
   if (!detail) return null;
 
   const color = typeColors[detail.type] || '#6b7280';
@@ -30,6 +31,29 @@ export default function NodeDetailPanel({ detail, typeColors, onClose, onEntityS
         <span className="node-detail-type-dot" style={{ backgroundColor: color }} />
         {detail.type}
       </div>
+
+      {graphNode && (
+        <div className="node-detail-metrics">
+          <h3 className="node-detail-section-title">Graph Metrics</h3>
+          {([
+            ['Importance', graphNode.importance ?? 0],
+            ['Betweenness', graphNode.betweenness ?? 0],
+            ['PageRank', graphNode.pagerank ?? 0],
+            ['Degree', graphNode.degree_centrality ?? 0],
+          ] as [string, number][]).map(([label, value]) => (
+            <div key={label} className="node-detail-metric-row">
+              <span className="node-detail-metric-label">{label}</span>
+              <div className="node-detail-metric-bar">
+                <div
+                  className="node-detail-metric-fill"
+                  style={{ width: `${Math.round(value * 100)}%`, backgroundColor: color }}
+                />
+              </div>
+              <span className="node-detail-metric-value">{(value * 100).toFixed(0)}%</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       <p className="node-detail-description">{detail.description}</p>
 

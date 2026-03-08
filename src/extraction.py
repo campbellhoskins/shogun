@@ -22,16 +22,16 @@ from anthropic import Anthropic, AsyncAnthropic
 # Thinking configuration for extraction calls
 _THINKING_CONFIG = {"type": "enabled", "budget_tokens": 10000}
 
-# Model used for extraction calls
-_EXTRACTION_MODEL = "claude-haiku-4-5-20251001"
+# Model used for extraction calls — loaded from .env TEST_MODEL
+import os
+from dotenv import load_dotenv
+load_dotenv()
+TEST_MODEL = os.environ.get("TEST_MODEL", "claude-haiku-4-5-20251001")
 
 from src.models import (
     DocumentSection,
-    EnumeratedList,
     FirstPassEntity,
     FirstPassResult,
-    FirstPassSection,
-    HierarchyEntry,
     Relationship,
     SectionExtraction,
     SourceAnchor,
@@ -39,7 +39,6 @@ from src.models import (
 from src.schemas import (
     BaseEntitySchema,
     generate_entity_type_prompt_section_slim,
-    generate_example_relationship,
     generate_relationship_type_prompt_section,
     validate_entity,
 )
@@ -66,241 +65,83 @@ def _dbg(header: str, body: str = "", indent: int = 0) -> None:
 
 ENTITY_SYSTEM_PROMPT = """\
 You are an expert ontology knowledge graph extraction system specializing in \
-corporate travel policy documents. Your role is to perform exhaustive entity \
+corporate travel policy documents. Your role is to perform entity \
 extraction on a single designated section of a travel policy document.
 
-You are operating at STAGE 2 of a multi-stage pipeline. Your output will be \
-consumed by downstream stages as follows:
+<pipeline_integration>
+You are operating at STAGE 2 of a multi-stage pipeline.
+Your output feeds directly into:
+- Stage 3: Cross-section relationship extraction. Entity names must be
+  identical across sections for Stage 3 to resolve entity identity.
+- Stage 4: Global deduplication and merge. Inconsistent naming generates
+  merge conflicts.
+</pipeline_integration>
 
-Stage 3 receives all section-level entity sets simultaneously and identifies \
-cross-section relationships. Consistent canonical entity naming in your output \
-is required for Stage 3 to correctly resolve cross-section entity identity. If \
-you rename a pre-registered entity, Stage 3 will treat it as a different \
-entity and the cross-section relationship will be lost.
+<entity_model>
+WHAT ENTITIES ARE
+Entities are discrete, identifiable things (nouns): organizations, roles,
+regulations, services, platforms, agreements, defined terms. 
 
-Stage 4 deduplicates and merges the complete entity registry across all \
-sections. Inconsistent naming of the same entity across sections will generate \
-merge conflicts that require manual resolution.
+WHAT ENTITIES ARE NOT
+Do not create an entity to wrap a simple assertion. If a statement is fully captured as a relationship between two existing entities, it is a relationship, not an entity.
 
-You have been provided with the following inputs:
+Exception: Create an Obligation entity when a requirement has its own
+constraints, exceptions, conditional logic, or must be independently
+referenceable.
 
-Document-level context — establishes the governing document's identity and \
-purpose.
-Section metadata — identifies the section you are processing, its functional \
-classification, and its role within the document.
-Global entity pre-registration — a seed list of entities that span multiple \
-sections, with canonical names you must use exactly. This list is intentionally \
-incomplete. Independent entity discovery is required.
-Section text — the raw text of the section you are extracting from. All \
-entities must be grounded in this text.
+GRANULARITY CALIBRATION
+A typical 2000-character section yields 5–15 entities. Significantly more suggests you are wrapping simple assertions as entities. Significantly fewer suggests you are collapsing list members or missing genuine entities.
+</entity_model>
 
-You must be precise, exhaustive, and consistent. Every output field you produce \
-will be consumed programmatically by downstream pipeline stages. Follow the \
-output schema exactly as specified."""
+<entity_types>
+{entity_types}
+</entity_types>
+
+<output_schema>
+Produce a single JSON object with one key: "entities" containing an array.
+
+Each entity requires:
+- id: lowercase_with_underscores, descriptive (e.g., "osha_general_duty_clause")
+- type: one of the types above
+- name: concise human-readable name
+- description: what this entity represents, grounded in section text
+- source_anchor: object with:
+    - source_text: EXACT verbatim quote from section text (no paraphrase)
+    - source_section: the section ID provided in the user message
+
+Produce ONLY the JSON object. No preamble, no commentary, no markdown fences.
+</output_schema>
+
+<pre_registration_rules>
+These rules apply ONLY when the user message includes a PRE-REGISTERED ENTITIES block:
+
+1. If a pre-registered entity is referenced in the section text, you MUST include it in your output using the pre-registered name character-for-character. Do not rename, abbreviate, or paraphrase.
+2. You MAY assign a different entity type than the candidate_types suggest if section text provides clear evidence for reclassification.
+3. If a pre-registered entity is NOT referenced in the section text, do not include it.
+4. If a pre-registered entity IS referenced, include it even if this section adds no new attributes. Presence in a section is itself a graph fact.
+5. The pre-registered list is intentionally incomplete. You are required to discover additional entities through independent analysis of the section text.
+</pre_registration_rules>
+"""
 
 
 ENTITY_USER_PROMPT = """\
-## PIPELINE CONTEXT
+<document_context>
+{document_metadata}
+</document_context>
 
-You are processing section {section_id} of a travel policy document as part of \
-a multi-stage ontology extraction pipeline. All context required for correct \
-extraction is provided below. Read every section of this message before \
-producing any output.
+<section_metadata>
+{section_metadata}
+</section_metadata>
 
----
-
-## DOCUMENT CONTEXT
-
-Document Title:       {document_title}
-Issuing Organization: {issuing_organization}
-Effective Date:       {effective_date}
-Document Purpose:     {document_purpose_summary}
-
----
-
-## SECTION BEING PROCESSED
-
-Section ID:                     {section_id}
-Section Name:                   {section_name}
-Section Purpose Classification: {section_purpose}
-Section Summary:                {section_summary}
-
----
-
-## GLOBAL ENTITY PRE-REGISTRATION
-
-The following entities have been pre-registered by Stage 1 because they appear \
-across multiple sections of this document. Each entry includes a canonical name, \
-provisional type suggestions, and an identity disambiguation note.
-
-BINDING INSTRUCTIONS:
-- If any pre-registered entity is referenced in your section text, you MUST use \
-  its entity_name value character-for-character as the entity name in your \
-  output. Do not rename, abbreviate, shorten, or paraphrase pre-registered \
-  entity names under any circumstances.
-- You may classify a pre-registered entity under a different entity type than \
-  the candidate_types suggest if the section text provides clear evidence for a \
-  different classification.
-- If a pre-registered entity is NOT referenced in this section's text, do not \
-  include it in your output.
-- If a pre-registered entity IS referenced in this section's text, you MUST \
-  include it in your entities array even if the section adds no new attributes. \
-  Its presence in this section is itself a graph fact.
-
-SCOPE NOTE: This list is a known-incomplete seed whose sole purpose is \
-cross-section entity naming coordination. It does not represent all entities in \
-the document. You are required to discover and register additional entities not \
-present in this list through independent analysis of section text.
-
-{global_entity_pre_registration}
-
----
-
-## SECTION TEXT
-
-Extract entities ONLY from the text below. Do not import \
-rules, thresholds, or entities from other sections unless they are \
-explicitly referenced within this text.
-
---- BEGIN SECTION TEXT ---
+{pre_registration_block}\
+<section_text section_id="{section_id}">
 {section_text}
---- END SECTION TEXT ---
+</section_text>
 
----
-
-## CRITICAL PRINCIPLES FOR KNOWLEDGE GRAPH CONSTRUCTION
-
-### Principle 1: Entities Are Things
-
-**Entities** represent discrete, identifiable things (nouns): organizations, \
-roles, policies, governance bodies, procedures, thresholds, definitions, \
-service tiers, expense categories, named party types.
-
-**Critical Rule**: Do NOT create an entity to wrap a simple assertion. If a \
-statement is just a relationship between two entities, it should be captured \
-as a relationship (in a later extraction pass), not as a standalone entity.
-
-**Exception**: Only create an entity to represent an assertion when it is too \
-complex for a single triple (multiple simultaneous targets, conditional logic, \
-references other rules). Use the "Requirement" entity type in such cases.
-
-### Principle 2: List Members Must Be Individual Entity Nodes
-
-When you encounter a list of named parties, roles, or categories, you MUST \
-create a separate entity node for each list member. Do NOT collapse them into \
-an attribute array. Knowledge graphs derive value from traversal — if \
-"stakeholders" only exists as a string in an attribute array, the traversal \
-path to it does not exist.
-
-### Principle 3: Extract All Genuine Entities
-
-Always extract these when they appear: the owning organization, named \
-governance bodies, named roles, defined terms, referenced policies or \
-instruments, any named party type, the Policy document itself, training \
-programs, service providers.
-
----
-
-## PROCESSING STEPS
-
-Complete your analysis inside `<extraction_analysis>` tags before producing the \
-final JSON output.
-
-### Step 1: Identify Key Entities
-
-Read the section and identify the distinct **things** mentioned: roles, \
-organizations, service providers, expense categories, transportation modes, \
-constraints (thresholds, deadlines, conditions), classes of service, etc. \
-Focus on entities that carry concrete information — names, numbers, conditions \
-— not on restating every sentence as a separate entity.
-
-**Avoid entity bloat:** Do NOT create a separate PolicyRule entity for every \
-sentence. If a rule's content is fully captured by a relationship between two \
-entities (e.g., PolicyRule COVERS ExpenseCategory), and the rule text is \
-recorded in the relationship's description or the parent entity's attributes, \
-a standalone PolicyRule entity adds no traversal value.
-
-Create PolicyRule entities only when:
-- The rule has its own constraints, exceptions, or requirements attached
-- The rule governs a combination of entities that cannot be expressed as a \
-  single relationship
-- The rule needs to be independently referenceable by other parts of the graph
-
-### Step 2: Verify
-
-Before producing JSON, check:
-- [ ] Pre-registered entity names used character-for-character
-- [ ] Each list of named parties/roles has separate entity nodes (not arrays)
-- [ ] Entity IDs are lowercase with underscores, descriptive of content
-
----
-
-## REQUIRED OUTPUT SCHEMA
-
-After your `<extraction_analysis>`, produce a single valid JSON object with \
-exactly one top-level key: "entities".
-
-### Entity Types
-
-{entity_types_section}
-
-### Entity Structure
-
-Create each entity with the following fields:
-
-**id** (required)
-- Use a plain descriptive identifier in lowercase with underscores
-- Make it descriptive of the entity content
-- Example: `coach_class_requirement` or `executive_director`
-
-**type** (required)
-- Must be one of the entity types listed above
-
-**name** (required)
-- A clear, human-readable name for this entity
-- Should be concise but descriptive
-
-**description** (required)
-- A brief description of what this entity represents
-- Draw this from the policy text
-- For named entities from lists, reference the parent sentence context
-
-**source_anchor** (required)
-- This is a mandatory object with two fields:
-  - **source_text**: The EXACT verbatim quote from the section text that \
-supports this entity. Copy character-for-character from the source. Do NOT \
-paraphrase. For named entities from lists, use the complete parent sentence \
-that introduces the list.
-  - **source_section**: Must be set to `{section_id}`
-
-Example entity:
-```json
-{{
-    "id": "example_entity",
-    "type": "TravelerRole",
-    "name": "International Traveler",
-    "description": "Staff member traveling to international destinations",
-    "source_anchor": {{
-        "source_text": "International travelers must comply with...",
-        "source_section": "{section_id}"
-    }}
-}}
-```
-
----
-
-## FINAL INSTRUCTIONS
-
-1. Read the section text in its entirety before writing any output.
-2. Wrap your analysis in `<extraction_analysis>` tags.
-3. After the closing `</extraction_analysis>` tag, produce ONLY the JSON object.
-4. The output must be valid, parseable JSON with one key: "entities".
-5. Focus on the key entities. Prefer fewer, well-described entities over many \
-   thin ones.
-6. Create separate entity nodes for each list member — do not collapse into \
-   attribute arrays.
-
-Begin your analysis now.
+<task>
+Extract all entities from section {section_id}. Produce only the JSON object. \
+Do not extract from content outside <section_text>.
+</task>
 """
 
 
@@ -313,41 +154,38 @@ You are an expert ontology knowledge graph extraction system. Your role is to \
 extract relationships between entities that have already been identified in a \
 section of a corporate travel policy document.
 
-You will receive the section text and a list of validated entities. Your task \
-is to identify the meaningful relationships between these entities."""
+<pipeline_context>
+Stage 2a (entity extraction) has already identified and validated all entities in this section. You receive those entities as input. Your task is to identify meaningful relationships between them, grounded in the section text.
 
+Stage 3 receives entity and relationship sets from all sections simultaneously and resolves cross-section connections. Your relationship output must reference only entity IDs provided in the input. Any fabricated ID will create a dangling edge that breaks Stage 3 graph assembly.
+</pipeline_context>
 
-RELATIONSHIP_USER_PROMPT = """\
-## SECTION TEXT
+<extraction_principles>
+WHAT RELATIONSHIPS ARE
+A relationship captures a specific, stated connection between two entities as evidenced by the section text. It represents how entities interact: governance, enablement, constraint, containment, classification, assignment, provision.
 
---- BEGIN SECTION TEXT ---
-{section_text}
---- END SECTION TEXT ---
+GROUNDING REQUIREMENT
+Every relationship must be supported by specific text in the section. Do not infer relationships from general domain knowledge or from entity descriptions alone. If the section text does not state or clearly imply the connection, do not create the relationship.
 
----
+DIRECTIONALITY
+Relationships are directed (source → target). The source is the actor, subject, or governing entity; the target is the object, recipient, or governed entity. Do not create inverse duplicates.
 
-## EXTRACTED ENTITIES
+ENTITY TYPE CONSTRAINTS
+Each relationship type specifies permitted source and target entity types. Before producing a relationship, verify that the source entity's type and target entity's type match the permitted types. Relationships that violate type constraints are invalid and will be rejected by the pipeline validator.
 
-The following entities have been validated and exist in the graph. You MUST \
-only create relationships between these entities.
+NO ENTITY FABRICATION
+Every source_id and target_id must exactly match an id from the provided entity list. If a valid relationship would require an entity that does not exist in the list, skip that relationship entirely. Do not create placeholder or implicit entities.
+</extraction_principles>
 
-```json
-{entities_json}
-```
-
----
-
-## RELATIONSHIP TYPES
+<relationship_types>
+Use ONLY the types below. The Source Type and Target Type columns are hard constraints — the entity referenced by source_id must have the listed type, and likewise for target_id.
 
 {relationship_types_section}
 
----
+</relationship_types>
 
-## REQUIRED OUTPUT SCHEMA
-
-Complete your analysis inside `<extraction_analysis>` tags, then produce a \
-single valid JSON object with exactly one top-level key: "relationships".
-
+<output_schema>
+Produce a single JSON object with one key: "relationships" containing an array of relationships.
 Each relationship must have:
 - **source_id**: MUST exactly match an entity id from the EXTRACTED ENTITIES list above
 - **target_id**: MUST exactly match an entity id from the EXTRACTED ENTITIES list above
@@ -355,30 +193,29 @@ Each relationship must have:
 - **description**: A specific description of HOW these entities relate, drawn \
   from the section text
 
-**HARD CONSTRAINT**: Every source_id and target_id MUST exactly match an id \
-from the EXTRACTED ENTITIES list. Do NOT invent new entity IDs. If you cannot \
-find a valid source or target entity for a relationship, skip that relationship.
+OUTPUT FORMAT
+Produce ONLY the JSON object. No preamble, no markdown fences, no commentary before or after.
+</output_schema>
+"""
 
-CRITICAL: Create relationships ONLY between entities within this section. Do \
-NOT create relationships to entities in other sections.
 
-Example relationship:
+RELATIONSHIP_USER_PROMPT = """\
+## SECTION TEXT
+
+--- BEGIN ---
+{section_text}
+--- END ---
+
+## ENTITIES IN SECTION {section_id}
+
+Extract relationships ONLY between entities listed below. \
+Every source_id and target_id must exactly match an id from this list.
+
 ```json
-{relationship_example}
+{entities_json}
 ```
 
----
-
-## FINAL INSTRUCTIONS
-
-1. Read the section text and entities list before writing any output.
-2. Wrap your analysis in `<extraction_analysis>` tags.
-3. After the closing `</extraction_analysis>` tag, produce ONLY the JSON object.
-4. The output must be valid, parseable JSON with one key: "relationships".
-5. Focus on meaningful relationships that capture how entities interact — \
-   what governs what, what constrains what, what covers what, who approves what.
-
-Begin your analysis now.
+Extract all relationships from section {section_id}. Produce only the JSON object.
 """
 
 
@@ -387,42 +224,19 @@ Begin your analysis now.
 # ============================================================
 
 
-def _build_entity_pre_registration(
+def _get_relevant_pre_registered(
     section: DocumentSection,
     first_pass_result: FirstPassResult,
-) -> str:
-    """Filter global_entity_pre_registration to entities relevant to this section.
-
-    Returns a formatted text block for injection into the user prompt.
-    """
+) -> list[FirstPassEntity]:
+    """Filter global_entity_pre_registration to entities relevant to this section."""
     section_id = section.section_id
     if not section_id or not first_pass_result.global_entity_pre_registration:
-        return "(No pre-registered entities for this section.)"
+        return []
 
-    relevant: list[FirstPassEntity] = []
-    for e in first_pass_result.global_entity_pre_registration:
-        if section_id in e.mentioned_in_sections:
-            relevant.append(e)
-
-    if not relevant:
-        return "(No pre-registered entities for this section.)"
-
-    lines = []
-    for e in relevant:
-        types_str = ", ".join(e.candidate_types) if e.candidate_types else "untyped"
-        lines.append(
-            f"- entity_name: {e.entity_name}\n"
-            f"  candidate_types: [{types_str}]\n"
-            f"  brief_description: {e.brief_description}"
-        )
-
-    result = "\n".join(lines)
-    _dbg(
-        f"_build_entity_pre_registration [{section_id}]",
-        f"{len(relevant)} entities:\n{result}",
-        indent=1,
-    )
-    return result
+    return [
+        e for e in first_pass_result.global_entity_pre_registration
+        if section_id in e.mentioned_in_sections
+    ]
 
 
 def _build_entity_prompt(
@@ -448,32 +262,79 @@ def _build_entity_prompt(
         f"Building entity prompt...",
     )
 
-    pre_reg_text = _build_entity_pre_registration(section, first_pass_result)
+    # Build document metadata block — only include populated fields
+    doc_lines = []
+    if dm.document_title:
+        doc_lines.append(f"  Title: {dm.document_title}")
+    if dm.issuing_organization:
+        doc_lines.append(f"  Issuing Organization: {dm.issuing_organization}")
+    if dm.effective_date:
+        doc_lines.append(f"  Effective Date: {dm.effective_date}")
+    if dm.document_purpose_summary:
+        doc_lines.append(f"  Purpose: {dm.document_purpose_summary}")
+    document_metadata = "\n".join(doc_lines) if doc_lines else "Document-level metadata was not extractable from this document."
+
+    # Build section metadata block — only include populated fields
+    sec_lines = []
+    sid = section.section_id or section.section_number
+    if sid:
+        sec_lines.append(f"  ID: {sid}")
+    if section.header:
+        sec_lines.append(f"  Name: {section.header}")
+    if section.section_purpose:
+        sec_lines.append(f"  Purpose: {section.section_purpose}")
+    if section.section_summary:
+        sec_lines.append(f"  Summary: {section.section_summary}")
+    section_metadata = "\n".join(sec_lines)
+
+    # Build pre-registration block — only include if there are relevant entities
+    pre_registered = _get_relevant_pre_registered(section, first_pass_result)
+    if pre_registered:
+        entity_lines = []
+        for e in pre_registered:
+            types_str = ", ".join(e.candidate_types) if e.candidate_types else "untyped"
+            line = f'  - name: "{e.entity_name}"\n'
+            line += f"    candidate_types: [{types_str}]\n"
+            line += f"    note: {e.brief_description}"
+            entity_lines.append(line)
+        entities_block = "\n".join(entity_lines)
+        pre_registration_block = (
+            f"<pre_registered_entities>\n"
+            f"Use each name character-for-character if it appears in section text.\n"
+            f"See system instructions for full binding rules.\n\n"
+            f"{entities_block}\n"
+            f"</pre_registered_entities>\n\n"
+        )
+        _dbg(
+            f"pre_registered_entities [{sid}]",
+            f"{len(pre_registered)} entities:\n{entities_block}",
+            indent=1,
+        )
+    else:
+        pre_registration_block = ""
 
     user_prompt = ENTITY_USER_PROMPT.format(
-        section_id=section.section_id or section.section_number,
-        document_title=dm.document_title,
-        issuing_organization=dm.issuing_organization,
-        effective_date=dm.effective_date or "Not specified",
-        document_purpose_summary=dm.document_purpose_summary,
-        section_name=section.header,
-        section_purpose=section.section_purpose or "Not classified",
-        section_summary=section.section_summary or "Not summarized",
-        global_entity_pre_registration=pre_reg_text,
+        section_id=sid,
+        document_metadata=document_metadata,
+        section_metadata=section_metadata,
+        pre_registration_block=pre_registration_block,
         section_text=section.text,
-        entity_types_section=generate_entity_type_prompt_section_slim(),
+    )
+
+    system_prompt = ENTITY_SYSTEM_PROMPT.format(
+        entity_types=generate_entity_type_prompt_section_slim(),
     )
 
     _dbg(
-        f"ENTITY SYSTEM PROMPT ({len(ENTITY_SYSTEM_PROMPT)} chars)",
-        ENTITY_SYSTEM_PROMPT,
+        f"ENTITY SYSTEM PROMPT ({len(system_prompt)} chars)",
+        system_prompt,
     )
     _dbg(
         f"ENTITY USER PROMPT → LLM [{section.section_number}] ({len(user_prompt)} chars)",
         user_prompt,
     )
 
-    return (ENTITY_SYSTEM_PROMPT, user_prompt)
+    return (system_prompt, user_prompt)
 
 
 def _build_relationship_prompt(
@@ -506,23 +367,28 @@ def _build_relationship_prompt(
         f"entities_json length: {len(entities_json)} chars",
     )
 
-    user_prompt = RELATIONSHIP_USER_PROMPT.format(
-        section_text=section.text,
-        entities_json=entities_json,
+    sid = section.section_id or section.section_number
+
+    system_prompt = RELATIONSHIP_SYSTEM_PROMPT.format(
         relationship_types_section=generate_relationship_type_prompt_section(),
-        relationship_example=generate_example_relationship(),
+    )
+
+    user_prompt = RELATIONSHIP_USER_PROMPT.format(
+        section_id=sid,
+        section_text=section.text.strip(),
+        entities_json=entities_json,
     )
 
     _dbg(
-        f"REL SYSTEM PROMPT ({len(RELATIONSHIP_SYSTEM_PROMPT)} chars)",
-        RELATIONSHIP_SYSTEM_PROMPT,
+        f"REL SYSTEM PROMPT ({len(system_prompt)} chars)",
+        system_prompt,
     )
     _dbg(
         f"REL USER PROMPT → LLM [{section.section_number}] ({len(user_prompt)} chars)",
         user_prompt,
     )
 
-    return (RELATIONSHIP_SYSTEM_PROMPT, user_prompt)
+    return (system_prompt, user_prompt)
 
 
 # ============================================================
@@ -693,7 +559,7 @@ async def _api_call_with_retry(
     for attempt in range(max_retries):
         try:
             response = await client.messages.create(
-                model="claude-sonnet-4-20250514",
+                model=TEST_MODEL,
                 max_tokens=16384,
                 system=system_prompt,
                 thinking=_THINKING_CONFIG,
@@ -751,7 +617,7 @@ def extract_section(
     entity_sys, entity_user = _build_entity_prompt(section, all_sections, first_pass_result)
 
     response = client.messages.create(
-        model=_EXTRACTION_MODEL,
+        model=TEST_MODEL,
         max_tokens=16000,
         system=entity_sys,
         thinking=_THINKING_CONFIG,
@@ -775,7 +641,7 @@ def extract_section(
         rel_sys, rel_user = _build_relationship_prompt(section, entities)
 
         response = client.messages.create(
-            model=_EXTRACTION_MODEL,
+            model=TEST_MODEL,
             max_tokens=16000,
             system=rel_sys,
             thinking=_THINKING_CONFIG,
@@ -812,7 +678,7 @@ def _retry_entity_extraction(
     )
 
     response = client.messages.create(
-        model=_EXTRACTION_MODEL,
+        model=TEST_MODEL,
         max_tokens=16000,
         system=entity_sys,
         thinking=_THINKING_CONFIG,
@@ -853,7 +719,7 @@ async def _extract_section_async(
 
         _dbg(
             f"ENTITY API CALL [{section.section_number}]",
-            f"model: {_EXTRACTION_MODEL}\n"
+            f"model: {TEST_MODEL}\n"
             f"max_tokens: 16384 (thinking: {_THINKING_CONFIG['budget_tokens']})\n"
             f"system prompt length: {len(entity_sys)} chars\n"
             f"user prompt length: {len(entity_user)} chars",
@@ -971,10 +837,6 @@ def extract_all_sections(
     if client is None:
         client = Anthropic()
 
-    # Backfill section_id from first pass if chunks are missing it
-    if first_pass_result:
-        _backfill_section_metadata(sections, first_pass_result)
-
     # Force sequential execution in debug mode so output is readable
     if _DEBUG:
         max_concurrent = 1
@@ -1026,62 +888,18 @@ def _sections_from_chunks(chunks: list[dict]) -> list[DocumentSection]:
     """Reconstruct DocumentSection objects from chunks.json dicts."""
     sections = []
     for c in chunks:
-        enum_lists = []
-        for el in c.get("enumerated_lists", []):
-            enum_lists.append(EnumeratedList(**el))
-        hier_path = [
-            HierarchyEntry(**entry)
-            for entry in c.get("hierarchical_path", [])
-        ]
         sections.append(DocumentSection(
-            chunk_id=c["chunk_id"],
+            section_id=c.get("section_id", c.get("chunk_id", "")),
             header=c.get("header", ""),
             section_number=c.get("section_number", ""),
-            level=c.get("level", 1),
             text=c["text"],
             source_offset=c.get("source_offset", 0),
-            parent_section=c.get("parent_section"),
-            parent_header=c.get("parent_header"),
-            hierarchical_path=hier_path,
-            enumerated_lists=enum_lists,
-            section_id=c.get("section_id", ""),
             section_purpose=c.get("section_purpose", ""),
             section_summary=c.get("section_summary", ""),
         ))
     return sections
 
 
-def _backfill_section_metadata(
-    sections: list[DocumentSection],
-    first_pass_result: FirstPassResult,
-) -> None:
-    """Backfill section_id/purpose/summary from first_pass onto sections missing them.
-
-    Matches by normalized header name against FirstPassSection.section_name.
-    Mutates sections in place.
-    """
-    if not first_pass_result or not first_pass_result.document_map.sections:
-        return
-
-    # Build lookup: lowercase section_name -> FirstPassSection
-    fp_lookup: dict[str, FirstPassSection] = {}
-    for fps in first_pass_result.document_map.sections:
-        fp_lookup[fps.section_name.lower().strip()] = fps
-
-    backfilled = 0
-    for section in sections:
-        if section.section_id:
-            continue  # Already has section_id
-        key = section.header.lower().strip()
-        fps = fp_lookup.get(key)
-        if fps:
-            section.section_id = fps.section_id
-            section.section_purpose = fps.section_purpose
-            section.section_summary = fps.section_summary
-            backfilled += 1
-
-    if backfilled:
-        print(f"  Backfilled section metadata for {backfilled}/{len(sections)} sections from first pass")
 
 
 def serialize_extractions(extractions: list[SectionExtraction]) -> list[dict]:
@@ -1093,7 +911,7 @@ def serialize_extractions(extractions: list[SectionExtraction]) -> list[dict]:
     out = []
     for se in extractions:
         out.append({
-            "chunk_id": se.section.chunk_id,
+            "section_id": se.section.section_id,
             "section_number": se.section.section_number,
             "entity_count": len(se.entities),
             "relationship_count": len(se.relationships),
@@ -1154,8 +972,6 @@ def main(argv: list[str] | None = None) -> None:
         print(f"Loaded first pass from {args.first_pass}")
 
     sections = _sections_from_chunks(chunks)
-    if fp_result:
-        _backfill_section_metadata(sections, fp_result)
     extractions = extract_all_sections(sections, first_pass_result=fp_result)
 
     data = serialize_extractions(extractions)

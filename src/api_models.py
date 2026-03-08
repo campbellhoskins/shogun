@@ -23,6 +23,10 @@ class GraphNode(BaseModel):
     color: str
     level: int = 5
     group: str = ""
+    importance: float = 0.0
+    betweenness: float = 0.0
+    pagerank: float = 0.0
+    degree_centrality: float = 0.0
 
 
 class GraphEdge(BaseModel):

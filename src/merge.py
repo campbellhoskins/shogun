@@ -18,7 +18,10 @@ import sys
 from collections import defaultdict
 from difflib import SequenceMatcher
 
+import os
+
 from anthropic import Anthropic
+from dotenv import load_dotenv
 
 from src.models import (
     DocumentSection,
@@ -31,9 +34,11 @@ from src.models import (
 from src.schemas import (
     BaseEntitySchema,
     get_typed_attributes,
-    reconstruct_merged_entity,
     validate_entity,
 )
+
+load_dotenv()
+TEST_MODEL = os.environ.get("TEST_MODEL", "claude-haiku-4-5-20251001")
 
 
 # ---------------------------------------------------------------------------
@@ -55,159 +60,192 @@ def _dbg(header: str, body: str = "") -> None:
 
 
 # ---------------------------------------------------------------------------
-# LLM deduplication prompt
+# LLM semantic dedup prompts (from data/merge.txt)
 # ---------------------------------------------------------------------------
 
-DEDUP_PROMPT = """\
-You are deduplicating entities that were extracted from a travel policy document. \
-The extraction process pulled entities of the same type from different sections \
-of the document. Some of these entities may refer to the same real-world thing \
-despite having different names, IDs, or descriptions.
+SEMANTIC_DEDUP_SYSTEM_PROMPT = """\
+You are a knowledge graph entity deduplication specialist. Your task is to identify entities that refer to the same real-world concept but were extracted with different IDs during a section-by-section extraction process.
 
-Here are all the entities of this type that need deduplication:
+<context>
+Entities have already been deduplicated by exact ID match. You are now receiving the consolidated list of unique entities. Some of these entities are semantic duplicates — they represent the same real-world thing but were assigned slightly different IDs during extraction from different sections.
+
+Analyze every entity and identify pairs where two or more entities refer to the same real-world concept. For each duplicate, determine which entity ID should be the canonical ID (the one to keep) and which should be remapped to it.
+</context>
+
+<rules>
+DUPLICATE DETECTION:
+- Name Match with Variation: Names that differ only in abbreviation, punctuation, suffix, or formality (e.g., "Statement of Work (SOW)" vs "SOW", "Direct Travel, Inc." vs "Direct Travel", "SAFE" vs "SAFE Response").
+- Description Overlap: Descriptions that describe the same real-world thing — same function, role, and purpose — even if worded differently.
+- Type Consistency: Candidates must have the same or compatible entity type. Different types (e.g., "Organization" vs "Service") means NOT duplicates.
+- Contextual Role: Entities occupying the same structural role in the document (e.g., both are "the travel management company providing services").
+
+CANONICAL ID SELECTION (in priority order):
+1. Prefer the more descriptive and specific ID (e.g., "statement_of_work" over "sow").
+2. Prefer the ID appearing in more sections (higher appears_in count).
+3. Prefer the ID using full naming conventions (e.g., "direct_travel_inc" over "direct_travel").
+
+NOT DUPLICATES — do not merge:
+- Parent entity and its child/component (e.g., "Platform" vs "Risk Intelligence Platform" — related but different scope).
+- Entities that are merely associated (e.g., an organization and its agreement).
+- Entities with different types representing genuinely different concepts (e.g., a "Service" and an "Obligation" about that service).
+- Entities sharing keywords but describing fundamentally different things.
+</rules>
+
+<output-format>
+Return ONLY a JSON array of remapping objects. Each object has exactly three fields:
+
+[
+  {
+    "old_id": "the entity ID to retire",
+    "new_id": "the canonical entity ID to remap to",
+    "reason": "brief explanation of why these are the same entity"
+  }
+]
+
+If no duplicates are found, return: []
+
+Do NOT return the full entity list. Do NOT return entities that do not need remapping. Return ONLY the JSON array.
+</output-format>"""
+
+SEMANTIC_DEDUP_USER_PROMPT = """\
+Below is the consolidated entity list after exact-ID deduplication. Identify any remaining semantic duplicates and return only the remapping instructions.
 
 <entities>
-{ENTITIES}
-</entities>
+{ENTITY_LIST}
+</entities>"""
 
-<entity_type>
-{ENTITY_TYPE}
-</entity_type>
 
----
+# ---------------------------------------------------------------------------
+# Pass 1: Exact ID deduplication (deterministic)
+# ---------------------------------------------------------------------------
 
-## CORE PRINCIPLE: PRESERVE QUERYABILITY
 
-Every distinctly-named entity that a user might search for must exist as its own \
-node in the graph. When two entities are related but use different names, keep both \
-and connect them with a relationship. Only merge when two extractions are truly the \
-same entity appearing in different sections — same name, same real-world referent — \
-where keeping both would create a meaningless exact duplicate.
+def _merge_entity_group(group: list[BaseEntitySchema]) -> BaseEntitySchema:
+    """Merge a group of entities that share the same (id, type) pair.
 
-A redundant node with a relationship is always preferable to a lost query path. \
-When in doubt, do NOT merge.
+    Picks the entity with the longest description as canonical, then merges
+    source_anchors, appears_in, descriptions, and typed attributes from all
+    members.
+    """
+    # Sort by description length descending — longest is most complete
+    group.sort(key=lambda e: len(e.description), reverse=True)
+    canonical = group[0]
 
----
+    # Collect all unique source_anchors (dedup by source_text)
+    seen_texts: set[str] = set()
+    all_anchors: list[SourceAnchor] = []
+    for e in group:
+        # From source_anchors list
+        for a in e.source_anchors:
+            if a.source_text and a.source_text not in seen_texts:
+                seen_texts.add(a.source_text)
+                all_anchors.append(a)
+        # From primary source_anchor
+        if e.source_anchor.source_text and e.source_anchor.source_text not in seen_texts:
+            seen_texts.add(e.source_anchor.source_text)
+            all_anchors.append(SourceAnchor(
+                source_text=e.source_anchor.source_text,
+                source_section=e.source_anchor.source_section,
+                source_offset=e.source_anchor.source_offset,
+            ))
 
-## MERGE LOGIC
+    # Union all appears_in sections
+    all_sections: set[str] = set()
+    for e in group:
+        all_sections.update(e.appears_in)
 
-Produce a deduplicated list of entities. For every group of entities that are true \
-duplicates, merge them into ONE entity. All other entities pass through with \
-relationships added where appropriate.
+    # Combine descriptions: canonical first, then unique content from others
+    descriptions = [canonical.description]
+    for e in group[1:]:
+        if e.description and e.description not in canonical.description:
+            descriptions.append(e.description)
+    combined_description = descriptions[0]
+    if len(descriptions) > 1:
+        unique_additions = [d for d in descriptions[1:] if d not in combined_description]
+        if unique_additions:
+            combined_description = combined_description.rstrip(". ") + ". " + " ".join(unique_additions)
 
-### When to Merge
+    # Build merged entity dict
+    entity_dict: dict = {
+        "id": canonical.id,
+        "type": canonical.type,
+        "name": canonical.name,
+        "description": combined_description,
+        "source_anchor": (all_anchors[0] if all_anchors else canonical.source_anchor).model_dump(),
+        "source_anchors": [a.model_dump() for a in all_anchors],
+        "appears_in": sorted(all_sections),
+    }
 
-Merge two entities ONLY when ALL of the following are true:
-- Their names are the same or unambiguous abbreviations of each other \
-(e.g., "ED" and "Executive Director")
-- Their descriptions refer to the same real-world role, object, or concept — \
-not merely a related or overlapping one
-- Keeping both as separate nodes would create a meaningless exact duplicate \
-with no distinct query value
+    # Merge typed attributes from all entities (non-empty preferred; conflicts become lists)
+    all_typed: dict[str, list] = defaultdict(list)
+    for e in group:
+        for k, v in get_typed_attributes(e).items():
+            if v is not None and v != "" and v != []:
+                all_typed[k].append(v)
 
-### When NOT to Merge
+    for k, values in all_typed.items():
+        unique_values = []
+        for v in values:
+            if v not in unique_values:
+                unique_values.append(v)
+        if len(unique_values) == 1:
+            entity_dict[k] = unique_values[0]
+        else:
+            entity_dict[k] = unique_values
 
-Do NOT merge when:
-- Two entities use different terminology for the same or similar group \
-(e.g., "Employees" and "Personnel") — instead, keep both and link with \
-an `equivalent_to` relationship
-- One entity is an umbrella or collective term that contains the other \
-(e.g., "Representatives" contains "Consultants") — instead, keep both \
-and link with a `part_of` relationship
-- Two entities share a generic name (e.g., both called "Policy") but describe \
-clearly different real-world things
-- You are unsure — false negatives (keeping duplicates) are always preferable \
-to false positives (incorrectly merging distinct entities)
+    # Validate via typed schema
+    entity, warnings = validate_entity(entity_dict)
+    if warnings:
+        for w in warnings:
+            _dbg(f"  [exact_id_dedup WARN] {w}")
+    if entity is not None:
+        return entity
 
-### Relationships Between Non-Merged Entities
+    # Fallback: return canonical with merged anchors/sections
+    canonical.source_anchors = all_anchors
+    canonical.appears_in = sorted(all_sections)
+    canonical.description = combined_description
+    return canonical
 
-When two entities are related but must remain separate, add a `relationships` \
-entry to connect them:
 
-| Situation | Action | Relationship |
-|---|---|---|
-| Same name, same role, different sections | **Merge** | — |
-| Different name, same or similar group of people | **Keep both** | \
-`equivalent_to` (on both entities, bidirectional) |
-| One entity is a named subcategory or member of another | **Keep both** | \
-`part_of` (on the child, pointing to the parent) |
-| Unclear whether same or different | **Keep both** | \
-Add relationship only if confident |
+def _exact_id_dedup(
+    entities: list[BaseEntitySchema],
+) -> tuple[list[BaseEntitySchema], int]:
+    """Pass 1: Merge entities with identical (id, type) pairs.
 
-### Conflicting Attributes
+    This is a cheap deterministic pass that runs before LLM-based dedup.
+    Entities extracted from different sections often share the exact same ID
+    (e.g., 'client' appearing in SEC-00, SEC-03, SEC-07). These are merged
+    by combining descriptions, source anchors, and typed attributes.
 
-If merged entities have conflicting values for the same attribute key, keep both \
-values as a list:
-```json
-"effective_date": ["2023-01-01", "2023-04-03"]
-```
-And note the conflict in the description.
+    Returns:
+        Tuple of (deduplicated entity list, number of merges performed).
+    """
+    groups: dict[tuple[str, str], list[BaseEntitySchema]] = defaultdict(list)
+    for e in entities:
+        groups[(e.id, e.type)].append(e)
 
----
+    deduped: list[BaseEntitySchema] = []
+    merge_count = 0
 
-## OUTPUT SCHEMA
+    for (eid, etype), group in groups.items():
+        if len(group) == 1:
+            entity = group[0]
+            # Ensure source_anchors populated from primary source_anchor
+            if not entity.source_anchors and entity.source_anchor.source_text:
+                entity.source_anchors = [SourceAnchor(
+                    source_text=entity.source_anchor.source_text,
+                    source_section=entity.source_anchor.source_section,
+                    source_offset=entity.source_anchor.source_offset,
+                )]
+            deduped.append(entity)
+            continue
 
-Output ONLY a JSON array. No preamble, no explanation, no commentary outside the JSON.
+        merge_count += len(group) - 1
+        merged = _merge_entity_group(group)
+        deduped.append(merged)
 
-Every entity in the array must follow this exact structure:
-```json
-{{
-  "id": "clean_lowercase_snake_case_id",
-  "type": "{ENTITY_TYPE}",
-  "name": "Best most complete name",
-  "description": "Combined or original description",
-  "attributes": {{"key": "value"}},
-  "relationships": [
-    {{"target_id": "other_entity_id", "type": "equivalent_to | part_of"}}
-  ],
-  "source_anchors": [
-    {{"source_text": "EXACT verbatim quote from input", "source_section": "0"}}
-  ],
-  "merged_from": ["original_id_1", "original_id_2"]
-}}
-```
-
-### Field Rules
-
-- **id**: Lowercase snake_case. Remove section prefixes (e.g., `s3_role_expense_limit` \
-→ `expense_limit`). If two non-merged entities would produce the same clean ID, \
-append a disambiguating suffix (e.g., `policy_travel`, `policy_expense`).
-- **name**: For merged entities, pick the most specific and complete name. \
-For pass-through entities, keep as-is.
-- **description**: For merged entities, combine descriptions using the pattern: \
-"[Most complete description]. [Unique facts from other sources not already covered]." \
-For pass-through entities, keep the original description verbatim — do not rewrite it.
-- **attributes**: For merged entities, take the union of all attribute keys. \
-For pass-through entities, keep as-is.
-- **relationships**: Array of relationship objects. Use `equivalent_to` for entities \
-that use different names for the same or similar group (add to both entities \
-bidirectionally). Use `part_of` for entities that are a named member or subcategory \
-of an umbrella entity (add only to the child, pointing at the parent). \
-Empty array `[]` if no relationships apply.
-- **source_anchors**: Include ALL source references from all original entities. \
-The `source_text` value must be copied character-for-character from the input. \
-Do not paraphrase, truncate, or edit.
-- **merged_from**: Array of all original entity IDs that were merged. \
-For pass-through entities, a single-element array.
-
----
-
-## SELF-VERIFICATION
-
-Before finalizing your output, verify:
-
-1. Every `source_text` value matches the input exactly — character for character
-2. Every original entity ID appears in exactly one `merged_from` array across \
-the entire output
-3. The total count of original IDs across all `merged_from` arrays equals the \
-total number of input entities
-4. No information from any original entity's description or attributes was lost
-5. No two output entities should themselves be merged (check your own output \
-for remaining duplicates)
-6. Every `target_id` in a relationship points to an `id` that exists in your output
-7. All `equivalent_to` relationships are bidirectional (if A → B, then B → A)
-8. The JSON is syntactically valid
-"""
+    return deduped, merge_count
 
 
 # ---------------------------------------------------------------------------
@@ -256,15 +294,18 @@ def merge_extractions(
         f"from {len(section_extractions)} sections"
     )
 
-    # Run LLM-based deduplication
+    # Pass 1: Exact ID dedup (deterministic — always runs)
+    all_entities, exact_merges = _exact_id_dedup(all_entities)
+    print(f"    Pass 1 (exact ID): {exact_merges} duplicates merged, {len(all_entities)} remaining")
+
+    # Pass 2: LLM-based semantic deduplication (on reduced list)
     if client is not None:
-        merged_entities, dedup_relationships, id_mapping, merge_count, api_calls, dedup_log = (
-            _llm_deduplicate_entities(all_entities, client)
+        merged_entities, id_mapping, merge_count, api_calls, dedup_log = (
+            _llm_semantic_dedup(all_entities, client)
         )
     else:
         # No client — pass through without dedup
         merged_entities = all_entities
-        dedup_relationships = []
         id_mapping = {}
         merge_count = 0
         api_calls = 0
@@ -272,9 +313,6 @@ def merge_extractions(
 
     # Update relationship references using the ID mapping
     merged_relationships = _update_relationships(all_relationships, id_mapping)
-
-    # Add relationships discovered during dedup (equivalent_to, part_of)
-    merged_relationships.extend(dedup_relationships)
 
     # Remove duplicate relationships
     merged_relationships = _deduplicate_relationships(merged_relationships)
@@ -286,7 +324,19 @@ def merge_extractions(
         if r.source_id not in entity_ids or r.target_id not in entity_ids
     ]
     if orphaned:
-        print(f"    WARNING: {len(orphaned)} orphaned relationships (referencing non-existent entities)")
+        # Collect missing IDs for diagnostics
+        missing_ids: set[str] = set()
+        for r in orphaned:
+            if r.source_id not in entity_ids:
+                missing_ids.add(r.source_id)
+            if r.target_id not in entity_ids:
+                missing_ids.add(r.target_id)
+        print(
+            f"    WARNING: {len(orphaned)} orphaned relationships "
+            f"referencing {len(missing_ids)} non-existent entity IDs: "
+            f"{sorted(missing_ids)[:10]}"
+            + (f" ... and {len(missing_ids) - 10} more" if len(missing_ids) > 10 else "")
+        )
         # Remove orphaned relationships
         merged_relationships = [
             r for r in merged_relationships
@@ -305,6 +355,7 @@ def merge_extractions(
         total_api_calls=api_calls,
         final_entity_count=len(merged_entities),
         final_relationship_count=len(merged_relationships),
+        exact_id_dedup_merges=exact_merges,
         semantic_dedup_merges=merge_count,
         semantic_dedup_api_calls=api_calls,
         cross_section_relationship_count=cross_section_count,
@@ -328,7 +379,7 @@ def merge_extractions(
 
 
 def _build_entities_block(entities: list[BaseEntitySchema]) -> str:
-    """Format entities as a JSON array for the dedup prompt."""
+    """Format entities as a JSON array for the semantic dedup prompt."""
     items = []
     for e in entities:
         item: dict = {
@@ -336,10 +387,11 @@ def _build_entities_block(entities: list[BaseEntitySchema]) -> str:
             "type": e.type,
             "name": e.name,
             "description": e.description,
+            "appears_in": e.appears_in,
+            "appears_in_count": len(e.appears_in),
             "source_text": e.source_anchor.source_text,
             "source_section": e.source_anchor.source_section,
         }
-        # Include typed attributes (type-specific fields + extras)
         typed_attrs = get_typed_attributes(e)
         if typed_attrs:
             item["typed_attributes"] = typed_attrs
@@ -368,233 +420,209 @@ def _parse_dedup_response(raw: str) -> list[dict]:
         raise
 
 
-def _llm_deduplicate_entities(
+def _apply_remappings(
+    entities: list[BaseEntitySchema],
+    remappings: list[dict],
+) -> tuple[list[BaseEntitySchema], dict[str, str], int]:
+    """Apply LLM remappings by merging old_id entities into new_id entities.
+
+    Uses the same _merge_entity_group logic as Pass 1 (exact ID dedup).
+
+    Handles synthetic canonical IDs: when the LLM invents a new_id that doesn't
+    exist in the entity list (e.g., remapping both 'safe' and 'safe_response' to
+    'safe_response_status'), we collect all old_id entities for that group and
+    pick the one appearing in the most sections as the actual canonical.
+
+    Returns:
+        Tuple of (merged entity list, id_mapping old->new, merge count).
+    """
+    entities_by_id = {e.id: e for e in entities}
+    id_mapping: dict[str, str] = {}
+
+    # Group remappings by canonical (new_id)
+    canonical_groups: dict[str, list[str]] = defaultdict(list)
+    for remap in remappings:
+        old_id = remap["old_id"]
+        new_id = remap["new_id"]
+
+        if old_id not in entities_by_id:
+            print(f"      [WARN] Skipping remap: old_id '{old_id}' not found")
+            continue
+
+        canonical_groups[new_id].append(old_id)
+
+    # Resolve synthetic canonical IDs (new_id doesn't exist as an entity)
+    resolved_groups: dict[str, list[str]] = {}
+    for new_id, old_ids in canonical_groups.items():
+        if new_id in entities_by_id:
+            # Normal case: canonical exists, old_ids merge into it
+            resolved_groups[new_id] = old_ids
+        else:
+            # Synthetic canonical: LLM invented an ID. Pick the best old_id
+            # as the actual canonical (most sections, then longest description).
+            valid_old = [oid for oid in old_ids if oid in entities_by_id]
+            if not valid_old:
+                print(f"      [WARN] Skipping group: new_id '{new_id}' not found and no valid old_ids")
+                continue
+            # Sort: most appears_in first, then longest description
+            valid_old.sort(
+                key=lambda oid: (len(entities_by_id[oid].appears_in), len(entities_by_id[oid].description)),
+                reverse=True,
+            )
+            actual_canonical = valid_old[0]
+            others = valid_old[1:]
+            if others:
+                resolved_groups[actual_canonical] = others
+                print(
+                    f"      [INFO] Synthetic canonical '{new_id}' resolved to "
+                    f"existing entity '{actual_canonical}' (merging {[actual_canonical] + others})"
+                )
+            else:
+                # Only one entity in this group — nothing to merge
+                print(
+                    f"      [INFO] Synthetic canonical '{new_id}' resolved to "
+                    f"'{actual_canonical}' (single entity, no merge needed)"
+                )
+
+    # Build id_mapping
+    for canonical_id, old_ids in resolved_groups.items():
+        for old_id in old_ids:
+            id_mapping[old_id] = canonical_id
+
+    # Merge each group
+    merged_ids: set[str] = set()
+    for canonical_id, old_ids in resolved_groups.items():
+        group = [entities_by_id[canonical_id]]
+        for old_id in old_ids:
+            group.append(entities_by_id[old_id])
+            merged_ids.add(old_id)
+        merged = _merge_entity_group(group)
+        # Force the merged entity to use the canonical ID (not whichever
+        # entity had the longest description in _merge_entity_group)
+        if merged.id != canonical_id:
+            id_mapping[merged.id] = canonical_id
+            merged.id = canonical_id
+        entities_by_id[canonical_id] = merged
+
+    # Build final list: all entities not retired by remapping
+    result = [e for eid, e in entities_by_id.items() if eid not in merged_ids]
+
+    return result, id_mapping, len(merged_ids)
+
+
+def _llm_semantic_dedup(
     entities: list[BaseEntitySchema],
     client: Anthropic,
-) -> tuple[list[BaseEntitySchema], list[Relationship], dict[str, str], int, int, list[dict]]:
-    """Use LLM to deduplicate entities by type group.
+) -> tuple[list[BaseEntitySchema], dict[str, str], int, int, list[dict]]:
+    """Pass 2: Single LLM call to identify semantic duplicates across all entities.
 
-    Groups entities by type, sends each group to the LLM, and gets back
-    a deduplicated entity list with merged descriptions, attributes, source
-    anchors, and inter-entity relationships (equivalent_to, part_of).
+    Sends the full post-Pass-1 entity list to the LLM, which returns remapping
+    instructions (old_id -> new_id). Remappings are then applied deterministically
+    using _merge_entity_group.
 
     Returns:
         Tuple of:
             - deduplicated entities (list[BaseEntitySchema])
-            - new relationships discovered during dedup (list[Relationship])
             - id_mapping old->new (dict[str, str])
             - merge count (int)
             - api call count (int)
             - dedup log for result storage (list[dict])
     """
-    # Group entities by type
-    by_type: dict[str, list[BaseEntitySchema]] = defaultdict(list)
-    for entity in entities:
-        by_type[entity.type].append(entity)
+    print(f"    Semantic dedup: sending {len(entities)} entities to LLM...")
 
-    id_mapping: dict[str, str] = {}
-    merge_count = 0
-    api_calls = 0
-    dedup_log: list[dict] = []
-    all_deduped: list[BaseEntitySchema] = []
-    new_relationships: list[Relationship] = []
+    entities_block = _build_entities_block(entities)
+    user_prompt = SEMANTIC_DEDUP_USER_PROMPT.format(ENTITY_LIST=entities_block)
 
-    for entity_type, type_entities in sorted(by_type.items()):
-        if len(type_entities) == 1:
-            # Single entity — pass through, populate source_anchors
-            entity = type_entities[0]
-            entity.source_anchors = [SourceAnchor(
-                source_text=entity.source_anchor.source_text,
-                source_section=entity.source_anchor.source_section,
-                source_offset=entity.source_anchor.source_offset,
-            )]
-            all_deduped.append(entity)
-            continue
+    _dbg("SYSTEM PROMPT", SEMANTIC_DEDUP_SYSTEM_PROMPT)
+    _dbg(f"USER PROMPT ({len(entities)} entities)", user_prompt)
 
-        print(f"    Deduplicating {len(type_entities)} entities of type '{entity_type}'...")
+    log_entry: dict = {
+        "input_count": len(entities),
+        "input_ids": [e.id for e in entities],
+    }
 
-        # Build prompt
-        entities_block = _build_entities_block(type_entities)
-        prompt = DEDUP_PROMPT.format(
-            ENTITY_TYPE=entity_type,
-            ENTITIES=entities_block,
+    try:
+        thinking_budget = min(32768, max(4096, len(entities) * 400))
+        max_tokens = thinking_budget + min(8192, max(2048, len(entities) * 100))
+
+        # Use streaming to avoid timeout on large entity lists
+        raw_text = ""
+        thinking_text = ""
+        input_tokens = 0
+        output_tokens = 0
+
+        in_thinking = False
+        with client.messages.stream(
+            model=TEST_MODEL,
+            max_tokens=max_tokens,
+            system=SEMANTIC_DEDUP_SYSTEM_PROMPT,
+            thinking={
+                "type": "enabled",
+                "budget_tokens": thinking_budget,
+            },
+            messages=[{"role": "user", "content": user_prompt}],
+        ) as stream:
+            for event in stream:
+                if event.type == "content_block_start":
+                    if event.content_block.type == "thinking":
+                        in_thinking = True
+                        print("\n      [Thinking]", flush=True)
+                    elif event.content_block.type == "text":
+                        in_thinking = False
+                        print("\n      [Response]", flush=True)
+                elif event.type == "content_block_delta":
+                    if hasattr(event.delta, "thinking"):
+                        thinking_text += event.delta.thinking
+                        print(event.delta.thinking, end="", flush=True)
+                    elif hasattr(event.delta, "text"):
+                        raw_text += event.delta.text
+                        print(event.delta.text, end="", flush=True)
+                elif event.type == "content_block_stop":
+                    print(flush=True)
+            response = stream.get_final_message()
+
+        input_tokens = response.usage.input_tokens
+        output_tokens = response.usage.output_tokens
+        print(f"      ({input_tokens} in, {output_tokens} out)")
+
+        log_entry["input_tokens"] = input_tokens
+        log_entry["output_tokens"] = output_tokens
+        log_entry["raw_response"] = raw_text
+        if thinking_text:
+            log_entry["thinking"] = thinking_text
+
+        _dbg("THINKING", thinking_text)
+        _dbg(
+            f"RESPONSE ({response.usage.input_tokens} in, {response.usage.output_tokens} out)",
+            raw_text,
         )
 
-        _dbg(f"PROMPT for type '{entity_type}' ({len(type_entities)} entities)", prompt)
+        # Parse remappings
+        remappings = _parse_dedup_response(raw_text)
+        log_entry["remappings"] = remappings
 
-        # Call LLM
-        log_entry: dict = {
-            "entity_type": entity_type,
-            "input_count": len(type_entities),
-            "input_ids": [e.id for e in type_entities],
-            "prompt": prompt,
-        }
+        if not remappings:
+            print("      -> No semantic duplicates found")
+            log_entry["merges"] = 0
+            return entities, {}, 0, 1, [log_entry]
 
-        try:
-            # Scale token budgets based on group size
-            thinking_budget = min(32768, max(4096, len(type_entities) * 800))
-            max_tokens = thinking_budget + min(16384, max(4096, len(type_entities) * 300))
-            response = client.messages.create(
-                model="claude-sonnet-4-20250514",
-                max_tokens=max_tokens,
-                thinking={
-                    "type": "enabled",
-                    "budget_tokens": thinking_budget,
-                },
-                messages=[{"role": "user", "content": prompt}],
-            )
-            api_calls += 1
+        # Print each remapping
+        for remap in remappings:
+            print(f"      {remap['old_id']} -> {remap['new_id']}: {remap.get('reason', '')}")
 
-            # Extract text and thinking blocks from response
-            raw_text = ""
-            thinking_text = ""
-            for block in response.content:
-                if block.type == "thinking":
-                    thinking_text = block.thinking
-                elif block.type == "text":
-                    raw_text = block.text
+        # Apply remappings deterministically
+        merged_entities, id_mapping, merge_count = _apply_remappings(entities, remappings)
 
-            log_entry["input_tokens"] = response.usage.input_tokens
-            log_entry["output_tokens"] = response.usage.output_tokens
-            log_entry["raw_response"] = raw_text
-            if thinking_text:
-                log_entry["thinking"] = thinking_text
+        log_entry["output_count"] = len(merged_entities)
+        log_entry["merges"] = merge_count
+        print(f"      -> {len(merged_entities)} unique ({merge_count} merged)")
 
-            _dbg(
-                f"THINKING for type '{entity_type}'",
-                thinking_text,
-            )
-            _dbg(
-                f"RESPONSE for type '{entity_type}' "
-                f"({response.usage.input_tokens} in, {response.usage.output_tokens} out)",
-                raw_text,
-            )
+        return merged_entities, id_mapping, merge_count, 1, [log_entry]
 
-            # Parse response
-            deduped_list = _parse_dedup_response(raw_text)
-
-            # Build lookup of original entities for source anchor collection
-            originals_by_id = {e.id: e for e in type_entities}
-
-            # Process each returned entity
-            type_deduped: list[BaseEntitySchema] = []
-
-            for item in deduped_list:
-                merged_from = item.get("merged_from", [])
-
-                # Build source_anchors from the LLM response
-                raw_anchors = item.get("source_anchors", [])
-                source_anchors = [
-                    SourceAnchor(
-                        source_text=a.get("source_text", ""),
-                        source_section=a.get("source_section", ""),
-                    )
-                    for a in raw_anchors
-                ]
-
-                # If no source_anchors in response, collect from originals
-                if not source_anchors and merged_from:
-                    for orig_id in merged_from:
-                        if orig_id in originals_by_id:
-                            orig = originals_by_id[orig_id]
-                            source_anchors.append(SourceAnchor(
-                                source_text=orig.source_anchor.source_text,
-                                source_section=orig.source_anchor.source_section,
-                                source_offset=orig.source_anchor.source_offset,
-                            ))
-
-                # Primary source anchor = first (or best)
-                primary_anchor = source_anchors[0] if source_anchors else SourceAnchor()
-
-                # Build entity dict for typed schema validation.
-                # Flatten "attributes" dict if LLM returned old-format.
-                entity_dict: dict = {
-                    "id": item["id"],
-                    "type": item["type"],
-                    "name": item["name"],
-                    "description": item.get("description", ""),
-                    "source_anchor": primary_anchor.model_dump(),
-                    "source_anchors": [a.model_dump() for a in source_anchors],
-                }
-                # Flatten legacy attributes dict to top-level
-                if "attributes" in item and isinstance(item["attributes"], dict):
-                    for k, v in item["attributes"].items():
-                        if k not in entity_dict:
-                            entity_dict[k] = v
-                # Also carry any top-level typed attribute fields
-                skip_keys = {"id", "type", "name", "description", "source_anchor",
-                             "source_anchors", "attributes", "merged_from",
-                             "relationships", "source_text", "source_section"}
-                for k, v in item.items():
-                    if k not in skip_keys and k not in entity_dict:
-                        entity_dict[k] = v
-
-                # Reconstruct as typed entity with merge-specific checks
-                source_entities = [
-                    originals_by_id[oid]
-                    for oid in merged_from
-                    if oid in originals_by_id
-                ]
-                entity, warnings = reconstruct_merged_entity(
-                    entity_dict, source_entities
-                )
-                if warnings:
-                    for w in warnings:
-                        print(f"      [WARN] {w}")
-                if entity is None:
-                    print(f"      [WARN] Skipping entity '{item.get('id', '?')}' — failed validation")
-                    continue
-                type_deduped.append(entity)
-
-                # Build id_mapping for relationship remapping
-                for orig_id in merged_from:
-                    if orig_id != entity.id:
-                        id_mapping[orig_id] = entity.id
-
-                # Extract relationships discovered during dedup
-                for rel in item.get("relationships", []):
-                    target_id = rel.get("target_id", "")
-                    rel_type = rel.get("type", "")
-                    if target_id and rel_type:
-                        new_relationships.append(Relationship(
-                            source_id=entity.id,
-                            target_id=target_id,
-                            type=rel_type,
-                            description=f"{entity.name} {rel_type} {target_id}",
-                            source_sections=[],
-                        ))
-
-            # Merge count = actual entity reduction (not ID renames)
-            type_merges = len(type_entities) - len(type_deduped)
-            type_new_rels = sum(
-                len(item.get("relationships", []))
-                for item in deduped_list
-            )
-            merge_count += type_merges
-            log_entry["output_count"] = len(type_deduped)
-            log_entry["merges"] = type_merges
-            log_entry["new_relationships"] = type_new_rels
-            log_entry["llm_response"] = deduped_list
-
-            all_deduped.extend(type_deduped)
-            rels_msg = f", {type_new_rels} relationships" if type_new_rels else ""
-            print(f"      -> {len(type_deduped)} unique ({type_merges} merged{rels_msg})")
-
-        except Exception as e:
-            print(f"    WARNING: Dedup failed for type '{entity_type}': {e}")
-            log_entry["error"] = str(e)
-            # Fall back — keep all entities unchanged, populate source_anchors
-            for entity in type_entities:
-                entity.source_anchors = [SourceAnchor(
-                    source_text=entity.source_anchor.source_text,
-                    source_section=entity.source_anchor.source_section,
-                    source_offset=entity.source_anchor.source_offset,
-                )]
-            all_deduped.extend(type_entities)
-
-        dedup_log.append(log_entry)
-
-    return all_deduped, new_relationships, id_mapping, merge_count, api_calls, dedup_log
+    except Exception as e:
+        print(f"    WARNING: Semantic dedup failed: {e}")
+        log_entry["error"] = str(e)
+        return entities, {}, 0, 1, [log_entry]
 
 
 # ---------------------------------------------------------------------------
@@ -823,8 +851,6 @@ def main(argv: list[str] | None = None) -> None:
     sections = _sections_from_chunks(chunks_data)
     section_extractions = _extractions_from_json(extractions_data, sections)
 
-    from dotenv import load_dotenv
-    load_dotenv()
     client = None if args.no_dedup else Anthropic()
     ontology, dedup_log = merge_extractions(
         section_extractions, source_text, sections, client=client
@@ -846,7 +872,7 @@ def main(argv: list[str] | None = None) -> None:
         f"Wrote ontology to {args.output}: "
         f"{meta.final_entity_count} entities, "
         f"{meta.final_relationship_count} relationships "
-        f"({meta.semantic_dedup_merges} duplicates merged, "
+        f"({meta.exact_id_dedup_merges} exact-ID + {meta.semantic_dedup_merges} semantic duplicates merged, "
         f"{meta.semantic_dedup_api_calls} API calls)"
     )
 

@@ -221,6 +221,7 @@ export default function App() {
       <div className="right-panel">
         <NodeDetailPanel
           detail={nodeDetail}
+          graphNode={nodeDetail && graphData ? graphData.nodes.find((n) => n.id === nodeDetail.id) : undefined}
           typeColors={typeColors}
           onClose={handleBackgroundClick}
           onEntitySelect={navigateToEntity}

@@ -13,9 +13,14 @@ import json
 import sys
 from pathlib import Path
 
+import os
+
 from dotenv import load_dotenv
 from anthropic import Anthropic
 from pypdf import PdfReader
+
+load_dotenv()
+TEST_MODEL = os.environ.get("TEST_MODEL", "claude-haiku-4-5-20251001")
 
 
 def load_document(path: Path) -> str:
@@ -79,7 +84,7 @@ def main() -> None:
 
     raw = ""
     with client.messages.stream(
-        model="claude-opus-4-20250514",
+        model=TEST_MODEL,
         max_tokens=16384,
         system=SYSTEM_PROMPT,
         messages=[

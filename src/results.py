@@ -56,6 +56,7 @@ def save_run(
     semantic_dedup_log: list[dict] | None = None,
     first_pass_result: FirstPassResult | None = None,
     cross_section_log: dict | None = None,
+    relationships_log: list[dict] | None = None,
 ) -> Path:
     """Save a complete pipeline run.
 
@@ -68,6 +69,7 @@ def save_run(
         semantic_dedup_log: LLM dedup decisions per entity type.
         first_pass_result: Stage 0 output.
         cross_section_log: Stage 3a cross-section extraction log.
+        relationships_log: Stage 4 relationship extraction log.
 
     Returns:
         Path to the run directory.
@@ -116,6 +118,12 @@ def save_run(
             "relationship_count": meta.cross_section_relationship_count,
             "api_calls": meta.cross_section_api_calls,
         } if cross_section_log else None,
+        "stage4_relationships": {
+            "valid_count": meta.stage4_relationship_count,
+            "invalid_count": meta.stage4_invalid_count,
+            "dedup_count": meta.stage4_dedup_count,
+            "api_calls": meta.stage4_api_calls,
+        } if relationships_log else None,
     }
     _write_json(run_dir / "run_meta.json", run_meta)
 
@@ -219,6 +227,10 @@ def save_run(
     if cross_section_log:
         _write_json(run_dir / "cross_section.json", cross_section_log)
 
+    # --- relationships_log.json ---
+    if relationships_log:
+        _write_json(run_dir / "relationships_log.json", relationships_log)
+
     # --- Update latest pointer ---
     latest_file = RESULTS_DIR / "latest.txt"
     latest_file.write_text(run_id, encoding="utf-8")
@@ -235,7 +247,7 @@ def load_run(run_id: str) -> dict:
         raise FileNotFoundError(f"Run not found: {run_dir}")
 
     result = {}
-    for name in ["run_meta", "sections", "first_pass", "extractions", "ontology", "entities", "relationships", "semantic_dedup", "cross_section"]:
+    for name in ["run_meta", "sections", "first_pass", "extractions", "ontology", "entities", "relationships", "semantic_dedup", "cross_section", "relationships_log"]:
         filepath = run_dir / f"{name}.json"
         if filepath.exists():
             result[name] = json.loads(filepath.read_text(encoding="utf-8"))

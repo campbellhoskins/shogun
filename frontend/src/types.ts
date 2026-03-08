@@ -7,6 +7,10 @@ export interface GraphNode {
   color: string;
   level: number;
   group: string;
+  importance?: number;
+  betweenness?: number;
+  pagerank?: number;
+  degree_centrality?: number;
 }
 
 export interface GraphEdge {

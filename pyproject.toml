@@ -20,4 +20,5 @@ dependencies = [
     "langchain-anthropic>=0.3.0",
     "langchain-community>=0.3.0",
     "langchain-core>=0.3.0",
+    "scipy>=1.17.1",
 ]
