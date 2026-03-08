@@ -1,13 +1,12 @@
-"""Stage 1: LLM-driven semantic chunking with list detection.
+"""Stage 1: Deterministic chunking via first-pass beginning_text matching.
 
-Uses a single LLM call to break a document into semantically complete chunks.
-The LLM returns the actual text of each chunk (no offset calculation required),
-then we compute source offsets post-hoc by locating each chunk in the original
-document. Each chunk serves as both an extraction unit (Stage 2) and a
-RAG-ready embedding chunk for future retrieval.
+Uses the document_map from Stage 0 (first pass) to locate section boundaries
+deterministically — no LLM call required. Each section's `beginning_text` is
+matched against the source document to find body start positions, then heading
+zones are found by walking backward through markdown heading lines.
 
 CLI usage:
-    python -m src.segmenter <input_markdown> -o <output.json>
+    python -m src.segmenter <input_markdown> --first-pass <first_pass.json> -o <output.json>
 """
 
 from __future__ import annotations
@@ -18,206 +17,16 @@ import re
 import sys
 import unicodedata
 
-from anthropic import Anthropic
-
-from src.models import DocumentSection, EnumeratedList, HierarchyEntry
-
-CHUNKING_SYSTEM_PROMPT = """\
-You are a document structure analyst. Your task is to break a provided document into semantically complete chunks while preserving meaning, context, and hierarchical relationships.
-
-Here is the document you need to analyze:
-
-<document>
-{{document}}
-</document>
-
-## Your Task
-
-Analyze this document and break it into chunks that preserve semantic completeness and document hierarchy. Each chunk should be a meaningful unit that makes sense when read in isolation, while also maintaining clear connections to its place in the overall document structure.
-
-Before creating your final output, work through your chunking strategy in <chunking_plan> tags:
-
-1. **List all sections**: Identify and explicitly write out every section in the document with its header text and section number. Include any preamble or unnumbered sections. It's OK for this section to be quite long.
-
-2. **Map hierarchical relationships**: For each section listed above, explicitly write out its complete hierarchical path from the document root. Identify the immediate parent section (if any) and note its section number and header.
-
-3. **Determine chunk boundaries**: Mark where each chunk should begin and end. Specify clear boundaries (e.g., "Chunk 1: From document start through end of section 1.2" or "Chunk 5: Section 3.1 complete text"). Ensure boundaries respect semantic completeness - don't break mid-sentence or mid-paragraph.
-
-4. **Verify complete coverage**: Cross-reference your chunk boundaries against the section list from step 1. Confirm that every section and every piece of text will be included in exactly one chunk with no gaps or overlaps.
-
-This planning step is critical for ensuring that each chunk includes proper hierarchical context and that the entire document is covered without gaps or overlaps.
-
-## Chunking Rules
-
-Follow these rules when creating chunks:
-
-**Semantic Completeness**: Each chunk must contain complete ideas. Never break mid-sentence or mid-paragraph. A chunk should make sense when read in isolation.
-
-**Contiguous Coverage**: Every character in the document must belong to exactly one chunk. When you concatenate all chunks in order, they must reproduce the entire document.
-
-**No Overlap**: Chunks must not contain duplicated text. Each portion of the document appears in exactly one chunk.
-
-**Verbatim Text**: The "text" field must be an exact copy of the source document text for that chunk. Do not add, remove, or modify any characters.
-
-**Preserve Headers with Content**: A section heading belongs with the content that follows it, not as a standalone chunk.
-
-**Enumerated Lists Stay Together**: A numbered or bulleted list should remain with its introductory context in the same chunk, unless the list is extremely long.
-
-**Adaptive Sizing**: More complex or dense sections should produce smaller chunks; simpler sections can be larger chunks. Target 500-2000 characters per chunk as a guideline, not a hard limit. Very short sections (like a title block) can be under 500 characters. A long section with a tightly coupled list can exceed 2000 characters.
-
-**Hierarchy**: Reflect the document's own structure. If a document has top-level sections (level 1) with subsections (level 2), each subsection should generally be its own chunk unless it's very short.
-
-## Output Format
-
-For each chunk, create a JSON object with the following fields:
-
-**header**: The section heading or title text exactly as it appears in the document. If the chunk has no explicit heading, create a short descriptive title in brackets like "[Preamble]" or "[Signature Block]".
-
-**section_number**: The hierarchical number extracted from the heading (e.g., "1", "2.1", "6.4"). If the chunk has no number, assign one based on its position (e.g., "0" for preamble, "A" for appendices).
-
-**level**: The depth in the document hierarchy (1 = top-level section, 2 = subsection, 3 = sub-subsection, etc.).
-
-**text**: The COMPLETE, VERBATIM text of this chunk copied exactly from the source document. Do not paraphrase, reword, summarize, or alter any text. Reproduce it character-for-character including whitespace and line breaks.
-
-**parent_section**: The section_number of this chunk's immediate parent, or null if it is a top-level chunk.
-
-**parent_header**: The full header text of this chunk's immediate parent section, or null if it is a top-level chunk. This provides contextual information about what larger section this chunk belongs to.
-
-**hierarchical_path**: An array of objects representing the full path from the document root to this chunk. Each object should contain "section_number" and "header" for each ancestor section, ordered from top-level to immediate parent. For top-level sections, this should be an empty array.
-
-**enumerated_lists**: An array of any enumerated lists (numbered, lettered, or bulleted) found within this chunk. For each list include:
-   - **item_count**: The exact number of items in the list
-   - **list_type**: "numbered", "lettered", or "bulleted"
-   - **preview**: The first few words of the first list item (for identification)
-
-## Example Output Structure
-
-Your output should be a JSON array of objects, one per chunk, in document order:
-
-```json
-[
-  {
-    "header": "Responsibilities of the Organization for Security and Rights Protection",
-    "section_number": "6",
-    "level": 1,
-    "text": "6. Responsibilities of the Organization for Security and Rights Protection\n\nThe organization shall ensure...",
-    "parent_section": null,
-    "parent_header": null,
-    "hierarchical_path": [],
-    "enumerated_lists": []
-  },
-  {
-    "header": "Physical Security",
-    "section_number": "6.1",
-    "level": 2,
-    "text": "6.1 Physical Security\n\nAll facilities must maintain...",
-    "parent_section": "6",
-    "parent_header": "Responsibilities of the Organization for Security and Rights Protection",
-    "hierarchical_path": [
-      {
-        "section_number": "6",
-        "header": "Responsibilities of the Organization for Security and Rights Protection"
-      }
-    ],
-    "enumerated_lists": [
-      {
-        "item_count": 3,
-        "list_type": "numbered",
-        "preview": "Access control systems must..."
-      }
-    ]
-  },
-  {
-    "header": "Access Control Requirements",
-    "section_number": "6.1.2",
-    "level": 3,
-    "text": "6.1.2 Access Control Requirements\n\nThe following requirements apply...",
-    "parent_section": "6.1",
-    "parent_header": "Physical Security",
-    "hierarchical_path": [
-      {
-        "section_number": "6",
-        "header": "Responsibilities of the Organization for Security and Rights Protection"
-      },
-      {
-        "section_number": "6.1",
-        "header": "Physical Security"
-      }
-    ],
-    "enumerated_lists": []
-  }
-]
-```
-
-Return ONLY the JSON array. No other text outside the analysis and JSON output.
-"""
+from src.models import DocumentSection, FirstPassResult, FirstPassSection
 
 
-def segment_document(
-    text: str, client: Anthropic | None = None
-) -> list[DocumentSection]:
-    """Segment a document into semantic chunks using an LLM.
-
-    The LLM returns the actual text of each chunk. We then compute source
-    offsets post-hoc by locating each chunk in the original document.
-
-    Args:
-        text: The full document text.
-        client: Anthropic client. Creates one if not provided.
-
-    Returns:
-        List of DocumentSection objects with text and computed source offsets.
-    """
-    if client is None:
-        client = Anthropic()
-
-    response = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=16384,
-        system=CHUNKING_SYSTEM_PROMPT.replace("{{document}}", text),
-        messages=[
-            {
-                "role": "user",
-                "content": f"Break the document above into semantic chunks. The document is {len(text)} characters long.",
-            }
-        ],
-    )
-
-    raw = response.content[0].text
-    chunks_data = _parse_json_response(raw)
-    sections = _build_sections(chunks_data, text)
-
-    return sections
+class SegmenterError(Exception):
+    """Raised when section boundary detection fails."""
 
 
-def _parse_json_response(raw: str) -> list[dict]:
-    """Parse JSON from the LLM response, handling chain-of-thought and markdown fences.
-
-    The updated segmenter prompt asks the LLM to output a <chunking_plan> block
-    before the JSON array.  We strip that block (and any other XML-style thinking
-    tags) before attempting to parse the JSON.
-    """
-    # Strip <chunking_plan>...</chunking_plan> (and any similar thinking tags)
-    cleaned = re.sub(
-        r"<chunking_plan>[\s\S]*?</chunking_plan>", "", raw
-    ).strip()
-
-    # Strip markdown code fences
-    if cleaned.startswith("```"):
-        lines = cleaned.split("\n")
-        lines = lines[1:]  # remove opening fence line
-        if lines and lines[-1].strip() == "```":
-            lines = lines[:-1]  # remove closing fence line
-        cleaned = "\n".join(lines)
-
-    try:
-        return json.loads(cleaned)
-    except json.JSONDecodeError:
-        match = re.search(r"\[[\s\S]*\]", cleaned)
-        if match:
-            return json.loads(match.group())
-        raise
-
+# ---------------------------------------------------------------------------
+# Text normalization (reused from original)
+# ---------------------------------------------------------------------------
 
 def _normalize(s: str) -> str:
     """Normalize a string for fuzzy matching: collapse whitespace, strip."""
@@ -225,138 +34,393 @@ def _normalize(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
-def _find_offset(chunk_text: str, document_text: str, search_start: int) -> int:
-    """Find the source offset of chunk_text within document_text.
+def _strip_markdown(s: str) -> str:
+    """Strip markdown inline formatting for robust text matching.
 
-    Tries exact match first (fast), then falls back to normalized matching
-    (handles minor whitespace differences from LLM reproduction).
-
-    Args:
-        chunk_text: The chunk text to locate.
-        document_text: The full document text.
-        search_start: Minimum offset to search from (ensures forward progress).
-
-    Returns:
-        The character offset where the chunk starts, or -1 if not found.
+    Removes bold/italic markers (**, *, __, _), heading markers (#),
+    and normalizes smart quotes to ASCII equivalents.
     """
-    # Exact match: search from search_start onward
-    idx = document_text.find(chunk_text, search_start)
+    # Strip bold/italic markers (order matters: ** before *, __ before _)
+    s = s.replace("**", "")
+    s = s.replace("__", "")
+    s = re.sub(r"(?<!\w)_|_(?!\w)", "", s)  # strip _ not inside words
+    s = re.sub(r"(?<!\w)\*|\*(?!\w)", "", s)  # strip * not inside words
+    # Normalize smart quotes
+    s = s.replace("\u2018", "'").replace("\u2019", "'")  # single quotes
+    s = s.replace("\u201c", '"').replace("\u201d", '"')  # double quotes
+    return s
+
+
+def _normalize_for_match(s: str) -> str:
+    """Full normalization: strip markdown, collapse whitespace."""
+    return _normalize(_strip_markdown(s))
+
+
+# ---------------------------------------------------------------------------
+# Step 1: Locate each section's body start via beginning_text
+# ---------------------------------------------------------------------------
+
+def _find_beginning_text(doc: str, beginning_text: str, search_from: int) -> int:
+    """Multi-strategy text locator for a section's beginning_text.
+
+    Matching cascade:
+      1. Exact match
+      2. Normalized match (first 100 chars as anchor)
+      3. Token-prefix match (first 10 words as regex)
+      4. Heading fallback (never used here — handled separately)
+
+    Returns character offset into doc, or -1 if not found.
+    """
+    if not beginning_text:
+        return -1
+
+    # Strategy 1: Exact match
+    idx = doc.find(beginning_text, search_from)
     if idx >= 0:
         return idx
 
-    # Normalized match: use the first 80 chars of the chunk as an anchor
-    # This handles cases where the LLM slightly altered whitespace
-    anchor_len = min(80, len(chunk_text))
-    chunk_anchor = _normalize(chunk_text[:anchor_len])
-    if not chunk_anchor:
-        return -1
+    # Strategy 2: Normalized match — strip markdown + collapse whitespace, first 100 chars
+    norm_bt = _normalize_for_match(beginning_text[:100])
+    if norm_bt:
+        # Slide a window over the document looking for a normalized match
+        window_extra = 60  # extra chars for markdown formatting expansion
+        search_end = len(doc)
+        for pos in range(search_from, search_end):
+            window = _normalize_for_match(doc[pos:pos + len(beginning_text[:100]) + window_extra])
+            if window.startswith(norm_bt):
+                return pos
 
-    # Slide a window over the document looking for a normalized match
-    best_pos = -1
-    for pos in range(search_start, len(document_text) - anchor_len + 1):
-        window = _normalize(document_text[pos : pos + anchor_len + 20])
-        if window.startswith(chunk_anchor) or chunk_anchor in window:
-            best_pos = pos
-            break
+    # Strategy 3: Token-prefix match — first 10 words as \s+ joined regex
+    # Strip markdown from both sides for robust matching
+    stripped_doc = _strip_markdown(doc[search_from:])
+    words = _strip_markdown(beginning_text).split()[:10]
+    if len(words) >= 3:
+        # Escape each word for regex, join with flexible whitespace
+        pattern = r"\s+".join(re.escape(w) for w in words)
+        m = re.search(pattern, stripped_doc)
+        if m:
+            # Map back to original doc position — find the matched text start
+            # by searching for the first word near the expected position
+            first_word = re.escape(words[0])
+            for offset_m in re.finditer(first_word, doc[search_from:]):
+                if abs(offset_m.start() - m.start()) < 50:
+                    return search_from + offset_m.start()
+            # Fall back to approximate position
+            return search_from + m.start()
 
-    return best_pos
+    return -1
 
 
-def _build_sections(
-    chunks_data: list[dict], document_text: str
-) -> list[DocumentSection]:
-    """Build DocumentSection objects from LLM chunk output.
+# ---------------------------------------------------------------------------
+# Step 2: Find heading zone start (backward search from body offset)
+# ---------------------------------------------------------------------------
 
-    Assigns chunk_ids, computes source offsets by locating each chunk's text
-    in the original document, and validates coverage.
+def _find_heading_start(doc: str, body_offset: int) -> int:
+    """Walk backward from body_offset to find the start of the heading zone.
+
+    Scans backward through lines:
+      - Skip blank lines immediately before the body
+      - Collect consecutive lines starting with '#'
+      - If stopped by a non-heading line, continue scanning backward
+        (up to ~500 chars) looking for markdown headings (^#{1,4} )
+
+    Returns the character offset of the first heading line, or body_offset
+    if no heading lines are found.
     """
-    doc_len = len(document_text)
-    sections: list[DocumentSection] = []
-    search_start = 0
-    total_chunk_chars = 0
+    # Split doc up to body_offset into lines to walk backward
+    text_before = doc[:body_offset]
+    lines = text_before.split("\n")
 
-    for i, chunk in enumerate(chunks_data):
-        chunk_text = chunk.get("text", "")
-        if not chunk_text:
+    # Walk backward from the last line
+    heading_line_start = body_offset
+    in_heading_zone = False
+    i = len(lines) - 1
+
+    while i >= 0:
+        line = lines[i].strip()
+
+        if not line:
+            # Blank line — skip if we haven't found headings yet,
+            # or stop if we're past the heading zone
+            if in_heading_zone:
+                break
+            i -= 1
             continue
 
-        total_chunk_chars += len(chunk_text)
+        if line.startswith("#"):
+            in_heading_zone = True
+            # Compute character offset of this line's start
+            heading_line_start = sum(len(l) + 1 for l in lines[:i])  # +1 for \n
+            i -= 1
+            continue
 
-        # Compute source offset post-hoc
-        offset = _find_offset(chunk_text, document_text, search_start)
-        if offset >= 0:
-            # Advance search_start past this chunk for the next one
-            search_start = offset + len(chunk_text)
+        # Non-blank, non-heading line — if we already found headings, stop.
+        # Otherwise, continue scanning backward (up to ~500 chars) to find
+        # a markdown heading that the LLM's beginning_text may have skipped past.
+        if in_heading_zone:
+            break
+
+        # Extended backward scan: skip past non-heading content lines
+        # (e.g., **2.1** bold items) to find the ## heading above
+        chars_scanned = 0
+        j = i
+        while j >= 0 and chars_scanned < 500:
+            scan_line = lines[j].strip()
+            chars_scanned += len(lines[j]) + 1
+
+            if not scan_line:
+                j -= 1
+                continue
+
+            if re.match(r"^#{1,4}\s", scan_line):
+                # Found a heading — update heading_start to include it
+                in_heading_zone = True
+                heading_line_start = sum(len(l) + 1 for l in lines[:j])
+                # Continue walking backward to capture any parent headings
+                i = j - 1
+                break
+
+            j -= 1
         else:
-            print(
-                f"  WARNING: Could not locate chunk {i + 1} "
-                f"({chunk.get('header', 'unknown')!r}) in document. "
-                f"Offset set to -1."
+            # Extended scan exhausted without finding a heading — stop
+            break
+
+        if not in_heading_zone:
+            break
+
+        continue
+
+    return heading_line_start
+
+
+# ---------------------------------------------------------------------------
+# Step 3: Compute section boundaries
+# ---------------------------------------------------------------------------
+
+def _compute_section_boundaries(
+    doc: str,
+    fp_sections: list[FirstPassSection],
+) -> list[tuple[int, int, int, FirstPassSection]]:
+    """Core algorithm: locate each section and compute (heading_start, body_start, end).
+
+    Returns list of (heading_start, body_start, section_end, fp_section) tuples.
+    Raises SegmenterError if a section's beginning_text cannot be found.
+    """
+    # Sort sections by section_order to enforce document-order scanning
+    sorted_sections = sorted(fp_sections, key=lambda s: s.section_order)
+
+    # Phase 1: Find body offsets for all sections
+    body_offsets: list[tuple[int, FirstPassSection]] = []
+    search_from = 0
+
+    for fps in sorted_sections:
+        body_offset = _find_beginning_text(doc, fps.beginning_text, search_from)
+
+        if body_offset < 0:
+            # Try heading fallback: search for section_name after # markers
+            # Try full name first, then progressively shorter prefixes
+            # (handles "Quick Reference for Site Visitors" → "### Quick Reference")
+            name_candidates = [fps.section_name]
+            # Also try the portion before " / " (handles "Travel Arrangements / Air Travel")
+            if " / " in fps.section_name:
+                name_candidates.extend(fps.section_name.split(" / "))
+            # Try progressively shorter word prefixes (min 2 words)
+            words = fps.section_name.split()
+            for length in range(len(words) - 1, 1, -1):
+                name_candidates.append(" ".join(words[:length]))
+
+            for candidate in name_candidates:
+                # Search line by line, stripping markdown before matching
+                # (handles headings like ### **_Quick Reference_**)
+                pos = search_from
+                found = False
+                for line in doc[search_from:].split("\n"):
+                    stripped_line = _strip_markdown(line).strip()
+                    if stripped_line.startswith("#") and candidate.lower() in stripped_line.lower():
+                        # Found the heading — body starts after this line
+                        heading_pos = pos
+                        eol = pos + len(line)
+                        body_offset = eol + 1
+                        while body_offset < len(doc) and doc[body_offset] == "\n":
+                            body_offset += 1
+                        found = True
+                        break
+                    pos += len(line) + 1  # +1 for \n
+                if found:
+                    break
+
+        if body_offset < 0:
+            raise SegmenterError(
+                f"Cannot locate section {fps.section_id} ({fps.section_name!r}) "
+                f"in document. beginning_text starts with: "
+                f"{fps.beginning_text[:80]!r}"
             )
 
-        # Build enumerated lists
-        enum_lists = []
-        for el in chunk.get("enumerated_lists", []):
-            enum_lists.append(
-                EnumeratedList(
-                    item_count=int(el.get("item_count", 0)),
-                    list_type=str(el.get("list_type", "")),
-                    preview=str(el.get("preview", "")),
-                )
+        if body_offsets and body_offset < body_offsets[-1][0]:
+            raise SegmenterError(
+                f"Section {fps.section_id} ({fps.section_name!r}) found at offset "
+                f"{body_offset}, which is before previous section at "
+                f"{body_offsets[-1][0]}. First pass output may be stale."
             )
 
-        # Build hierarchical path
-        hier_path = [
-            HierarchyEntry(**entry)
-            for entry in chunk.get("hierarchical_path", [])
-        ]
+        body_offsets.append((body_offset, fps))
+        search_from = body_offset + 1
 
-        chunk_id = f"chunk_{i + 1:03d}"
+    # Phase 2: Find heading zone starts by walking backward from each body offset
+    boundaries: list[tuple[int, int, int, FirstPassSection]] = []
 
-        sections.append(
-            DocumentSection(
-                chunk_id=chunk_id,
-                header=str(chunk.get("header", "")),
-                section_number=str(chunk.get("section_number", "")),
-                level=int(chunk.get("level", 1)),
-                text=chunk_text,
-                source_offset=offset if offset >= 0 else 0,
-                parent_section=chunk.get("parent_section"),
-                parent_header=chunk.get("parent_header"),
-                hierarchical_path=hier_path,
-                enumerated_lists=enum_lists,
+    for idx, (body_offset, fps) in enumerate(body_offsets):
+        heading_start = _find_heading_start(doc, body_offset)
+
+        # Section end = next section's heading_start, or end of document
+        if idx + 1 < len(body_offsets):
+            next_body = body_offsets[idx + 1][0]
+            next_heading = _find_heading_start(doc, next_body)
+            section_end = next_heading
+        else:
+            section_end = len(doc)
+
+        boundaries.append((heading_start, body_offset, section_end, fps))
+
+    return boundaries
+
+
+
+def _section_id_to_number(section_id: str) -> str:
+    """Convert SEC-NNx to a dotted section number.
+
+    Examples:
+        SEC-01  → "1"
+        SEC-02a → "2.1"
+        SEC-02b → "2.2"
+        SEC-03a1 → "3.1.1"
+    """
+    m = re.match(r"^SEC-(\d+)([a-z]?)(\d*)$", section_id)
+    if not m:
+        return section_id
+
+    num_str, letter, sub = m.groups()
+    num = int(num_str)
+
+    if not letter:
+        return str(num)
+
+    letter_offset = ord(letter) - ord("a") + 1
+    if not sub:
+        return f"{num}.{letter_offset}"
+
+    return f"{num}.{letter_offset}.{int(sub)}"
+
+
+
+# ---------------------------------------------------------------------------
+# Main entry point
+# ---------------------------------------------------------------------------
+
+def segment_document(
+    text: str,
+    client: object | None = None,  # DEPRECATED: ignored, kept for call-site compat
+    first_pass_result: FirstPassResult | None = None,
+) -> list[DocumentSection]:
+    """Segment a document into chunks using deterministic boundary detection.
+
+    Uses the document_map from Stage 0 (first pass) to locate section boundaries
+    via beginning_text matching. No LLM call is made.
+
+    Args:
+        text: The full document text.
+        client: DEPRECATED — ignored. Kept for pipeline.py call-site compatibility.
+        first_pass_result: Required. First pass output with document_map sections.
+
+    Returns:
+        List of DocumentSection objects with text and computed source offsets.
+
+    Raises:
+        ValueError: If first_pass_result is None or has no sections.
+        SegmenterError: If a section cannot be located in the document.
+    """
+    if first_pass_result is None or not first_pass_result.document_map.sections:
+        raise ValueError(
+            "first_pass_result with non-empty document_map.sections is required "
+            "for deterministic segmentation."
+        )
+
+    fp_sections = first_pass_result.document_map.sections
+
+    # Compute boundaries
+    boundaries = _compute_section_boundaries(text, fp_sections)
+
+    sections: list[DocumentSection] = []
+
+    # Emit preamble if there's significant text before first section
+    first_heading_start = boundaries[0][0] if boundaries else len(text)
+    preamble_text = text[:first_heading_start].strip()
+    if len(preamble_text) > 50:
+        sections.append(DocumentSection(
+            section_id="SEC-00",
+            header="[Preamble]",
+            section_number="0",
+            text=text[:first_heading_start].rstrip("\n") + "\n",
+            source_offset=0,
+        ))
+
+    # Build sections from boundaries
+    for heading_start, body_start, section_end, fps in boundaries:
+        section_text = text[heading_start:section_end]
+
+        # Post-processing: trim trailing next-section headers that bled through.
+        # Catches patterns like "\n---\n\n## N. HEADING\n" or just "\n## N. HEADING\n"
+        # at the end of a section's text.
+        trail_match = re.search(
+            r"\n(?:---\s*\n\s*)?\n*(?=#{1,4}\s+\S)",
+            section_text,
+            re.MULTILINE,
+        )
+        if trail_match:
+            # Only trim if the matched heading is near the end (last 20% of text)
+            # to avoid trimming legitimate sub-headings within the section
+            match_pos = trail_match.start()
+            remaining_after = len(section_text) - match_pos
+            # Check if what follows is a top-level heading (## N.) not a sub-heading
+            # belonging to this section
+            after_text = section_text[match_pos:].strip()
+            is_next_section_heading = bool(
+                re.match(r"(?:---\s*\n\s*)?#{1,3}\s+\d+[\.\)]\s", after_text)
             )
-        )
+            if is_next_section_heading and remaining_after < len(section_text) * 0.25:
+                section_text = section_text[:match_pos].rstrip("\n") + "\n"
 
-    # Coverage validation
-    coverage_ratio = total_chunk_chars / max(doc_len, 1)
-    located = sum(1 for s in sections if s.source_offset > 0 or sections.index(s) == 0)
+        sec_num = _section_id_to_number(fps.section_id)
 
-    if coverage_ratio < 0.9:
-        print(
-            f"  WARNING: Chunks cover {total_chunk_chars} chars vs "
-            f"{doc_len} document chars ({coverage_ratio:.0%}). "
-            f"Some text may have been omitted by the LLM."
-        )
-    elif coverage_ratio > 1.1:
-        print(
-            f"  WARNING: Chunks total {total_chunk_chars} chars vs "
-            f"{doc_len} document chars ({coverage_ratio:.0%}). "
-            f"The LLM may have duplicated some text across chunks."
-        )
+        if not section_text.strip():
+            print(f"  WARNING: Section {fps.section_id} ({fps.section_name!r}) has empty text after slicing.")
 
-    unlocated = len(sections) - sum(
-        1 for s in sections
-        if _find_offset(s.text[:40], document_text, 0) >= 0
-    )
-    if unlocated > 0:
+        sections.append(DocumentSection(
+            section_id=fps.section_id,
+            header=fps.section_name,
+            section_number=sec_num,
+            text=section_text,
+            source_offset=heading_start,
+            section_purpose=fps.section_purpose,
+            section_summary=fps.section_summary,
+        ))
+
+    # Coverage check
+    total_section_chars = sum(len(s.text) for s in sections)
+    coverage = total_section_chars / max(len(text), 1)
+    if coverage < 0.85:
         print(
-            f"  WARNING: {unlocated}/{len(sections)} chunks could not be "
-            f"located in the original document."
+            f"  WARNING: Sections cover {total_section_chars} chars vs "
+            f"{len(text)} document chars ({coverage:.0%}). "
+            f"Some text may not be captured."
         )
 
     return sections
 
+
+# ---------------------------------------------------------------------------
+# Serialization (unchanged contract)
+# ---------------------------------------------------------------------------
 
 def serialize_sections(sections: list[DocumentSection]) -> list[dict]:
     """Serialize DocumentSection objects to plain dicts for JSON output.
@@ -368,28 +432,27 @@ def serialize_sections(sections: list[DocumentSection]) -> list[dict]:
     out = []
     for s in sections:
         out.append({
-            "chunk_id": s.chunk_id,
+            "section_id": s.section_id,
             "header": s.header,
             "section_number": s.section_number,
-            "level": s.level,
             "text": s.text,
             "char_count": len(s.text),
             "source_offset": s.source_offset,
-            "parent_section": s.parent_section,
-            "parent_header": s.parent_header,
-            "hierarchical_path": [
-                entry.model_dump() for entry in s.hierarchical_path
-            ],
-            "enumerated_lists": [el.model_dump() for el in s.enumerated_lists],
+            "section_purpose": s.section_purpose,
+            "section_summary": s.section_summary,
         })
     return out
 
 
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
+
 def main(argv: list[str] | None = None) -> None:
-    """CLI entry point: segment a markdown document into semantic chunks."""
+    """CLI entry point: segment a markdown document using first-pass boundaries."""
     parser = argparse.ArgumentParser(
         prog="python -m src.segmenter",
-        description="Stage 1: Segment a document into semantic chunks via LLM.",
+        description="Stage 1: Deterministic document chunking via first-pass boundaries.",
     )
     parser.add_argument(
         "input",
@@ -400,15 +463,21 @@ def main(argv: list[str] | None = None) -> None:
         default="data/chunks.json",
         help="Path to write the output chunks JSON (default: data/chunks.json).",
     )
+    parser.add_argument(
+        "--first-pass",
+        required=True,
+        help="Path to first_pass.json (Stage 0 output). Required.",
+    )
     args = parser.parse_args(argv)
-
-    from dotenv import load_dotenv
-    load_dotenv()
 
     input_text = open(args.input, encoding="utf-8").read()
     print(f"Read {len(input_text)} chars from {args.input}")
 
-    sections = segment_document(input_text)
+    with open(args.first_pass, encoding="utf-8") as f:
+        fp_result = FirstPassResult(**json.load(f))
+    print(f"Loaded first pass from {args.first_pass}")
+
+    sections = segment_document(input_text, first_pass_result=fp_result)
 
     data = serialize_sections(sections)
     with open(args.output, "w", encoding="utf-8") as f:

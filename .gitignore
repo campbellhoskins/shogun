@@ -19,6 +19,7 @@ output/graphs/
 # Frontend
 frontend/node_modules/
 frontend/dist/
+frontend/test-results/
 
 # Screenshots (generated during testing)
 output/screenshot_*.png

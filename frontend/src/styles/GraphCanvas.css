@@ -110,3 +110,13 @@
   margin: 2px 4px;
   background: var(--border-subtle);
 }
+
+/* TravelEvent glow animation (applied via vis-network node styling) */
+@keyframes travel-event-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px rgba(244, 63, 94, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 14px rgba(244, 63, 94, 0.7));
+  }
+}

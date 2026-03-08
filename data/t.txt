@@ -1,0 +1,1102 @@
+{
+  "relationships": [
+    {
+      "source_id": "travel_services_agreement",
+      "target_id": "exhibit_d",
+      "type": "INCORPORATES",
+      "description": "Exhibit D is incorporated into and forms part of the Travel Services Agreement, as stated in the preamble."
+    },
+    {
+      "source_id": "travel_services_agreement",
+      "target_id": "statement_of_work",
+      "type": "INCORPORATES",
+      "description": "The SOW is a component of the Agreement referenced throughout Exhibit D for client-specific configurations, with second-level precedence in the document hierarchy per Section 14."
+    },
+    {
+      "source_id": "travel_services_agreement",
+      "target_id": "data_processing_agreement",
+      "type": "INCORPORATES",
+      "description": "The DPA is incorporated by reference or attached as a separate exhibit to the Agreement per Section 7.1."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "travel_services_agreement",
+      "type": "PARTY_TO",
+      "description": "Direct Travel, Inc. is a signatory party to the Travel Services Agreement as stated in the preamble."
+    },
+    {
+      "source_id": "client",
+      "target_id": "travel_services_agreement",
+      "type": "PARTY_TO",
+      "description": "Client is a signatory party to the Travel Services Agreement as stated in the preamble."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "exhibit_d",
+      "type": "PARTY_TO",
+      "description": "Direct Travel, Inc. is a signatory party to Exhibit D as stated in the preamble and Section 15 acceptance block."
+    },
+    {
+      "source_id": "client",
+      "target_id": "exhibit_d",
+      "type": "PARTY_TO",
+      "description": "Client is a signatory party to Exhibit D as stated in the preamble and Section 15 acceptance block."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "duty_of_care_services",
+      "type": "PROVIDES",
+      "description": "Direct Travel provides the Duty of Care Services described in Section 3 to support Client's travel risk management program, as established in Sections 1.1 and 1.2."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "itinerary_visibility_and_traveler_locate",
+      "type": "PROVIDES",
+      "description": "Direct Travel captures and maintains itinerary records, provides reporting dashboards, identifies travelers in impact zones, and supports off-channel data ingestion per Section 3.1."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "risk_intelligence_and_monitoring",
+      "type": "PROVIDES",
+      "description": "Direct Travel maintains continuous 24/7 monitoring of global events using the Risk Intelligence Platform per Section 3.2."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "pre_trip_services",
+      "type": "PROVIDES",
+      "description": "Direct Travel provides destination risk ratings, pre-trip briefing materials, high-risk approval workflows, and insurance verification per Section 3.3."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "in_trip_monitoring_and_alerts",
+      "type": "PROVIDES",
+      "description": "Direct Travel delivers destination-specific and event-based alerts to Travelers through configured channels and monitors active trips per Section 3.4."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "incident_response_and_traveler_assistance",
+      "type": "PROVIDES",
+      "description": "Direct Travel provides welfare checks, rebooking support, Specialist Provider coordination, and Client escalation during Level 2+ Incidents per Section 3.5."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "post_incident_reporting",
+      "type": "PROVIDES",
+      "description": "Direct Travel provides post-incident summaries upon Client request or automatically for Level 4 Incidents per Section 3.6."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "alerts_service",
+      "type": "PROVIDES",
+      "description": "Direct Travel delivers alerts to travelers regarding incidents and risks as part of the in-trip monitoring service per Sections 3.4 and 9."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "welfare_checks_service",
+      "type": "PROVIDES",
+      "description": "Direct Travel conducts welfare checks to verify traveler safety and status during incidents per Sections 3.5 and 5.4."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "disruption_assistance_service",
+      "type": "PROVIDES",
+      "description": "Direct Travel provides rebooking, rerouting, and itinerary modification support during incidents per Section 3.5."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "risk_intelligence",
+      "type": "PROVIDES",
+      "description": "Direct Travel provides risk ratings, destination advisories, and threat assessments based on commercially available intelligence per Sections 3.2, 3.3, and 10.5."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "crisis_bridge",
+      "type": "PROVIDES",
+      "description": "Direct Travel establishes and manages Crisis Bridges during Level 4 Incidents per Section 6.3."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "pre_trip_briefing_service",
+      "type": "PROVIDES",
+      "description": "Direct Travel delivers pre-trip briefing materials to Travelers prior to departure where configured in the SOW per Section 3.3(b)."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "travel_insurance_verification",
+      "type": "PROVIDES",
+      "description": "Direct Travel verifies appropriate travel insurance coverage where included in the SOW per Section 3.3(d)."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "sitrep_service",
+      "type": "PROVIDES",
+      "description": "Direct Travel provides SITREPs during Crisis Bridge activation at configured cadence intervals per Section 6.3(c)."
+    },
+    {
+      "source_id": "duty_of_care_services",
+      "target_id": "osha_general_duty_clause",
+      "type": "COMPLIES_WITH",
+      "description": "Services are designed to assist Client in meeting obligations under OSHA General Duty Clause, Section 5(a)(1) per Section 1.2."
+    },
+    {
+      "source_id": "duty_of_care_services",
+      "target_id": "health_and_safety_at_work_act_1974",
+      "type": "COMPLIES_WITH",
+      "description": "Services are designed to assist Client in meeting obligations under the Health and Safety at Work Act 1974 per Section 1.2."
+    },
+    {
+      "source_id": "duty_of_care_services",
+      "target_id": "management_of_health_and_safety_at_work_regulations_1999",
+      "type": "COMPLIES_WITH",
+      "description": "Services are designed to assist Client in meeting obligations under the Management of Health and Safety at Work Regulations 1999 per Section 1.2."
+    },
+    {
+      "source_id": "duty_of_care_services",
+      "target_id": "corporate_manslaughter_and_corporate_homicide_act_2007",
+      "type": "COMPLIES_WITH",
+      "description": "Services are designed to assist Client in meeting obligations under the Corporate Manslaughter and Corporate Homicide Act 2007 per Section 1.2."
+    },
+    {
+      "source_id": "duty_of_care_services",
+      "target_id": "framework_directive_89_391_eec",
+      "type": "COMPLIES_WITH",
+      "description": "Services are designed to assist Client in meeting obligations under EU Framework Directive 89/391/EEC per Section 1.2."
+    },
+    {
+      "source_id": "duty_of_care_services",
+      "target_id": "iso_31030_2021",
+      "type": "COMPLIES_WITH",
+      "description": "Services are designed consistent with ISO 31030:2021 Travel Risk Management framework per Section 1.2."
+    },
+    {
+      "source_id": "exhibit_d",
+      "target_id": "gdpr",
+      "type": "COMPLIES_WITH",
+      "description": "Traveler Data processing for duty of care is supported by legitimate interest under GDPR Article 6(1)(f) per Section 7.3."
+    },
+    {
+      "source_id": "exhibit_d",
+      "target_id": "eu_package_travel_directive_2015_2302",
+      "type": "COMPLIES_WITH",
+      "description": "Parties will cooperate to structure arrangements to avoid inadvertent creation of a package or allocate responsibilities per Section 10.6."
+    },
+    {
+      "source_id": "exhibit_d",
+      "target_id": "uk_package_travel_and_linked_travel_arrangements_regulations_2018",
+      "type": "COMPLIES_WITH",
+      "description": "Parties will cooperate to structure arrangements to avoid inadvertent creation of a package or allocate responsibilities per Section 10.6."
+    },
+    {
+      "source_id": "duty_of_care_services",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "Duty of Care Services are defined as the services described in Section 3 of this Exhibit per Section 2.5."
+    },
+    {
+      "source_id": "severity_level",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "The Level 1 through Level 4 classification system is described in Section 5 of Exhibit D per Section 2.10."
+    },
+    {
+      "source_id": "approved_channels",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "Approved Channels are defined in Section 2.1 of Exhibit D as bookings through designated online booking tools, agent-assisted channels, or other approved channels."
+    },
+    {
+      "source_id": "incident",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "Incident is defined in Section 2.7 of Exhibit D as an event that may reasonably impact Traveler safety, security, health, or ability to continue travel."
+    },
+    {
+      "source_id": "traveler",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "Traveler is defined in Section 2.12 as a Client employee or other authorized person traveling on Client business."
+    },
+    {
+      "source_id": "crisis_bridge",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "Crisis Bridge is defined in Section 2.4 as a real-time conference line and/or digital collaboration channel for Level 4 Incidents."
+    },
+    {
+      "source_id": "off_channel_booking",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "Off-Channel Booking is defined in Section 2.8 as any travel booking made outside of Approved Channels."
+    },
+    {
+      "source_id": "pnr",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "PNR is defined in Section 2.9 as the foundational booking data record maintained in the GDS or NDC connection."
+    },
+    {
+      "source_id": "traveler_data",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "Traveler Data is defined in Section 2.13 as personal data related to Travelers processed by Direct Travel for services under the Agreement."
+    },
+    {
+      "source_id": "specialist_provider",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "Specialist Provider is defined in Section 2.11 as a third-party provider of security, medical, evacuation, or other services."
+    },
+    {
+      "source_id": "risk_intelligence_platform",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "Risk Intelligence Platform is defined in Section 2.6 as the third-party risk management platform designated by Direct Travel."
+    },
+    {
+      "source_id": "express_client_authorization_requirement",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "The express authorization requirement for extraordinary measures is specified in Section 3.5(b) of Exhibit D."
+    },
+    {
+      "source_id": "traveler_outreach_standards",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "Traveler outreach standards including channel priority, logging, and response framework are specified in Section 5.4 of Exhibit D."
+    },
+    {
+      "source_id": "escalation_roster_maintenance",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "The escalation roster maintenance obligation is specified in Section 6.1 of Exhibit D."
+    },
+    {
+      "source_id": "non_responsive_traveler_escalation",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "Non-responsive traveler escalation procedures are specified in Section 6.2 of Exhibit D."
+    },
+    {
+      "source_id": "crisis_bridge_activation",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "Crisis Bridge activation obligations are specified in Section 6.3 of Exhibit D."
+    },
+    {
+      "source_id": "sitrep_provision",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "SITREP provision obligations and cadence are specified in Section 6.3(c-d) of Exhibit D."
+    },
+    {
+      "source_id": "quarterly_business_reviews",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "Quarterly business review obligations and content are specified in Section 12.1 of Exhibit D."
+    },
+    {
+      "source_id": "post_incident_review",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "Post-incident review obligations for Level 4 Incidents are specified in Section 12.2 of Exhibit D."
+    },
+    {
+      "source_id": "material_change_notification",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "Material change notification obligations are specified in Section 12.3 of Exhibit D."
+    },
+    {
+      "source_id": "booking_time_approval_configuration",
+      "target_id": "statement_of_work",
+      "type": "DEFINED_IN",
+      "description": "Approval tiers, approver hierarchy, and destination-specific overrides for booking-time approval are defined in the SOW per Sections 4.2 and 3.3(c)."
+    },
+    {
+      "source_id": "off_channel_visibility_limitation_acknowledgment",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "Client's acknowledgment of off-channel visibility limitations is specified in Section 9.3 of Exhibit D."
+    },
+    {
+      "source_id": "booking_compliance_policy_responsibility",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "Client's responsibility for booking compliance policies and training is specified in Section 9.3(c) of Exhibit D."
+    },
+    {
+      "source_id": "extraordinary_measures_authorization",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "The extraordinary measures authorization obligation is specified in Section 8.6 of Exhibit D."
+    },
+    {
+      "source_id": "escalation_response_obligation",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "Client's escalation response obligation is specified in Section 8.8 of Exhibit D."
+    },
+    {
+      "source_id": "legitimate_interest_assessment_obligation",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "The legitimate interest assessment obligation is specified in Section 7.3(b) of Exhibit D."
+    },
+    {
+      "source_id": "data_protection_impact_assessment_obligation",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "The data protection impact assessment obligation for traveler tracking and location monitoring is specified in Section 7.3(b) of Exhibit D."
+    },
+    {
+      "source_id": "provide_traveler_notice_obligation",
+      "target_id": "exhibit_d",
+      "type": "DEFINED_IN",
+      "description": "The obligation to provide notice to Travelers regarding data processing is specified in Section 7.3(c) of Exhibit D."
+    },
+    {
+      "source_id": "escalation_roster_maintenance",
+      "target_id": "client",
+      "type": "ASSIGNED_TO",
+      "description": "Client shall provide Direct Travel with a 24/7 escalation roster and notify of changes within five business days per Section 6.1."
+    },
+    {
+      "source_id": "express_client_authorization_requirement",
+      "target_id": "client",
+      "type": "ASSIGNED_TO",
+      "description": "Physical evacuation, private security, medical evacuation, charter transportation, and extraordinary cost actions require express Client authorization per Section 3.5(b)."
+    },
+    {
+      "source_id": "booking_time_approval_configuration",
+      "target_id": "client",
+      "type": "ASSIGNED_TO",
+      "description": "Client is responsible for defining and maintaining booking-time approval workflows per Section 4.2."
+    },
+    {
+      "source_id": "off_channel_booking_data_visibility_limitation",
+      "target_id": "client",
+      "type": "ASSIGNED_TO",
+      "description": "Client acknowledges that Off-Channel Bookings without itinerary data are not visible to Direct Travel per Section 3.1(d)."
+    },
+    {
+      "source_id": "booking_compliance_policy_responsibility",
+      "target_id": "client",
+      "type": "ASSIGNED_TO",
+      "description": "Client bears sole responsibility for establishing policies and training to maximize booking compliance per Section 9.3(c)."
+    },
+    {
+      "source_id": "off_channel_visibility_limitation_acknowledgment",
+      "target_id": "client",
+      "type": "ASSIGNED_TO",
+      "description": "Client acknowledges that Direct Travel cannot provide Duty of Care Services for off-channel bookings unless itinerary data is provided per Section 9.3."
+    },
+    {
+      "source_id": "extraordinary_measures_authorization",
+      "target_id": "client",
+      "type": "ASSIGNED_TO",
+      "description": "Client must authorize extraordinary measures and accept associated costs per Section 8.6."
+    },
+    {
+      "source_id": "escalation_response_obligation",
+      "target_id": "client",
+      "type": "ASSIGNED_TO",
+      "description": "Client must respond to escalation notifications in a timely manner with authorized decision-makers available 24/7 per Section 8.8."
+    },
+    {
+      "source_id": "data_protection_assessment_obligation",
+      "target_id": "client",
+      "type": "ASSIGNED_TO",
+      "description": "Client must conduct and maintain DPIAs or LIAs as required under applicable data protection laws per Section 8.9."
+    },
+    {
+      "source_id": "legitimate_interest_assessment_obligation",
+      "target_id": "client",
+      "type": "ASSIGNED_TO",
+      "description": "Client is responsible for conducting and documenting any required Legitimate Interest Assessment per Section 7.3(b)."
+    },
+    {
+      "source_id": "data_protection_impact_assessment_obligation",
+      "target_id": "client",
+      "type": "ASSIGNED_TO",
+      "description": "Client is responsible for conducting and documenting a Data Protection Impact Assessment for traveler tracking and welfare checks per Section 7.3(b)."
+    },
+    {
+      "source_id": "provide_traveler_notice_obligation",
+      "target_id": "client",
+      "type": "ASSIGNED_TO",
+      "description": "Client is responsible for providing appropriate notice to Travelers regarding data processing per Section 7.3(c)."
+    },
+    {
+      "source_id": "traveler_outreach_standards",
+      "target_id": "direct_travel_inc",
+      "type": "ASSIGNED_TO",
+      "description": "Direct Travel must conduct welfare checks via configured channels, log all attempts, use standardized response framework, and provide live contact within 15 minutes for NEED ASSISTANCE per Section 5.4."
+    },
+    {
+      "source_id": "non_responsive_traveler_escalation",
+      "target_id": "direct_travel_inc",
+      "type": "ASSIGNED_TO",
+      "description": "Direct Travel must escalate non-responsive travelers after three contacts across two channels over ninety minutes per Section 6.2."
+    },
+    {
+      "source_id": "crisis_bridge_activation",
+      "target_id": "direct_travel_inc",
+      "type": "ASSIGNED_TO",
+      "description": "Direct Travel must establish a Crisis Bridge within sixty minutes of Level 4 determination per Section 6.3(a)."
+    },
+    {
+      "source_id": "sitrep_provision",
+      "target_id": "direct_travel_inc",
+      "type": "ASSIGNED_TO",
+      "description": "Direct Travel must provide SITREPs at approximately thirty-minute intervals during acute phase and hourly thereafter per Section 6.3(c)."
+    },
+    {
+      "source_id": "material_change_notification",
+      "target_id": "direct_travel_inc",
+      "type": "ASSIGNED_TO",
+      "description": "Direct Travel must notify Client of material changes to the Risk Intelligence Platform, service team structure, or regulatory requirements per Section 12.3."
+    },
+    {
+      "source_id": "post_incident_review",
+      "target_id": "direct_travel_inc",
+      "type": "ASSIGNED_TO",
+      "description": "Direct Travel will make commercially reasonable efforts to participate in a post-incident review within thirty days following a Level 4 Incident per Section 12.2."
+    },
+    {
+      "source_id": "quarterly_business_reviews",
+      "target_id": "direct_travel_inc",
+      "type": "ASSIGNED_TO",
+      "description": "Direct Travel participates in quarterly business reviews covering duty of care metrics and SLO performance per Section 12.1."
+    },
+    {
+      "source_id": "quarterly_business_reviews",
+      "target_id": "client",
+      "type": "ASSIGNED_TO",
+      "description": "Client participates in quarterly business reviews covering duty of care metrics per Section 12.1."
+    },
+    {
+      "source_id": "traveler_emergency_services_responsibility",
+      "target_id": "traveler",
+      "type": "ASSIGNED_TO",
+      "description": "Travelers remain responsible for contacting local emergency services when there is an immediate threat to life per Section 3.5(c)."
+    },
+    {
+      "source_id": "incident",
+      "target_id": "severity_level",
+      "type": "CLASSIFIED_AS",
+      "description": "Incidents are classified into Level 1 through Level 4 severity using commercially reasonable judgment informed by the Risk Intelligence Platform per Section 5.1."
+    },
+    {
+      "source_id": "incident",
+      "target_id": "security_threats",
+      "type": "CATEGORIZED_AS",
+      "description": "Incidents may be categorized under security threats including terrorism, armed conflict, crime, and civil unrest per Section 3.2(c)."
+    },
+    {
+      "source_id": "incident",
+      "target_id": "natural_hazards",
+      "type": "CATEGORIZED_AS",
+      "description": "Incidents may be categorized under natural hazards including earthquakes, hurricanes, flooding, wildfire, and volcanic activity per Section 3.2(c)."
+    },
+    {
+      "source_id": "incident",
+      "target_id": "health_risks",
+      "type": "CATEGORIZED_AS",
+      "description": "Incidents may be categorized under health risks including disease outbreaks, pandemic developments, and environmental contamination per Section 3.2(c)."
+    },
+    {
+      "source_id": "incident",
+      "target_id": "transportation_disruptions",
+      "type": "CATEGORIZED_AS",
+      "description": "Incidents may be categorized under transportation disruptions including airport closures, airline failures, rail strikes, and border closures per Section 3.2(c)."
+    },
+    {
+      "source_id": "incident",
+      "target_id": "political_and_regulatory_changes",
+      "type": "CATEGORIZED_AS",
+      "description": "Incidents may be categorized under political and regulatory changes including visa requirement changes, entry restrictions, and government advisories per Section 3.2(c)."
+    },
+    {
+      "source_id": "incident",
+      "target_id": "infrastructure_failures",
+      "type": "CATEGORIZED_AS",
+      "description": "Incidents may be categorized under infrastructure failures including telecommunications outages and power grid failures per Section 3.2(c)."
+    },
+    {
+      "source_id": "incident",
+      "target_id": "traveler",
+      "type": "IMPACTS",
+      "description": "Direct Travel identifies Travelers who are in or near the affected area (impact zone) when an Incident occurs per Section 3.1(c)."
+    },
+    {
+      "source_id": "alerts_service",
+      "target_id": "traveler",
+      "type": "SENT_TO",
+      "description": "Direct Travel delivers destination-specific or event-based alerts to Travelers through email, SMS, or mobile push notification per Section 3.4(a)."
+    },
+    {
+      "source_id": "welfare_checks_service",
+      "target_id": "traveler",
+      "type": "SENT_TO",
+      "description": "Welfare checks are attempted via SMS, email, mobile push, and voice call to Travelers in priority order per Section 5.4(a)."
+    },
+    {
+      "source_id": "alerts_service",
+      "target_id": "incident",
+      "type": "TRIGGERED_BY",
+      "description": "Alerts are generated when conditions meeting configured thresholds are detected near a Traveler's current or upcoming destination per Section 3.4(a)."
+    },
+    {
+      "source_id": "welfare_checks_service",
+      "target_id": "incident",
+      "type": "TRIGGERED_BY",
+      "description": "Welfare checks are initiated during incidents classified at Severity Level 2 or above per Section 3.5(a)."
+    },
+    {
+      "source_id": "traveler",
+      "target_id": "safe",
+      "type": "RESPONDS_WITH",
+      "description": "Travelers may confirm status as SAFE indicating no immediate danger and no assistance required per Section 5.4(c)."
+    },
+    {
+      "source_id": "traveler",
+      "target_id": "need_assistance",
+      "type": "RESPONDS_WITH",
+      "description": "Travelers may confirm status as NEED ASSISTANCE indicating they require support per Section 5.4(c)."
+    },
+    {
+      "source_id": "traveler",
+      "target_id": "not_in_area",
+      "type": "RESPONDS_WITH",
+      "description": "Travelers may confirm status as NOT IN AREA indicating they are not in or near the affected area per Section 5.4(c)."
+    },
+    {
+      "source_id": "traveler",
+      "target_id": "no_response",
+      "type": "RESPONDS_WITH",
+      "description": "Travelers who have not responded within the configured outreach window receive NO RESPONSE status per Section 5.4(c)."
+    },
+    {
+      "source_id": "need_assistance",
+      "target_id": "incident_response_and_traveler_assistance",
+      "type": "TRIGGERS_ACTION",
+      "description": "If a Traveler indicates NEED ASSISTANCE, Direct Travel will attempt live contact within 15 minutes and offer assistance consistent with Section 3.5 per Section 5.4(d)."
+    },
+    {
+      "source_id": "no_response",
+      "target_id": "non_responsive_traveler_escalation",
+      "type": "TRIGGERS_ACTION",
+      "description": "No Response status triggers escalation per Section 6.2 as specified in the traveler outreach standards table in Section 5.4(c)."
+    },
+    {
+      "source_id": "incident_response_and_traveler_assistance",
+      "target_id": "severity_level",
+      "type": "ACTIVATED_AT",
+      "description": "Incident response and traveler assistance services are activated at Severity Level 2 and above per Section 3.5(a)."
+    },
+    {
+      "source_id": "crisis_bridge",
+      "target_id": "severity_level",
+      "type": "ACTIVATED_AT",
+      "description": "Crisis Bridge is established during Level 4 Incidents per Sections 2.4 and 6.3(a)."
+    },
+    {
+      "source_id": "welfare_checks_service",
+      "target_id": "severity_level",
+      "type": "ACTIVATED_AT",
+      "description": "Welfare checks are proactive at Level 3 (within 60 minutes) and Level 4 (within 30 minutes), and optional at Level 2 per Section 5.2."
+    },
+    {
+      "source_id": "sitrep_service",
+      "target_id": "severity_level",
+      "type": "ACTIVATED_AT",
+      "description": "SITREP delivery is activated at Level 4 Incidents during Crisis Bridge activation per Section 6.3(c)."
+    },
+    {
+      "source_id": "primary_travel_program_owner",
+      "target_id": "client",
+      "type": "DESIGNATED_BY",
+      "description": "Client designates the Primary Travel Program Owner as first point of contact for all Incidents on the escalation roster per Section 6.1."
+    },
+    {
+      "source_id": "alternate_travel_program_contact",
+      "target_id": "client",
+      "type": "DESIGNATED_BY",
+      "description": "Client designates the Alternate Travel Program Contact as backup when the primary is unavailable per Section 6.1."
+    },
+    {
+      "source_id": "after_hours_duty_contact",
+      "target_id": "client",
+      "type": "DESIGNATED_BY",
+      "description": "Client designates the After-Hours Duty Contact for incidents occurring outside Client Business Hours per Section 6.1."
+    },
+    {
+      "source_id": "corporate_security",
+      "target_id": "client",
+      "type": "DESIGNATED_BY",
+      "description": "Client designates Corporate Security for security-related incidents at Level 3 and above (if applicable) per Section 6.1."
+    },
+    {
+      "source_id": "human_resources_duty_contact",
+      "target_id": "client",
+      "type": "DESIGNATED_BY",
+      "description": "Client designates the Human Resources Duty Contact for incidents involving employee welfare, injury, or fatality per Section 6.1."
+    },
+    {
+      "source_id": "senior_leadership_contact",
+      "target_id": "client",
+      "type": "DESIGNATED_BY",
+      "description": "Client designates the Senior Leadership Contact for Level 4 Crisis escalation requiring senior awareness and decision-making per Section 6.1."
+    },
+    {
+      "source_id": "severity_level",
+      "target_id": "primary_travel_program_owner",
+      "type": "ESCALATED_TO",
+      "description": "The Primary Travel Program Owner is the first point of contact for all Incidents per Section 6.1."
+    },
+    {
+      "source_id": "severity_level",
+      "target_id": "alternate_travel_program_contact",
+      "type": "ESCALATED_TO",
+      "description": "The Alternate Travel Program Contact is engaged when the Primary Travel Program Owner is unavailable per Section 6.1."
+    },
+    {
+      "source_id": "severity_level",
+      "target_id": "after_hours_duty_contact",
+      "type": "ESCALATED_TO",
+      "description": "The After-Hours Duty Contact is engaged for incidents occurring outside Client Business Hours per Section 6.1."
+    },
+    {
+      "source_id": "severity_level",
+      "target_id": "corporate_security",
+      "type": "ESCALATED_TO",
+      "description": "Corporate Security is engaged for security-related incidents at Level 3 and above per Section 6.1."
+    },
+    {
+      "source_id": "severity_level",
+      "target_id": "human_resources_duty_contact",
+      "type": "ESCALATED_TO",
+      "description": "Human Resources Duty Contact is engaged for incidents involving employee welfare, injury, or fatality per Section 6.1."
+    },
+    {
+      "source_id": "severity_level",
+      "target_id": "senior_leadership_contact",
+      "type": "ESCALATED_TO",
+      "description": "Senior Leadership Contact is engaged for Level 4 Crisis incidents requiring senior awareness and decision-making per Section 6.1."
+    },
+    {
+      "source_id": "approved_channels",
+      "target_id": "duty_of_care_services",
+      "type": "ENABLES_COVERAGE",
+      "description": "Direct Travel can only provide Duty of Care Services for travel visible in its systems; bookings through Approved Channels provide this visibility per Sections 2.1 and 9.1."
+    },
+    {
+      "source_id": "approved_channels",
+      "target_id": "alerts_service",
+      "type": "ENABLES_COVERAGE",
+      "description": "Travelers who book outside Approved Channels may not receive alerts per Section 9.3(b)."
+    },
+    {
+      "source_id": "approved_channels",
+      "target_id": "welfare_checks_service",
+      "type": "ENABLES_COVERAGE",
+      "description": "Travelers who book outside Approved Channels may not receive welfare checks per Section 9.3(b)."
+    },
+    {
+      "source_id": "approved_channels",
+      "target_id": "disruption_assistance_service",
+      "type": "ENABLES_COVERAGE",
+      "description": "Travelers who book outside Approved Channels may not receive disruption assistance per Section 9.3(b)."
+    },
+    {
+      "source_id": "approved_channels",
+      "target_id": "itinerary_visibility_and_traveler_locate",
+      "type": "ENABLES_COVERAGE",
+      "description": "Direct Travel captures and maintains itinerary records for all travel booked through Approved Channels per Section 3.1(a)."
+    },
+    {
+      "source_id": "risk_intelligence_and_monitoring",
+      "target_id": "risk_intelligence_platform",
+      "type": "ENABLED_BY",
+      "description": "Direct Travel maintains continuous 24/7 monitoring using the Risk Intelligence Platform's intelligence capabilities per Section 3.2(a)."
+    },
+    {
+      "source_id": "pre_trip_services",
+      "target_id": "risk_intelligence_platform",
+      "type": "ENABLED_BY",
+      "description": "Destination risk ratings and pre-trip briefing content are sourced from the Risk Intelligence Platform per Sections 3.3(a) and 3.3(b)."
+    },
+    {
+      "source_id": "in_trip_monitoring_and_alerts",
+      "target_id": "risk_intelligence_platform",
+      "type": "ENABLED_BY",
+      "description": "Active threat alerts are layered on the risk map from the Risk Intelligence Platform for monitoring per Section 3.2(b)."
+    },
+    {
+      "source_id": "risk_intelligence",
+      "target_id": "risk_intelligence_platform",
+      "type": "ENABLED_BY",
+      "description": "Risk ratings, destination advisories, and threat assessments are sourced from the Risk Intelligence Platform per Section 3.3(a)."
+    },
+    {
+      "source_id": "pre_trip_briefing_service",
+      "target_id": "risk_intelligence_platform",
+      "type": "ENABLED_BY",
+      "description": "Briefing content is sourced from the Risk Intelligence Platform and updated on a continuous basis per Section 3.3(b)."
+    },
+    {
+      "source_id": "duty_of_care_services",
+      "target_id": "platform",
+      "type": "ENABLED_BY",
+      "description": "Duty of Care Services are delivered through Direct Travel's integrated technology ecosystem including booking tools, risk intelligence integration, and communication tools per Section 2.14."
+    },
+    {
+      "source_id": "duty_of_care_services",
+      "target_id": "gds",
+      "type": "ENABLED_BY",
+      "description": "Effectiveness of Duty of Care Services depends on supplier system availability including GDS per Sections 5.3 and 10.2."
+    },
+    {
+      "source_id": "pre_trip_services",
+      "target_id": "booking_platform",
+      "type": "ENABLED_BY",
+      "description": "High-risk destination approval workflows are enforced within the booking platform, preventing ticketing until approval is obtained per Section 3.3(c)."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "platform",
+      "type": "OPERATES",
+      "description": "The Platform is described as Direct Travel's integrated technology ecosystem per Section 2.14."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "incident_activity_log",
+      "type": "OPERATES",
+      "description": "Direct Travel maintains an incident activity log for Level 3 and Level 4 Incidents per Appendix C."
+    },
+    {
+      "source_id": "crisis24",
+      "target_id": "crisis24_horizon",
+      "type": "OPERATES",
+      "description": "Crisis24 Horizon is the third-party risk management platform provided by Crisis24 (a GardaWorld company) as designated by Direct Travel per Section 2.6."
+    },
+    {
+      "source_id": "client",
+      "target_id": "direct_travel_inc",
+      "type": "ENGAGES",
+      "description": "Client contracts Direct Travel for travel management and duty of care services as established in the preamble and throughout the Agreement."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "crisis24",
+      "type": "ENGAGES",
+      "description": "Direct Travel designates Crisis24 Horizon as the Risk Intelligence Platform and lists Crisis24 as a Specialist Provider per Sections 2.6 and 2.11."
+    },
+    {
+      "source_id": "direct_travel_inc",
+      "target_id": "specialist_provider",
+      "type": "ENGAGES",
+      "description": "Specialist Providers may be engaged by Direct Travel on Client's behalf for security, medical, evacuation, or other services per Section 2.11."
+    },
+    {
+      "source_id": "client",
+      "target_id": "specialist_provider",
+      "type": "ENGAGES",
+      "description": "Specialist Providers may be engaged by Client directly or by Direct Travel on Client's behalf per Section 2.11."
+    },
+    {
+      "source_id": "traveler",
+      "target_id": "pnr",
+      "type": "HAS_BOOKING",
+      "description": "Travelers whose itinerary is booked through Approved Channels have PNR records maintained in the GDS or NDC connection per Sections 2.9 and 2.12."
+    },
+    {
+      "source_id": "traveler",
+      "target_id": "off_channel_booking",
+      "type": "HAS_BOOKING",
+      "description": "An Off-Channel Booking is any travel booking made by or on behalf of a Traveler outside of Approved Channels per Section 2.8."
+    },
+    {
+      "source_id": "pnr",
+      "target_id": "approved_channels",
+      "type": "BOOKED_THROUGH",
+      "description": "PNR records are created for bookings through Approved Channels including designated online booking tools and agent-assisted channels per Sections 2.1 and 2.9."
+    },
+    {
+      "source_id": "incident_response_and_traveler_assistance",
+      "target_id": "client",
+      "type": "REQUIRES_AUTHORIZATION_FROM",
+      "description": "Physical evacuation, private security, medical evacuation, charter transport, premium-class rebooking, and extraordinary costs require express Client authorization per Section 3.5(b)."
+    },
+    {
+      "source_id": "non_responsive_traveler_escalation",
+      "target_id": "client",
+      "type": "REQUIRES_AUTHORIZATION_FROM",
+      "description": "Further locate attempts beyond the standard outreach cadence require Client authorization and may incur additional costs per Section 6.2(c)."
+    },
+    {
+      "source_id": "express_client_authorization_requirement",
+      "target_id": "incident_response_and_traveler_assistance",
+      "type": "RELATES_TO",
+      "description": "The authorization requirement constrains Direct Travel's incident response capabilities for evacuation, security deployment, and other extraordinary measures per Section 3.5(b)."
+    },
+    {
+      "source_id": "traveler_outreach_standards",
+      "target_id": "welfare_checks_service",
+      "type": "RELATES_TO",
+      "description": "Traveler outreach standards govern the channel priority, logging requirements, and response framework for welfare checks per Section 5.4."
+    },
+    {
+      "source_id": "escalation_roster_maintenance",
+      "target_id": "incident_response_and_traveler_assistance",
+      "type": "RELATES_TO",
+      "description": "The escalation roster supports incident response by providing 24/7 contact availability for Client notification during incidents per Sections 6.1 and 3.5(a)."
+    },
+    {
+      "source_id": "off_channel_booking_data_visibility_limitation",
+      "target_id": "itinerary_visibility_and_traveler_locate",
+      "type": "RELATES_TO",
+      "description": "The visibility limitation acknowledges that Direct Travel cannot locate, alert, or assist Travelers whose travel is not in its systems per Section 3.1(d)."
+    },
+    {
+      "source_id": "off_channel_visibility_limitation_acknowledgment",
+      "target_id": "duty_of_care_services",
+      "type": "RELATES_TO",
+      "description": "Client acknowledges that Direct Travel cannot provide Duty of Care Services for off-channel bookings unless itinerary data is provided per Section 9.3."
+    },
+    {
+      "source_id": "booking_compliance_policy_responsibility",
+      "target_id": "approved_channels",
+      "type": "RELATES_TO",
+      "description": "Client is solely responsible for establishing policies and training to maximize booking compliance with Approved Channels per Section 9.3(c)."
+    },
+    {
+      "source_id": "extraordinary_measures_authorization",
+      "target_id": "incident_response_and_traveler_assistance",
+      "type": "RELATES_TO",
+      "description": "Client must authorize and accept costs for extraordinary measures including evacuation and charter transport per Section 8.6."
+    },
+    {
+      "source_id": "escalation_response_obligation",
+      "target_id": "incident_response_and_traveler_assistance",
+      "type": "RELATES_TO",
+      "description": "Client's timely response to escalation notifications enables effective incident response, particularly during Level 3 and Level 4 Incidents per Section 8.8."
+    },
+    {
+      "source_id": "crisis_bridge_activation",
+      "target_id": "crisis_bridge",
+      "type": "RELATES_TO",
+      "description": "The crisis bridge activation obligation governs the establishment of Crisis Bridges within sixty minutes of Level 4 determination per Section 6.3."
+    },
+    {
+      "source_id": "sitrep_provision",
+      "target_id": "sitrep_service",
+      "type": "RELATES_TO",
+      "description": "The SITREP provision obligation defines the cadence and content of situation updates during Crisis Bridge activation per Section 6.3(c-d)."
+    },
+    {
+      "source_id": "sitrep_provision",
+      "target_id": "crisis_bridge",
+      "type": "RELATES_TO",
+      "description": "SITREPs are delivered through the Crisis Bridge at target cadence of thirty minutes during acute phase and hourly thereafter per Section 6.3(c)."
+    },
+    {
+      "source_id": "legitimate_interest_assessment_obligation",
+      "target_id": "traveler_data",
+      "type": "RELATES_TO",
+      "description": "Client must conduct a Legitimate Interest Assessment relating to the processing of Traveler Data per Section 7.3(b)."
+    },
+    {
+      "source_id": "data_protection_impact_assessment_obligation",
+      "target_id": "traveler_data",
+      "type": "RELATES_TO",
+      "description": "Client must conduct a DPIA for traveler tracking, location monitoring, and welfare check communications per Section 7.3(b)."
+    },
+    {
+      "source_id": "provide_traveler_notice_obligation",
+      "target_id": "traveler_data",
+      "type": "RELATES_TO",
+      "description": "Client must provide Travelers with transparent notice regarding collection, purposes, recipients, retention, and rights related to Traveler Data per Section 7.3(c)."
+    },
+    {
+      "source_id": "material_change_notification",
+      "target_id": "risk_intelligence_platform",
+      "type": "RELATES_TO",
+      "description": "Direct Travel must notify Client of material changes to the Risk Intelligence Platform or its capabilities per Section 12.3."
+    },
+    {
+      "source_id": "post_incident_review",
+      "target_id": "incident",
+      "type": "RELATES_TO",
+      "description": "Post-incident reviews are conducted following Level 4 Incidents to identify improvements and assess response effectiveness per Section 12.2."
+    },
+    {
+      "source_id": "quarterly_business_reviews",
+      "target_id": "duty_of_care_services",
+      "type": "RELATES_TO",
+      "description": "Quarterly business reviews include duty of care program metrics, SLO performance, welfare check response rates, and off-channel booking visibility gaps per Section 12.1."
+    },
+    {
+      "source_id": "duty_of_care_services",
+      "target_id": "traveler_data",
+      "type": "REQUIRES_DATA",
+      "description": "Direct Travel processes Traveler Data only to provide services and its effectiveness is materially reduced where profile data is incomplete per Sections 7.1 and 7.4."
+    },
+    {
+      "source_id": "duty_of_care_services",
+      "target_id": "itinerary_data",
+      "type": "REQUIRES_DATA",
+      "description": "Effectiveness of Duty of Care Services depends on itinerary visibility through Approved Channels or supported integrations per Section 10.2."
+    },
+    {
+      "source_id": "welfare_checks_service",
+      "target_id": "mobile_phone_number_data_element",
+      "type": "REQUIRES_DATA",
+      "description": "Mobile phone number is the primary welfare check channel; its absence means SMS outreach is unavailable with degraded response time per Section 7.4."
+    },
+    {
+      "source_id": "welfare_checks_service",
+      "target_id": "email_address_data_element",
+      "type": "REQUIRES_DATA",
+      "description": "Email address is a secondary alert and communication channel for welfare checks; its absence prevents email-based outreach per Section 7.4."
+    },
+    {
+      "source_id": "alerts_service",
+      "target_id": "mobile_phone_number_data_element",
+      "type": "REQUIRES_DATA",
+      "description": "SMS alerts require a mobile phone number; absence means SMS alerts are unavailable per Sections 3.4(a) and 7.4."
+    },
+    {
+      "source_id": "alerts_service",
+      "target_id": "email_address_data_element",
+      "type": "REQUIRES_DATA",
+      "description": "Email is an alert delivery channel; absence prevents email-based alerts per Sections 3.4(a) and 7.4."
+    },
+    {
+      "source_id": "itinerary_visibility_and_traveler_locate",
+      "target_id": "full_legal_name_data_element",
+      "type": "REQUIRES_DATA",
+      "description": "Full legal name is required for Traveler identification and supplier matching; absence prevents identity confirmation per Section 7.4."
+    },
+    {
+      "source_id": "incident_response_and_traveler_assistance",
+      "target_id": "emergency_contact_data_element",
+      "type": "REQUIRES_DATA",
+      "description": "Emergency contact information is required for next-of-kin notification in critical situations; absence requires Client to provide during incident per Section 7.4."
+    },
+    {
+      "source_id": "incident_response_and_traveler_assistance",
+      "target_id": "nationality_country_of_residence_data_element",
+      "type": "REQUIRES_DATA",
+      "description": "Nationality and country of residence are required for consular and immigration assistance; absence limits coordination with appropriate embassy per Section 7.4."
+    },
+    {
+      "source_id": "pre_trip_services",
+      "target_id": "passport_details_data_element",
+      "type": "REQUIRES_DATA",
+      "description": "Passport details are required for international travel documentation verification and consular coordination per Section 7.4."
+    },
+    {
+      "source_id": "itinerary_visibility_and_traveler_locate",
+      "target_id": "itinerary_data",
+      "type": "REQUIRES_DATA",
+      "description": "Itinerary data is essential for traveler locate capabilities; Direct Travel identifies travelers in impact zones using available itinerary data per Section 3.1(c)."
+    },
+    {
+      "source_id": "supplier_direct_connect_feeds",
+      "target_id": "duty_of_care_services",
+      "type": "ENABLES_COVERAGE",
+      "description": "Integration of supplier direct-connect booking feeds reduces off-channel visibility gaps enabling duty of care coverage per Section 9.2(a)."
+    },
+    {
+      "source_id": "automated_email_parsing_system",
+      "target_id": "duty_of_care_services",
+      "type": "ENABLES_COVERAGE",
+      "description": "Automated email parsing ingests forwarded itinerary confirmations to reduce off-channel visibility gaps per Section 9.2(b)."
+    },
+    {
+      "source_id": "corporate_travel_policy",
+      "target_id": "approved_channels",
+      "type": "RELATES_TO",
+      "description": "Client must establish a corporate travel policy that requires booking through Approved Channels per Section 8.1."
+    },
+    {
+      "source_id": "traveler_data",
+      "target_id": "specialist_provider",
+      "type": "SENT_TO",
+      "description": "During an Incident, Direct Travel may share minimum necessary Traveler Data with Specialist Providers authorized by Client per Section 7.5(c)."
+    },
+    {
+      "source_id": "traveler_data",
+      "target_id": "travel_suppliers",
+      "type": "SENT_TO",
+      "description": "During an Incident, Direct Travel may share minimum necessary Traveler Data with travel suppliers for rebooking and itinerary changes per Section 7.5(b)."
+    },
+    {
+      "source_id": "mobile_application",
+      "target_id": "welfare_checks_service",
+      "type": "ENABLED_BY",
+      "description": "Mobile application push notification is one of the configured welfare check outreach channels per Section 5.4(a)."
+    },
+    {
+      "source_id": "crisis24_horizon",
+      "target_id": "risk_intelligence_platform",
+      "type": "ENABLED_BY",
+      "description": "The Risk Intelligence Platform is currently Crisis24 Horizon, designated by Direct Travel for global threat monitoring and traveler locate capabilities per Section 2.6."
+    },
+    {
+      "source_id": "interactive_global_map",
+      "target_id": "itinerary_visibility_and_traveler_locate",
+      "type": "ENABLED_BY",
+      "description": "The interactive global map displays Traveler locations overlaid with destination risk ratings and active threat alerts where included in the SOW per Section 3.1(b)."
+    },
+    {
+      "source_id": "pre_trip_briefing_service",
+      "target_id": "statement_of_work",
+      "type": "DEFINED_IN",
+      "description": "Pre-trip briefing delivery method and threshold are configurable per SOW as specified in Appendix A.4."
+    },
+    {
+      "source_id": "crisis_bridge",
+      "target_id": "statement_of_work",
+      "type": "DEFINED_IN",
+      "description": "Crisis Bridge availability and activation triggers are configurable per SOW as specified in Appendix A.2 and Section 6.3(a)."
+    },
+    {
+      "source_id": "sitrep_service",
+      "target_id": "statement_of_work",
+      "type": "DEFINED_IN",
+      "description": "SITREP cadence for Level 4 acute and sustained incidents is configurable in the SOW per Appendix A.2."
+    },
+    {
+      "source_id": "travel_insurance_verification",
+      "target_id": "statement_of_work",
+      "type": "DEFINED_IN",
+      "description": "Travel insurance verification is configurable as Enabled or Disabled in the SOW per Appendix A.4."
+    },
+    {
+      "source_id": "risk_intelligence_dashboard_and_reporting",
+      "target_id": "statement_of_work",
+      "type": "DEFINED_IN",
+      "description": "Risk intelligence dashboard access level is configurable as Full, Read-only, or Disabled in the SOW per Appendix A.5."
+    },
+    {
+      "source_id": "interactive_global_map",
+      "target_id": "statement_of_work",
+      "type": "DEFINED_IN",
+      "description": "Interactive global map access is configurable as Included or Not included in the SOW per Appendix A.5."
+    },
+    {
+      "source_id": "quarterly_business_reviews",
+      "target_id": "statement_of_work",
+      "type": "DEFINED_IN",
+      "description": "Cadence for quarterly business reviews may be specified in the SOW per Section 12.1."
+    },
+    {
+      "source_id": "duty_of_care_services",
+      "target_id": "statement_of_work",
+      "type": "DEFINED_IN",
+      "description": "Fees for Duty of Care Services are specified in the SOW per Section 11.1."
+    }
+  ]
+}

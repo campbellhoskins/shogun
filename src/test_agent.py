@@ -18,8 +18,13 @@ from pathlib import Path
 from typing import Any
 
 import networkx as nx
+import os
+
 from dotenv import load_dotenv
 from anthropic import Anthropic
+
+load_dotenv()
+TEST_MODEL = os.environ.get("TEST_MODEL", "claude-haiku-4-5-20251001")
 
 from src.build_graph import load_graph_file, list_graphs
 from src.graph import build_graph
@@ -40,7 +45,7 @@ def ask_verbose(question: str, g: nx.DiGraph, client: Anthropic, max_turns: int 
         turn_count += 1
 
         response = client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model=TEST_MODEL,
             max_tokens=4096,
             system=SYSTEM_PROMPT,
             tools=TOOLS,

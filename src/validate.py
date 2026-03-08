@@ -4,8 +4,13 @@ import json
 import sys
 from pathlib import Path
 
+import os
+
 from dotenv import load_dotenv
 from anthropic import Anthropic
+
+load_dotenv()
+TEST_MODEL = os.environ.get("TEST_MODEL", "claude-haiku-4-5-20251001")
 
 from src.main import load_document
 from src.parser import parse_policy
@@ -88,7 +93,7 @@ def coverage_check(policy_text: str, ontology_graph, client: Anthropic) -> None:
     graph_text = "\n".join(graph_summary)
 
     response = client.messages.create(
-        model="claude-sonnet-4-20250514",
+        model=TEST_MODEL,
         max_tokens=4096,
         system="""\
 You are a quality assurance analyst reviewing an ontology graph extracted from a policy document.

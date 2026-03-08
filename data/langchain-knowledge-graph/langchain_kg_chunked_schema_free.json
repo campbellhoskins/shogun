@@ -1,0 +1,5103 @@
+{
+  "name": "chunked_schema_free",
+  "mode": "structured_output",
+  "elapsed_seconds": 316.23,
+  "document_count": 19,
+  "raw_node_count": 376,
+  "deduped_node_count": 302,
+  "relationship_count": 406,
+  "node_type_count": 65,
+  "relationship_type_count": 143,
+  "node_type_distribution": {
+    "Service": 29,
+    "Organization": 24,
+    "Document": 14,
+    "Data": 14,
+    "Field": 14,
+    "Cost": 12,
+    "Concept": 11,
+    "Communication": 11,
+    "System": 9,
+    "Classification": 8,
+    "Regulation": 8,
+    "Role": 8,
+    "Process": 8,
+    "Coverage": 7,
+    "Provider": 7,
+    "Metric": 7,
+    "Risk": 6,
+    "Configuration": 6,
+    "Technology": 5,
+    "Event": 5,
+    "Fee": 5,
+    "Program": 4,
+    "Company": 4,
+    "Location": 4,
+    "Category": 4,
+    "Response": 4,
+    "Assessment": 4,
+    "Incident": 4,
+    "Communication channel": 4,
+    "Alert": 4,
+    "Person": 3,
+    "Structure": 3,
+    "Standard": 2,
+    "Region": 2,
+    "Entity": 2,
+    "Requirement": 2,
+    "Platform": 2,
+    "Section": 2,
+    "Service level": 2,
+    "Service option": 2,
+    "Dashboard": 2,
+    "Agreement": 1,
+    "Rating": 1,
+    "Policy": 1,
+    "Provision": 1,
+    "Channel": 1,
+    "Profile": 1,
+    "Measure": 1,
+    "Law": 1,
+    "Issue": 1,
+    "Integration": 1,
+    "Rule": 1,
+    "Limit": 1,
+    "Concern": 1,
+    "Contact": 1,
+    "Recommendation": 1,
+    "Model": 1,
+    "Environment": 1,
+    "Practice": 1,
+    "Period": 1,
+    "Legal obligation": 1,
+    "Clause": 1,
+    "Document section": 1,
+    "Report": 1,
+    "Language": 1
+  },
+  "relationship_type_distribution": {
+    "INCLUDES": 63,
+    "CONTAINS": 22,
+    "USES": 16,
+    "APPLIES_TO": 14,
+    "REQUIRES": 13,
+    "PROVIDES": 12,
+    "TYPE_OF": 12,
+    "MAINTAINS": 8,
+    "DEFINED_IN": 6,
+    "MONITORS": 6,
+    "RESPONSIBLE_FOR": 6,
+    "RELATES_TO": 6,
+    "DOES_NOT_CONTROL": 6,
+    "DOES_NOT_PROVIDE": 6,
+    "SUPPORTS": 5,
+    "CONFIGURES": 5,
+    "CONTACT_FOR": 5,
+    "SHARES_DATA_WITH": 5,
+    "HAS": 4,
+    "CAN_REQUEST_CHANGE": 4,
+    "CAN_RESPOND": 4,
+    "DEPENDS_ON": 4,
+    "DOES_NOT_OPERATE": 4,
+    "FOR": 4,
+    "BOOKS_THROUGH": 3,
+    "CONTACTS": 3,
+    "RESPONDS_TO": 3,
+    "TRIGGERS": 3,
+    "CONDUCTS": 3,
+    "MAY_NOT_RECEIVE": 3,
+    "SUBJECT_TO": 3,
+    "SPECIFIED_IN": 3,
+    "GENERATES": 3,
+    "SURVIVES_TERMINATION": 3,
+    "GOVERNS": 3,
+    "TRACKS": 3,
+    "INCORPORATED_INTO": 2,
+    "PARTY_TO": 2,
+    "RELATED_TO": 2,
+    "COORDINATES_WITH": 2,
+    "PROCESSES": 2,
+    "IDENTIFIES": 2,
+    "DELIVERS": 2,
+    "BASED_ON": 2,
+    "ESTABLISHES": 2,
+    "AUTHORIZES": 2,
+    "INSTRUCTS": 2,
+    "TRANSFERRED_FROM": 2,
+    "COMMUNICATES": 2,
+    "NOTIFIES": 2,
+    "DESIGNATES": 2,
+    "REQUIRED_BY": 2,
+    "NOT_LIABLE_FOR": 2,
+    "ARISING_FROM": 2,
+    "TAKES_PRECEDENCE_OVER": 2,
+    "INVOLVES": 2,
+    "AUTOMATIC_FOR": 2,
+    "ENABLED_FOR": 2,
+    "REFERS_TO": 2,
+    "FORMS_PART_OF": 1,
+    "OWNS": 1,
+    "HAS_DUTY_OF_CARE_TO": 1,
+    "IS_A": 1,
+    "PROVIDES_FRAMEWORK_FOR": 1,
+    "PROVIDED_BY": 1,
+    "APPROVED_BY": 1,
+    "OUTSIDE_OF": 1,
+    "ESTABLISHED_DURING": 1,
+    "CURRENTLY": 1,
+    "DESIGNATED_BY": 1,
+    "MEANS": 1,
+    "SUBSIDIARY_OF": 1,
+    "EMPLOYEE_OF": 1,
+    "OWNED_BY": 1,
+    "INTEGRATES": 1,
+    "PROVIDES_SERVICE": 1,
+    "PROVIDES_ACCESS": 1,
+    "CAPTURED_FROM": 1,
+    "DISPLAYS_LOCATIONS": 1,
+    "OVERLAYS": 1,
+    "DELIVERED_TO": 1,
+    "VERIFIES": 1,
+    "SENT_TO": 1,
+    "COORDINATES": 1,
+    "CONTRACTS": 1,
+    "PROVIDED_TO": 1,
+    "DETERMINES": 1,
+    "PROVIDES_TO": 1,
+    "ACTIVATED_FOR": 1,
+    "BOUND_BY": 1,
+    "CONTROLS": 1,
+    "PROCESSES_AS_PROCESSOR": 1,
+    "GOVERNED_BY": 1,
+    "PROVIDES_NOTICE_TO": 1,
+    "SHARES_DURING_INCIDENT": 1,
+    "DERIVED_FROM": 1,
+    "REQUIRES_INCLUSION_IN": 1,
+    "RETAINS": 1,
+    "SAFEGUARDS_TRANSFER_OF": 1,
+    "REQUIRES_BOOKING_THROUGH": 1,
+    "DEFINES_APPROVAL_FOR": 1,
+    "DEFINES": 1,
+    "ENSURES_COMPLETE": 1,
+    "ENSURES_ACCURATE": 1,
+    "ENSURES_INFORMED": 1,
+    "ENSURES_TRAINED": 1,
+    "CONTACTS_FIRST": 1,
+    "PROCURES": 1,
+    "PROVIDES_POLICY_DETAILS": 1,
+    "SENDS": 1,
+    "MADE_OUTSIDE": 1,
+    "CREATES": 1,
+    "AFFECTS": 1,
+    "INGESTS": 1,
+    "CONFIGURED_WITHIN": 1,
+    "RESTRICTS": 1,
+    "ACKNOWLEDGES_LIMITATIONS": 1,
+    "BOOKS_OUTSIDE": 1,
+    "RESPONSIBLE_FOR_TRAINING": 1,
+    "CANNOT_GUARANTEE_SAFETY": 1,
+    "INCLUDED_IN": 1,
+    "BORNE_BY": 1,
+    "COVERED_BY": 1,
+    "AUTHORIZED_BY": 1,
+    "DURING": 1,
+    "DUE_TO": 1,
+    "EXAMPLE_OF": 1,
+    "OBTAINS": 1,
+    "FROM": 1,
+    "BEFORE_EXCEEDING": 1,
+    "OVERRIDES": 1,
+    "BELONGS_TO": 1,
+    "PARTICIPATES_IN": 1,
+    "OPERATES": 1,
+    "IMPACTS": 1,
+    "CAN_AMEND": 1,
+    "COTERMINOUS_WITH": 1,
+    "TERMINATED_BY": 1,
+    "DURATION": 1,
+    "CONFIGURED_PER": 1,
+    "DEFAULT_LANGUAGE": 1,
+    "INCLUDED_FOR": 1,
+    "LOGS": 1
+  },
+  "nodes": [
+    {
+      "id": "Exhibit D",
+      "type": "Document",
+      "properties": {
+        "title": "DUTY OF CARE & TRAVEL RISK MANAGEMENT SERVICES"
+      }
+    },
+    {
+      "id": "Travel Services Agreement",
+      "type": "Agreement",
+      "properties": {}
+    },
+    {
+      "id": "Client",
+      "type": "Organization",
+      "properties": {}
+    },
+    {
+      "id": "Direct Travel, Inc.",
+      "type": "Organization",
+      "properties": {
+        "alternative_name": "TMC"
+      }
+    },
+    {
+      "id": "Statement Of Work",
+      "type": "Document",
+      "properties": {
+        "abbreviation": "SOW"
+      }
+    },
+    {
+      "id": "Direct Travel",
+      "type": "Organization",
+      "properties": {
+        "service": "travel assistance",
+        "availability": "24/7 emergency support"
+      }
+    },
+    {
+      "id": "Duty Of Care Services",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Travel Risk Management Program",
+      "type": "Program",
+      "properties": {
+        "abbreviation": "TRM"
+      }
+    },
+    {
+      "id": "Severity Level Classifications",
+      "type": "Classification",
+      "properties": {}
+    },
+    {
+      "id": "Osha General Duty Clause",
+      "type": "Regulation",
+      "properties": {
+        "section": "Section 5(a)(1)",
+        "act": "Occupational Safety and Health Act of 1970",
+        "jurisdiction": "United States"
+      }
+    },
+    {
+      "id": "Health And Safety At Work Act 1974",
+      "type": "Regulation",
+      "properties": {
+        "year": "1974",
+        "jurisdiction": "United Kingdom"
+      }
+    },
+    {
+      "id": "Management Of Health And Safety At Work Regulations 1999",
+      "type": "Regulation",
+      "properties": {
+        "year": "1999",
+        "jurisdiction": "United Kingdom"
+      }
+    },
+    {
+      "id": "Corporate Manslaughter And Corporate Homicide Act 2007",
+      "type": "Regulation",
+      "properties": {
+        "year": "2007",
+        "jurisdiction": "United Kingdom"
+      }
+    },
+    {
+      "id": "Framework Directive 89/391/Eec",
+      "type": "Regulation",
+      "properties": {
+        "directive_number": "89/391/EEC",
+        "jurisdiction": "European Union"
+      }
+    },
+    {
+      "id": "Iso 31030:2021",
+      "type": "Standard",
+      "properties": {
+        "title": "Travel Risk Management",
+        "year": "2021",
+        "derived_from": "ISO 31000"
+      }
+    },
+    {
+      "id": "Employers",
+      "type": "Role",
+      "properties": {}
+    },
+    {
+      "id": "Employees",
+      "type": "Role",
+      "properties": {}
+    },
+    {
+      "id": "Approved Channels",
+      "type": "Concept",
+      "properties": {}
+    },
+    {
+      "id": "After-Hours",
+      "type": "Concept",
+      "properties": {}
+    },
+    {
+      "id": "Business Hours",
+      "type": "Concept",
+      "properties": {}
+    },
+    {
+      "id": "Sow",
+      "type": "Document",
+      "properties": {}
+    },
+    {
+      "id": "Crisis Bridge",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Level 4 Incidents",
+      "type": "Concept",
+      "properties": {}
+    },
+    {
+      "id": "Specialist Providers",
+      "type": "Organization",
+      "properties": {}
+    },
+    {
+      "id": "Risk Intelligence Platform",
+      "type": "Technology",
+      "properties": {}
+    },
+    {
+      "id": "Crisis24 Horizon",
+      "type": "Technology",
+      "properties": {}
+    },
+    {
+      "id": "Incident",
+      "type": "Concept",
+      "properties": {}
+    },
+    {
+      "id": "Traveler",
+      "type": "Person",
+      "properties": {}
+    },
+    {
+      "id": "Off-Channel Booking",
+      "type": "Concept",
+      "properties": {}
+    },
+    {
+      "id": "Pnr",
+      "type": "Concept",
+      "properties": {}
+    },
+    {
+      "id": "Passenger Name Record",
+      "type": "Concept",
+      "properties": {}
+    },
+    {
+      "id": "Severity Level",
+      "type": "Concept",
+      "properties": {}
+    },
+    {
+      "id": "Crisis24",
+      "type": "Organization",
+      "properties": {}
+    },
+    {
+      "id": "Gardaworld",
+      "type": "Organization",
+      "properties": {}
+    },
+    {
+      "id": "International Sos",
+      "type": "Organization",
+      "properties": {}
+    },
+    {
+      "id": "Traveler Data",
+      "type": "Concept",
+      "properties": {}
+    },
+    {
+      "id": "Platform",
+      "type": "Technology",
+      "properties": {}
+    },
+    {
+      "id": "Agreement",
+      "type": "Document",
+      "properties": {}
+    },
+    {
+      "id": "Direct Travel",
+      "type": "Company",
+      "properties": {}
+    },
+    {
+      "id": "Client",
+      "type": "Company",
+      "properties": {}
+    },
+    {
+      "id": "Travelers",
+      "type": "Person",
+      "properties": {}
+    },
+    {
+      "id": "Approved Channels",
+      "type": "System",
+      "properties": {}
+    },
+    {
+      "id": "Off-Channel Bookings",
+      "type": "System",
+      "properties": {}
+    },
+    {
+      "id": "Risk Intelligence Platform",
+      "type": "System",
+      "properties": {}
+    },
+    {
+      "id": "Itinerary Records",
+      "type": "Data",
+      "properties": {}
+    },
+    {
+      "id": "Reporting Dashboards",
+      "type": "System",
+      "properties": {}
+    },
+    {
+      "id": "Global Map",
+      "type": "System",
+      "properties": {}
+    },
+    {
+      "id": "Incident",
+      "type": "Event",
+      "properties": {}
+    },
+    {
+      "id": "Impact Zone",
+      "type": "Location",
+      "properties": {}
+    },
+    {
+      "id": "Destination Risk Ratings",
+      "type": "Data",
+      "properties": {}
+    },
+    {
+      "id": "Pre-Trip Advisories",
+      "type": "Document",
+      "properties": {}
+    },
+    {
+      "id": "Travel Insurance",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Real-Time Alerts",
+      "type": "System",
+      "properties": {}
+    },
+    {
+      "id": "Specialist Providers",
+      "type": "Company",
+      "properties": {}
+    },
+    {
+      "id": "Local Emergency Services",
+      "type": "Organization",
+      "properties": {
+        "service": "emergency response"
+      }
+    },
+    {
+      "id": "Post-Incident Summary",
+      "type": "Document",
+      "properties": {}
+    },
+    {
+      "id": "Severity Level 2",
+      "type": "Classification",
+      "properties": {}
+    },
+    {
+      "id": "Level 4 Incidents",
+      "type": "Classification",
+      "properties": {}
+    },
+    {
+      "id": "Security Threats",
+      "type": "Risk",
+      "properties": {}
+    },
+    {
+      "id": "Natural Hazards",
+      "type": "Risk",
+      "properties": {}
+    },
+    {
+      "id": "Health Risks",
+      "type": "Risk",
+      "properties": {}
+    },
+    {
+      "id": "Transportation Disruptions",
+      "type": "Risk",
+      "properties": {}
+    },
+    {
+      "id": "Political Changes",
+      "type": "Risk",
+      "properties": {}
+    },
+    {
+      "id": "Infrastructure Failures",
+      "type": "Risk",
+      "properties": {}
+    },
+    {
+      "id": "Traveler Categories",
+      "type": "Category",
+      "properties": {}
+    },
+    {
+      "id": "Vip/Executive Travelers",
+      "type": "Category",
+      "properties": {}
+    },
+    {
+      "id": "High-Risk Destination Travelers",
+      "type": "Category",
+      "properties": {}
+    },
+    {
+      "id": "Group Travel",
+      "type": "Category",
+      "properties": {}
+    },
+    {
+      "id": "Service Enhancements",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Booking-Time Approval Workflows",
+      "type": "Process",
+      "properties": {}
+    },
+    {
+      "id": "Destination Risk Ratings",
+      "type": "Rating",
+      "properties": {}
+    },
+    {
+      "id": "Approval Tiers",
+      "type": "Structure",
+      "properties": {}
+    },
+    {
+      "id": "Approver Hierarchy",
+      "type": "Structure",
+      "properties": {}
+    },
+    {
+      "id": "Destination-Specific Overrides",
+      "type": "Configuration",
+      "properties": {}
+    },
+    {
+      "id": "Level 1",
+      "type": "Classification",
+      "properties": {
+        "name": "Advisory",
+        "description": "Minor disruption with limited direct impact on Travelers; informational alert only"
+      }
+    },
+    {
+      "id": "Level 2",
+      "type": "Classification",
+      "properties": {
+        "name": "Monitor",
+        "description": "Moderate disruption that may impact Travelers; targeted alerts issued; optional welfare check"
+      }
+    },
+    {
+      "id": "Level 3",
+      "type": "Classification",
+      "properties": {
+        "name": "Action Required",
+        "description": "Significant disruption likely impacting one or more Travelers; proactive outreach required"
+      }
+    },
+    {
+      "id": "Level 4",
+      "type": "Classification",
+      "properties": {
+        "name": "Crisis",
+        "description": "Immediate life safety risk or large-scale disruption affecting multiple Travelers; urgent outreach and crisis escalation"
+      }
+    },
+    {
+      "id": "Service Level Objectives",
+      "type": "Standard",
+      "properties": {}
+    },
+    {
+      "id": "Traveler Alert",
+      "type": "Communication",
+      "properties": {}
+    },
+    {
+      "id": "Client Escalation Notification",
+      "type": "Communication",
+      "properties": {}
+    },
+    {
+      "id": "Status Update",
+      "type": "Communication",
+      "properties": {}
+    },
+    {
+      "id": "Crisis Bridge",
+      "type": "Communication",
+      "properties": {}
+    },
+    {
+      "id": "Sms",
+      "type": "Communication",
+      "properties": {
+        "type": "text message"
+      }
+    },
+    {
+      "id": "Email",
+      "type": "Communication",
+      "properties": {
+        "type": "email"
+      }
+    },
+    {
+      "id": "Mobile Application Push Notification",
+      "type": "Communication",
+      "properties": {}
+    },
+    {
+      "id": "Voice Call",
+      "type": "Communication",
+      "properties": {}
+    },
+    {
+      "id": "Safe",
+      "type": "Response",
+      "properties": {}
+    },
+    {
+      "id": "Need Assistance",
+      "type": "Response",
+      "properties": {}
+    },
+    {
+      "id": "Not In Area",
+      "type": "Response",
+      "properties": {}
+    },
+    {
+      "id": "No Response",
+      "type": "Response",
+      "properties": {}
+    },
+    {
+      "id": "24/7 Escalation Roster",
+      "type": "Document",
+      "properties": {}
+    },
+    {
+      "id": "Primary Travel Program Owner",
+      "type": "Role",
+      "properties": {}
+    },
+    {
+      "id": "Alternate Travel Program Contact",
+      "type": "Role",
+      "properties": {}
+    },
+    {
+      "id": "After-Hours Duty Contact",
+      "type": "Role",
+      "properties": {}
+    },
+    {
+      "id": "Corporate Security",
+      "type": "Role",
+      "properties": {}
+    },
+    {
+      "id": "Human Resources Duty Contact",
+      "type": "Role",
+      "properties": {}
+    },
+    {
+      "id": "Senior Leadership Contact",
+      "type": "Role",
+      "properties": {}
+    },
+    {
+      "id": "Level 3 Incidents",
+      "type": "Event",
+      "properties": {}
+    },
+    {
+      "id": "Level 4 Incidents",
+      "type": "Event",
+      "properties": {}
+    },
+    {
+      "id": "Crisis Bridge",
+      "type": "Process",
+      "properties": {}
+    },
+    {
+      "id": "Sitreps",
+      "type": "Document",
+      "properties": {}
+    },
+    {
+      "id": "Traveler Data",
+      "type": "Data",
+      "properties": {}
+    },
+    {
+      "id": "Data Processing Agreement",
+      "type": "Document",
+      "properties": {}
+    },
+    {
+      "id": "General Data Protection Regulation",
+      "type": "Regulation",
+      "properties": {}
+    },
+    {
+      "id": "Legitimate Interest Assessment",
+      "type": "Assessment",
+      "properties": {}
+    },
+    {
+      "id": "Data Protection Impact Assessment",
+      "type": "Assessment",
+      "properties": {}
+    },
+    {
+      "id": "Traveler Profile Data",
+      "type": "Data",
+      "properties": {}
+    },
+    {
+      "id": "Full Legal Name",
+      "type": "Data",
+      "properties": {}
+    },
+    {
+      "id": "Mobile Phone Number",
+      "type": "Data",
+      "properties": {}
+    },
+    {
+      "id": "Email Address",
+      "type": "Data",
+      "properties": {}
+    },
+    {
+      "id": "Emergency Contact",
+      "type": "Data",
+      "properties": {}
+    },
+    {
+      "id": "Passport Details",
+      "type": "Data",
+      "properties": {}
+    },
+    {
+      "id": "Nationality",
+      "type": "Data",
+      "properties": {}
+    },
+    {
+      "id": "Country Of Residence",
+      "type": "Data",
+      "properties": {}
+    },
+    {
+      "id": "Travel Suppliers",
+      "type": "Organization",
+      "properties": {}
+    },
+    {
+      "id": "Airlines",
+      "type": "Organization",
+      "properties": {}
+    },
+    {
+      "id": "Hotels",
+      "type": "Organization",
+      "properties": {}
+    },
+    {
+      "id": "Ground Transportation Providers",
+      "type": "Organization",
+      "properties": {}
+    },
+    {
+      "id": "Security Providers",
+      "type": "Organization",
+      "properties": {}
+    },
+    {
+      "id": "Medical Providers",
+      "type": "Organization",
+      "properties": {}
+    },
+    {
+      "id": "Evacuation Providers",
+      "type": "Organization",
+      "properties": {}
+    },
+    {
+      "id": "Insurance Providers",
+      "type": "Organization",
+      "properties": {}
+    },
+    {
+      "id": "Government Authorities",
+      "type": "Organization",
+      "properties": {}
+    },
+    {
+      "id": "Emergency Services",
+      "type": "Organization",
+      "properties": {}
+    },
+    {
+      "id": "Location Data",
+      "type": "Data",
+      "properties": {}
+    },
+    {
+      "id": "Pnr-Based Location",
+      "type": "Data",
+      "properties": {}
+    },
+    {
+      "id": "Gps Tracking",
+      "type": "Technology",
+      "properties": {}
+    },
+    {
+      "id": "Mobile Application",
+      "type": "Technology",
+      "properties": {}
+    },
+    {
+      "id": "European Economic Area",
+      "type": "Region",
+      "properties": {}
+    },
+    {
+      "id": "United Kingdom",
+      "type": "Region",
+      "properties": {}
+    },
+    {
+      "id": "Standard Contractual Clauses",
+      "type": "Document",
+      "properties": {}
+    },
+    {
+      "id": "Client",
+      "type": "Entity",
+      "properties": {}
+    },
+    {
+      "id": "Corporate Travel Policy",
+      "type": "Policy",
+      "properties": {}
+    },
+    {
+      "id": "Duty Of Care Provisions",
+      "type": "Provision",
+      "properties": {}
+    },
+    {
+      "id": "Approved Channels",
+      "type": "Channel",
+      "properties": {}
+    },
+    {
+      "id": "High-Risk Destinations",
+      "type": "Location",
+      "properties": {}
+    },
+    {
+      "id": "Current Escalation Roster",
+      "type": "Document",
+      "properties": {}
+    },
+    {
+      "id": "High-Risk Destination Approval Requirements",
+      "type": "Requirement",
+      "properties": {}
+    },
+    {
+      "id": "Traveler Profiles",
+      "type": "Profile",
+      "properties": {}
+    },
+    {
+      "id": "24/7 Emergency Line",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Local Emergency Services",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Welfare Check Communications",
+      "type": "Communication",
+      "properties": {}
+    },
+    {
+      "id": "Location Tracking",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Monitoring",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Extraordinary Measures",
+      "type": "Measure",
+      "properties": {}
+    },
+    {
+      "id": "Evacuation",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Specialized Security Response",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Charter Transport",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Premium-Class Rebooking",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Insurance",
+      "type": "Coverage",
+      "properties": {}
+    },
+    {
+      "id": "Travel Insurance",
+      "type": "Coverage",
+      "properties": {}
+    },
+    {
+      "id": "Medical Treatment",
+      "type": "Coverage",
+      "properties": {}
+    },
+    {
+      "id": "Emergency Medical Evacuation",
+      "type": "Coverage",
+      "properties": {}
+    },
+    {
+      "id": "Repatriation",
+      "type": "Coverage",
+      "properties": {}
+    },
+    {
+      "id": "Trip Disruption",
+      "type": "Coverage",
+      "properties": {}
+    },
+    {
+      "id": "Personal Liability",
+      "type": "Coverage",
+      "properties": {}
+    },
+    {
+      "id": "Escalation Notifications",
+      "type": "Communication",
+      "properties": {}
+    },
+    {
+      "id": "Level 3 Incidents",
+      "type": "Incident",
+      "properties": {}
+    },
+    {
+      "id": "Level 4 Incidents",
+      "type": "Incident",
+      "properties": {}
+    },
+    {
+      "id": "Authorized Decision-Makers",
+      "type": "Person",
+      "properties": {}
+    },
+    {
+      "id": "Data Protection Impact Assessments",
+      "type": "Assessment",
+      "properties": {}
+    },
+    {
+      "id": "Legitimate Interest Assessments",
+      "type": "Assessment",
+      "properties": {}
+    },
+    {
+      "id": "Data Protection Laws",
+      "type": "Law",
+      "properties": {}
+    },
+    {
+      "id": "Traveler Tracking",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Off-Channel Bookings",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Corporate Travel Bookings",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Managed Travel Programs",
+      "type": "Program",
+      "properties": {}
+    },
+    {
+      "id": "Visibility Gap",
+      "type": "Issue",
+      "properties": {}
+    },
+    {
+      "id": "Supplier Direct-Connect Booking Feeds",
+      "type": "Integration",
+      "properties": {}
+    },
+    {
+      "id": "Itinerary Confirmation Emails",
+      "type": "Data",
+      "properties": {}
+    },
+    {
+      "id": "Expense Report Data Mining",
+      "type": "Process",
+      "properties": {}
+    },
+    {
+      "id": "Policy Enforcement Rules",
+      "type": "Rule",
+      "properties": {}
+    },
+    {
+      "id": "Booking Platform",
+      "type": "Platform",
+      "properties": {}
+    },
+    {
+      "id": "Alerts",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Welfare Checks",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Disruption Assistance",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Trm Program",
+      "type": "Program",
+      "properties": {}
+    },
+    {
+      "id": "Governments",
+      "type": "Organization",
+      "properties": {}
+    },
+    {
+      "id": "Telecommunications Providers",
+      "type": "Organization",
+      "properties": {}
+    },
+    {
+      "id": "Gds",
+      "type": "System",
+      "properties": {}
+    },
+    {
+      "id": "Airline Reservation Systems",
+      "type": "System",
+      "properties": {}
+    },
+    {
+      "id": "Hotel Reservation Systems",
+      "type": "System",
+      "properties": {}
+    },
+    {
+      "id": "Medical Care",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Legal Advice",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Security Operations",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Psychological Services",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Immigration Services",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Consular Services",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Railways",
+      "type": "Organization",
+      "properties": {}
+    },
+    {
+      "id": "Risk Intelligence Sources",
+      "type": "Organization",
+      "properties": {}
+    },
+    {
+      "id": "Eu Package Travel Directive 2015/2302",
+      "type": "Regulation",
+      "properties": {}
+    },
+    {
+      "id": "Uk Package Travel And Linked Travel Arrangements Regulations 2018",
+      "type": "Regulation",
+      "properties": {}
+    },
+    {
+      "id": "Per-Traveler Fee",
+      "type": "Fee",
+      "properties": {}
+    },
+    {
+      "id": "Per-Trip Fee",
+      "type": "Fee",
+      "properties": {}
+    },
+    {
+      "id": "Platform Access Fee",
+      "type": "Fee",
+      "properties": {}
+    },
+    {
+      "id": "Risk Intelligence Dashboard",
+      "type": "Platform",
+      "properties": {}
+    },
+    {
+      "id": "Reporting",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Incident Response Fees",
+      "type": "Fee",
+      "properties": {}
+    },
+    {
+      "id": "Severity Level",
+      "type": "Classification",
+      "properties": {}
+    },
+    {
+      "id": "Specialist Provider Access Fees",
+      "type": "Fee",
+      "properties": {}
+    },
+    {
+      "id": "Pass-Through Costs",
+      "type": "Cost",
+      "properties": {}
+    },
+    {
+      "id": "Specialist Provider Fees",
+      "type": "Cost",
+      "properties": {}
+    },
+    {
+      "id": "Security Consultants",
+      "type": "Provider",
+      "properties": {}
+    },
+    {
+      "id": "Medical Professionals",
+      "type": "Provider",
+      "properties": {}
+    },
+    {
+      "id": "Evacuation Operators",
+      "type": "Provider",
+      "properties": {}
+    },
+    {
+      "id": "Evacuation Costs",
+      "type": "Cost",
+      "properties": {}
+    },
+    {
+      "id": "Medical Repatriation Transport Costs",
+      "type": "Cost",
+      "properties": {}
+    },
+    {
+      "id": "Charter Transportation Costs",
+      "type": "Cost",
+      "properties": {}
+    },
+    {
+      "id": "Non-Commercial Transportation Costs",
+      "type": "Cost",
+      "properties": {}
+    },
+    {
+      "id": "Fare Differences",
+      "type": "Cost",
+      "properties": {}
+    },
+    {
+      "id": "Change Fees",
+      "type": "Cost",
+      "properties": {}
+    },
+    {
+      "id": "Emergency Rebooking",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Premium-Class Upgrades",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Incidents",
+      "type": "Event",
+      "properties": {}
+    },
+    {
+      "id": "Hotel Costs",
+      "type": "Cost",
+      "properties": {}
+    },
+    {
+      "id": "Accommodation Costs",
+      "type": "Cost",
+      "properties": {}
+    },
+    {
+      "id": "Extended Stays",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "Telecommunications Costs",
+      "type": "Cost",
+      "properties": {}
+    },
+    {
+      "id": "Satellite Phone Charges",
+      "type": "Cost",
+      "properties": {}
+    },
+    {
+      "id": "Authorization",
+      "type": "Process",
+      "properties": {}
+    },
+    {
+      "id": "Threshold",
+      "type": "Limit",
+      "properties": {}
+    },
+    {
+      "id": "Traveler Safety",
+      "type": "Concern",
+      "properties": {}
+    },
+    {
+      "id": "Escalation Contacts",
+      "type": "Contact",
+      "properties": {}
+    },
+    {
+      "id": "Parties",
+      "type": "Entity",
+      "properties": {}
+    },
+    {
+      "id": "Quarterly Business Reviews",
+      "type": "Process",
+      "properties": {}
+    },
+    {
+      "id": "Duty Of Care Program Metrics",
+      "type": "Metric",
+      "properties": {}
+    },
+    {
+      "id": "Incident Counts By Severity Level And Geography",
+      "type": "Metric",
+      "properties": {}
+    },
+    {
+      "id": "Slo Performance",
+      "type": "Metric",
+      "properties": {}
+    },
+    {
+      "id": "Response Times",
+      "type": "Metric",
+      "properties": {}
+    },
+    {
+      "id": "Outreach Completion Rates",
+      "type": "Metric",
+      "properties": {}
+    },
+    {
+      "id": "Traveler Welfare Check Response Rates",
+      "type": "Metric",
+      "properties": {}
+    },
+    {
+      "id": "Off-Channel Booking Visibility Gap Analysis",
+      "type": "Metric",
+      "properties": {}
+    },
+    {
+      "id": "Program Improvement Recommendations",
+      "type": "Recommendation",
+      "properties": {}
+    },
+    {
+      "id": "Level 4 Incident",
+      "type": "Event",
+      "properties": {}
+    },
+    {
+      "id": "Post-Incident Review",
+      "type": "Process",
+      "properties": {}
+    },
+    {
+      "id": "Global Service Team Structure",
+      "type": "Structure",
+      "properties": {}
+    },
+    {
+      "id": "Coverage Model",
+      "type": "Model",
+      "properties": {}
+    },
+    {
+      "id": "Regulatory Requirements",
+      "type": "Requirement",
+      "properties": {}
+    },
+    {
+      "id": "Exhibit",
+      "type": "Document",
+      "properties": {}
+    },
+    {
+      "id": "Travel Program",
+      "type": "Program",
+      "properties": {}
+    },
+    {
+      "id": "Risk Environment",
+      "type": "Environment",
+      "properties": {}
+    },
+    {
+      "id": "Industry Best Practices",
+      "type": "Practice",
+      "properties": {}
+    },
+    {
+      "id": "Section 7",
+      "type": "Section",
+      "properties": {
+        "title": "Traveler Data, Privacy, and Security"
+      }
+    },
+    {
+      "id": "Section 10",
+      "type": "Section",
+      "properties": {
+        "title": "Limitations, Disclaimers, and Allocation of Risk"
+      }
+    },
+    {
+      "id": "Data Retention Period",
+      "type": "Period",
+      "properties": {}
+    },
+    {
+      "id": "Accrued Rights Or Obligations",
+      "type": "Legal obligation",
+      "properties": {}
+    },
+    {
+      "id": "Order Of Precedence",
+      "type": "Clause",
+      "properties": {}
+    },
+    {
+      "id": "Direct Travel, Inc.",
+      "type": "Company",
+      "properties": {}
+    },
+    {
+      "id": "Acceptance Section",
+      "type": "Document section",
+      "properties": {}
+    },
+    {
+      "id": "Appendix A",
+      "type": "Document",
+      "properties": {}
+    },
+    {
+      "id": "Configurable Parameters",
+      "type": "Concept",
+      "properties": {}
+    },
+    {
+      "id": "Outreach Configuration",
+      "type": "Configuration",
+      "properties": {}
+    },
+    {
+      "id": "Sms",
+      "type": "Communication channel",
+      "properties": {}
+    },
+    {
+      "id": "Email",
+      "type": "Communication channel",
+      "properties": {}
+    },
+    {
+      "id": "Phone",
+      "type": "Communication channel",
+      "properties": {}
+    },
+    {
+      "id": "Mobile App Push",
+      "type": "Communication channel",
+      "properties": {}
+    },
+    {
+      "id": "Level 3",
+      "type": "Service level",
+      "properties": {}
+    },
+    {
+      "id": "Level 4",
+      "type": "Service level",
+      "properties": {}
+    },
+    {
+      "id": "Coverage Model",
+      "type": "Configuration",
+      "properties": {}
+    },
+    {
+      "id": "24/7 Staffed",
+      "type": "Service option",
+      "properties": {}
+    },
+    {
+      "id": "Business Hours + On-Call",
+      "type": "Service option",
+      "properties": {}
+    },
+    {
+      "id": "Sitrep",
+      "type": "Report",
+      "properties": {}
+    },
+    {
+      "id": "Integrations And Providers",
+      "type": "Configuration",
+      "properties": {}
+    },
+    {
+      "id": "Crisis24 Horizon",
+      "type": "Provider",
+      "properties": {}
+    },
+    {
+      "id": "International Sos",
+      "type": "Provider",
+      "properties": {}
+    },
+    {
+      "id": "Crisis24 Response",
+      "type": "Provider",
+      "properties": {}
+    },
+    {
+      "id": "Global Guardian",
+      "type": "Provider",
+      "properties": {}
+    },
+    {
+      "id": "Pre-Trip Services",
+      "type": "Configuration",
+      "properties": {}
+    },
+    {
+      "id": "Pre-Trip Briefing",
+      "type": "Service",
+      "properties": {}
+    },
+    {
+      "id": "High-Risk Destination",
+      "type": "Location",
+      "properties": {}
+    },
+    {
+      "id": "Critical Destination",
+      "type": "Location",
+      "properties": {}
+    },
+    {
+      "id": "Booking-Time Approval Workflow",
+      "type": "Process",
+      "properties": {}
+    },
+    {
+      "id": "Travel Insurance Verification",
+      "type": "Process",
+      "properties": {}
+    },
+    {
+      "id": "Reporting And Dashboards",
+      "type": "Configuration",
+      "properties": {}
+    },
+    {
+      "id": "Risk Intelligence Dashboard",
+      "type": "Dashboard",
+      "properties": {}
+    },
+    {
+      "id": "Interactive Global Map",
+      "type": "Dashboard",
+      "properties": {}
+    },
+    {
+      "id": "English",
+      "type": "Language",
+      "properties": {}
+    },
+    {
+      "id": "Level 1 Advisory Alert",
+      "type": "Alert",
+      "properties": {
+        "classification": "Level 1 — Advisory",
+        "impact": "not expected to directly impact travel plans",
+        "action_required": "No action required"
+      }
+    },
+    {
+      "id": "Level 2 Monitor Alert",
+      "type": "Alert",
+      "properties": {
+        "classification": "Level 2 — Monitor",
+        "impact": "may affect travel",
+        "action_required": "Monitor situation"
+      }
+    },
+    {
+      "id": "Level 3 Action Required Welfare Check",
+      "type": "Alert",
+      "properties": {
+        "classification": "Level 3 — Action Required",
+        "impact": "significant event",
+        "action_required": "Confirm status"
+      }
+    },
+    {
+      "id": "Level 4 Crisis Welfare Check",
+      "type": "Alert",
+      "properties": {
+        "classification": "Level 4 — Crisis",
+        "impact": "critical event",
+        "action_required": "Immediate response required"
+      }
+    },
+    {
+      "id": "Voice",
+      "type": "Communication",
+      "properties": {
+        "type": "voice call"
+      }
+    },
+    {
+      "id": "Incident Activity Log",
+      "type": "Document",
+      "properties": {}
+    },
+    {
+      "id": "Level 3 Incident",
+      "type": "Incident",
+      "properties": {}
+    },
+    {
+      "id": "Level 4 Incident",
+      "type": "Incident",
+      "properties": {}
+    },
+    {
+      "id": "Incident Id",
+      "type": "Field",
+      "properties": {}
+    },
+    {
+      "id": "Incident Classification",
+      "type": "Field",
+      "properties": {}
+    },
+    {
+      "id": "Date/Time Opened",
+      "type": "Field",
+      "properties": {}
+    },
+    {
+      "id": "Date/Time Closed",
+      "type": "Field",
+      "properties": {}
+    },
+    {
+      "id": "Event Description",
+      "type": "Field",
+      "properties": {}
+    },
+    {
+      "id": "Affected Geography",
+      "type": "Field",
+      "properties": {}
+    },
+    {
+      "id": "Impacted Travelers",
+      "type": "Field",
+      "properties": {}
+    },
+    {
+      "id": "Outreach Log",
+      "type": "Field",
+      "properties": {}
+    },
+    {
+      "id": "Traveler Status Summary",
+      "type": "Field",
+      "properties": {}
+    },
+    {
+      "id": "Client Escalation Log",
+      "type": "Field",
+      "properties": {}
+    },
+    {
+      "id": "Actions Taken",
+      "type": "Field",
+      "properties": {}
+    },
+    {
+      "id": "Specialist Provider Engagement",
+      "type": "Field",
+      "properties": {}
+    },
+    {
+      "id": "Crisis Bridge Log",
+      "type": "Field",
+      "properties": {}
+    },
+    {
+      "id": "Resolution Notes",
+      "type": "Field",
+      "properties": {}
+    },
+    {
+      "id": "Tmc",
+      "type": "Organization",
+      "properties": {}
+    },
+    {
+      "id": "Specialist Provider",
+      "type": "Organization",
+      "properties": {}
+    }
+  ],
+  "relationships": [
+    {
+      "source_id": "Exhibit D",
+      "source_type": "Document",
+      "target_id": "Travel Services Agreement",
+      "target_type": "Agreement",
+      "type": "INCORPORATED_INTO",
+      "properties": {}
+    },
+    {
+      "source_id": "Exhibit D",
+      "source_type": "Document",
+      "target_id": "Travel Services Agreement",
+      "target_type": "Agreement",
+      "type": "FORMS_PART_OF",
+      "properties": {}
+    },
+    {
+      "source_id": "Travel Services Agreement",
+      "source_type": "Agreement",
+      "target_id": "Client",
+      "target_type": "Organization",
+      "type": "PARTY_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Travel Services Agreement",
+      "source_type": "Agreement",
+      "target_id": "Direct Travel, Inc.",
+      "target_type": "Organization",
+      "type": "PARTY_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Statement Of Work",
+      "source_type": "Document",
+      "target_id": "Travel Services Agreement",
+      "target_type": "Agreement",
+      "type": "RELATED_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Duty Of Care Services",
+      "target_type": "Service",
+      "type": "PROVIDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "source_type": "Service",
+      "target_id": "Travel Risk Management Program",
+      "target_type": "Program",
+      "type": "SUPPORTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Travel Risk Management Program",
+      "target_type": "Program",
+      "type": "OWNS",
+      "properties": {}
+    },
+    {
+      "source_id": "Osha General Duty Clause",
+      "source_type": "Regulation",
+      "target_id": "Employers",
+      "target_type": "Role",
+      "type": "APPLIES_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Health And Safety At Work Act 1974",
+      "source_type": "Regulation",
+      "target_id": "Employers",
+      "target_type": "Role",
+      "type": "APPLIES_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Management Of Health And Safety At Work Regulations 1999",
+      "source_type": "Regulation",
+      "target_id": "Employers",
+      "target_type": "Role",
+      "type": "APPLIES_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Corporate Manslaughter And Corporate Homicide Act 2007",
+      "source_type": "Regulation",
+      "target_id": "Employers",
+      "target_type": "Role",
+      "type": "APPLIES_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Framework Directive 89/391/Eec",
+      "source_type": "Regulation",
+      "target_id": "Employers",
+      "target_type": "Role",
+      "type": "APPLIES_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Employers",
+      "source_type": "Role",
+      "target_id": "Employees",
+      "target_type": "Role",
+      "type": "HAS_DUTY_OF_CARE_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Employers",
+      "target_type": "Role",
+      "type": "IS_A",
+      "properties": {}
+    },
+    {
+      "source_id": "Iso 31030:2021",
+      "source_type": "Standard",
+      "target_id": "Travel Risk Management Program",
+      "target_type": "Program",
+      "type": "PROVIDES_FRAMEWORK_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Approved Channels",
+      "source_type": "Concept",
+      "target_id": "Direct Travel",
+      "target_type": "Organization",
+      "type": "PROVIDED_BY",
+      "properties": {}
+    },
+    {
+      "source_id": "Approved Channels",
+      "source_type": "Concept",
+      "target_id": "Client",
+      "target_type": "Organization",
+      "type": "APPROVED_BY",
+      "properties": {}
+    },
+    {
+      "source_id": "After-Hours",
+      "source_type": "Concept",
+      "target_id": "Business Hours",
+      "target_type": "Concept",
+      "type": "OUTSIDE_OF",
+      "properties": {}
+    },
+    {
+      "source_id": "Business Hours",
+      "source_type": "Concept",
+      "target_id": "Sow",
+      "target_type": "Document",
+      "type": "DEFINED_IN",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Crisis Bridge",
+      "target_type": "Service",
+      "type": "PROVIDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Crisis Bridge",
+      "source_type": "Service",
+      "target_id": "Level 4 Incidents",
+      "target_type": "Concept",
+      "type": "ESTABLISHED_DURING",
+      "properties": {}
+    },
+    {
+      "source_id": "Crisis Bridge",
+      "source_type": "Service",
+      "target_id": "Client",
+      "target_type": "Organization",
+      "type": "COORDINATES_WITH",
+      "properties": {}
+    },
+    {
+      "source_id": "Crisis Bridge",
+      "source_type": "Service",
+      "target_id": "Specialist Providers",
+      "target_type": "Organization",
+      "type": "COORDINATES_WITH",
+      "properties": {}
+    },
+    {
+      "source_id": "Risk Intelligence Platform",
+      "source_type": "Technology",
+      "target_id": "Crisis24 Horizon",
+      "target_type": "Technology",
+      "type": "CURRENTLY",
+      "properties": {}
+    },
+    {
+      "source_id": "Risk Intelligence Platform",
+      "source_type": "Technology",
+      "target_id": "Direct Travel",
+      "target_type": "Organization",
+      "type": "DESIGNATED_BY",
+      "properties": {}
+    },
+    {
+      "source_id": "Pnr",
+      "source_type": "Concept",
+      "target_id": "Passenger Name Record",
+      "target_type": "Concept",
+      "type": "MEANS",
+      "properties": {}
+    },
+    {
+      "source_id": "Severity Level",
+      "source_type": "Concept",
+      "target_id": "Level 4 Incidents",
+      "target_type": "Concept",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Crisis24",
+      "source_type": "Organization",
+      "target_id": "Gardaworld",
+      "target_type": "Organization",
+      "type": "SUBSIDIARY_OF",
+      "properties": {}
+    },
+    {
+      "source_id": "Crisis24",
+      "source_type": "Organization",
+      "target_id": "Specialist Providers",
+      "target_type": "Organization",
+      "type": "TYPE_OF",
+      "properties": {}
+    },
+    {
+      "source_id": "International Sos",
+      "source_type": "Organization",
+      "target_id": "Specialist Providers",
+      "target_type": "Organization",
+      "type": "TYPE_OF",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler",
+      "source_type": "Person",
+      "target_id": "Client",
+      "target_type": "Organization",
+      "type": "EMPLOYEE_OF",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler Data",
+      "source_type": "Concept",
+      "target_id": "Traveler",
+      "target_type": "Person",
+      "type": "RELATED_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Traveler Data",
+      "target_type": "Concept",
+      "type": "PROCESSES",
+      "properties": {}
+    },
+    {
+      "source_id": "Platform",
+      "source_type": "Technology",
+      "target_id": "Direct Travel",
+      "target_type": "Organization",
+      "type": "OWNED_BY",
+      "properties": {}
+    },
+    {
+      "source_id": "Platform",
+      "source_type": "Technology",
+      "target_id": "Risk Intelligence Platform",
+      "target_type": "Technology",
+      "type": "INTEGRATES",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Itinerary Records",
+      "target_type": "Data",
+      "type": "MAINTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Client",
+      "target_type": "Company",
+      "type": "PROVIDES_SERVICE",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Reporting Dashboards",
+      "target_type": "System",
+      "type": "PROVIDES_ACCESS",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Risk Intelligence Platform",
+      "target_type": "System",
+      "type": "USES",
+      "properties": {}
+    },
+    {
+      "source_id": "Travelers",
+      "source_type": "Person",
+      "target_id": "Approved Channels",
+      "target_type": "System",
+      "type": "BOOKS_THROUGH",
+      "properties": {}
+    },
+    {
+      "source_id": "Travelers",
+      "source_type": "Person",
+      "target_id": "Off-Channel Bookings",
+      "target_type": "System",
+      "type": "BOOKS_THROUGH",
+      "properties": {}
+    },
+    {
+      "source_id": "Itinerary Records",
+      "source_type": "Data",
+      "target_id": "Approved Channels",
+      "target_type": "System",
+      "type": "CAPTURED_FROM",
+      "properties": {}
+    },
+    {
+      "source_id": "Global Map",
+      "source_type": "System",
+      "target_id": "Travelers",
+      "target_type": "Person",
+      "type": "DISPLAYS_LOCATIONS",
+      "properties": {}
+    },
+    {
+      "source_id": "Global Map",
+      "source_type": "System",
+      "target_id": "Destination Risk Ratings",
+      "target_type": "Data",
+      "type": "OVERLAYS",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Impact Zone",
+      "target_type": "Location",
+      "type": "IDENTIFIES",
+      "properties": {}
+    },
+    {
+      "source_id": "Impact Zone",
+      "source_type": "Location",
+      "target_id": "Travelers",
+      "target_type": "Person",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Risk Intelligence Platform",
+      "source_type": "System",
+      "target_id": "Security Threats",
+      "target_type": "Risk",
+      "type": "MONITORS",
+      "properties": {}
+    },
+    {
+      "source_id": "Risk Intelligence Platform",
+      "source_type": "System",
+      "target_id": "Natural Hazards",
+      "target_type": "Risk",
+      "type": "MONITORS",
+      "properties": {}
+    },
+    {
+      "source_id": "Risk Intelligence Platform",
+      "source_type": "System",
+      "target_id": "Health Risks",
+      "target_type": "Risk",
+      "type": "MONITORS",
+      "properties": {}
+    },
+    {
+      "source_id": "Risk Intelligence Platform",
+      "source_type": "System",
+      "target_id": "Transportation Disruptions",
+      "target_type": "Risk",
+      "type": "MONITORS",
+      "properties": {}
+    },
+    {
+      "source_id": "Risk Intelligence Platform",
+      "source_type": "System",
+      "target_id": "Political Changes",
+      "target_type": "Risk",
+      "type": "MONITORS",
+      "properties": {}
+    },
+    {
+      "source_id": "Risk Intelligence Platform",
+      "source_type": "System",
+      "target_id": "Infrastructure Failures",
+      "target_type": "Risk",
+      "type": "MONITORS",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Destination Risk Ratings",
+      "target_type": "Data",
+      "type": "PROVIDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Pre-Trip Advisories",
+      "target_type": "Document",
+      "type": "DELIVERS",
+      "properties": {}
+    },
+    {
+      "source_id": "Pre-Trip Advisories",
+      "source_type": "Document",
+      "target_id": "Travelers",
+      "target_type": "Person",
+      "type": "DELIVERED_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Travel Insurance",
+      "target_type": "Service",
+      "type": "VERIFIES",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Real-Time Alerts",
+      "target_type": "System",
+      "type": "DELIVERS",
+      "properties": {}
+    },
+    {
+      "source_id": "Real-Time Alerts",
+      "source_type": "System",
+      "target_id": "Travelers",
+      "target_type": "Person",
+      "type": "SENT_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Specialist Providers",
+      "target_type": "Company",
+      "type": "COORDINATES",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Company",
+      "target_id": "Specialist Providers",
+      "target_type": "Company",
+      "type": "CONTRACTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Travelers",
+      "source_type": "Person",
+      "target_id": "Local Emergency Services",
+      "target_type": "Organization",
+      "type": "CONTACTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Post-Incident Summary",
+      "target_type": "Document",
+      "type": "PROVIDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Post-Incident Summary",
+      "source_type": "Document",
+      "target_id": "Client",
+      "target_type": "Company",
+      "type": "PROVIDED_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Severity Level 2",
+      "target_type": "Classification",
+      "type": "RESPONDS_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Level 4 Incidents",
+      "source_type": "Classification",
+      "target_id": "Post-Incident Summary",
+      "target_type": "Document",
+      "type": "TRIGGERS",
+      "properties": {}
+    },
+    {
+      "source_id": "Sow",
+      "source_type": "Document",
+      "target_id": "Direct Travel",
+      "target_type": "Company",
+      "type": "CONFIGURES",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Traveler Categories",
+      "target_type": "Category",
+      "type": "REQUIRES",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler Categories",
+      "source_type": "Category",
+      "target_id": "Vip/Executive Travelers",
+      "target_type": "Category",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler Categories",
+      "source_type": "Category",
+      "target_id": "High-Risk Destination Travelers",
+      "target_type": "Category",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler Categories",
+      "source_type": "Category",
+      "target_id": "Group Travel",
+      "target_type": "Category",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler Categories",
+      "source_type": "Category",
+      "target_id": "Service Enhancements",
+      "target_type": "Service",
+      "type": "HAS",
+      "properties": {}
+    },
+    {
+      "source_id": "Service Enhancements",
+      "source_type": "Service",
+      "target_id": "Sow",
+      "target_type": "Document",
+      "type": "DEFINED_IN",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Booking-Time Approval Workflows",
+      "target_type": "Process",
+      "type": "REQUIRES",
+      "properties": {}
+    },
+    {
+      "source_id": "Booking-Time Approval Workflows",
+      "source_type": "Process",
+      "target_id": "Destination Risk Ratings",
+      "target_type": "Rating",
+      "type": "BASED_ON",
+      "properties": {}
+    },
+    {
+      "source_id": "Approval Tiers",
+      "source_type": "Structure",
+      "target_id": "Sow",
+      "target_type": "Document",
+      "type": "DEFINED_IN",
+      "properties": {}
+    },
+    {
+      "source_id": "Approver Hierarchy",
+      "source_type": "Structure",
+      "target_id": "Sow",
+      "target_type": "Document",
+      "type": "DEFINED_IN",
+      "properties": {}
+    },
+    {
+      "source_id": "Destination-Specific Overrides",
+      "source_type": "Configuration",
+      "target_id": "Sow",
+      "target_type": "Document",
+      "type": "DEFINED_IN",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Approval Tiers",
+      "target_type": "Structure",
+      "type": "RESPONSIBLE_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Approver Hierarchy",
+      "target_type": "Structure",
+      "type": "RESPONSIBLE_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Destination-Specific Overrides",
+      "target_type": "Configuration",
+      "type": "RESPONSIBLE_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Risk Intelligence Platform",
+      "target_type": "System",
+      "type": "USES",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Incident",
+      "target_type": "Event",
+      "type": "DETERMINES",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Level 1",
+      "target_type": "Classification",
+      "type": "CAN_REQUEST_CHANGE",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Level 2",
+      "target_type": "Classification",
+      "type": "CAN_REQUEST_CHANGE",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Level 3",
+      "target_type": "Classification",
+      "type": "CAN_REQUEST_CHANGE",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Level 4",
+      "target_type": "Classification",
+      "type": "CAN_REQUEST_CHANGE",
+      "properties": {}
+    },
+    {
+      "source_id": "Service Level Objectives",
+      "source_type": "Standard",
+      "target_id": "Level 1",
+      "target_type": "Classification",
+      "type": "APPLIES_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Service Level Objectives",
+      "source_type": "Standard",
+      "target_id": "Level 2",
+      "target_type": "Classification",
+      "type": "APPLIES_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Service Level Objectives",
+      "source_type": "Standard",
+      "target_id": "Level 3",
+      "target_type": "Classification",
+      "type": "APPLIES_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Service Level Objectives",
+      "source_type": "Standard",
+      "target_id": "Level 4",
+      "target_type": "Classification",
+      "type": "APPLIES_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Level 1",
+      "source_type": "Classification",
+      "target_id": "Traveler Alert",
+      "target_type": "Communication",
+      "type": "REQUIRES",
+      "properties": {
+        "timeframe": "within 4 hours"
+      }
+    },
+    {
+      "source_id": "Level 2",
+      "source_type": "Classification",
+      "target_id": "Traveler Alert",
+      "target_type": "Communication",
+      "type": "REQUIRES",
+      "properties": {
+        "timeframe": "within 2 hours"
+      }
+    },
+    {
+      "source_id": "Level 2",
+      "source_type": "Classification",
+      "target_id": "Client Escalation Notification",
+      "target_type": "Communication",
+      "type": "REQUIRES",
+      "properties": {
+        "timeframe": "within 4 hours"
+      }
+    },
+    {
+      "source_id": "Level 3",
+      "source_type": "Classification",
+      "target_id": "Traveler Alert",
+      "target_type": "Communication",
+      "type": "REQUIRES",
+      "properties": {
+        "timeframe": "within 60 minutes"
+      }
+    },
+    {
+      "source_id": "Level 3",
+      "source_type": "Classification",
+      "target_id": "Client Escalation Notification",
+      "target_type": "Communication",
+      "type": "REQUIRES",
+      "properties": {
+        "timeframe": "within 60 minutes"
+      }
+    },
+    {
+      "source_id": "Level 4",
+      "source_type": "Classification",
+      "target_id": "Traveler Alert",
+      "target_type": "Communication",
+      "type": "REQUIRES",
+      "properties": {
+        "timeframe": "within 30 minutes"
+      }
+    },
+    {
+      "source_id": "Level 4",
+      "source_type": "Classification",
+      "target_id": "Client Escalation Notification",
+      "target_type": "Communication",
+      "type": "REQUIRES",
+      "properties": {
+        "timeframe": "within 30 minutes"
+      }
+    },
+    {
+      "source_id": "Level 4",
+      "source_type": "Classification",
+      "target_id": "Crisis Bridge",
+      "target_type": "Communication",
+      "type": "REQUIRES",
+      "properties": {
+        "timeframe": "within 60 minutes"
+      }
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Sms",
+      "target_type": "Communication",
+      "type": "USES",
+      "properties": {
+        "priority": "1"
+      }
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Email",
+      "target_type": "Communication",
+      "type": "USES",
+      "properties": {
+        "priority": "2"
+      }
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Mobile Application Push Notification",
+      "target_type": "Communication",
+      "type": "USES",
+      "properties": {
+        "priority": "3"
+      }
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Voice Call",
+      "target_type": "Communication",
+      "type": "USES",
+      "properties": {
+        "priority": "4"
+      }
+    },
+    {
+      "source_id": "Travelers",
+      "source_type": "Person",
+      "target_id": "Safe",
+      "target_type": "Response",
+      "type": "CAN_RESPOND",
+      "properties": {}
+    },
+    {
+      "source_id": "Travelers",
+      "source_type": "Person",
+      "target_id": "Need Assistance",
+      "target_type": "Response",
+      "type": "CAN_RESPOND",
+      "properties": {}
+    },
+    {
+      "source_id": "Travelers",
+      "source_type": "Person",
+      "target_id": "Not In Area",
+      "target_type": "Response",
+      "type": "CAN_RESPOND",
+      "properties": {}
+    },
+    {
+      "source_id": "Travelers",
+      "source_type": "Person",
+      "target_id": "No Response",
+      "target_type": "Response",
+      "type": "CAN_RESPOND",
+      "properties": {}
+    },
+    {
+      "source_id": "Need Assistance",
+      "source_type": "Response",
+      "target_id": "Voice Call",
+      "target_type": "Communication",
+      "type": "TRIGGERS",
+      "properties": {
+        "timeframe": "within 15 minutes"
+      }
+    },
+    {
+      "source_id": "Sow",
+      "source_type": "Document",
+      "target_id": "Sms",
+      "target_type": "Communication",
+      "type": "CONFIGURES",
+      "properties": {}
+    },
+    {
+      "source_id": "Sow",
+      "source_type": "Document",
+      "target_id": "Email",
+      "target_type": "Communication",
+      "type": "CONFIGURES",
+      "properties": {}
+    },
+    {
+      "source_id": "Sow",
+      "source_type": "Document",
+      "target_id": "Mobile Application Push Notification",
+      "target_type": "Communication",
+      "type": "CONFIGURES",
+      "properties": {}
+    },
+    {
+      "source_id": "Sow",
+      "source_type": "Document",
+      "target_id": "Voice Call",
+      "target_type": "Communication",
+      "type": "CONFIGURES",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Direct Travel",
+      "target_type": "Organization",
+      "type": "PROVIDES_TO",
+      "properties": {
+        "item": "24/7 escalation roster"
+      }
+    },
+    {
+      "source_id": "24/7 Escalation Roster",
+      "source_type": "Document",
+      "target_id": "Primary Travel Program Owner",
+      "target_type": "Role",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "24/7 Escalation Roster",
+      "source_type": "Document",
+      "target_id": "Alternate Travel Program Contact",
+      "target_type": "Role",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "24/7 Escalation Roster",
+      "source_type": "Document",
+      "target_id": "After-Hours Duty Contact",
+      "target_type": "Role",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "24/7 Escalation Roster",
+      "source_type": "Document",
+      "target_id": "Corporate Security",
+      "target_type": "Role",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "24/7 Escalation Roster",
+      "source_type": "Document",
+      "target_id": "Human Resources Duty Contact",
+      "target_type": "Role",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "24/7 Escalation Roster",
+      "source_type": "Document",
+      "target_id": "Senior Leadership Contact",
+      "target_type": "Role",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Primary Travel Program Owner",
+      "source_type": "Role",
+      "target_id": "Level 3 Incidents",
+      "target_type": "Event",
+      "type": "CONTACT_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Primary Travel Program Owner",
+      "source_type": "Role",
+      "target_id": "Level 4 Incidents",
+      "target_type": "Event",
+      "type": "CONTACT_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Corporate Security",
+      "source_type": "Role",
+      "target_id": "Level 3 Incidents",
+      "target_type": "Event",
+      "type": "CONTACT_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Corporate Security",
+      "source_type": "Role",
+      "target_id": "Level 4 Incidents",
+      "target_type": "Event",
+      "type": "CONTACT_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Senior Leadership Contact",
+      "source_type": "Role",
+      "target_id": "Level 4 Incidents",
+      "target_type": "Event",
+      "type": "CONTACT_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Traveler",
+      "target_type": "Person",
+      "type": "CONTACTS",
+      "properties": {
+        "attempts": "at least three (3) contacts",
+        "channels": "at least two (2) channels",
+        "duration": "ninety (90) minutes"
+      }
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Crisis Bridge",
+      "target_type": "Process",
+      "type": "ESTABLISHES",
+      "properties": {
+        "timeframe": "within sixty (60) minutes"
+      }
+    },
+    {
+      "source_id": "Crisis Bridge",
+      "source_type": "Process",
+      "target_id": "Level 4 Incidents",
+      "target_type": "Event",
+      "type": "ACTIVATED_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Sitreps",
+      "target_type": "Document",
+      "type": "PROVIDES",
+      "properties": {
+        "frequency_acute": "approximately thirty (30) minutes during first 4 hours",
+        "frequency_ongoing": "approximately hourly thereafter"
+      }
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Specialist Providers",
+      "target_type": "Organization",
+      "type": "AUTHORIZES",
+      "properties": {
+        "purpose": "on-ground locate assistance"
+      }
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "24/7 Escalation Roster",
+      "target_type": "Document",
+      "type": "MAINTAINS",
+      "properties": {
+        "notification_timeframe": "within five (5) business days of changes"
+      }
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Traveler Data",
+      "target_type": "Data",
+      "type": "PROCESSES",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Agreement",
+      "target_type": "Document",
+      "type": "BOUND_BY",
+      "properties": {}
+    },
+    {
+      "source_id": "Data Processing Agreement",
+      "source_type": "Document",
+      "target_id": "Agreement",
+      "target_type": "Document",
+      "type": "INCORPORATED_INTO",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Traveler Data",
+      "target_type": "Data",
+      "type": "CONTROLS",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Traveler Data",
+      "target_type": "Data",
+      "type": "PROCESSES_AS_PROCESSOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Direct Travel",
+      "target_type": "Organization",
+      "type": "INSTRUCTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler Data",
+      "source_type": "Data",
+      "target_id": "General Data Protection Regulation",
+      "target_type": "Regulation",
+      "type": "GOVERNED_BY",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Legitimate Interest Assessment",
+      "target_type": "Assessment",
+      "type": "RESPONSIBLE_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Data Protection Impact Assessment",
+      "target_type": "Assessment",
+      "type": "RESPONSIBLE_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Traveler",
+      "target_type": "Person",
+      "type": "PROVIDES_NOTICE_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler Profile Data",
+      "source_type": "Data",
+      "target_id": "Full Legal Name",
+      "target_type": "Data",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler Profile Data",
+      "source_type": "Data",
+      "target_id": "Mobile Phone Number",
+      "target_type": "Data",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler Profile Data",
+      "source_type": "Data",
+      "target_id": "Email Address",
+      "target_type": "Data",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler Profile Data",
+      "source_type": "Data",
+      "target_id": "Emergency Contact",
+      "target_type": "Data",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler Profile Data",
+      "source_type": "Data",
+      "target_id": "Passport Details",
+      "target_type": "Data",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler Profile Data",
+      "source_type": "Data",
+      "target_id": "Nationality",
+      "target_type": "Data",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler Profile Data",
+      "source_type": "Data",
+      "target_id": "Country Of Residence",
+      "target_type": "Data",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Traveler Data",
+      "target_type": "Data",
+      "type": "SHARES_DURING_INCIDENT",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Client",
+      "target_type": "Organization",
+      "type": "SHARES_DATA_WITH",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Travel Suppliers",
+      "target_type": "Organization",
+      "type": "SHARES_DATA_WITH",
+      "properties": {}
+    },
+    {
+      "source_id": "Travel Suppliers",
+      "source_type": "Organization",
+      "target_id": "Airlines",
+      "target_type": "Organization",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Travel Suppliers",
+      "source_type": "Organization",
+      "target_id": "Hotels",
+      "target_type": "Organization",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Travel Suppliers",
+      "source_type": "Organization",
+      "target_id": "Ground Transportation Providers",
+      "target_type": "Organization",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Specialist Providers",
+      "target_type": "Organization",
+      "type": "SHARES_DATA_WITH",
+      "properties": {}
+    },
+    {
+      "source_id": "Specialist Providers",
+      "source_type": "Organization",
+      "target_id": "Security Providers",
+      "target_type": "Organization",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Specialist Providers",
+      "source_type": "Organization",
+      "target_id": "Medical Providers",
+      "target_type": "Organization",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Specialist Providers",
+      "source_type": "Organization",
+      "target_id": "Evacuation Providers",
+      "target_type": "Organization",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Specialist Providers",
+      "source_type": "Organization",
+      "target_id": "Insurance Providers",
+      "target_type": "Organization",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Government Authorities",
+      "target_type": "Organization",
+      "type": "SHARES_DATA_WITH",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Emergency Services",
+      "target_type": "Organization",
+      "type": "SHARES_DATA_WITH",
+      "properties": {}
+    },
+    {
+      "source_id": "Location Data",
+      "source_type": "Data",
+      "target_id": "Pnr-Based Location",
+      "target_type": "Data",
+      "type": "DERIVED_FROM",
+      "properties": {}
+    },
+    {
+      "source_id": "Mobile Application",
+      "source_type": "Technology",
+      "target_id": "Location Data",
+      "target_type": "Data",
+      "type": "PROVIDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Gps Tracking",
+      "source_type": "Technology",
+      "target_id": "Statement Of Work",
+      "target_type": "Document",
+      "type": "REQUIRES_INCLUSION_IN",
+      "properties": {}
+    },
+    {
+      "source_id": "Gps Tracking",
+      "source_type": "Technology",
+      "target_id": "Data Protection Impact Assessment",
+      "target_type": "Assessment",
+      "type": "REQUIRES",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Traveler Data",
+      "target_type": "Data",
+      "type": "RETAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler Data",
+      "source_type": "Data",
+      "target_id": "European Economic Area",
+      "target_type": "Region",
+      "type": "TRANSFERRED_FROM",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler Data",
+      "source_type": "Data",
+      "target_id": "United Kingdom",
+      "target_type": "Region",
+      "type": "TRANSFERRED_FROM",
+      "properties": {}
+    },
+    {
+      "source_id": "Standard Contractual Clauses",
+      "source_type": "Document",
+      "target_id": "Traveler Data",
+      "target_type": "Data",
+      "type": "SAFEGUARDS_TRANSFER_OF",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Corporate Travel Policy",
+      "target_type": "Policy",
+      "type": "ESTABLISHES",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Corporate Travel Policy",
+      "target_type": "Policy",
+      "type": "MAINTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Corporate Travel Policy",
+      "target_type": "Policy",
+      "type": "COMMUNICATES",
+      "properties": {}
+    },
+    {
+      "source_id": "Corporate Travel Policy",
+      "source_type": "Policy",
+      "target_id": "Duty Of Care Provisions",
+      "target_type": "Provision",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Corporate Travel Policy",
+      "source_type": "Policy",
+      "target_id": "Approved Channels",
+      "target_type": "Channel",
+      "type": "REQUIRES_BOOKING_THROUGH",
+      "properties": {}
+    },
+    {
+      "source_id": "Corporate Travel Policy",
+      "source_type": "Policy",
+      "target_id": "High-Risk Destinations",
+      "target_type": "Location",
+      "type": "DEFINES_APPROVAL_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Current Escalation Roster",
+      "target_type": "Document",
+      "type": "PROVIDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Current Escalation Roster",
+      "target_type": "Document",
+      "type": "MAINTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Direct Travel",
+      "target_type": "Organization",
+      "type": "NOTIFIES",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "High-Risk Destination Approval Requirements",
+      "target_type": "Requirement",
+      "type": "DEFINES",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "High-Risk Destination Approval Requirements",
+      "target_type": "Requirement",
+      "type": "COMMUNICATES",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Traveler Profiles",
+      "target_type": "Profile",
+      "type": "ENSURES_COMPLETE",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Traveler Profiles",
+      "target_type": "Profile",
+      "type": "ENSURES_ACCURATE",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Travelers",
+      "target_type": "Person",
+      "type": "INSTRUCTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Travelers",
+      "target_type": "Person",
+      "type": "ENSURES_INFORMED",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Travelers",
+      "target_type": "Person",
+      "type": "ENSURES_TRAINED",
+      "properties": {}
+    },
+    {
+      "source_id": "Travelers",
+      "source_type": "Person",
+      "target_id": "Approved Channels",
+      "target_type": "Channel",
+      "type": "BOOKS_THROUGH",
+      "properties": {}
+    },
+    {
+      "source_id": "Travelers",
+      "source_type": "Person",
+      "target_id": "Direct Travel",
+      "target_type": "Organization",
+      "type": "CONTACTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Travelers",
+      "source_type": "Person",
+      "target_id": "24/7 Emergency Line",
+      "target_type": "Service",
+      "type": "USES",
+      "properties": {}
+    },
+    {
+      "source_id": "Travelers",
+      "source_type": "Person",
+      "target_id": "Local Emergency Services",
+      "target_type": "Service",
+      "type": "CONTACTS_FIRST",
+      "properties": {}
+    },
+    {
+      "source_id": "Travelers",
+      "source_type": "Person",
+      "target_id": "Welfare Check Communications",
+      "target_type": "Communication",
+      "type": "RESPONDS_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Extraordinary Measures",
+      "target_type": "Measure",
+      "type": "AUTHORIZES",
+      "properties": {}
+    },
+    {
+      "source_id": "Extraordinary Measures",
+      "source_type": "Measure",
+      "target_id": "Evacuation",
+      "target_type": "Service",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Extraordinary Measures",
+      "source_type": "Measure",
+      "target_id": "Specialized Security Response",
+      "target_type": "Service",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Extraordinary Measures",
+      "source_type": "Measure",
+      "target_id": "Charter Transport",
+      "target_type": "Service",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Extraordinary Measures",
+      "source_type": "Measure",
+      "target_id": "Premium-Class Rebooking",
+      "target_type": "Service",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Travel Insurance",
+      "target_type": "Coverage",
+      "type": "PROCURES",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Travel Insurance",
+      "target_type": "Coverage",
+      "type": "MAINTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Travel Insurance",
+      "source_type": "Coverage",
+      "target_id": "Medical Treatment",
+      "target_type": "Coverage",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Travel Insurance",
+      "source_type": "Coverage",
+      "target_id": "Emergency Medical Evacuation",
+      "target_type": "Coverage",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Travel Insurance",
+      "source_type": "Coverage",
+      "target_id": "Repatriation",
+      "target_type": "Coverage",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Travel Insurance",
+      "source_type": "Coverage",
+      "target_id": "Trip Disruption",
+      "target_type": "Coverage",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Travel Insurance",
+      "source_type": "Coverage",
+      "target_id": "Personal Liability",
+      "target_type": "Coverage",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Direct Travel",
+      "target_type": "Organization",
+      "type": "PROVIDES_POLICY_DETAILS",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Escalation Notifications",
+      "target_type": "Communication",
+      "type": "RESPONDS_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Escalation Notifications",
+      "target_type": "Communication",
+      "type": "SENDS",
+      "properties": {}
+    },
+    {
+      "source_id": "Escalation Notifications",
+      "source_type": "Communication",
+      "target_id": "Level 3 Incidents",
+      "target_type": "Incident",
+      "type": "RELATES_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Escalation Notifications",
+      "source_type": "Communication",
+      "target_id": "Level 4 Incidents",
+      "target_type": "Incident",
+      "type": "RELATES_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Authorized Decision-Makers",
+      "target_type": "Person",
+      "type": "DESIGNATES",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Data Protection Impact Assessments",
+      "target_type": "Assessment",
+      "type": "CONDUCTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Data Protection Impact Assessments",
+      "target_type": "Assessment",
+      "type": "MAINTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Legitimate Interest Assessments",
+      "target_type": "Assessment",
+      "type": "CONDUCTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Entity",
+      "target_id": "Legitimate Interest Assessments",
+      "target_type": "Assessment",
+      "type": "MAINTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Data Protection Impact Assessments",
+      "source_type": "Assessment",
+      "target_id": "Data Protection Laws",
+      "target_type": "Law",
+      "type": "REQUIRED_BY",
+      "properties": {}
+    },
+    {
+      "source_id": "Legitimate Interest Assessments",
+      "source_type": "Assessment",
+      "target_id": "Data Protection Laws",
+      "target_type": "Law",
+      "type": "REQUIRED_BY",
+      "properties": {}
+    },
+    {
+      "source_id": "Data Protection Impact Assessments",
+      "source_type": "Assessment",
+      "target_id": "Traveler Tracking",
+      "target_type": "Service",
+      "type": "RELATES_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Data Protection Impact Assessments",
+      "source_type": "Assessment",
+      "target_id": "Location Tracking",
+      "target_type": "Service",
+      "type": "RELATES_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Legitimate Interest Assessments",
+      "source_type": "Assessment",
+      "target_id": "Traveler Tracking",
+      "target_type": "Service",
+      "type": "RELATES_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Legitimate Interest Assessments",
+      "source_type": "Assessment",
+      "target_id": "Monitoring",
+      "target_type": "Service",
+      "type": "RELATES_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Corporate Travel Bookings",
+      "source_type": "Service",
+      "target_id": "Managed Travel Programs",
+      "target_type": "Program",
+      "type": "MADE_OUTSIDE",
+      "properties": {
+        "percentage": "30%"
+      }
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Duty Of Care Services",
+      "target_type": "Service",
+      "type": "PROVIDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Off-Channel Bookings",
+      "source_type": "Service",
+      "target_id": "Visibility Gap",
+      "target_type": "Issue",
+      "type": "CREATES",
+      "properties": {}
+    },
+    {
+      "source_id": "Visibility Gap",
+      "source_type": "Issue",
+      "target_id": "Client",
+      "target_type": "Organization",
+      "type": "AFFECTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Supplier Direct-Connect Booking Feeds",
+      "target_type": "Integration",
+      "type": "SUPPORTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Itinerary Confirmation Emails",
+      "target_type": "Data",
+      "type": "INGESTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Expense Report Data Mining",
+      "target_type": "Process",
+      "type": "SUPPORTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Policy Enforcement Rules",
+      "source_type": "Rule",
+      "target_id": "Booking Platform",
+      "target_type": "Platform",
+      "type": "CONFIGURED_WITHIN",
+      "properties": {}
+    },
+    {
+      "source_id": "Policy Enforcement Rules",
+      "source_type": "Rule",
+      "target_id": "Off-Channel Bookings",
+      "target_type": "Service",
+      "type": "RESTRICTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Direct Travel",
+      "target_type": "Company",
+      "type": "ACKNOWLEDGES_LIMITATIONS",
+      "properties": {}
+    },
+    {
+      "source_id": "Travelers",
+      "source_type": "Person",
+      "target_id": "Approved Channels",
+      "target_type": "Channel",
+      "type": "BOOKS_OUTSIDE",
+      "properties": {}
+    },
+    {
+      "source_id": "Travelers",
+      "source_type": "Person",
+      "target_id": "Alerts",
+      "target_type": "Service",
+      "type": "MAY_NOT_RECEIVE",
+      "properties": {}
+    },
+    {
+      "source_id": "Travelers",
+      "source_type": "Person",
+      "target_id": "Welfare Checks",
+      "target_type": "Service",
+      "type": "MAY_NOT_RECEIVE",
+      "properties": {}
+    },
+    {
+      "source_id": "Travelers",
+      "source_type": "Person",
+      "target_id": "Disruption Assistance",
+      "target_type": "Service",
+      "type": "MAY_NOT_RECEIVE",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Travelers",
+      "target_type": "Person",
+      "type": "RESPONSIBLE_FOR_TRAINING",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Traveler",
+      "target_type": "Person",
+      "type": "CANNOT_GUARANTEE_SAFETY",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "source_type": "Service",
+      "target_id": "Client",
+      "target_type": "Organization",
+      "type": "SUPPORTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "source_type": "Service",
+      "target_id": "Trm Program",
+      "target_type": "Program",
+      "type": "SUPPORTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Airlines",
+      "target_type": "Organization",
+      "type": "DOES_NOT_CONTROL",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Hotels",
+      "target_type": "Organization",
+      "type": "DOES_NOT_CONTROL",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Ground Transportation Providers",
+      "target_type": "Organization",
+      "type": "DOES_NOT_CONTROL",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Governments",
+      "target_type": "Organization",
+      "type": "DOES_NOT_CONTROL",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Emergency Services",
+      "target_type": "Organization",
+      "type": "DOES_NOT_CONTROL",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Telecommunications Providers",
+      "target_type": "Organization",
+      "type": "DOES_NOT_CONTROL",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "source_type": "Service",
+      "target_id": "Approved Channels",
+      "target_type": "System",
+      "type": "DEPENDS_ON",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "source_type": "Service",
+      "target_id": "Gds",
+      "target_type": "System",
+      "type": "DEPENDS_ON",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "source_type": "Service",
+      "target_id": "Airline Reservation Systems",
+      "target_type": "System",
+      "type": "DEPENDS_ON",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "source_type": "Service",
+      "target_id": "Hotel Reservation Systems",
+      "target_type": "System",
+      "type": "DEPENDS_ON",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Medical Care",
+      "target_type": "Service",
+      "type": "DOES_NOT_PROVIDE",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Legal Advice",
+      "target_type": "Service",
+      "type": "DOES_NOT_PROVIDE",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Security Operations",
+      "target_type": "Service",
+      "type": "DOES_NOT_PROVIDE",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Psychological Services",
+      "target_type": "Service",
+      "type": "DOES_NOT_PROVIDE",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Immigration Services",
+      "target_type": "Service",
+      "type": "DOES_NOT_PROVIDE",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Consular Services",
+      "target_type": "Service",
+      "type": "DOES_NOT_PROVIDE",
+      "properties": {}
+    },
+    {
+      "source_id": "Specialist Providers",
+      "source_type": "Organization",
+      "target_id": "Sow",
+      "target_type": "Document",
+      "type": "INCLUDED_IN",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Airlines",
+      "target_type": "Organization",
+      "type": "DOES_NOT_OPERATE",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Hotels",
+      "target_type": "Organization",
+      "type": "DOES_NOT_OPERATE",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Railways",
+      "target_type": "Organization",
+      "type": "DOES_NOT_OPERATE",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Ground Transportation Providers",
+      "target_type": "Organization",
+      "type": "DOES_NOT_OPERATE",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Travel Suppliers",
+      "target_type": "Organization",
+      "type": "NOT_LIABLE_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Risk Intelligence Sources",
+      "target_type": "Organization",
+      "type": "NOT_LIABLE_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Travel Authorization Decisions",
+      "target_type": "Decision",
+      "type": "RESPONSIBLE_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Eu Package Travel Directive 2015/2302",
+      "target_type": "Regulation",
+      "type": "SUBJECT_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Company",
+      "target_id": "Uk Package Travel And Linked Travel Arrangements Regulations 2018",
+      "target_type": "Regulation",
+      "type": "SUBJECT_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "source_type": "Service",
+      "target_id": "Agreement",
+      "target_type": "Document",
+      "type": "SUBJECT_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "source_type": "Service",
+      "target_id": "Sow",
+      "target_type": "Document",
+      "type": "SPECIFIED_IN",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "source_type": "Service",
+      "target_id": "Per-Traveler Fee",
+      "target_type": "Fee",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "source_type": "Service",
+      "target_id": "Per-Trip Fee",
+      "target_type": "Fee",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "source_type": "Service",
+      "target_id": "Platform Access Fee",
+      "target_type": "Fee",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Platform Access Fee",
+      "source_type": "Fee",
+      "target_id": "Risk Intelligence Dashboard",
+      "target_type": "Platform",
+      "type": "FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Platform Access Fee",
+      "source_type": "Fee",
+      "target_id": "Reporting",
+      "target_type": "Service",
+      "type": "FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident Response Fees",
+      "source_type": "Fee",
+      "target_id": "Severity Level",
+      "target_type": "Classification",
+      "type": "BASED_ON",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "source_type": "Service",
+      "target_id": "Incident Response Fees",
+      "target_type": "Fee",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "source_type": "Service",
+      "target_id": "Specialist Provider Access Fees",
+      "target_type": "Fee",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Pass-Through Costs",
+      "source_type": "Cost",
+      "target_id": "Client",
+      "target_type": "Organization",
+      "type": "BORNE_BY",
+      "properties": {}
+    },
+    {
+      "source_id": "Pass-Through Costs",
+      "source_type": "Cost",
+      "target_id": "Insurance",
+      "target_type": "Coverage",
+      "type": "COVERED_BY",
+      "properties": {}
+    },
+    {
+      "source_id": "Specialist Provider Fees",
+      "source_type": "Cost",
+      "target_id": "Pass-Through Costs",
+      "target_type": "Cost",
+      "type": "TYPE_OF",
+      "properties": {}
+    },
+    {
+      "source_id": "Security Consultants",
+      "source_type": "Provider",
+      "target_id": "Specialist Provider Fees",
+      "target_type": "Cost",
+      "type": "GENERATES",
+      "properties": {}
+    },
+    {
+      "source_id": "Medical Professionals",
+      "source_type": "Provider",
+      "target_id": "Specialist Provider Fees",
+      "target_type": "Cost",
+      "type": "GENERATES",
+      "properties": {}
+    },
+    {
+      "source_id": "Evacuation Operators",
+      "source_type": "Provider",
+      "target_id": "Specialist Provider Fees",
+      "target_type": "Cost",
+      "type": "GENERATES",
+      "properties": {}
+    },
+    {
+      "source_id": "Evacuation Costs",
+      "source_type": "Cost",
+      "target_id": "Pass-Through Costs",
+      "target_type": "Cost",
+      "type": "TYPE_OF",
+      "properties": {}
+    },
+    {
+      "source_id": "Medical Repatriation Transport Costs",
+      "source_type": "Cost",
+      "target_id": "Pass-Through Costs",
+      "target_type": "Cost",
+      "type": "TYPE_OF",
+      "properties": {}
+    },
+    {
+      "source_id": "Charter Transportation Costs",
+      "source_type": "Cost",
+      "target_id": "Pass-Through Costs",
+      "target_type": "Cost",
+      "type": "TYPE_OF",
+      "properties": {}
+    },
+    {
+      "source_id": "Non-Commercial Transportation Costs",
+      "source_type": "Cost",
+      "target_id": "Pass-Through Costs",
+      "target_type": "Cost",
+      "type": "TYPE_OF",
+      "properties": {}
+    },
+    {
+      "source_id": "Fare Differences",
+      "source_type": "Cost",
+      "target_id": "Emergency Rebooking",
+      "target_type": "Service",
+      "type": "ARISING_FROM",
+      "properties": {}
+    },
+    {
+      "source_id": "Change Fees",
+      "source_type": "Cost",
+      "target_id": "Emergency Rebooking",
+      "target_type": "Service",
+      "type": "ARISING_FROM",
+      "properties": {}
+    },
+    {
+      "source_id": "Fare Differences",
+      "source_type": "Cost",
+      "target_id": "Pass-Through Costs",
+      "target_type": "Cost",
+      "type": "TYPE_OF",
+      "properties": {}
+    },
+    {
+      "source_id": "Change Fees",
+      "source_type": "Cost",
+      "target_id": "Pass-Through Costs",
+      "target_type": "Cost",
+      "type": "TYPE_OF",
+      "properties": {}
+    },
+    {
+      "source_id": "Premium-Class Upgrades",
+      "source_type": "Service",
+      "target_id": "Client",
+      "target_type": "Organization",
+      "type": "AUTHORIZED_BY",
+      "properties": {}
+    },
+    {
+      "source_id": "Premium-Class Upgrades",
+      "source_type": "Service",
+      "target_id": "Incidents",
+      "target_type": "Event",
+      "type": "DURING",
+      "properties": {}
+    },
+    {
+      "source_id": "Hotel Costs",
+      "source_type": "Cost",
+      "target_id": "Extended Stays",
+      "target_type": "Service",
+      "type": "FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Accommodation Costs",
+      "source_type": "Cost",
+      "target_id": "Extended Stays",
+      "target_type": "Service",
+      "type": "FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Extended Stays",
+      "source_type": "Service",
+      "target_id": "Incidents",
+      "target_type": "Event",
+      "type": "DUE_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Hotel Costs",
+      "source_type": "Cost",
+      "target_id": "Pass-Through Costs",
+      "target_type": "Cost",
+      "type": "TYPE_OF",
+      "properties": {}
+    },
+    {
+      "source_id": "Accommodation Costs",
+      "source_type": "Cost",
+      "target_id": "Pass-Through Costs",
+      "target_type": "Cost",
+      "type": "TYPE_OF",
+      "properties": {}
+    },
+    {
+      "source_id": "Telecommunications Costs",
+      "source_type": "Cost",
+      "target_id": "Pass-Through Costs",
+      "target_type": "Cost",
+      "type": "TYPE_OF",
+      "properties": {}
+    },
+    {
+      "source_id": "Satellite Phone Charges",
+      "source_type": "Cost",
+      "target_id": "Telecommunications Costs",
+      "target_type": "Cost",
+      "type": "EXAMPLE_OF",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Authorization",
+      "target_type": "Process",
+      "type": "OBTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Authorization",
+      "source_type": "Process",
+      "target_id": "Client",
+      "target_type": "Organization",
+      "type": "FROM",
+      "properties": {}
+    },
+    {
+      "source_id": "Authorization",
+      "source_type": "Process",
+      "target_id": "Threshold",
+      "target_type": "Limit",
+      "type": "BEFORE_EXCEEDING",
+      "properties": {}
+    },
+    {
+      "source_id": "Threshold",
+      "source_type": "Limit",
+      "target_id": "Sow",
+      "target_type": "Document",
+      "type": "SPECIFIED_IN",
+      "properties": {}
+    },
+    {
+      "source_id": "Traveler Safety",
+      "source_type": "Concern",
+      "target_id": "Authorization",
+      "target_type": "Process",
+      "type": "OVERRIDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Escalation Contacts",
+      "source_type": "Contact",
+      "target_id": "Client",
+      "target_type": "Organization",
+      "type": "BELONGS_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Parties",
+      "source_type": "Entity",
+      "target_id": "Quarterly Business Reviews",
+      "target_type": "Process",
+      "type": "CONDUCTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Quarterly Business Reviews",
+      "source_type": "Process",
+      "target_id": "Sow",
+      "target_type": "Document",
+      "type": "SPECIFIED_IN",
+      "properties": {}
+    },
+    {
+      "source_id": "Quarterly Business Reviews",
+      "source_type": "Process",
+      "target_id": "Duty Of Care Program Metrics",
+      "target_type": "Metric",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Program Metrics",
+      "source_type": "Metric",
+      "target_id": "Incident Counts By Severity Level And Geography",
+      "target_type": "Metric",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Program Metrics",
+      "source_type": "Metric",
+      "target_id": "Slo Performance",
+      "target_type": "Metric",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Slo Performance",
+      "source_type": "Metric",
+      "target_id": "Response Times",
+      "target_type": "Metric",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Slo Performance",
+      "source_type": "Metric",
+      "target_id": "Outreach Completion Rates",
+      "target_type": "Metric",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Program Metrics",
+      "source_type": "Metric",
+      "target_id": "Traveler Welfare Check Response Rates",
+      "target_type": "Metric",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Program Metrics",
+      "source_type": "Metric",
+      "target_id": "Off-Channel Booking Visibility Gap Analysis",
+      "target_type": "Metric",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Duty Of Care Program Metrics",
+      "source_type": "Metric",
+      "target_id": "Program Improvement Recommendations",
+      "target_type": "Recommendation",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Level 4 Incident",
+      "source_type": "Event",
+      "target_id": "Post-Incident Review",
+      "target_type": "Process",
+      "type": "TRIGGERS",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Post-Incident Review",
+      "target_type": "Process",
+      "type": "PARTICIPATES_IN",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Client",
+      "target_type": "Organization",
+      "type": "NOTIFIES",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Risk Intelligence Platform",
+      "target_type": "System",
+      "type": "OPERATES",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Global Service Team Structure",
+      "target_type": "Structure",
+      "type": "HAS",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Coverage Model",
+      "target_type": "Model",
+      "type": "HAS",
+      "properties": {}
+    },
+    {
+      "source_id": "Regulatory Requirements",
+      "source_type": "Requirement",
+      "target_id": "Duty Of Care Services",
+      "target_type": "Service",
+      "type": "IMPACTS",
+      "properties": {}
+    },
+    {
+      "source_id": "Parties",
+      "source_type": "Entity",
+      "target_id": "Exhibit",
+      "target_type": "Document",
+      "type": "CAN_AMEND",
+      "properties": {}
+    },
+    {
+      "source_id": "Client",
+      "source_type": "Organization",
+      "target_id": "Travel Program",
+      "target_type": "Program",
+      "type": "HAS",
+      "properties": {}
+    },
+    {
+      "source_id": "Exhibit",
+      "source_type": "Document",
+      "target_id": "Agreement",
+      "target_type": "Document",
+      "type": "COTERMINOUS_WITH",
+      "properties": {}
+    },
+    {
+      "source_id": "Exhibit",
+      "source_type": "Document",
+      "target_id": "Agreement",
+      "target_type": "Document",
+      "type": "TERMINATED_BY",
+      "properties": {}
+    },
+    {
+      "source_id": "Section 7",
+      "source_type": "Section",
+      "target_id": "Exhibit",
+      "target_type": "Document",
+      "type": "SURVIVES_TERMINATION",
+      "properties": {}
+    },
+    {
+      "source_id": "Section 10",
+      "source_type": "Section",
+      "target_id": "Exhibit",
+      "target_type": "Document",
+      "type": "SURVIVES_TERMINATION",
+      "properties": {}
+    },
+    {
+      "source_id": "Accrued Rights Or Obligations",
+      "source_type": "Legal obligation",
+      "target_id": "Exhibit",
+      "target_type": "Document",
+      "type": "SURVIVES_TERMINATION",
+      "properties": {}
+    },
+    {
+      "source_id": "Section 7",
+      "source_type": "Section",
+      "target_id": "Data Retention Period",
+      "target_type": "Period",
+      "type": "DURATION",
+      "properties": {}
+    },
+    {
+      "source_id": "Order Of Precedence",
+      "source_type": "Clause",
+      "target_id": "Exhibit",
+      "target_type": "Document",
+      "type": "GOVERNS",
+      "properties": {}
+    },
+    {
+      "source_id": "Order Of Precedence",
+      "source_type": "Clause",
+      "target_id": "Agreement",
+      "target_type": "Document",
+      "type": "GOVERNS",
+      "properties": {}
+    },
+    {
+      "source_id": "Order Of Precedence",
+      "source_type": "Clause",
+      "target_id": "Sow",
+      "target_type": "Document",
+      "type": "GOVERNS",
+      "properties": {}
+    },
+    {
+      "source_id": "Agreement",
+      "source_type": "Document",
+      "target_id": "Sow",
+      "target_type": "Document",
+      "type": "TAKES_PRECEDENCE_OVER",
+      "properties": {
+        "precedence_order": "1"
+      }
+    },
+    {
+      "source_id": "Sow",
+      "source_type": "Document",
+      "target_id": "Exhibit",
+      "target_type": "Document",
+      "type": "TAKES_PRECEDENCE_OVER",
+      "properties": {
+        "precedence_order": "2"
+      }
+    },
+    {
+      "source_id": "Acceptance Section",
+      "source_type": "Document section",
+      "target_id": "Direct Travel, Inc.",
+      "target_type": "Company",
+      "type": "INVOLVES",
+      "properties": {}
+    },
+    {
+      "source_id": "Acceptance Section",
+      "source_type": "Document section",
+      "target_id": "Client",
+      "target_type": "Entity",
+      "type": "INVOLVES",
+      "properties": {}
+    },
+    {
+      "source_id": "Appendix A",
+      "source_type": "Document",
+      "target_id": "Configurable Parameters",
+      "target_type": "Concept",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Configurable Parameters",
+      "source_type": "Concept",
+      "target_id": "Sow",
+      "target_type": "Document",
+      "type": "DEFINED_IN",
+      "properties": {}
+    },
+    {
+      "source_id": "Configurable Parameters",
+      "source_type": "Concept",
+      "target_id": "Client",
+      "target_type": "Organization",
+      "type": "CONFIGURED_PER",
+      "properties": {}
+    },
+    {
+      "source_id": "Configurable Parameters",
+      "source_type": "Concept",
+      "target_id": "Outreach Configuration",
+      "target_type": "Configuration",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Configurable Parameters",
+      "source_type": "Concept",
+      "target_id": "Coverage Model",
+      "target_type": "Configuration",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Configurable Parameters",
+      "source_type": "Concept",
+      "target_id": "Integrations And Providers",
+      "target_type": "Configuration",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Configurable Parameters",
+      "source_type": "Concept",
+      "target_id": "Pre-Trip Services",
+      "target_type": "Configuration",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Configurable Parameters",
+      "source_type": "Concept",
+      "target_id": "Reporting And Dashboards",
+      "target_type": "Configuration",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Outreach Configuration",
+      "source_type": "Configuration",
+      "target_id": "Sms",
+      "target_type": "Communication channel",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Outreach Configuration",
+      "source_type": "Configuration",
+      "target_id": "Email",
+      "target_type": "Communication channel",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Outreach Configuration",
+      "source_type": "Configuration",
+      "target_id": "Phone",
+      "target_type": "Communication channel",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Outreach Configuration",
+      "source_type": "Configuration",
+      "target_id": "Mobile App Push",
+      "target_type": "Communication channel",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Outreach Configuration",
+      "source_type": "Configuration",
+      "target_id": "Level 3",
+      "target_type": "Service level",
+      "type": "APPLIES_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Outreach Configuration",
+      "source_type": "Configuration",
+      "target_id": "Level 4",
+      "target_type": "Service level",
+      "type": "APPLIES_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Outreach Configuration",
+      "source_type": "Configuration",
+      "target_id": "English",
+      "target_type": "Language",
+      "type": "DEFAULT_LANGUAGE",
+      "properties": {}
+    },
+    {
+      "source_id": "Coverage Model",
+      "source_type": "Configuration",
+      "target_id": "24/7 Staffed",
+      "target_type": "Service option",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Coverage Model",
+      "source_type": "Configuration",
+      "target_id": "Business Hours + On-Call",
+      "target_type": "Service option",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Coverage Model",
+      "source_type": "Configuration",
+      "target_id": "Crisis Bridge",
+      "target_type": "Service",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Coverage Model",
+      "source_type": "Configuration",
+      "target_id": "Sitrep",
+      "target_type": "Report",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Crisis Bridge",
+      "source_type": "Service",
+      "target_id": "Level 4",
+      "target_type": "Service level",
+      "type": "INCLUDED_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Crisis24 Horizon",
+      "target_type": "Provider",
+      "type": "DESIGNATES",
+      "properties": {}
+    },
+    {
+      "source_id": "Integrations And Providers",
+      "source_type": "Configuration",
+      "target_id": "Crisis24 Horizon",
+      "target_type": "Provider",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Integrations And Providers",
+      "source_type": "Configuration",
+      "target_id": "International Sos",
+      "target_type": "Provider",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Integrations And Providers",
+      "source_type": "Configuration",
+      "target_id": "Crisis24 Response",
+      "target_type": "Provider",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Integrations And Providers",
+      "source_type": "Configuration",
+      "target_id": "Global Guardian",
+      "target_type": "Provider",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Pre-Trip Services",
+      "source_type": "Configuration",
+      "target_id": "Pre-Trip Briefing",
+      "target_type": "Service",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Pre-Trip Services",
+      "source_type": "Configuration",
+      "target_id": "High-Risk Destination",
+      "target_type": "Location",
+      "type": "APPLIES_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Pre-Trip Services",
+      "source_type": "Configuration",
+      "target_id": "Critical Destination",
+      "target_type": "Location",
+      "type": "APPLIES_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Pre-Trip Services",
+      "source_type": "Configuration",
+      "target_id": "Booking-Time Approval Workflow",
+      "target_type": "Process",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Pre-Trip Services",
+      "source_type": "Configuration",
+      "target_id": "Travel Insurance Verification",
+      "target_type": "Process",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Pre-Trip Briefing",
+      "source_type": "Service",
+      "target_id": "High-Risk Destination",
+      "target_type": "Location",
+      "type": "AUTOMATIC_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Pre-Trip Briefing",
+      "source_type": "Service",
+      "target_id": "Critical Destination",
+      "target_type": "Location",
+      "type": "AUTOMATIC_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Booking-Time Approval Workflow",
+      "source_type": "Process",
+      "target_id": "High-Risk Destination",
+      "target_type": "Location",
+      "type": "ENABLED_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Booking-Time Approval Workflow",
+      "source_type": "Process",
+      "target_id": "Critical Destination",
+      "target_type": "Location",
+      "type": "ENABLED_FOR",
+      "properties": {}
+    },
+    {
+      "source_id": "Reporting And Dashboards",
+      "source_type": "Configuration",
+      "target_id": "Risk Intelligence Dashboard",
+      "target_type": "Dashboard",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Reporting And Dashboards",
+      "source_type": "Configuration",
+      "target_id": "Interactive Global Map",
+      "target_type": "Dashboard",
+      "type": "INCLUDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Level 1 Advisory Alert",
+      "source_type": "Alert",
+      "target_id": "Email",
+      "target_type": "Communication",
+      "type": "USES",
+      "properties": {}
+    },
+    {
+      "source_id": "Level 2 Monitor Alert",
+      "source_type": "Alert",
+      "target_id": "Sms",
+      "target_type": "Communication",
+      "type": "USES",
+      "properties": {}
+    },
+    {
+      "source_id": "Level 2 Monitor Alert",
+      "source_type": "Alert",
+      "target_id": "Email",
+      "target_type": "Communication",
+      "type": "USES",
+      "properties": {}
+    },
+    {
+      "source_id": "Level 3 Action Required Welfare Check",
+      "source_type": "Alert",
+      "target_id": "Sms",
+      "target_type": "Communication",
+      "type": "USES",
+      "properties": {}
+    },
+    {
+      "source_id": "Level 3 Action Required Welfare Check",
+      "source_type": "Alert",
+      "target_id": "Email",
+      "target_type": "Communication",
+      "type": "USES",
+      "properties": {}
+    },
+    {
+      "source_id": "Level 3 Action Required Welfare Check",
+      "source_type": "Alert",
+      "target_id": "Voice",
+      "target_type": "Communication",
+      "type": "USES",
+      "properties": {}
+    },
+    {
+      "source_id": "Level 4 Crisis Welfare Check",
+      "source_type": "Alert",
+      "target_id": "Sms",
+      "target_type": "Communication",
+      "type": "USES",
+      "properties": {}
+    },
+    {
+      "source_id": "Level 4 Crisis Welfare Check",
+      "source_type": "Alert",
+      "target_id": "Email",
+      "target_type": "Communication",
+      "type": "USES",
+      "properties": {}
+    },
+    {
+      "source_id": "Level 4 Crisis Welfare Check",
+      "source_type": "Alert",
+      "target_id": "Voice",
+      "target_type": "Communication",
+      "type": "USES",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Level 1 Advisory Alert",
+      "target_type": "Alert",
+      "type": "PROVIDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Level 2 Monitor Alert",
+      "target_type": "Alert",
+      "type": "PROVIDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Level 3 Action Required Welfare Check",
+      "target_type": "Alert",
+      "type": "PROVIDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Level 4 Crisis Welfare Check",
+      "target_type": "Alert",
+      "type": "PROVIDES",
+      "properties": {}
+    },
+    {
+      "source_id": "Level 3 Action Required Welfare Check",
+      "source_type": "Alert",
+      "target_id": "Local Emergency Services",
+      "target_type": "Organization",
+      "type": "REFERS_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Level 4 Crisis Welfare Check",
+      "source_type": "Alert",
+      "target_id": "Local Emergency Services",
+      "target_type": "Organization",
+      "type": "REFERS_TO",
+      "properties": {}
+    },
+    {
+      "source_id": "Direct Travel",
+      "source_type": "Organization",
+      "target_id": "Incident Activity Log",
+      "target_type": "Document",
+      "type": "MAINTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Level 3 Incident",
+      "source_type": "Incident",
+      "target_id": "Incident Activity Log",
+      "target_type": "Document",
+      "type": "REQUIRES",
+      "properties": {}
+    },
+    {
+      "source_id": "Level 4 Incident",
+      "source_type": "Incident",
+      "target_id": "Incident Activity Log",
+      "target_type": "Document",
+      "type": "REQUIRES",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident Activity Log",
+      "source_type": "Document",
+      "target_id": "Incident Id",
+      "target_type": "Field",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident Activity Log",
+      "source_type": "Document",
+      "target_id": "Incident Classification",
+      "target_type": "Field",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident Activity Log",
+      "source_type": "Document",
+      "target_id": "Date/Time Opened",
+      "target_type": "Field",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident Activity Log",
+      "source_type": "Document",
+      "target_id": "Date/Time Closed",
+      "target_type": "Field",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident Activity Log",
+      "source_type": "Document",
+      "target_id": "Event Description",
+      "target_type": "Field",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident Activity Log",
+      "source_type": "Document",
+      "target_id": "Affected Geography",
+      "target_type": "Field",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident Activity Log",
+      "source_type": "Document",
+      "target_id": "Impacted Travelers",
+      "target_type": "Field",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident Activity Log",
+      "source_type": "Document",
+      "target_id": "Outreach Log",
+      "target_type": "Field",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident Activity Log",
+      "source_type": "Document",
+      "target_id": "Traveler Status Summary",
+      "target_type": "Field",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident Activity Log",
+      "source_type": "Document",
+      "target_id": "Client Escalation Log",
+      "target_type": "Field",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident Activity Log",
+      "source_type": "Document",
+      "target_id": "Actions Taken",
+      "target_type": "Field",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident Activity Log",
+      "source_type": "Document",
+      "target_id": "Specialist Provider Engagement",
+      "target_type": "Field",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident Activity Log",
+      "source_type": "Document",
+      "target_id": "Crisis Bridge Log",
+      "target_type": "Field",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Incident Activity Log",
+      "source_type": "Document",
+      "target_id": "Resolution Notes",
+      "target_type": "Field",
+      "type": "CONTAINS",
+      "properties": {}
+    },
+    {
+      "source_id": "Outreach Log",
+      "source_type": "Field",
+      "target_id": "Traveler",
+      "target_type": "Person",
+      "type": "TRACKS",
+      "properties": {}
+    },
+    {
+      "source_id": "Impacted Travelers",
+      "source_type": "Field",
+      "target_id": "Traveler",
+      "target_type": "Person",
+      "type": "IDENTIFIES",
+      "properties": {}
+    },
+    {
+      "source_id": "Client Escalation Log",
+      "source_type": "Field",
+      "target_id": "Client",
+      "target_type": "Organization",
+      "type": "TRACKS",
+      "properties": {}
+    },
+    {
+      "source_id": "Actions Taken",
+      "source_type": "Field",
+      "target_id": "Tmc",
+      "target_type": "Organization",
+      "type": "LOGS",
+      "properties": {}
+    },
+    {
+      "source_id": "Specialist Provider Engagement",
+      "source_type": "Field",
+      "target_id": "Specialist Provider",
+      "target_type": "Organization",
+      "type": "TRACKS",
+      "properties": {}
+    },
+    {
+      "source_id": "Crisis Bridge Log",
+      "source_type": "Field",
+      "target_id": "Level 4 Incident",
+      "target_type": "Incident",
+      "type": "APPLIES_TO",
+      "properties": {}
+    }
+  ]
+}

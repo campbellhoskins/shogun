@@ -13,8 +13,13 @@ import sys
 import time
 from pathlib import Path
 
+import os
+
 from dotenv import load_dotenv
 from anthropic import Anthropic
+
+load_dotenv()
+TEST_MODEL = os.environ.get("TEST_MODEL", "claude-haiku-4-5-20251001")
 
 from src.build_graph import load_graph_file, list_graphs
 from src.graph import build_graph
@@ -63,7 +68,7 @@ def judge_answer(
 ) -> dict:
     """Use a separate LLM call to judge the agent's answer against ground truth."""
     response = client.messages.create(
-        model="claude-sonnet-4-20250514",
+        model=TEST_MODEL,
         max_tokens=1024,
         system=JUDGE_SYSTEM_PROMPT,
         messages=[

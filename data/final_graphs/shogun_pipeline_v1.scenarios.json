@@ -1,0 +1,250 @@
+{
+  "scenarios": [
+    {
+      "id": "earthquake-response",
+      "name": "Level 3 Earthquake \u2014 Full Response Chain",
+      "steps": [
+        {
+          "title": "Incident Detected",
+          "description": "A Level 3 earthquake is reported in a region where travelers are deployed. The system begins by classifying the incident.",
+          "highlight_nodes": ["incident", "severity_level"],
+          "highlight_edges": ["incident->severity_level"],
+          "focus_node": "incident",
+          "log": [
+            {"type": "query", "text": "> QUERY: get_entity(incident)"},
+            {"type": "traverse", "text": "  TRAVERSE: incident -[CLASSIFIED_AS]-> severity_level"},
+            {"type": "attr", "text": "  READ ATTR: severity_level.level = 3 (Natural Hazard)"}
+          ]
+        },
+        {
+          "title": "Severity Classification",
+          "description": "The incident is categorized as a natural hazard. Severity level determines which services activate and who gets notified.",
+          "highlight_nodes": ["incident", "severity_level", "natural_hazards"],
+          "highlight_edges": ["incident->severity_level", "incident->natural_hazards"],
+          "focus_node": "severity_level",
+          "log": [
+            {"type": "traverse", "text": "  TRAVERSE: incident -[CATEGORIZED_AS]-> natural_hazards"},
+            {"type": "attr", "text": "  READ ATTR: natural_hazards.type = RiskCategory"},
+            {"type": "decision", "text": "  DECISION: Severity Level 3 activates welfare checks + incident response"}
+          ]
+        },
+        {
+          "title": "Identify Impacted Travelers",
+          "description": "The system traverses from the incident to find all travelers in the affected zone.",
+          "highlight_nodes": ["incident", "traveler", "severity_level"],
+          "highlight_edges": ["incident->traveler", "incident->severity_level"],
+          "focus_node": "traveler",
+          "log": [
+            {"type": "query", "text": "> QUERY: get_neighbors(incident, direction=outgoing)"},
+            {"type": "traverse", "text": "  TRAVERSE: incident -[IMPACTS]-> traveler"},
+            {"type": "attr", "text": "  READ ATTR: traveler.type = Traveler"},
+            {"type": "dim", "text": "  ... checking traveler location against incident zone"}
+          ]
+        },
+        {
+          "title": "Determine Activated Services",
+          "description": "At severity level 3, specific duty-of-care services are activated: welfare checks, in-trip monitoring, and incident response.",
+          "highlight_nodes": ["severity_level", "welfare_checks_service", "incident_response_and_traveler_assistance", "in_trip_monitoring_and_alerts"],
+          "highlight_edges": ["welfare_checks_service->severity_level", "incident_response_and_traveler_assistance->severity_level", "in_trip_monitoring_and_alerts->risk_intelligence_platform"],
+          "focus_node": "welfare_checks_service",
+          "log": [
+            {"type": "query", "text": "> QUERY: get_neighbors(severity_level, direction=incoming)"},
+            {"type": "traverse", "text": "  TRAVERSE: welfare_checks_service -[ACTIVATED_AT]-> severity_level"},
+            {"type": "traverse", "text": "  TRAVERSE: incident_response_and_traveler_assistance -[ACTIVATED_AT]-> severity_level"},
+            {"type": "decision", "text": "  DECISION: 3 services activated for this severity level"}
+          ]
+        },
+        {
+          "title": "Verify Booking Visibility",
+          "description": "Services only work if the traveler booked through approved channels. The agent checks for ENABLES_COVERAGE edges.",
+          "highlight_nodes": ["approved_channels", "duty_of_care_services", "itinerary_visibility_and_traveler_locate", "welfare_checks_service"],
+          "highlight_edges": ["approved_channels->duty_of_care_services", "approved_channels->itinerary_visibility_and_traveler_locate", "approved_channels->welfare_checks_service"],
+          "focus_node": "approved_channels",
+          "log": [
+            {"type": "query", "text": "> QUERY: get_neighbors(approved_channels, direction=outgoing)"},
+            {"type": "traverse", "text": "  TRAVERSE: approved_channels -[ENABLES_COVERAGE]-> duty_of_care_services"},
+            {"type": "traverse", "text": "  TRAVERSE: approved_channels -[ENABLES_COVERAGE]-> itinerary_visibility_and_traveler_locate"},
+            {"type": "traverse", "text": "  TRAVERSE: approved_channels -[ENABLES_COVERAGE]-> welfare_checks_service"},
+            {"type": "decision", "text": "  DECISION: Traveler booked via approved channel \u2014 full coverage active"}
+          ]
+        },
+        {
+          "title": "Initiate Welfare Check",
+          "description": "Direct Travel initiates a welfare check. The traveler will be contacted and asked to respond with a status.",
+          "highlight_nodes": ["welfare_checks_service", "traveler", "safe", "need_assistance", "no_response"],
+          "highlight_edges": ["traveler->safe", "traveler->need_assistance", "traveler->no_response"],
+          "focus_node": "welfare_checks_service",
+          "log": [
+            {"type": "query", "text": "> QUERY: get_neighbors(traveler, type=RESPONDS_WITH)"},
+            {"type": "traverse", "text": "  TRAVERSE: traveler -[RESPONDS_WITH]-> safe"},
+            {"type": "traverse", "text": "  TRAVERSE: traveler -[RESPONDS_WITH]-> need_assistance"},
+            {"type": "traverse", "text": "  TRAVERSE: traveler -[RESPONDS_WITH]-> no_response"},
+            {"type": "dim", "text": "  ... awaiting traveler response"}
+          ]
+        },
+        {
+          "title": "Traveler Responds: NEED ASSISTANCE",
+          "description": "The traveler responds with NEED ASSISTANCE, which triggers the incident response service.",
+          "highlight_nodes": ["traveler", "need_assistance", "incident_response_and_traveler_assistance"],
+          "highlight_edges": ["traveler->need_assistance", "need_assistance->incident_response_and_traveler_assistance"],
+          "focus_node": "need_assistance",
+          "log": [
+            {"type": "attr", "text": "  READ ATTR: response_status = NEED ASSISTANCE"},
+            {"type": "traverse", "text": "  TRAVERSE: need_assistance -[TRIGGERS_ACTION]-> incident_response_and_traveler_assistance"},
+            {"type": "warning", "text": "  ALERT: Incident response triggered \u2014 checking authorization requirements"}
+          ]
+        },
+        {
+          "title": "Authorization Gate",
+          "description": "Incident response requires explicit client authorization before extraordinary measures can be taken.",
+          "highlight_nodes": ["incident_response_and_traveler_assistance", "client", "express_client_authorization_requirement"],
+          "highlight_edges": ["incident_response_and_traveler_assistance->client", "express_client_authorization_requirement->client"],
+          "focus_node": "client",
+          "log": [
+            {"type": "traverse", "text": "  TRAVERSE: incident_response_and_traveler_assistance -[REQUIRES_AUTHORIZATION_FROM]-> client"},
+            {"type": "traverse", "text": "  TRAVERSE: express_client_authorization_requirement -[ASSIGNED_TO]-> client"},
+            {"type": "warning", "text": "  GATE: Client authorization REQUIRED before proceeding"},
+            {"type": "decision", "text": "  DECISION: Escalate to client contacts for authorization"}
+          ]
+        },
+        {
+          "title": "Escalation Contacts",
+          "description": "The severity level determines the escalation roster. Multiple contacts are notified in priority order.",
+          "highlight_nodes": ["severity_level", "primary_travel_program_owner", "corporate_security", "senior_leadership_contact", "human_resources_duty_contact"],
+          "highlight_edges": ["severity_level->primary_travel_program_owner", "severity_level->corporate_security", "severity_level->senior_leadership_contact", "severity_level->human_resources_duty_contact"],
+          "focus_node": "primary_travel_program_owner",
+          "log": [
+            {"type": "query", "text": "> QUERY: get_neighbors(severity_level, type=ESCALATED_TO)"},
+            {"type": "traverse", "text": "  TRAVERSE: severity_level -[ESCALATED_TO]-> primary_travel_program_owner"},
+            {"type": "traverse", "text": "  TRAVERSE: severity_level -[ESCALATED_TO]-> corporate_security"},
+            {"type": "traverse", "text": "  TRAVERSE: severity_level -[ESCALATED_TO]-> senior_leadership_contact"},
+            {"type": "traverse", "text": "  TRAVERSE: severity_level -[ESCALATED_TO]-> human_resources_duty_contact"},
+            {"type": "decision", "text": "  DECISION: 4 contacts notified. Awaiting client authorization to proceed with incident response."}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "non-responsive-traveler",
+      "name": "Traveler Non-Responsive \u2014 Escalation Path",
+      "steps": [
+        {
+          "title": "Welfare Check \u2014 No Response",
+          "description": "A welfare check is initiated but the traveler does not respond. The NO RESPONSE status triggers escalation.",
+          "highlight_nodes": ["traveler", "no_response", "welfare_checks_service"],
+          "highlight_edges": ["traveler->no_response", "welfare_checks_service->severity_level"],
+          "focus_node": "no_response",
+          "log": [
+            {"type": "query", "text": "> QUERY: get_entity(no_response)"},
+            {"type": "attr", "text": "  READ ATTR: no_response.type = TravelerResponseStatus"},
+            {"type": "traverse", "text": "  TRAVERSE: traveler -[RESPONDS_WITH]-> no_response"},
+            {"type": "warning", "text": "  ALERT: Traveler non-responsive \u2014 escalation required"}
+          ]
+        },
+        {
+          "title": "Escalation Triggered",
+          "description": "NO RESPONSE triggers the incident response service, same as NEED ASSISTANCE.",
+          "highlight_nodes": ["no_response", "incident_response_and_traveler_assistance", "non_responsive_traveler_escalation"],
+          "highlight_edges": ["no_response->incident_response_and_traveler_assistance", "non_responsive_traveler_escalation->direct_travel_inc"],
+          "focus_node": "incident_response_and_traveler_assistance",
+          "log": [
+            {"type": "traverse", "text": "  TRAVERSE: no_response -[TRIGGERS_ACTION]-> incident_response_and_traveler_assistance"},
+            {"type": "traverse", "text": "  TRAVERSE: non_responsive_traveler_escalation -[ASSIGNED_TO]-> direct_travel_inc"},
+            {"type": "decision", "text": "  DECISION: Direct Travel obligated to escalate non-responsive traveler"}
+          ]
+        },
+        {
+          "title": "Identify Escalation Contacts",
+          "description": "The severity level determines who must be contacted. Client-designated contacts form the escalation roster.",
+          "highlight_nodes": ["severity_level", "primary_travel_program_owner", "human_resources_duty_contact", "after_hours_duty_contact"],
+          "highlight_edges": ["severity_level->primary_travel_program_owner", "severity_level->human_resources_duty_contact", "severity_level->after_hours_duty_contact"],
+          "focus_node": "primary_travel_program_owner",
+          "log": [
+            {"type": "query", "text": "> QUERY: get_neighbors(severity_level, type=ESCALATED_TO)"},
+            {"type": "traverse", "text": "  TRAVERSE: severity_level -[ESCALATED_TO]-> primary_travel_program_owner"},
+            {"type": "traverse", "text": "  TRAVERSE: severity_level -[ESCALATED_TO]-> human_resources_duty_contact"},
+            {"type": "traverse", "text": "  TRAVERSE: severity_level -[ESCALATED_TO]-> after_hours_duty_contact"},
+            {"type": "attr", "text": "  READ ATTR: all contacts DESIGNATED_BY client"}
+          ]
+        },
+        {
+          "title": "Client Authorization for Locate",
+          "description": "Locating a non-responsive traveler requires explicit client authorization. This is a hard gate in the policy.",
+          "highlight_nodes": ["incident_response_and_traveler_assistance", "client", "express_client_authorization_requirement", "extraordinary_measures_authorization"],
+          "highlight_edges": ["incident_response_and_traveler_assistance->client", "express_client_authorization_requirement->client", "extraordinary_measures_authorization->client"],
+          "focus_node": "client",
+          "log": [
+            {"type": "traverse", "text": "  TRAVERSE: incident_response_and_traveler_assistance -[REQUIRES_AUTHORIZATION_FROM]-> client"},
+            {"type": "traverse", "text": "  TRAVERSE: extraordinary_measures_authorization -[ASSIGNED_TO]-> client"},
+            {"type": "warning", "text": "  GATE: Extraordinary measures require express client authorization"},
+            {"type": "decision", "text": "  DECISION: Cannot proceed with traveler locate until client authorizes. Contact primary_travel_program_owner."}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "off-channel-booking",
+      "name": "Off-Channel Booking \u2014 Coverage Gap",
+      "steps": [
+        {
+          "title": "Level 4 Crisis Detected",
+          "description": "A major security incident is reported. The system checks if travelers in the area have duty-of-care coverage.",
+          "highlight_nodes": ["incident", "severity_level", "security_threats"],
+          "highlight_edges": ["incident->severity_level", "incident->security_threats"],
+          "focus_node": "incident",
+          "log": [
+            {"type": "query", "text": "> QUERY: get_entity(incident)"},
+            {"type": "traverse", "text": "  TRAVERSE: incident -[CLASSIFIED_AS]-> severity_level"},
+            {"type": "traverse", "text": "  TRAVERSE: incident -[CATEGORIZED_AS]-> security_threats"},
+            {"type": "attr", "text": "  READ ATTR: severity_level.level = 4 (Critical)"}
+          ]
+        },
+        {
+          "title": "Check Booking Channel",
+          "description": "A traveler in the area booked through an off-channel method (direct with airline, personal travel agent, etc.).",
+          "highlight_nodes": ["traveler", "off_channel_booking"],
+          "highlight_edges": ["traveler->off_channel_booking"],
+          "focus_node": "off_channel_booking",
+          "log": [
+            {"type": "query", "text": "> QUERY: get_neighbors(traveler, type=HAS_BOOKING)"},
+            {"type": "traverse", "text": "  TRAVERSE: traveler -[HAS_BOOKING]-> off_channel_booking"},
+            {"type": "attr", "text": "  READ ATTR: off_channel_booking.type = Booking"},
+            {"type": "warning", "text": "  ALERT: Booking is OFF-CHANNEL \u2014 checking coverage eligibility"}
+          ]
+        },
+        {
+          "title": "No Coverage Edges Found",
+          "description": "Unlike approved_channels, the off_channel_booking entity has NO ENABLES_COVERAGE edges. The traveler is invisible to duty-of-care services.",
+          "highlight_nodes": ["off_channel_booking", "duty_of_care_services", "itinerary_visibility_and_traveler_locate", "alerts_service", "disruption_assistance_service"],
+          "highlight_edges": [],
+          "focus_node": "off_channel_booking",
+          "log": [
+            {"type": "query", "text": "> QUERY: get_neighbors(off_channel_booking, type=ENABLES_COVERAGE)"},
+            {"type": "warning", "text": "  RESULT: 0 edges found \u2014 NO ENABLES_COVERAGE relationships"},
+            {"type": "warning", "text": "  ALERT: Off-channel booking has NO duty-of-care coverage"},
+            {"type": "dim", "text": "  ... traveler cannot be located, no welfare check possible"},
+            {"type": "dim", "text": "  ... no disruption assistance, no alerts"}
+          ]
+        },
+        {
+          "title": "Contrast: Approved Channel Coverage",
+          "description": "For comparison, approved_channels has 6 ENABLES_COVERAGE edges providing full service coverage. This is the coverage gap that off-channel bookings create.",
+          "highlight_nodes": ["approved_channels", "duty_of_care_services", "itinerary_visibility_and_traveler_locate", "in_trip_monitoring_and_alerts", "incident_response_and_traveler_assistance", "alerts_service", "welfare_checks_service", "disruption_assistance_service"],
+          "highlight_edges": ["approved_channels->duty_of_care_services", "approved_channels->itinerary_visibility_and_traveler_locate", "approved_channels->in_trip_monitoring_and_alerts", "approved_channels->incident_response_and_traveler_assistance", "approved_channels->alerts_service", "approved_channels->welfare_checks_service", "approved_channels->disruption_assistance_service"],
+          "focus_node": "approved_channels",
+          "log": [
+            {"type": "query", "text": "> QUERY: get_neighbors(approved_channels, type=ENABLES_COVERAGE)"},
+            {"type": "traverse", "text": "  TRAVERSE: approved_channels -[ENABLES_COVERAGE]-> duty_of_care_services"},
+            {"type": "traverse", "text": "  TRAVERSE: approved_channels -[ENABLES_COVERAGE]-> itinerary_visibility_and_traveler_locate"},
+            {"type": "traverse", "text": "  TRAVERSE: approved_channels -[ENABLES_COVERAGE]-> in_trip_monitoring_and_alerts"},
+            {"type": "traverse", "text": "  TRAVERSE: approved_channels -[ENABLES_COVERAGE]-> incident_response_and_traveler_assistance"},
+            {"type": "traverse", "text": "  TRAVERSE: approved_channels -[ENABLES_COVERAGE]-> alerts_service"},
+            {"type": "traverse", "text": "  TRAVERSE: approved_channels -[ENABLES_COVERAGE]-> welfare_checks_service"},
+            {"type": "traverse", "text": "  TRAVERSE: approved_channels -[ENABLES_COVERAGE]-> disruption_assistance_service"},
+            {"type": "decision", "text": "  DECISION: 7 services covered via approved channels vs 0 for off-channel. Policy enforcement critical."}
+          ]
+        }
+      ]
+    }
+  ]
+}

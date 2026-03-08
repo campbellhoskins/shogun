@@ -1,0 +1,399 @@
+.scenario-panel {
+  padding: var(--panel-padding);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Scenario Selector --- */
+
+.scenario-selector {
+  position: relative;
+  flex-shrink: 0;
+  margin-bottom: 12px;
+}
+
+.scenario-selector-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.scenario-selector-btn:hover {
+  border-color: var(--accent-primary);
+}
+
+.scenario-selector-btn .chevron {
+  font-size: 10px;
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+}
+
+.scenario-selector-btn .chevron.open {
+  transform: rotate(180deg);
+}
+
+.scenario-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.scenario-option {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-fast);
+}
+
+.scenario-option:last-child {
+  border-bottom: none;
+}
+
+.scenario-option:hover {
+  background: var(--bg-highlight);
+  color: var(--text-primary);
+}
+
+.scenario-option.active {
+  color: var(--accent-primary);
+  background: rgba(129, 140, 248, 0.08);
+}
+
+/* --- Step Info --- */
+
+.scenario-step-header {
+  flex-shrink: 0;
+  margin-bottom: 12px;
+}
+
+.scenario-step-counter {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.scenario-step-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.scenario-step-description {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* --- Agent Reasoning Trace --- */
+
+.scenario-log {
+  flex: 1;
+  overflow-y: auto;
+  background: #0a0f1a;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 12px;
+  margin: 12px 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.6;
+  min-height: 120px;
+}
+
+.scenario-log-line {
+  animation: logFadeIn 200ms ease-out;
+}
+
+.scenario-log-line.log-query {
+  color: #67e8f9; /* cyan */
+}
+
+.scenario-log-line.log-traverse {
+  color: #c4b5fd; /* violet */
+}
+
+.scenario-log-line.log-attr {
+  color: #fbbf24; /* amber */
+}
+
+.scenario-log-line.log-decision {
+  color: #4ade80; /* green */
+}
+
+.scenario-log-line.log-warning {
+  color: #f87171; /* red */
+}
+
+.scenario-log-line.log-dim {
+  color: var(--text-muted);
+}
+
+@keyframes logFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Controls --- */
+
+.scenario-controls {
+  flex-shrink: 0;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.scenario-btn-prev,
+.scenario-btn-next,
+.scenario-btn-auto {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  background: var(--bg-elevated);
+}
+
+.scenario-btn-prev:hover,
+.scenario-btn-next:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-primary);
+}
+
+.scenario-btn-prev:disabled,
+.scenario-btn-next:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.scenario-btn-auto {
+  margin-left: auto;
+}
+
+.scenario-btn-auto:hover {
+  color: var(--accent-hot);
+  border-color: var(--accent-hot);
+}
+
+.scenario-btn-auto.playing {
+  color: var(--accent-hot);
+  border-color: var(--accent-hot);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+/* --- Empty State --- */
+
+.scenario-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px 16px;
+  gap: 8px;
+}
+
+.scenario-empty-icon {
+  font-size: 28px;
+  opacity: 0.4;
+}
+
+.scenario-empty-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.scenario-empty-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* --- Mode Toggle --- */
+
+.scenario-mode-toggle {
+  display: flex;
+  gap: 0;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.scenario-mode-btn {
+  flex: 1;
+  padding: 6px 0;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.scenario-mode-btn:first-child {
+  border-right: 1px solid var(--border-subtle);
+}
+
+.scenario-mode-btn:hover {
+  color: var(--text-secondary);
+  background: var(--bg-elevated);
+}
+
+.scenario-mode-btn.active {
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+}
+
+/* --- Live Walkthrough --- */
+
+.live-walkthrough-input {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.live-prompt-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.live-prompt-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 12px;
+  outline: none;
+  transition: border-color var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.live-prompt-input::placeholder {
+  color: var(--text-muted);
+}
+
+.live-prompt-input:focus {
+  border-color: var(--accent-primary);
+}
+
+.live-prompt-input:disabled {
+  opacity: 0.5;
+}
+
+.live-run-btn {
+  align-self: flex-end;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 6px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid var(--accent-primary);
+  color: var(--accent-primary);
+  background: transparent;
+}
+
+.live-run-btn:hover:not(:disabled) {
+  background: rgba(129, 140, 248, 0.1);
+}
+
+.live-run-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.live-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.live-loading-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.live-loading-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-hot);
+  animation: thinking-pulse 1.4s ease-in-out infinite;
+}
+
+.live-loading-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.live-loading-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.live-loading-text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}

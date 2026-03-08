@@ -1,8 +1,13 @@
 from __future__ import annotations
 
 import json
+import os
 
 from anthropic import Anthropic
+from dotenv import load_dotenv
+
+load_dotenv()
+TEST_MODEL = os.environ.get("TEST_MODEL", "claude-haiku-4-5-20251001")
 
 from src.models import OntologyGraph
 from src.pipeline import extract_ontology
@@ -93,7 +98,7 @@ def parse_policy_legacy(
         client = Anthropic()
 
     response = client.messages.create(
-        model="claude-sonnet-4-20250514",
+        model=TEST_MODEL,
         max_tokens=16384,
         system=LEGACY_EXTRACTION_SYSTEM_PROMPT,
         messages=[

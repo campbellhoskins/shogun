@@ -1,10 +1,17 @@
 from __future__ import annotations
 
 import json
+import os
+import re
+from dataclasses import dataclass, field
 from typing import Any
 
 import networkx as nx
 from anthropic import Anthropic
+from dotenv import load_dotenv
+
+load_dotenv()
+TEST_MODEL = os.environ.get("TEST_MODEL", "claude-haiku-4-5-20251001")
 
 from src.models import AgentResponse
 
@@ -130,6 +137,38 @@ TOOLS = [
             "type": "object",
             "properties": {},
             "required": [],
+        },
+    },
+    {
+        "name": "traverse_workflow",
+        "description": "Follow the FOLLOWED_BY chain from a starting entity to enumerate an ordered procedure. Returns all steps in sequence. Use this to walk through multi-step workflows like welfare check outreach or escalation procedures.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "start_entity_id": {
+                    "type": "string",
+                    "description": "The ID of the first step in the procedure",
+                },
+            },
+            "required": ["start_entity_id"],
+        },
+    },
+    {
+        "name": "find_by_attribute",
+        "description": "Find entities that have a specific attribute value. Supports exact match and substring match on string attributes. Use this to find entities by operational criteria like severity level, escalation condition, or roster position.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "attribute_name": {
+                    "type": "string",
+                    "description": "The attribute name to search (e.g., 'escalation_severity_levels', 'activation_severity_threshold', 'roster_position')",
+                },
+                "attribute_value": {
+                    "type": "string",
+                    "description": "The value to match (case-insensitive, substring match for strings)",
+                },
+            },
+            "required": ["attribute_name", "attribute_value"],
         },
     },
 ]
@@ -297,6 +336,67 @@ def _execute_tool(tool_name: str, tool_input: dict, g: nx.DiGraph) -> str:
 
         return "\n".join(lines)
 
+    elif tool_name == "traverse_workflow":
+        start_id = tool_input["start_entity_id"]
+        if start_id not in g:
+            return f"Entity '{start_id}' not found in graph."
+
+        # Follow FOLLOWED_BY chain
+        steps = [start_id]
+        current = start_id
+        visited = {start_id}
+        while True:
+            next_step = None
+            for _, tgt, edata in g.out_edges(current, data=True):
+                if edata.get("type") == "FOLLOWED_BY" and tgt not in visited:
+                    next_step = tgt
+                    break
+            if next_step is None:
+                break
+            steps.append(next_step)
+            visited.add(next_step)
+            current = next_step
+
+        if len(steps) == 1:
+            return f"No FOLLOWED_BY chain found from '{start_id}'. This entity may not be the start of a workflow."
+
+        lines = [f"Workflow sequence ({len(steps)} steps):\n"]
+        for i, step_id in enumerate(steps, 1):
+            data = g.nodes[step_id]
+            name = data.get("name", step_id)
+            etype = data.get("type", "?")
+            lines.append(f"  Step {i}: {name} [{etype}] ({step_id})")
+            # Show key typed attributes
+            for attr in ("tmc_action", "action_time_target", "channel", "channel_priority_order",
+                         "activation_severity_threshold", "time_constraint"):
+                val = data.get(attr)
+                if val not in (None, "", []):
+                    lines.append(f"          {attr}: {val}")
+        return "\n".join(lines)
+
+    elif tool_name == "find_by_attribute":
+        attr_name = tool_input["attribute_name"]
+        attr_value = tool_input["attribute_value"].lower()
+        results = []
+        for node_id, data in g.nodes(data=True):
+            val = data.get(attr_name)
+            if val is None:
+                continue
+            # Match: substring for strings, membership for lists, exact for others
+            matched = False
+            if isinstance(val, str) and attr_value in val.lower():
+                matched = True
+            elif isinstance(val, list) and any(attr_value in str(v).lower() for v in val):
+                matched = True
+            elif str(val).lower() == attr_value:
+                matched = True
+            if matched:
+                results.append(
+                    f"- {node_id} [{data.get('type', '?')}]: {data.get('name', '?')} "
+                    f"({attr_name}={val})"
+                )
+        return "\n".join(results) if results else f"No entities with {attr_name} matching '{tool_input['attribute_value']}'."
+
     return f"Unknown tool: {tool_name}"
 
 
@@ -316,7 +416,7 @@ def ask(question: str, g: nx.DiGraph, client: Anthropic | None = None, max_turns
         turn_count += 1
 
         response = client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model=TEST_MODEL,
             max_tokens=4096,
             system=SYSTEM_PROMPT,
             tools=TOOLS,
@@ -339,6 +439,8 @@ def ask(question: str, g: nx.DiGraph, client: Anthropic | None = None, max_turns
                         referenced_entities.add(tool_input["source_id"])
                     if "target_id" in tool_input:
                         referenced_entities.add(tool_input["target_id"])
+                    if "start_entity_id" in tool_input:
+                        referenced_entities.add(tool_input["start_entity_id"])
 
                     result = _execute_tool(tool_name, tool_input, g)
                     tool_results.append({
@@ -370,3 +472,378 @@ def ask(question: str, g: nx.DiGraph, client: Anthropic | None = None, max_turns
         referenced_entities=sorted(referenced_entities),
         reasoning_path=f"Hit max_turns ({max_turns})",
     )
+
+
+# --- Live Walkthrough ---
+
+
+@dataclass
+class ToolCallRecord:
+    """Record of a single tool call during agent execution."""
+    tool_name: str
+    tool_input: dict[str, Any]
+    result: str
+    entity_ids: list[str] = field(default_factory=list)
+
+
+def _compute_highlights_for_tool(
+    tool_name: str, tool_input: dict[str, Any], result: str, g: nx.DiGraph
+) -> tuple[list[str], list[str], str | None]:
+    """Compute highlight nodes, edges, and focus node for a tool call."""
+    nodes: list[str] = []
+    edges: list[str] = []
+    focus: str | None = None
+
+    if tool_name == "get_entity":
+        eid = tool_input.get("entity_id", "")
+        if eid in g:
+            focus = eid
+            nodes.append(eid)
+            for _, tgt in g.out_edges(eid):
+                nodes.append(tgt)
+                edges.append(f"{eid}->{tgt}")
+            for src, _ in g.in_edges(eid):
+                nodes.append(src)
+                edges.append(f"{src}->{eid}")
+
+    elif tool_name == "get_neighbors":
+        eid = tool_input.get("entity_id", "")
+        depth = tool_input.get("depth", 1)
+        if eid in g:
+            focus = eid
+            visited = {eid}
+            frontier = {eid}
+            for _ in range(depth):
+                next_f: set[str] = set()
+                for n in frontier:
+                    next_f.update(g.successors(n))
+                    next_f.update(g.predecessors(n))
+                visited.update(next_f)
+                frontier = next_f
+            nodes = list(visited)
+            for src, tgt in g.subgraph(visited).edges():
+                edges.append(f"{src}->{tgt}")
+
+    elif tool_name == "find_paths":
+        src_id = tool_input.get("source_id", "")
+        tgt_id = tool_input.get("target_id", "")
+        if src_id in g:
+            nodes.append(src_id)
+            focus = src_id
+        if tgt_id in g:
+            nodes.append(tgt_id)
+        # Extract entity IDs from result lines (format: "entity_name (entity_id)")
+        for match in re.finditer(r"\(([a-z_]+)\)", result):
+            eid = match.group(1)
+            if eid in g and eid not in nodes:
+                nodes.append(eid)
+
+    elif tool_name in ("search_entities", "find_entities", "find_by_attribute"):
+        # Result lines: "- entity_id [Type]: Name — Description"  or  "- entity_id: Name — Desc"
+        for line in result.split("\n"):
+            line = line.strip()
+            if line.startswith("- "):
+                # Extract ID (first word after "- ")
+                eid = line[2:].split(":")[0].split("[")[0].split(" ")[0].strip()
+                if eid in g:
+                    nodes.append(eid)
+                    if focus is None:
+                        focus = eid
+
+    elif tool_name == "traverse_workflow":
+        start_id = tool_input.get("start_entity_id", "")
+        if start_id in g:
+            focus = start_id
+            # Follow FOLLOWED_BY chain to get all workflow nodes
+            current = start_id
+            visited = {start_id}
+            while True:
+                next_step = None
+                for _, tgt, edata in g.out_edges(current, data=True):
+                    if edata.get("type") == "FOLLOWED_BY" and tgt not in visited:
+                        next_step = tgt
+                        break
+                if next_step is None:
+                    break
+                edges.append(f"{current}->{next_step}")
+                visited.add(next_step)
+                current = next_step
+            nodes = list(visited)
+
+    return nodes, edges, focus
+
+
+def _make_step_title(tool_name: str, tool_input: dict[str, Any], g: nx.DiGraph) -> str:
+    """Generate a human-readable step title from a tool call."""
+    if tool_name == "get_entity":
+        eid = tool_input.get("entity_id", "?")
+        name = g.nodes[eid].get("name", eid) if eid in g else eid
+        return f"Inspect: {name}"
+    elif tool_name == "get_neighbors":
+        eid = tool_input.get("entity_id", "?")
+        name = g.nodes[eid].get("name", eid) if eid in g else eid
+        depth = tool_input.get("depth", 1)
+        return f"Explore neighborhood: {name} (depth {depth})"
+    elif tool_name == "search_entities":
+        return f"Search: \"{tool_input.get('keyword', '?')}\""
+    elif tool_name == "find_entities":
+        return f"Find all: {tool_input.get('entity_type', '?')}"
+    elif tool_name == "find_paths":
+        src = tool_input.get("source_id", "?")
+        tgt = tool_input.get("target_id", "?")
+        src_name = g.nodes[src].get("name", src) if src in g else src
+        tgt_name = g.nodes[tgt].get("name", tgt) if tgt in g else tgt
+        return f"Find paths: {src_name} \u2192 {tgt_name}"
+    elif tool_name == "list_entity_types":
+        return "Survey entity types"
+    elif tool_name == "get_graph_summary":
+        return "Graph overview"
+    elif tool_name == "traverse_workflow":
+        eid = tool_input.get("start_entity_id", "?")
+        name = g.nodes[eid].get("name", eid) if eid in g else eid
+        return f"Traverse workflow from: {name}"
+    elif tool_name == "find_by_attribute":
+        attr = tool_input.get("attribute_name", "?")
+        val = tool_input.get("attribute_value", "?")
+        return f"Find by {attr} = \"{val}\""
+    return tool_name
+
+
+def _tool_call_to_log_lines(
+    tool_name: str, tool_input: dict[str, Any], result: str, g: nx.DiGraph
+) -> list[dict[str, str]]:
+    """Convert a tool call + result into color-coded log lines."""
+    lines: list[dict[str, str]] = []
+
+    # Tool invocation line
+    if tool_name == "get_entity":
+        eid = tool_input["entity_id"]
+        lines.append({"type": "query", "text": f"> TOOL: get_entity(\"{eid}\")"})
+        if eid in g:
+            data = g.nodes[eid]
+            lines.append({"type": "attr", "text": f"  Type: {data.get('type', '?')}"})
+            lines.append({"type": "attr", "text": f"  Name: {data.get('name', '?')}"})
+            desc = data.get("description", "")
+            if desc:
+                lines.append({"type": "dim", "text": f"  {desc[:120]}{'...' if len(desc) > 120 else ''}"})
+            # Show relationships as traversals
+            out = list(g.out_edges(eid, data=True))
+            if out:
+                for _, tgt, edata in out[:8]:
+                    tgt_name = g.nodes[tgt].get("name", tgt)
+                    lines.append({"type": "traverse", "text": f"  -[{edata.get('type', '?')}]-> {tgt_name}"})
+                if len(out) > 8:
+                    lines.append({"type": "dim", "text": f"  ... +{len(out) - 8} more outgoing"})
+            in_ = list(g.in_edges(eid, data=True))
+            if in_:
+                for src, _, edata in in_[:6]:
+                    src_name = g.nodes[src].get("name", src)
+                    lines.append({"type": "traverse", "text": f"  <-[{edata.get('type', '?')}]- {src_name}"})
+                if len(in_) > 6:
+                    lines.append({"type": "dim", "text": f"  ... +{len(in_) - 6} more incoming"})
+        else:
+            lines.append({"type": "warning", "text": f"  Entity '{eid}' not found"})
+
+    elif tool_name == "get_neighbors":
+        eid = tool_input["entity_id"]
+        depth = tool_input.get("depth", 1)
+        lines.append({"type": "query", "text": f"> TOOL: get_neighbors(\"{eid}\", depth={depth})"})
+        # Count entities from result
+        entity_lines = [l for l in result.split("\n") if l.strip().startswith("- ")]
+        rel_lines = [l for l in result.split("\n") if "--[" in l]
+        lines.append({"type": "traverse", "text": f"  {len(entity_lines)} entities, {len(rel_lines)} relationships in neighborhood"})
+        # Show a few relationships
+        for rl in rel_lines[:6]:
+            lines.append({"type": "traverse", "text": f"  {rl.strip()}"})
+        if len(rel_lines) > 6:
+            lines.append({"type": "dim", "text": f"  ... +{len(rel_lines) - 6} more relationships"})
+
+    elif tool_name == "search_entities":
+        kw = tool_input["keyword"]
+        lines.append({"type": "query", "text": f"> TOOL: search_entities(\"{kw}\")"})
+        found = [l.strip() for l in result.split("\n") if l.strip().startswith("- ")]
+        for f in found[:5]:
+            lines.append({"type": "attr", "text": f"  FOUND: {f[2:][:100]}"})
+        if len(found) > 5:
+            lines.append({"type": "dim", "text": f"  ... +{len(found) - 5} more results"})
+        if not found:
+            lines.append({"type": "warning", "text": f"  No results for \"{kw}\""})
+
+    elif tool_name == "find_entities":
+        etype = tool_input["entity_type"]
+        lines.append({"type": "query", "text": f"> TOOL: find_entities(\"{etype}\")"})
+        found = [l.strip() for l in result.split("\n") if l.strip().startswith("- ")]
+        for f in found[:5]:
+            lines.append({"type": "attr", "text": f"  {f[2:][:100]}"})
+        if len(found) > 5:
+            lines.append({"type": "dim", "text": f"  ... +{len(found) - 5} more"})
+        if not found:
+            lines.append({"type": "warning", "text": f"  No entities of type '{etype}'"})
+
+    elif tool_name == "find_paths":
+        src = tool_input["source_id"]
+        tgt = tool_input["target_id"]
+        lines.append({"type": "query", "text": f"> TOOL: find_paths(\"{src}\" -> \"{tgt}\")"})
+        path_count = result.count("Path ")
+        if path_count > 0:
+            lines.append({"type": "traverse", "text": f"  Found {path_count} path(s)"})
+            # Show path steps
+            for line in result.split("\n"):
+                line = line.strip()
+                if "--[" in line or "<--[" in line:
+                    lines.append({"type": "traverse", "text": f"  {line[:120]}"})
+        else:
+            lines.append({"type": "warning", "text": f"  No paths found"})
+
+    elif tool_name == "list_entity_types":
+        lines.append({"type": "query", "text": "> TOOL: list_entity_types()"})
+        type_lines = [l.strip() for l in result.split("\n") if l.strip().startswith("- ")]
+        for tl in type_lines[:8]:
+            lines.append({"type": "attr", "text": f"  {tl[2:]}"})
+        if len(type_lines) > 8:
+            lines.append({"type": "dim", "text": f"  ... +{len(type_lines) - 8} more types"})
+
+    elif tool_name == "get_graph_summary":
+        lines.append({"type": "query", "text": "> TOOL: get_graph_summary()"})
+        for line in result.split("\n")[:6]:
+            if line.strip():
+                lines.append({"type": "attr", "text": f"  {line.strip()}"})
+
+    elif tool_name == "traverse_workflow":
+        start_id = tool_input.get("start_entity_id", "?")
+        lines.append({"type": "query", "text": f"> TOOL: traverse_workflow(\"{start_id}\")"})
+        step_lines = [l for l in result.split("\n") if l.strip().startswith("Step ")]
+        for sl in step_lines[:8]:
+            lines.append({"type": "traverse", "text": f"  {sl.strip()}"})
+        if len(step_lines) > 8:
+            lines.append({"type": "dim", "text": f"  ... +{len(step_lines) - 8} more steps"})
+        if not step_lines:
+            lines.append({"type": "warning", "text": f"  No workflow chain found from '{start_id}'"})
+
+    elif tool_name == "find_by_attribute":
+        attr = tool_input.get("attribute_name", "?")
+        val = tool_input.get("attribute_value", "?")
+        lines.append({"type": "query", "text": f"> TOOL: find_by_attribute(\"{attr}\", \"{val}\")"})
+        found = [l.strip() for l in result.split("\n") if l.strip().startswith("- ")]
+        for f in found[:5]:
+            lines.append({"type": "attr", "text": f"  FOUND: {f[2:][:100]}"})
+        if len(found) > 5:
+            lines.append({"type": "dim", "text": f"  ... +{len(found) - 5} more results"})
+        if not found:
+            lines.append({"type": "warning", "text": f"  No matches for {attr}=\"{val}\""})
+
+    return lines
+
+
+def run_walkthrough(
+    prompt: str, g: nx.DiGraph, client: Anthropic | None = None, max_turns: int = 15
+) -> dict:
+    """Run the agent with full tool tracing and return a Scenario-shaped dict.
+
+    The returned dict matches the Scenario model shape so the frontend can
+    render it with the same step controls as scripted scenarios.
+    """
+    if client is None:
+        client = Anthropic()
+
+    messages: list[dict[str, Any]] = [
+        {"role": "user", "content": prompt},
+    ]
+
+    trace: list[ToolCallRecord] = []
+    referenced_entities: set[str] = set()
+    turn_count = 0
+    final_answer = ""
+
+    while turn_count < max_turns:
+        turn_count += 1
+
+        response = client.messages.create(
+            model=TEST_MODEL,
+            max_tokens=4096,
+            system=SYSTEM_PROMPT,
+            tools=TOOLS,
+            messages=messages,
+        )
+
+        if response.stop_reason == "tool_use":
+            tool_results = []
+            for block in response.content:
+                if block.type == "tool_use":
+                    tool_name = block.name
+                    tool_input = block.input
+
+                    if "entity_id" in tool_input:
+                        referenced_entities.add(tool_input["entity_id"])
+                    if "source_id" in tool_input:
+                        referenced_entities.add(tool_input["source_id"])
+                    if "target_id" in tool_input:
+                        referenced_entities.add(tool_input["target_id"])
+
+                    result = _execute_tool(tool_name, tool_input, g)
+                    trace.append(ToolCallRecord(
+                        tool_name=tool_name,
+                        tool_input=tool_input,
+                        result=result,
+                        entity_ids=[eid for eid in referenced_entities],
+                    ))
+                    tool_results.append({
+                        "type": "tool_result",
+                        "tool_use_id": block.id,
+                        "content": result,
+                    })
+
+            messages.append({"role": "assistant", "content": response.content})
+            messages.append({"role": "user", "content": tool_results})
+        else:
+            for block in response.content:
+                if hasattr(block, "text"):
+                    final_answer += block.text
+            break
+
+    if not final_answer:
+        final_answer = "Agent reached maximum turns without a final answer."
+
+    # Convert trace into Scenario steps
+    steps: list[dict] = []
+    for record in trace:
+        h_nodes, h_edges, focus = _compute_highlights_for_tool(
+            record.tool_name, record.tool_input, record.result, g
+        )
+        log_lines = _tool_call_to_log_lines(
+            record.tool_name, record.tool_input, record.result, g
+        )
+        steps.append({
+            "title": _make_step_title(record.tool_name, record.tool_input, g),
+            "description": f"Agent called {record.tool_name} to explore the graph.",
+            "highlight_nodes": h_nodes,
+            "highlight_edges": h_edges,
+            "focus_node": focus,
+            "log": log_lines,
+        })
+
+    # Final answer step
+    answer_lines: list[dict[str, str]] = [
+        {"type": "decision", "text": "> AGENT CONCLUSION:"},
+    ]
+    for line in final_answer.split("\n"):
+        if line.strip():
+            answer_lines.append({"type": "decision", "text": f"  {line.strip()}"})
+
+    steps.append({
+        "title": "Agent Conclusion",
+        "description": "The agent has completed its graph traversal and reached a conclusion.",
+        "highlight_nodes": [eid for eid in referenced_entities if eid in g],
+        "highlight_edges": [],
+        "focus_node": None,
+        "log": answer_lines,
+    })
+
+    # Truncate prompt for scenario name
+    name = prompt[:60] + ("..." if len(prompt) > 60 else "")
+
+    return {
+        "id": "live-walkthrough",
+        "name": f"Live: {name}",
+        "steps": steps,
+    }

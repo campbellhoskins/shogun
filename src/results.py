@@ -29,9 +29,11 @@ from collections import defaultdict
 from src.models import (
     DocumentSection,
     ExtractionMetadata,
+    FirstPassResult,
     OntologyGraph,
     SectionExtraction,
 )
+from src.schemas import get_typed_attributes
 
 RESULTS_DIR = Path(__file__).parent.parent / "results"
 RUNS_DIR = RESULTS_DIR / "runs"
@@ -52,6 +54,9 @@ def save_run(
     pipeline_elapsed: float,
     stage_timings: dict[str, float] | None = None,
     semantic_dedup_log: list[dict] | None = None,
+    first_pass_result: FirstPassResult | None = None,
+    cross_section_log: dict | None = None,
+    relationships_log: list[dict] | None = None,
 ) -> Path:
     """Save a complete pipeline run.
 
@@ -62,6 +67,9 @@ def save_run(
         pipeline_elapsed: Total pipeline time in seconds.
         stage_timings: Optional dict of stage name -> elapsed seconds.
         semantic_dedup_log: LLM dedup decisions per entity type.
+        first_pass_result: Stage 0 output.
+        cross_section_log: Stage 3a cross-section extraction log.
+        relationships_log: Stage 4 relationship extraction log.
 
     Returns:
         Path to the run directory.
@@ -89,6 +97,11 @@ def save_run(
         "deduplication_merges": meta.deduplication_merges,
         "semantic_dedup_merges": meta.semantic_dedup_merges,
         "semantic_dedup_api_calls": meta.semantic_dedup_api_calls,
+        "first_pass": {
+            "sections_identified": len(first_pass_result.document_map.sections),
+            "entities_pre_registered": len(first_pass_result.global_entity_pre_registration),
+            "cross_section_dependencies": len(first_pass_result.cross_section_dependencies),
+        } if first_pass_result else None,
         "source_anchoring": {
             "total_entities": len(ontology.entities),
             "anchored": sum(
@@ -101,6 +114,16 @@ def save_run(
                 and e.source_anchor.source_offset >= 0
             ),
         },
+        "cross_section": {
+            "relationship_count": meta.cross_section_relationship_count,
+            "api_calls": meta.cross_section_api_calls,
+        } if cross_section_log else None,
+        "stage4_relationships": {
+            "valid_count": meta.stage4_relationship_count,
+            "invalid_count": meta.stage4_invalid_count,
+            "dedup_count": meta.stage4_dedup_count,
+            "api_calls": meta.stage4_api_calls,
+        } if relationships_log else None,
     }
     _write_json(run_dir / "run_meta.json", run_meta)
 
@@ -108,20 +131,17 @@ def save_run(
     sections_data = []
     for s in ontology.source_sections:
         sections_data.append({
-            "chunk_id": s.chunk_id,
+            "section_id": s.section_id,
             "section_number": s.section_number,
             "header": s.header,
-            "level": s.level,
             "source_offset": s.source_offset,
-            "parent_section": s.parent_section,
-            "parent_header": s.parent_header,
-            "hierarchical_path": [
-                entry.model_dump() for entry in s.hierarchical_path
-            ],
             "char_count": len(s.text),
-            "enumerated_lists": [el.model_dump() for el in s.enumerated_lists],
         })
     _write_json(run_dir / "sections.json", sections_data)
+
+    # --- first_pass.json ---
+    if first_pass_result is not None:
+        _write_json(run_dir / "first_pass.json", first_pass_result.model_dump())
 
     # --- extractions.json ---
     extractions_data = []
@@ -146,7 +166,7 @@ def save_run(
             "id": e.id,
             "name": e.name,
             "description": e.description,
-            "attributes": e.attributes,
+            "typed_attributes": get_typed_attributes(e),
             "source_section": e.source_anchor.source_section,
             "source_text": e.source_anchor.source_text,
         }
@@ -203,6 +223,14 @@ def save_run(
             "type_groups": semantic_dedup_log,
         })
 
+    # --- cross_section.json ---
+    if cross_section_log:
+        _write_json(run_dir / "cross_section.json", cross_section_log)
+
+    # --- relationships_log.json ---
+    if relationships_log:
+        _write_json(run_dir / "relationships_log.json", relationships_log)
+
     # --- Update latest pointer ---
     latest_file = RESULTS_DIR / "latest.txt"
     latest_file.write_text(run_id, encoding="utf-8")
@@ -219,7 +247,7 @@ def load_run(run_id: str) -> dict:
         raise FileNotFoundError(f"Run not found: {run_dir}")
 
     result = {}
-    for name in ["run_meta", "sections", "extractions", "ontology", "entities", "relationships", "semantic_dedup"]:
+    for name in ["run_meta", "sections", "first_pass", "extractions", "ontology", "entities", "relationships", "semantic_dedup", "cross_section", "relationships_log"]:
         filepath = run_dir / f"{name}.json"
         if filepath.exists():
             result[name] = json.loads(filepath.read_text(encoding="utf-8"))
