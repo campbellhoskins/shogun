@@ -37,12 +37,17 @@ from src.api_models import (
     EntitySummary,
     GraphData,
     GraphEdge,
+    GraphListItem,
     GraphNode,
     GraphStats,
+    LoadGraphRequest,
     PathRequest,
     PathResponse,
     PathStep,
     RelationshipDetail,
+    Scenario,
+    ScenariosResponse,
+    WalkthroughRequest,
 )
 from src.graph import build_graph
 from src.models import OntologyGraph
@@ -137,11 +142,15 @@ ENTITY_GROUPS: list[str] = [
     "Compliance",
 ]
 
+# Directory for preloaded graphs (single source of truth for the dropdown)
+FINAL_GRAPHS_DIR = Path(__file__).parent.parent / "data" / "final_graphs"
+
 # Module-level state (set during startup)
 _ontology: OntologyGraph | None = None
 _graph: nx.DiGraph | None = None
 _client: Anthropic | None = None
 _metrics: dict[str, dict[str, float]] = {}
+_current_graph_filename: str = ""
 
 
 def _compute_metrics(g: nx.DiGraph) -> dict[str, dict[str, float]]:
@@ -199,7 +208,101 @@ def _get_node_name(node_id: str) -> str:
     return node_id
 
 
+def _load_and_activate_graph(graph_path: Path, filename: str = "") -> OntologyGraph:
+    """Load an ontology JSON file and activate it as the current graph."""
+    global _ontology, _graph, _metrics, _current_graph_filename
+
+    data = json.loads(graph_path.read_text(encoding="utf-8"))
+
+    # Handle both OntologyGraph format and raw extractions format
+    if isinstance(data, dict) and "entities" in data:
+        try:
+            ontology = OntologyGraph(**data)
+        except (ValueError, Exception):
+            from src.models import Relationship, ExtractionMetadata
+            from src.schemas import validate_entity
+            entities = []
+            relationships = []
+            for e_data in data.get("entities", []):
+                if "attributes" in e_data and isinstance(e_data["attributes"], dict):
+                    attrs = e_data.pop("attributes")
+                    for k, v in attrs.items():
+                        if k not in e_data:
+                            e_data[k] = v
+                entity, _ = validate_entity(e_data)
+                if entity is not None:
+                    entities.append(entity)
+            for r in data.get("relationships", []):
+                relationships.append(Relationship(**r))
+            ontology = OntologyGraph(
+                graph_title=data.get("graph_title", ""),
+                entities=entities,
+                relationships=relationships,
+                source_document=data.get("source_document", str(graph_path)),
+                source_sections=[],
+                extraction_metadata=ExtractionMetadata(
+                    section_count=0,
+                    final_entity_count=len(entities),
+                    final_relationship_count=len(relationships),
+                ),
+            )
+    else:
+        raise ValueError(f"Unrecognized graph format in {graph_path}")
+
+    _ontology = ontology
+    _graph = build_graph(_ontology)
+    _metrics = _compute_metrics(_graph)
+    _current_graph_filename = filename or graph_path.name
+
+    return ontology
+
+
 # --- API Endpoints ---
+
+
+@app.get("/api/graphs")
+def list_graphs() -> list[GraphListItem]:
+    """List all available graphs from data/final_graphs/."""
+    if not FINAL_GRAPHS_DIR.exists():
+        return []
+
+    items = []
+    for f in sorted(FINAL_GRAPHS_DIR.glob("*.json")):
+        if f.name.endswith(".scenarios.json"):
+            continue
+        try:
+            data = json.loads(f.read_text(encoding="utf-8"))
+            title = data.get("graph_title", "") or f.stem
+            entities = data.get("entities", data.get("nodes", []))
+            relationships = data.get("relationships", [])
+            items.append(GraphListItem(
+                filename=f.name,
+                graph_title=title,
+                entity_count=len(entities),
+                relationship_count=len(relationships),
+            ))
+        except Exception:
+            continue
+
+    return items
+
+
+@app.post("/api/graphs/load")
+def load_graph_endpoint(req: LoadGraphRequest) -> GraphStats:
+    """Switch the active graph to a different file from data/final_graphs/."""
+    if not FINAL_GRAPHS_DIR.exists():
+        raise HTTPException(status_code=404, detail="final_graphs directory not found")
+
+    graph_path = FINAL_GRAPHS_DIR / req.filename
+    if not graph_path.exists() or ".." in req.filename:
+        raise HTTPException(status_code=404, detail=f"Graph file '{req.filename}' not found")
+
+    try:
+        _load_and_activate_graph(graph_path, req.filename)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to load graph: {e}")
+
+    return get_graph_stats()
 
 
 @app.get("/api/graph")
@@ -239,6 +342,7 @@ def get_graph() -> GraphData:
         nodes=nodes,
         edges=edges,
         source_document=_graph.graph.get("source_document", ""),
+        graph_title=_ontology.graph_title if _ontology else "",
         type_colors=TYPE_COLORS,
         entity_groups=ENTITY_GROUPS,
     )
@@ -451,6 +555,35 @@ def cascade_from_event(req: CascadeRequest) -> CascadeResponse:
     )
 
 
+@app.get("/api/scenarios")
+def get_scenarios() -> ScenariosResponse:
+    """Load scenario sidecar JSON for the current graph."""
+    if not _current_graph_filename:
+        return ScenariosResponse(scenarios=[])
+
+    sidecar_name = _current_graph_filename.replace(".json", ".scenarios.json")
+    sidecar_path = FINAL_GRAPHS_DIR / sidecar_name
+    if not sidecar_path.exists():
+        return ScenariosResponse(scenarios=[])
+
+    try:
+        data = json.loads(sidecar_path.read_text(encoding="utf-8"))
+        return ScenariosResponse(**data)
+    except Exception:
+        return ScenariosResponse(scenarios=[])
+
+
+@app.post("/api/agent/walkthrough")
+async def agent_walkthrough(req: WalkthroughRequest) -> Scenario:
+    """Run the agent with full tool tracing and return a Scenario for step-through."""
+    assert _graph is not None
+
+    from src.agent import run_walkthrough
+
+    result = await run_in_threadpool(run_walkthrough, req.prompt, _graph, _client)
+    return Scenario(**result)
+
+
 @app.post("/api/agent/ask")
 async def agent_ask(req: AgentQuestion) -> AgentAnswer:
     """Send a question to the reasoning agent."""
@@ -505,7 +638,7 @@ if FRONTEND_DIR.exists():
 # --- CLI Entry Point ---
 
 
-def _load_graph(args: argparse.Namespace) -> OntologyGraph:
+def _load_graph_cli(args: argparse.Namespace) -> OntologyGraph:
     """Load an OntologyGraph from CLI arguments."""
     if args.latest:
         from src.results import load_latest_ontology
@@ -518,81 +651,14 @@ def _load_graph(args: argparse.Namespace) -> OntologyGraph:
         sys.exit(1)
 
     print(f"Loading graph from {graph_path}...")
-    data = json.loads(graph_path.read_text(encoding="utf-8"))
-
-    # Handle both OntologyGraph format and raw extractions format
-    if isinstance(data, dict) and "entities" in data:
-        try:
-            return OntologyGraph(**data)
-        except (ValueError, Exception) as e:
-            # Fall back to entity-by-entity validation for legacy ontology files
-            # with old entity types that don't match the current schema
-            print(f"Strict load failed ({e}), falling back to entity-level validation...")
-            from src.models import Relationship, ExtractionMetadata
-            from src.schemas import validate_entity
-            entities = []
-            relationships = []
-            for e_data in data.get("entities", []):
-                if "attributes" in e_data and isinstance(e_data["attributes"], dict):
-                    attrs = e_data.pop("attributes")
-                    for k, v in attrs.items():
-                        if k not in e_data:
-                            e_data[k] = v
-                entity, _ = validate_entity(e_data)
-                if entity is not None:
-                    entities.append(entity)
-            for r in data.get("relationships", []):
-                relationships.append(Relationship(**r))
-            return OntologyGraph(
-                entities=entities,
-                relationships=relationships,
-                source_document=data.get("source_document", str(graph_path)),
-                source_sections=[],
-                extraction_metadata=ExtractionMetadata(
-                    section_count=0,
-                    final_entity_count=len(entities),
-                    final_relationship_count=len(relationships),
-                ),
-            )
-    elif isinstance(data, list):
-        # Extractions format — flatten entities and relationships
-        from src.models import Relationship, ExtractionMetadata
-        from src.schemas import validate_entity
-        entities = []
-        relationships = []
-        for section in data:
-            for e in section.get("entities", []):
-                # Flatten legacy attributes dict
-                if "attributes" in e and isinstance(e["attributes"], dict):
-                    attrs = e.pop("attributes")
-                    for k, v in attrs.items():
-                        if k not in e:
-                            e[k] = v
-                entity, _ = validate_entity(e)
-                if entity is not None:
-                    entities.append(entity)
-            for r in section.get("relationships", []):
-                relationships.append(Relationship(**r))
-        return OntologyGraph(
-            entities=entities,
-            relationships=relationships,
-            source_document=str(graph_path),
-            extraction_metadata=ExtractionMetadata(
-                section_count=len(data),
-                final_entity_count=len(entities),
-                final_relationship_count=len(relationships),
-            ),
-        )
-    else:
-        print(f"Error: Unrecognized graph format in {graph_path}", file=sys.stderr)
-        sys.exit(1)
+    return _load_and_activate_graph(graph_path)
 
 
 def main():
     global _ontology, _graph, _client, _metrics
 
     parser = argparse.ArgumentParser(description="Shogun Ontology Explorer")
-    group = parser.add_mutually_exclusive_group(required=True)
+    group = parser.add_mutually_exclusive_group(required=False)
     group.add_argument("--graph", type=str, help="Path to ontology.json or extractions.json")
     group.add_argument("--latest", action="store_true", help="Load the latest pipeline run")
     parser.add_argument("--port", type=int, default=8000, help="Port to serve on (default: 8000)")
@@ -600,15 +666,28 @@ def main():
 
     args = parser.parse_args()
 
-    # Load graph
-    _ontology = _load_graph(args)
-    _graph = build_graph(_ontology)
-    _metrics = _compute_metrics(_graph)
+    # Load graph: --graph or --latest take priority, else auto-load first from final_graphs/
+    if args.graph or args.latest:
+        _load_graph_cli(args)
+    elif FINAL_GRAPHS_DIR.exists() and list(FINAL_GRAPHS_DIR.glob("*.json")):
+        graph_files = sorted(f for f in FINAL_GRAPHS_DIR.glob("*.json") if not f.name.endswith(".scenarios.json"))
+        if not graph_files:
+            print("Error: No graph files found in data/final_graphs/.", file=sys.stderr)
+            sys.exit(1)
+        first_graph = graph_files[0]
+        print(f"Auto-loading from final_graphs: {first_graph.name}")
+        _load_and_activate_graph(first_graph)
+    else:
+        print("Error: No --graph, --latest, or data/final_graphs/ graphs found.", file=sys.stderr)
+        sys.exit(1)
+
     _client = Anthropic()
 
+    assert _graph is not None
     entity_count = _graph.number_of_nodes()
     edge_count = _graph.number_of_edges()
-    print(f"Graph loaded: {entity_count} entities, {edge_count} relationships")
+    title = _ontology.graph_title if _ontology and _ontology.graph_title else _current_graph_filename
+    print(f"Graph loaded: {title} — {entity_count} entities, {edge_count} relationships")
 
     # Check frontend build
     if not FRONTEND_DIR.exists():
