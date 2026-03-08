@@ -124,6 +124,7 @@ class SectionExtraction(BaseModel):
 
 
 class OntologyGraph(BaseModel):
+    graph_title: str = ""
     entities: list[AnyEntity]
     relationships: list[Relationship]
     source_sections: list[DocumentSection] = []

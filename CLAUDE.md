@@ -2,225 +2,193 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Why This Project Exists
+## Project Purpose
 
-Shogun is a demonstration project being built to prove technical capability to Arjun Chopra, a Silicon Valley VC (Floodgate partner) who is assembling a team to build an AI-powered travel industry roll-up. The venture has three interlocking entities:
+Shogun is a "Palantir for Travel" demo — an AI pipeline that ingests unstructured travel duty-of-care policy PDFs and builds structured ontology graphs that reasoning agents can traverse. It demonstrates the full loop: **Ingest → Extract → Reason → Evaluate**. The quality bar is production-grade enterprise tooling, not prototype.
 
-- **O1** — A hybrid PE/VC investment firm (similar to General Catalyst's model) that acquires travel management companies already entrenched in the industry.
-- **Spotnana** — A modern cloud-native travel infrastructure platform ($100M+ raised) that replaces legacy GDS systems with APIs. Acquired companies get migrated onto Spotnana.
-- **Shogun (the AI task force)** — A "Palantir for Travel" that deploys Forward Deployed Engineers into acquired companies to automate their workflows using AI. This is the entity I'm building toward joining.
+**Document scope:** Travel duty of care policies only (risk classifications, approval workflows, evacuation procedures, personnel tracking). Not education/school duty of care.
 
-The business thesis: Travel management companies run on **30% manual workflows**. A $600M revenue TMC at 10% margin earns $60M profit — but if you automate even half the manual work, margin jumps to 15%+ ($90M). The play is to acquire these companies (which have regulatory moats like IATA/ARC accreditation), migrate them onto Spotnana, and deploy AI agents to automate operations.
+## Prerequisites
 
-## What I'm Demonstrating
-
-An engineer they hired from Amazon impressed Arjun by spending a weekend building an agent that ingests travel compliance data and constructs an ontology graph from it. I need to demonstrate the same kind of initiative — but go further. Instead of just parsing a document into a graph, this project shows the full pipeline:
-
-1. **Ingest** a real corporate travel duty of care policy document (PDF)
-2. **Extract** a complete ontology graph — entities, relationships, attributes — that captures every rule, threshold, role, definition, and procedure
-3. **Reason** over the graph using an AI agent with tool-use that traverses the graph programmatically (not just dumping text into a prompt)
-4. **Evaluate** the quality of both the graph and the agent's answers against a ground-truth test set
-
-The sophistication matters because this mirrors what Shogun would actually deploy: take messy, unstructured policy documents from acquired TMCs and turn them into structured knowledge that agents can act on. If I can demonstrate this on duty of care policies, the same pattern extends to booking rules, fare rules, expense policies, and the PNR disruption workflows that are the core business opportunity.
-
-## Document Scope
-
-This project is exclusively focused on **travel duty of care** policies — documents from organizations (NGOs, international development orgs, corporations) that govern the safety, security, and wellbeing of personnel traveling or working in field locations, high-risk zones, and foreign countries. These documents contain travel-specific concepts like destination risk classifications, travel approval workflows, pre-travel security briefings, personnel tracking/check-in requirements, emergency evacuation procedures, and SEA (Sexual Exploitation and Abuse) compliance.
-
-**Not in scope:** Education/school duty of care policies (yard supervision, child safe standards, campus premises). These are a different document class with different entity types and have been removed from the data directory.
-
-## The Bar
-
-Arjun specifically praised the Amazon engineer's initiative. The bar is not "interesting prototype" — it's "this person clearly understands the domain, the technical challenges, and can build production-quality tooling." Every piece of this project should reflect that standard.
+- **Python >=3.12** (required by pyproject.toml)
+- **uv** package manager (not pip) — install via `curl -LsSf https://astral.sh/uv/install.sh | sh`
+- **Node.js** (for frontend) — React 18 + Vite 6 + Playwright 1.58
+- **`.env` file** in project root with:
+  ```
+  ANTHROPIC_API_KEY=sk-ant-api03-...
+  TEST_MODEL=claude-haiku-4-5-20251001
+  BEST_MODEL=claude-sonnet-4-20250514
+  ```
 
 ## Commands
 
 ```bash
 # Setup
-uv sync                     # Install dependencies (uses uv, not pip)
+uv sync                     # Install Python dependencies
+cd frontend && npm install   # Install frontend dependencies (first time)
 
 # Full pipeline: PDF -> ontology graph -> interactive Q&A
 uv run python -m src.main data/231123_Duty_of_Care_Policy.pdf
 
-# Individual pipeline stages (standalone CLIs)
-uv run python -m src.first_pass <input.md> -o <first_pass.json>     # Stage 0: First pass analysis
-uv run python -m src.segmenter <input.md> -o <chunks.json>         # Stage 1: Semantic chunking
-uv run python -m src.segmenter <input.md> --first-pass <first_pass.json>  # Stage 1 with first pass guidance
-uv run python -m src.extraction <chunks.json> -o <extractions.json> # Stage 2: Entity extraction
-uv run python -m src.extraction <chunks.json> --first-pass <first_pass.json>  # Stage 2 with global context
-uv run python -m src.extraction <chunks.json> --debug               # Stage 2 with full prompt/response tracing
-uv run python -m src.merge <extractions.json> <chunks.json> <source.md> -o <ontology.json>  # Stage 3: Merge
+# Individual pipeline stages
+uv run python -m src.first_pass <input.md> -o <first_pass.json>                    # Stage 0
+uv run python -m src.segmenter <input.md> --first-pass <first_pass.json> -o <out>  # Stage 1
+uv run python -m src.extraction <chunks.json> --first-pass <fp.json> -o <out>      # Stage 2
+uv run python -m src.extraction <chunks.json> --debug                              # Stage 2 with prompt tracing
+uv run python -m src.merge <extractions.json> <chunks.json> <source.md> -o <out>   # Stage 3
+
+# Agent & evaluation
+uv run python -m src.test_agent --graph <graph_id>                                  # Interactive agent REPL
+uv run python -m src.eval --graph <graph_id> --qa data/*.qa.small.json              # Eval against Q&A set
+uv run python -m src.generate_qa data/231123_Duty_of_Care_Policy.pdf                # Generate Q&A test set
+uv run python -m src.validate data/231123_Duty_of_Care_Policy.pdf                   # Graph validation
 
 # Legacy single-pass extraction (for A/B comparison)
 uv run python -m src.build_graph data/231123_Duty_of_Care_Policy.pdf --prompt 1
-uv run python -m src.build_graph --list
 
-# Graph validation (structural + coverage + source anchoring)
-uv run python -m src.validate data/231123_Duty_of_Care_Policy.pdf
+# Frontend
+cd frontend && npm run build                                        # Build React SPA
+uv run python -m src.frontend --graph <path/to/ontology.json>      # Launch with specific graph
+uv run python -m src.frontend --latest                              # Launch with latest pipeline run
 
-# Agent testing (verbose mode showing every tool call)
-uv run python -m src.test_agent --graph <graph_id>
-
-# Evaluation against Q&A test set
-uv run python -m src.eval --graph <graph_id> --qa data/231123_Duty_of_Care_Policy.qa.small.json
-
-# Generate Q&A test set from a policy document
-uv run python -m src.generate_qa data/231123_Duty_of_Care_Policy.pdf
-
-# Frontend: Interactive Ontology Explorer
-cd frontend && npm install && npm run build  # First time setup
-uv run python -m src.frontend --graph <path/to/ontology.json>  # Launch with specific graph
-uv run python -m src.frontend --latest                          # Launch with latest pipeline run
-uv run python -m src.frontend --graph data/extractions.json --port 8080  # Custom port
-
-# Frontend tests (Playwright — must have server running on :8789 first)
-cd frontend && npx playwright test                    # Run all tests
-cd frontend && npx playwright test --headed           # Run with visible browser
-cd frontend && npx playwright test zoom-controls      # Run specific test file
-cd frontend && npx playwright test --reporter=list    # Verbose output
+# Frontend tests (Playwright — server must be running on :8789)
+cd frontend && npx playwright test                         # Run all tests
+cd frontend && npx playwright test zoom-controls           # Run specific test file
+cd frontend && npx playwright test --grep "zoom in"        # Run specific test by name
+cd frontend && npx playwright test --headed                # Run with visible browser
+cd frontend && npx playwright test --reporter=list         # Verbose output
 ```
 
 ## Architecture
 
-### Pipeline (Source-Anchored Extraction)
-
-The core pipeline is a four-stage process orchestrated by `src/pipeline.py`:
+### Pipeline Overview (6 stages, orchestrated by `src/pipeline.py`)
 
 ```
 PDF → pdf_parser.py → markdown
-                         ↓
-                   [Stage 0] first_pass.py   → Full-document structural analysis → FirstPassResult
-                         ↓
-                   [Stage 1] segmenter.py    → LLM semantic chunking (guided by Stage 0) → DocumentSection[]
-                         ↓
-                   [Stage 2] extraction.py   → Per-section entity extraction (async parallel, with global context) → SectionExtraction[]
-                         ↓
-                   [Stage 3] merge.py        → Deterministic dedup (union-find) → OntologyGraph
-                         ↓
-                   results.py saves to results/runs/{timestamp}_{policy}/
+    ↓
+[Stage 0] first_pass.py      1 LLM call (streaming + thinking)  → FirstPassResult
+    ↓
+[Stage 1] segmenter.py       0 LLM calls (deterministic)        → DocumentSection[]
+    ↓
+[Stage 2] extraction.py      2N LLM calls (async, 2 concurrent) → SectionExtraction[]
+    ↓
+[Stage 3a] cross_section.py  1 LLM call                         → Relationship[] (cross-section)
+    ↓
+[Stage 3b] merge.py          1 LLM call (semantic dedup)         → OntologyGraph
+    ↓
+[Stage 4] relationships.py   1 LLM call (full-doc relationships) → Relationship[]
+    ↓
+results.py → saves to results/runs/{timestamp}_{policy}/
 ```
 
-**Stage 0 (First Pass):** Single LLM call (with thinking enabled) analyzes the full document to produce a document map (section inventory with `beginning_text` for chunk location), global entity pre-registration (canonical names for cross-section consistency), and cross-section dependencies. This output flows into Stages 1 and 2.
+### Stage Details
 
-**Stage 1 (Segmenter):** Single LLM call breaks the document into semantic chunks with hierarchical metadata (parent sections, enumerated list detection). When Stage 0 output is available, the pre-identified section structure guides chunk boundary decisions. Post-hoc offset computation locates each chunk in the source document.
+**Stage 0 — First Pass** (`src/first_pass.py`): Single streaming LLM call with extended thinking (budget: 32768 tokens, max output: 49152). Produces three outputs that guide all downstream stages:
+- **document_map**: Section inventory with `beginning_text` (first 40-60 words) used by Stage 1 for deterministic boundary detection
+- **global_entity_pre_registration**: Canonical entity names for cross-section consistency
+- **cross_section_dependencies**: Section pairs with typed dependency relationships (MODIFIES, REFERENCES, OVERRIDES, etc.)
 
-**Stage 2 (Extraction):** Each chunk gets its own LLM call (async with semaphore-based concurrency control, default 2 concurrent). When Stage 0 output is available, each extraction call receives global document context, pre-registered entity names, and relevant cross-section dependencies. The extraction prompt enforces graph-first principles: entities are things, relationships are assertions, list members become individual nodes. Uses `<extraction_analysis>` chain-of-thought tags that get stripped before JSON parsing. Zero-entity results trigger an automatic retry with an aggressive prompt.
+**Stage 1 — Segmenter** (`src/segmenter.py`): **No LLM call** — purely deterministic. Matches `beginning_text` from Stage 0 against the source document using a multi-tier cascade: exact match → normalized match → token-prefix regex → heading fallback. Walks backward from body start to find heading boundaries. Emits a preamble section (SEC-00) if >50 chars exist before the first detected section. Warns if coverage <85%.
 
-**Stage 3 (Merge):** Deterministic deduplication using union-find over two tiers: exact base-ID match (after stripping section prefixes) and exact Name+Type match. Source offsets are verified against the original document using exact, normalized, and fuzzy (SequenceMatcher) matching.
+**Stage 2 — Extraction** (`src/extraction.py`): Two-pass per section, run async with `asyncio.Semaphore(2)`:
+- **Pass 1 (Entities)**: Extracts typed entities using schemas from `src/schemas.py`. Uses thinking (budget: 10000). Zero-entity results trigger auto-retry with aggressive fallback prompt.
+- **Pass 2 (Relationships)**: Extracts relationships constrained by entity type pairs from schemas. Validates source/target IDs exist (dangling edges rejected).
 
-### Reasoning Agent
+**Stage 3a — Cross-Section** (`src/cross_section.py`): Extracts relationships that connect entities from different sections. Hard validation: `source_section != target_section`.
 
-`src/agent.py` implements a tool-use agent loop. The agent has NO access to the raw policy document — it can only query the ontology graph through six tools (`list_entity_types`, `find_entities`, `search_entities`, `get_entity`, `get_neighbors`, `find_paths`, `get_graph_summary`). This forces graph traversal rather than text retrieval, proving the graph's completeness.
+**Stage 3b — Merge** (`src/merge.py`): Two-pass deduplication:
+- Pass 1 (deterministic): Groups by `(id, type)` tuple after stripping section prefixes (e.g., `SEC-01:client` → `client`). Merges attributes, source anchors.
+- Pass 2 (LLM): Semantic dedup with thinking budget scaled to entity count. Anti-merge rules: numbered/leveled entities and channel-specific entities never merge.
+- Post-merge: Remaps all relationship IDs, removes orphaned edges, deduplicates by `(source_id, target_id, type)`.
 
-### Frontend (Ontology Explorer)
+**Stage 4 — Relationships** (`src/relationships.py`): Full-document relationship extraction using all deduplicated entities. No cross-section restriction (intra-section allowed). Deduplicates against existing Stage 2-3a relationships.
 
-`src/frontend.py` serves a React SPA (`frontend/`) via FastAPI. Three-panel layout: left (Path Finder + Agent Chat), center (vis-network force-directed graph), right (entity detail panel). The frontend talks to the graph exclusively through REST API endpoints (`/api/graph`, `/api/entity/{id}`, `/api/search`, `/api/paths`, `/api/agent/ask`). The agent chat calls the existing `ask()` function from `src/agent.py` via `run_in_threadpool`. Neo4j-ready architecture: swapping NetworkX for Neo4j later only changes backend endpoint implementations. API models live in `src/api_models.py`.
+### Key Modules
 
-### Evaluation
+| Module | Role |
+|--------|------|
+| `src/models.py` | Core Pydantic models: `OntologyGraph`, `Entity`, `Relationship`, `DocumentSection`, `SectionExtraction`, `FirstPassResult`, `ExtractionMetadata` |
+| `src/base_models.py` | Shared base models (`SourceAnchor`) to avoid circular imports between models.py and schemas.py |
+| `src/schemas.py` | **Single source of truth** for all entity type definitions (typed attributes, field descriptions) and relationship type constraints (source/target type pairs). Generates prompt sections for LLM calls. |
+| `src/graph.py` | Builds NetworkX `DiGraph` from `OntologyGraph` |
+| `src/api_models.py` | Presentation-layer Pydantic models for REST API responses (`GraphNode`, `GraphEdge`, `EntityDetail`, `PathResponse`, etc.) |
+| `src/results.py` | Save/load pipeline runs. Key functions: `save_run()`, `load_run()`, `load_latest_ontology()`, `list_runs()` |
+| `src/__init__.py` | Windows UTF-8 console encoding fix for LLM unicode output |
 
-`src/eval.py` runs the agent against a Q&A test set and uses a separate LLM judge call to score each answer on accuracy (0-3), completeness (0-2), and hallucination (0-1). Pass threshold is 4/6.
+### Reasoning Agent (`src/agent.py`)
 
-### Data Models
+Tool-use loop with **no access to raw document** — only graph traversal tools:
 
-All Pydantic models live in `src/models.py`: `Entity`, `Relationship`, `OntologyGraph`, `DocumentSection`, `SectionExtraction`, `SourceAnchor`, `ExtractionMetadata`, `AgentResponse`. The `OntologyGraph` is the central model — it serializes to/from JSON and can be reconstructed via `OntologyGraph(**data)`.
+| Tool | Purpose |
+|------|---------|
+| `list_entity_types` | Count of each entity type |
+| `find_entities` | All entities of a specific type |
+| `search_entities` | Keyword search across all entity fields |
+| `get_entity` | Full entity detail with attributes and relationships |
+| `get_neighbors` | BFS expansion within N hops (default 1) |
+| `find_paths` | Up to 5 undirected paths between two entities (cutoff 5 hops) |
+| `get_graph_summary` | High-level node/edge/type counts |
+| `traverse_workflow` | Follow FOLLOWED_BY chains for ordered procedures |
+| `find_by_attribute` | Find entities by attribute value (substring match) |
 
-### Two Extraction Paths
+Hard limit: 15 turns per question. `run_walkthrough()` is an enhanced version that traces every tool call for frontend scenario visualization.
 
-- **Current (pipeline):** `src/main.py` → `src/pipeline.py` → segmenter → extraction → merge. Multi-stage with source anchoring.
-- **Legacy (single-pass):** `src/build_graph.py` → `src/parser.py` (calls `parse_policy_legacy()`). Single LLM call, no source anchoring. Kept for A/B comparison. Saves to `output/graphs/`.
+### Frontend (`src/frontend.py` + `frontend/`)
 
-### LLM Configuration
+FastAPI serves a React SPA. Three-panel layout: left (PathFinder / Agent Chat / Cascade / Scenarios), center (vis-network force-directed graph), right (entity detail).
 
-The `.env` file defines two model variables:
-- `TEST_MODEL` — cheap/fast model for development and iteration (`claude-haiku-4-5-20251001`)
-- `BEST_MODEL` — high-quality model for production runs (`claude-sonnet-4-20250514`)
+**Key API endpoints:** `/api/graphs` (list), `/api/graphs/load` (switch), `/api/graph` (full data + centrality metrics), `/api/entity/{id}`, `/api/search`, `/api/paths`, `/api/cascade`, `/api/scenarios`, `/api/agent/ask`, `/api/agent/walkthrough`.
 
-**When Claude Code runs any pipeline stage, service, or LLM call, always use `TEST_MODEL`.** This applies to all invocations: `src.main`, `src.first_pass`, `src.segmenter`, `src.extraction`, `src.merge`, `src.agent`, `src.eval`, `src.frontend`, `src.generate_qa`, and any new modules. Only switch to `BEST_MODEL` when the user explicitly requests it.
+**Centrality metrics** computed at graph load: `importance = 0.40 * betweenness + 0.35 * pagerank + 0.25 * degree` (all normalized 0-1). Used for node sizing.
 
-API key is loaded from `.env` via `python-dotenv`.
+**Graph files** served from `data/final_graphs/`. Scenario sidecars: `{graph_name}.scenarios.json` in same directory.
 
-## Project Structure Conventions
+### Evaluation (`src/eval.py`)
 
-### PDF Parsers
+LLM judge scores agent answers on 3 dimensions: accuracy (0-3), completeness (0-2), no-hallucination (0-1). **Pass threshold: 4/6.** Results saved to `output/eval_results.json`.
 
-We maintain two PDF-to-markdown parsers. **Parser 1 is the active parser** used by the pipeline (`src/pdf_parser.py`).
+## LLM Configuration
 
-- `src/pdf_parser.py` — Parser 1 (custom heuristic, font-metric analysis via raw PyMuPDF). Handles bold ALL-CAPS heading detection, page number stripping, repeated header/footer removal, TOC dot-filler removal, cover page logic, definition formatting, and paragraph joining. **This is imported by `src/main.py`.**
-- `src/pdf_parser_1.py` — Named copy of Parser 1 for reference.
-- `src/pdf_parser_2.py` — Parser 2 (pymupdf4llm wrapper). Better at tables, links, and italic preservation, but misses body-size bold headings and does not strip noise.
+**When Claude Code runs any pipeline stage, service, or LLM call, always use `TEST_MODEL`.** Only switch to `BEST_MODEL` when the user explicitly requests it. This applies to all modules.
 
-### Parsed Output Organization
+API key loaded from `.env` via `python-dotenv`. Model env vars: `TEST_MODEL`, `BEST_MODEL`, `LLM_CLI_MODEL`.
 
-Each parser writes its markdown output to its own subfolder under `data/`:
+## Critical Gotchas
 
-- `data/parser_1/` — Markdowns generated by Parser 1
-- `data/parser_2/` — Markdowns generated by Parser 2
+1. **Stage 1 is deterministic, not LLM-based.** If Stage 0's `beginning_text` is inaccurate, segmentation silently fails with wrong boundaries. No LLM fallback.
+2. **Async concurrency hardcoded to 2.** `asyncio.Semaphore(2)` in extraction.py — bottleneck for documents with many small sections.
+3. **Entity ID prefix stripping in merge.** `SEC-01:client` → `client` for dedup matching. New code consuming merge output must handle both forms.
+4. **Synthetic canonical IDs.** LLM semantic dedup sometimes invents new IDs not in the entity list. `merge.py` handles this by picking the best existing ID as canonical.
+5. **No API retry/backoff.** If an LLM call fails (rate limit, token overflow), the pipeline fails hard.
+6. **Source anchoring is optional.** Entities may have empty `source_anchor.source_text`. Merge uses SequenceMatcher fuzzy matching as fallback for offset computation.
+7. **Orphaned relationships silently removed.** After merge remapping, edges referencing deleted entity IDs are dropped with a warning log, not an error.
+8. **Anti-merge rules are strict.** Numbered/leveled entities (severity_level_1 through severity_level_4) and channel-specific entities never merge, even if names are similar.
+9. **JSON parsing has progressive fallback.** First pass and extraction both handle: raw parse → strip markdown fences → fix escape sequences → strip control characters.
 
-Source PDFs live in `data/` root. Do not mix parser outputs into the same folder.
+## PDF Parsers
 
-### Result Storage Conventions
+**Parser 1 is active** (`src/pdf_parser.py`). Four-phase: extraction (PyMuPDF font metrics) → noise removal (headers/footers/page numbers/TOC dots) → font analysis (body size detection, heading level mapping) → markdown rendering (heading hierarchy, lists, definitions, paragraph joining).
 
-Every pipeline run that makes API calls **must** save its outputs to `results/`. No LLM-generated data should exist only in console output or in-memory. If an API was called and tokens were spent, the result has a file.
+Parser 2 (`src/pdf_parser_2.py`) is a pymupdf4llm wrapper — better at tables/links, worse at heading detection/noise. Kept for comparison. Outputs go to `data/parser_1/` and `data/parser_2/` respectively.
 
-#### Directory Layout
+## Result Storage
 
-```
-results/
-├── runs/                              # One subdirectory per pipeline run
-│   ├── {timestamp}_{policy_name}/     # Run ID = UTC timestamp + sanitized policy name
-│   │   ├── run_meta.json              # Run metadata, timings, counts, anchoring stats
-│   │   ├── first_pass.json            # Stage 0: First pass document analysis
-│   │   ├── sections.json              # Stage 1: LLM segmentation output
-│   │   ├── extractions.json           # Stage 2: per-section extraction (pre-merge)
-│   │   ├── ontology.json              # Stage 3: final merged OntologyGraph (reloadable)
-│   │   ├── entities.json              # Entities grouped by type (human-readable)
-│   │   └── relationships.json         # Relationships grouped by type (human-readable)
-│   └── ...
-└── latest.txt                         # Contains the run_id of the most recent run
-```
+Every pipeline run auto-saves to `results/runs/{YYYY-MM-DDTHH-MM-SS}_{policy_name}/`. Run IDs are immutable. `ontology.json` is the source of truth (reloadable via `OntologyGraph(**data)`). Latest run ID stored in `results/latest.txt`.
 
-#### File Contracts
+**Files per run:** `run_meta.json`, `first_pass.json`, `sections.json`, `extractions.json`, `ontology.json`, `entities.json`, `relationships.json`, plus optional `semantic_dedup.json`, `cross_section.json`, `relationships_log.json`.
 
-Each file in a run directory has a fixed schema. Do not add ad-hoc files or change these schemas without updating both `src/results.py` and this section.
+**Rules:**
+1. Never lose API results — every LLM output gets a file.
+2. When adding a pipeline stage, add a JSON file to the run directory and update `save_run()` / `load_run()` in `src/results.py`.
+3. Reload previous runs without API calls via `load_latest_ontology()` or `load_run(run_id)`.
 
-| File | Purpose | Schema Owner |
-|------|---------|--------------|
-| `run_meta.json` | Pipeline config, timings, entity/relationship counts, source anchoring quality stats | `save_run()` in `src/results.py` |
-| `first_pass.json` | Stage 0 output: document_map, global_entity_pre_registration, cross_section_dependencies | `save_run()` — sourced from `FirstPassResult` model |
-| `sections.json` | Array of sections: header, section_number, level, char_count, enumerated_lists | `save_run()` — sourced from `DocumentSection` model |
-| `extractions.json` | Array of per-section results: section info + raw entities/relationships before merge | `save_run()` — sourced from `SectionExtraction` model |
-| `ontology.json` | Full `OntologyGraph.model_dump()` — reloadable via `OntologyGraph(**data)` | `save_run()` — sourced from `OntologyGraph` model |
-| `entities.json` | Entities grouped by type with id, name, description, attributes, source_section, source_text | `save_run()` — derived view for human reading |
-| `relationships.json` | Relationships grouped by type with resolved entity names | `save_run()` — derived view for human reading |
-
-#### Rules
-
-1. **Every pipeline run auto-saves.** The `extract_ontology()` function in `src/pipeline.py` calls `save_run()` at the end of every execution. No manual save step.
-2. **Never lose API results.** If a new pipeline stage is added (e.g., cross-section inference, verification), its LLM output must be added as a new file in the run directory and registered in `save_run()`.
-3. **Run IDs are immutable.** Format: `YYYY-MM-DDTHH-MM-SS_{policy_name}`. Once a run is saved, its directory is never overwritten — each run gets a unique timestamp.
-4. **`ontology.json` is the source of truth.** It contains the complete serialized graph and can reconstruct the full `OntologyGraph` object. All other files are derived views for convenience.
-5. **Reload without re-running.** Use `load_latest_ontology()` or `load_run(run_id)` from `src/results.py` to reload any previous run's graph without making API calls.
-6. **When adding a new pipeline stage**, add a corresponding JSON file to the run directory (e.g., `cross_section.json`, `verification.json`), update `save_run()` to write it, and update `load_run()` to read it. Document the new file in this table.
-
-#### What Goes Where
-
-| Data Type | Where It Lives |
-|-----------|---------------|
-| Source policy PDFs | `data/` |
-| PDF-to-markdown conversions | `data/parser_1/`, `data/parser_2/` |
-| Q&A test sets | `data/*.qa.json` |
-| Pipeline run outputs (entities, relationships, ontology) | `results/runs/{run_id}/` |
-| Evaluation results (agent Q&A scoring) | `output/eval_results.json` |
-| Graph visualizations (interactive HTML) | `output/graph.html` |
-| Saved graphs (legacy format from `build_graph.py`) | `output/graphs/` |
-| Planning/design docs | `docs/` |
+**Data locations:** Source PDFs in `data/`, Q&A test sets as `data/*.qa.json`, pipeline runs in `results/runs/`, eval results in `output/eval_results.json`, legacy graphs in `output/graphs/`, planning docs in `docs/`.
 
 ## Core Principles
 
-- **Accuracy over cost.** Never accept a worse outcome to save tokens or reduce API calls. If the agent needs more iterations, let it iterate.
-- **Enterprise-grade quality.** Every decision should be evaluated as: "Would this hold up at scale with high-stakes compliance documents where errors have real consequences?"
-- **No shortcuts.** If a more robust solution exists — even if harder to implement — that is the correct choice.
-- **Correctness first, then performance.** A fast wrong answer is worthless. A slower correct answer is the standard.
+- **Accuracy over cost.** Never accept a worse outcome to save tokens. If the agent needs more iterations, let it iterate.
+- **Enterprise-grade quality.** Every decision evaluated as: "Would this hold up at scale with high-stakes compliance documents?"
+- **Correctness first, then performance.** A fast wrong answer is worthless.
 
 ## Frontend Testing Standard (Mandatory)
 
@@ -228,32 +196,15 @@ Each file in a run directory has a fixed schema. Do not add ad-hoc files or chan
 
 ### Workflow (Red → Green)
 
-1. **Write the Playwright test first.** The test describes the desired behavior — what the UI should do after the change. Be specific: assert element visibility, click interactions, state transitions, visual regressions.
-2. **Run the test — it MUST FAIL.** This confirms the test is actually testing the new behavior, not something that already works. If it passes before you've made any code changes, the test is wrong.
-3. **Implement the frontend change.** Write the React/CSS code to make the feature work.
-4. **Run the test again — it MUST PASS.** If it doesn't, fix the implementation (not the test) until it does.
-5. **Run the full test suite** to confirm nothing else broke.
+1. **Write the Playwright test first** — assert element visibility, interactions, state transitions.
+2. **Run the test — it MUST FAIL** before any code changes.
+3. **Implement the frontend change.**
+4. **Run the test — it MUST PASS.** Fix the implementation, not the test.
+5. **Run the full suite** to confirm no regressions.
 
 ### Test Infrastructure
 
-- Tests live in `frontend/tests/` as `*.spec.ts` files
-- Config: `frontend/playwright.config.ts`
-- Tests run against the frontend served at `http://localhost:8789` (start the server first)
-- Use `npx playwright test` from the `frontend/` directory
-
-### What to Test
-
-| Change Type | What to Assert |
-|-------------|---------------|
-| New UI component | Element exists, correct content, proper styling classes |
-| Interactive feature | Click/type triggers expected state change, correct elements appear/disappear |
-| Zoom/navigation | Scale changes, viewport shows expected nodes after action |
-| Panel open/close | Panel visibility, animation completion, content population |
-| API integration | Loading states, data rendering, error handling |
-
-### Rules
-
-1. **No frontend PR without tests.** Every frontend change must have a corresponding Playwright test.
-2. **Tests describe behavior, not implementation.** Test what the user sees and does, not internal React state.
-3. **Tests must be deterministic.** Use `waitFor` for async operations. Never rely on timing alone.
-4. **Test file naming:** `frontend/tests/{feature}.spec.ts` — one file per feature area.
+- Tests: `frontend/tests/*.spec.ts` (one file per feature area)
+- Config: `frontend/playwright.config.ts` (chromium only, 30s timeout, 0 retries)
+- Base URL: `http://localhost:8789` (server must be running)
+- Tests must be deterministic — use `waitFor` for async, never rely on timing alone.

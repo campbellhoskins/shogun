@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Duty of Care Knowledge Graph — Operational Demo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.4/cytoscape.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:        #0c1220;
+  --panel:     #131c2e;
+  --panel-alt: #182336;
+  --border:    #1e3050;
+  --text:      #cdd6e4;
+  --text-dim:  #6b7a94;
+  --accent:    #3b82f6;
+  --green:     #34d399;
+  --red:       #ef4444;
+  --orange:    #f97316;
+  --amber:     #fbbf24;
+  --cyan:      #22d3ee;
+  --violet:    #a78bfa;
+  --pink:      #f472b6;
+  --slate:     #94a3b8;
+}
+body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+/* ---- HEADER ---- */
+header { padding: 14px 24px; background: var(--panel); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 18px; flex-shrink: 0; }
+header h1 { font-size: 16px; font-weight: 700; letter-spacing: .3px; }
+header h1 span { color: var(--accent); }
+header .tag { font-size: 10px; background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: 600; letter-spacing: .5px; }
+header .subtitle { font-size: 12px; color: var(--text-dim); margin-left: auto; }
+
+/* ---- MAIN LAYOUT ---- */
+main { display: flex; flex: 1; min-height: 0; }
+#graph-wrap { flex: 1; position: relative; }
+#cy { width: 100%; height: 100%; }
+#right-panel { width: 380px; flex-shrink: 0; border-left: 1px solid var(--border); display: flex; flex-direction: column; }
+
+/* ---- LEGEND ---- */
+#legend { position: absolute; bottom: 12px; left: 12px; background: rgba(19,28,46,.92); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 6px 14px; z-index: 10; max-width: 600px; }
+#legend .item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--text-dim); }
+#legend .dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+/* ---- INSPECTOR ---- */
+#inspector { padding: 16px; border-bottom: 1px solid var(--border); overflow-y: auto; flex: 0 0 auto; max-height: 45%; }
+#inspector h2 { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); margin-bottom: 10px; }
+#inspector .empty { font-size: 12px; color: var(--text-dim); font-style: italic; }
+#inspector .ename { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+#inspector .etype { font-size: 11px; color: var(--accent); margin-bottom: 10px; }
+#inspector .edesc { font-size: 12px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.5; }
+#inspector table { width: 100%; font-size: 12px; border-collapse: collapse; }
+#inspector td { padding: 4px 0; vertical-align: top; }
+#inspector td:first-child { color: var(--text-dim); width: 45%; padding-right: 8px; }
+#inspector td:last-child { color: var(--text); font-weight: 500; }
+#inspector tr { border-bottom: 1px solid var(--border); }
+
+/* ---- SCENARIO PANEL ---- */
+#scenario { flex: 1; display: flex; flex-direction: column; min-height: 0; padding: 16px; }
+#scenario h2 { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); margin-bottom: 10px; }
+#scenario select { width: 100%; padding: 8px 10px; background: var(--panel-alt); border: 1px solid var(--border); color: var(--text); border-radius: 6px; font-size: 13px; margin-bottom: 12px; cursor: pointer; }
+#step-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+#step-counter { font-size: 11px; color: var(--text-dim); white-space: nowrap; }
+#step-title { font-size: 14px; font-weight: 700; }
+#step-desc { font-size: 12px; color: var(--text-dim); line-height: 1.5; margin-bottom: 10px; min-height: 36px; }
+
+/* Agent log */
+#agent-log-wrap { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+#agent-log-label { font-size: 10px; text-transform: uppercase; letter-spacing: .8px; color: var(--text-dim); margin-bottom: 6px; }
+#agent-log { flex: 1; overflow-y: auto; background: #0a0f1a; border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace; font-size: 11px; line-height: 1.7; }
+#agent-log .log-line { opacity: 0; animation: fadeIn .3s forwards; }
+#agent-log .qry { color: var(--cyan); }
+#agent-log .trv { color: var(--violet); }
+#agent-log .atr { color: var(--amber); }
+#agent-log .dec { color: var(--green); }
+#agent-log .wrn { color: var(--red); }
+#agent-log .dim { color: var(--text-dim); }
+@keyframes fadeIn { to { opacity: 1; } }
+
+/* Controls */
+#controls { display: flex; gap: 8px; margin-top: 10px; flex-shrink: 0; }
+#controls button { flex: 1; padding: 8px; background: var(--panel-alt); border: 1px solid var(--border); color: var(--text); border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; }
+#controls button:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+#controls button:disabled { opacity: .3; cursor: default; background: var(--panel-alt); border-color: var(--border); color: var(--text); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Duty of Care <span>Knowledge Graph</span></h1>
+  <div class="tag">OPERATIONAL DEMO</div>
+  <div class="subtitle">Graph-driven autonomous agent decision support</div>
+</header>
+
+<main>
+  <div id="graph-wrap">
+    <div id="cy"></div>
+    <div id="legend"></div>
+  </div>
+  <div id="right-panel">
+    <div id="inspector">
+      <h2>Entity Inspector</h2>
+      <div class="empty">Click any node to inspect its structured attributes</div>
+    </div>
+    <div id="scenario">
+      <h2>Scenario Simulator</h2>
+      <select id="scenario-select">
+        <option value="">— Select a scenario —</option>
+      </select>
+      <div id="step-header"><span id="step-counter"></span><span id="step-title"></span></div>
+      <div id="step-desc"></div>
+      <div id="agent-log-wrap">
+        <div id="agent-log-label">Agent Reasoning Trace</div>
+        <div id="agent-log"></div>
+      </div>
+      <div id="controls">
+        <button id="btn-prev" disabled>◀ Prev</button>
+        <button id="btn-next" disabled>Next ▶</button>
+        <button id="btn-auto" disabled>Auto ▶▶</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+// ======================================================================
+//  COLOR / TYPE CONFIG
+// ======================================================================
+const TYPE_STYLE = {
+  SeverityLevel:          { color: '#ef4444', shape: 'diamond',          label: 'Severity Level' },
+  Service:                { color: '#3b82f6', shape: 'round-rectangle',  label: 'Service' },
+  ContactRole:            { color: '#a78bfa', shape: 'round-tag',        label: 'Contact Role' },
+  TravelerResponseStatus: { color: '#34d399', shape: 'round-hexagon',    label: 'Response Status' },
+  Incident:               { color: '#f97316', shape: 'star',             label: 'Incident' },
+  Traveler:               { color: '#22d3ee', shape: 'ellipse',          label: 'Traveler' },
+  Organization:           { color: '#94a3b8', shape: 'round-rectangle',  label: 'Organization' },
+  BookingChannel:         { color: '#fbbf24', shape: 'pentagon',         label: 'Booking Channel' },
+};
+
+// per-level severity colors for visual gradient
+const SEV_COLORS = { 1:'#fbbf24', 2:'#f97316', 3:'#ef4444', 4:'#991b1b' };
+
+// ======================================================================
+//  GRAPH DATA  (representative subset with populated typed attributes)
+// ======================================================================
+const nodes = [
+  // ---- Incident ----
+  { id:'incident', type:'Incident', name:'Earthquake — Tokyo',
+    attrs:{ event_type:'Natural Disaster — Earthquake', location:'Tokyo, Japan', status:'Active' },
+    pos:{x:420,y:60} },
+
+  // ---- Severity Levels (4 decomposed entities) ----
+  { id:'sev1', type:'SeverityLevel', name:'Level 1 — Advisory',
+    attrs:{ level:1, classification:'Advisory', alert_time_target:'4 hours',
+      client_escalation_time_target:'Not required', status_update_cadence:'As conditions change',
+      crisis_bridge_required:false },
+    pos:{x:160,y:195} },
+  { id:'sev2', type:'SeverityLevel', name:'Level 2 — Monitor',
+    attrs:{ level:2, classification:'Monitor', alert_time_target:'2 hours',
+      client_escalation_time_target:'4 hours', status_update_cadence:'Every 4 hours while active',
+      crisis_bridge_required:false },
+    pos:{x:310,y:195} },
+  { id:'sev3', type:'SeverityLevel', name:'Level 3 — Action Required',
+    attrs:{ level:3, classification:'ActionRequired', alert_time_target:'60 minutes',
+      client_escalation_time_target:'60 minutes', status_update_cadence:'Every 2 hours while active',
+      crisis_bridge_required:false },
+    pos:{x:460,y:195} },
+  { id:'sev4', type:'SeverityLevel', name:'Level 4 — Crisis',
+    attrs:{ level:4, classification:'Crisis', alert_time_target:'30 minutes',
+      client_escalation_time_target:'30 minutes', status_update_cadence:'Every 30 min acute / hourly sustained',
+      crisis_bridge_required:true },
+    pos:{x:610,y:195} },
+
+  // ---- Services ----
+  { id:'svc_alerts', type:'Service', name:'Alerts',
+    attrs:{ activation_severity_threshold:1, requires_client_authorization:false },
+    pos:{x:100,y:350} },
+  { id:'svc_welfare', type:'Service', name:'Welfare Checks',
+    attrs:{ activation_severity_threshold:2, requires_client_authorization:false,
+      authorization_details:'N/A — standard outreach does not require authorization' },
+    pos:{x:270,y:350} },
+  { id:'svc_response', type:'Service', name:'Incident Response',
+    attrs:{ activation_severity_threshold:2, requires_client_authorization:true,
+      authorization_details:'Evacuation, private security, medical evac, charter transport, premium-class rebooking, extraordinary costs' },
+    pos:{x:440,y:350} },
+  { id:'svc_disrupt', type:'Service', name:'Disruption Assistance',
+    attrs:{ activation_severity_threshold:2, requires_client_authorization:false },
+    pos:{x:600,y:350} },
+  { id:'svc_crisis', type:'Service', name:'Crisis Bridge',
+    attrs:{ activation_severity_threshold:4, requires_client_authorization:false,
+      authorization_details:'Activated automatically for Level 4; no authorization needed' },
+    pos:{x:720,y:350} },
+
+  // ---- Contact Roles ----
+  { id:'cr_primary', type:'ContactRole', name:'Primary Program Owner',
+    attrs:{ escalation_severity_levels:[1,2,3,4], escalation_condition:'All incidents',
+      roster_position:'Primary' },
+    pos:{x:790,y:130} },
+  { id:'cr_alternate', type:'ContactRole', name:'Alternate Contact',
+    attrs:{ escalation_severity_levels:[1,2,3,4], escalation_condition:'Primary unavailable',
+      roster_position:'Backup' },
+    pos:{x:810,y:195} },
+  { id:'cr_afterhrs', type:'ContactRole', name:'After-Hours Duty',
+    attrs:{ escalation_severity_levels:[1,2,3,4], escalation_condition:'Outside Business Hours',
+      roster_position:'Conditional' },
+    pos:{x:790,y:260} },
+  { id:'cr_security', type:'ContactRole', name:'Corporate Security',
+    attrs:{ escalation_severity_levels:[3,4], escalation_condition:'Security-related incidents',
+      roster_position:'Conditional' },
+    pos:{x:810,y:325} },
+  { id:'cr_hr', type:'ContactRole', name:'HR Duty Contact',
+    attrs:{ escalation_severity_levels:[3,4], escalation_condition:'Employee welfare / injury / fatality',
+      roster_position:'Conditional' },
+    pos:{x:790,y:390} },
+  { id:'cr_senior', type:'ContactRole', name:'Senior Leadership',
+    attrs:{ escalation_severity_levels:[4], escalation_condition:'Crisis requiring senior decision-making',
+      roster_position:'CrisisOnly' },
+    pos:{x:810,y:455} },
+
+  // ---- Traveler ----
+  { id:'traveler', type:'Traveler', name:'Traveler (in Tokyo)',
+    attrs:{ booking_status:'Active', itinerary_destination:'Tokyo, Japan' },
+    pos:{x:340,y:500} },
+
+  // ---- Response Statuses ----
+  { id:'rs_safe', type:'TravelerResponseStatus', name:'SAFE',
+    attrs:{ tmc_action:'Log status; no further action unless conditions change',
+      action_time_target:'N/A', closes_outreach:true, triggers_escalation:false },
+    pos:{x:140,y:640} },
+  { id:'rs_need', type:'TravelerResponseStatus', name:'NEED ASSISTANCE',
+    attrs:{ tmc_action:'Attempt live contact within 15 min; provide rebooking, medical/security referral',
+      action_time_target:'15 minutes', closes_outreach:false, triggers_escalation:false },
+    pos:{x:320,y:640} },
+  { id:'rs_nota', type:'TravelerResponseStatus', name:'NOT IN AREA',
+    attrs:{ tmc_action:'Log status; remove from active outreach for this incident',
+      action_time_target:'N/A', closes_outreach:true, triggers_escalation:false },
+    pos:{x:500,y:640} },
+  { id:'rs_noresp', type:'TravelerResponseStatus', name:'NO RESPONSE',
+    attrs:{ tmc_action:'Escalate to Client after 3 attempts / 2 channels / 90 min',
+      action_time_target:'After 90 min outreach window', closes_outreach:false, triggers_escalation:true },
+    pos:{x:680,y:640} },
+
+  // ---- Booking Channels ----
+  { id:'ch_approved', type:'BookingChannel', name:'Approved Channels',
+    attrs:{ channel_types:'OBT, Agent-assisted, Approved integrations',
+      enables_visibility:true },
+    pos:{x:150,y:500} },
+  { id:'ch_offchannel', type:'BookingChannel', name:'Off-Channel Booking',
+    attrs:{ channel_types:'Consumer sites, direct supplier, personal agency',
+      enables_visibility:false },
+    pos:{x:550,y:500} },
+
+  // ---- Organizations ----
+  { id:'org_dt', type:'Organization', name:'Direct Travel (TMC)',
+    attrs:{ role:'Travel Management Company / Service Provider' },
+    pos:{x:55,y:150} },
+  { id:'org_client', type:'Organization', name:'Client',
+    attrs:{ role:'Contracting Organization / Data Controller' },
+    pos:{x:55,y:250} },
+];
+
+const edges = [
+  // Classification
+  { id:'e1',  src:'incident',   tgt:'sev3',        type:'CLASSIFIED_AS',       label:'CLASSIFIED_AS' },
+  // Impacts
+  { id:'e2',  src:'incident',   tgt:'traveler',     type:'IMPACTS',             label:'IMPACTS' },
+  // Service activation
+  { id:'e3',  src:'svc_alerts', tgt:'sev1',         type:'ACTIVATED_AT',        label:'ACTIVATED_AT' },
+  { id:'e4',  src:'svc_alerts', tgt:'sev2',         type:'ACTIVATED_AT',        label:'ACTIVATED_AT' },
+  { id:'e5',  src:'svc_alerts', tgt:'sev3',         type:'ACTIVATED_AT',        label:'ACTIVATED_AT' },
+  { id:'e6',  src:'svc_alerts', tgt:'sev4',         type:'ACTIVATED_AT',        label:'ACTIVATED_AT' },
+  { id:'e7',  src:'svc_welfare',tgt:'sev2',         type:'ACTIVATED_AT',        label:'ACTIVATED_AT' },
+  { id:'e8',  src:'svc_welfare',tgt:'sev3',         type:'ACTIVATED_AT',        label:'ACTIVATED_AT' },
+  { id:'e9',  src:'svc_welfare',tgt:'sev4',         type:'ACTIVATED_AT',        label:'ACTIVATED_AT' },
+  { id:'e10', src:'svc_response',tgt:'sev2',        type:'ACTIVATED_AT',        label:'ACTIVATED_AT' },
+  { id:'e11', src:'svc_response',tgt:'sev3',        type:'ACTIVATED_AT',        label:'ACTIVATED_AT' },
+  { id:'e12', src:'svc_response',tgt:'sev4',        type:'ACTIVATED_AT',        label:'ACTIVATED_AT' },
+  { id:'e13', src:'svc_disrupt',tgt:'sev2',         type:'ACTIVATED_AT',        label:'ACTIVATED_AT' },
+  { id:'e14', src:'svc_disrupt',tgt:'sev3',         type:'ACTIVATED_AT',        label:'ACTIVATED_AT' },
+  { id:'e15', src:'svc_crisis', tgt:'sev4',         type:'ACTIVATED_AT',        label:'ACTIVATED_AT' },
+  // Escalation
+  { id:'e20', src:'sev3',       tgt:'cr_primary',   type:'ESCALATED_TO',        label:'ESCALATED_TO' },
+  { id:'e21', src:'sev3',       tgt:'cr_security',  type:'ESCALATED_TO',        label:'ESCALATED_TO' },
+  { id:'e22', src:'sev4',       tgt:'cr_primary',   type:'ESCALATED_TO',        label:'ESCALATED_TO' },
+  { id:'e23', src:'sev4',       tgt:'cr_security',  type:'ESCALATED_TO',        label:'ESCALATED_TO' },
+  { id:'e24', src:'sev4',       tgt:'cr_senior',    type:'ESCALATED_TO',        label:'ESCALATED_TO' },
+  { id:'e25', src:'sev4',       tgt:'cr_hr',        type:'ESCALATED_TO',        label:'ESCALATED_TO' },
+  // Traveler responses
+  { id:'e30', src:'traveler',   tgt:'rs_safe',      type:'RESPONDS_WITH',       label:'RESPONDS_WITH' },
+  { id:'e31', src:'traveler',   tgt:'rs_need',      type:'RESPONDS_WITH',       label:'RESPONDS_WITH' },
+  { id:'e32', src:'traveler',   tgt:'rs_nota',      type:'RESPONDS_WITH',       label:'RESPONDS_WITH' },
+  { id:'e33', src:'traveler',   tgt:'rs_noresp',    type:'RESPONDS_WITH',       label:'RESPONDS_WITH' },
+  // Triggers action
+  { id:'e34', src:'rs_need',    tgt:'svc_response', type:'TRIGGERS_ACTION',     label:'TRIGGERS_ACTION' },
+  { id:'e35', src:'rs_noresp',  tgt:'svc_response', type:'TRIGGERS_ACTION',     label:'TRIGGERS_ACTION' },
+  // Booking channel coverage
+  { id:'e40', src:'ch_approved',tgt:'svc_welfare',  type:'ENABLES_COVERAGE',    label:'ENABLES_COVERAGE' },
+  { id:'e41', src:'ch_approved',tgt:'svc_alerts',   type:'ENABLES_COVERAGE',    label:'ENABLES_COVERAGE' },
+  { id:'e42', src:'ch_approved',tgt:'svc_disrupt',  type:'ENABLES_COVERAGE',    label:'ENABLES_COVERAGE' },
+  // Service provision
+  { id:'e50', src:'org_dt',     tgt:'svc_welfare',  type:'PROVIDES',            label:'PROVIDES' },
+  { id:'e51', src:'org_dt',     tgt:'svc_response', type:'PROVIDES',            label:'PROVIDES' },
+  { id:'e52', src:'org_dt',     tgt:'svc_alerts',   type:'PROVIDES',            label:'PROVIDES' },
+  { id:'e53', src:'org_dt',     tgt:'svc_crisis',   type:'PROVIDES',            label:'PROVIDES' },
+  // Authorization
+  { id:'e60', src:'svc_response',tgt:'org_client',  type:'REQUIRES_AUTH_FROM',  label:'REQUIRES_AUTH' },
+  // Welfare check delivery
+  { id:'e70', src:'svc_welfare',tgt:'traveler',     type:'SENT_TO',             label:'SENT_TO' },
+];
+
+// ======================================================================
+//  SCENARIOS
+// ======================================================================
+const scenarios = [
+{
+  id: 'full_response',
+  name: '⚡ Level 3 Earthquake — Full Response Chain',
+  steps: [
+    { title: 'Incident Detected',
+      desc: 'Risk Intelligence Platform detects a magnitude 6.1 earthquake near Tokyo. Graph query begins.',
+      highlight: ['incident'],
+      edges: [],
+      log: [
+        { cls:'qry', text:'QUERY  graph.getNode("incident")' },
+        { cls:'atr', text:'READ   type=Natural Disaster, location=Tokyo, Japan' },
+        { cls:'dim', text:'───────────────────────────────────' },
+      ]},
+    { title: 'Severity Classification',
+      desc: 'Agent traverses CLASSIFIED_AS edge → reads Level 3 structured attributes for SLO timing.',
+      highlight: ['incident','sev3'],
+      edges: ['e1'],
+      focus: 'sev3',
+      log: [
+        { cls:'trv', text:'TRAVERSE  incident ──CLASSIFIED_AS──▶ severity_level_3' },
+        { cls:'atr', text:'READ ATTR  level = 3' },
+        { cls:'atr', text:'READ ATTR  classification = ActionRequired' },
+        { cls:'atr', text:'READ ATTR  alert_time_target = "60 minutes"' },
+        { cls:'atr', text:'READ ATTR  client_escalation_time_target = "60 minutes"' },
+        { cls:'atr', text:'READ ATTR  crisis_bridge_required = false' },
+        { cls:'dec', text:'DECISION  Must initiate outreach within 60 min' },
+        { cls:'dec', text:'DECISION  Crisis Bridge NOT required at Level 3' },
+      ]},
+    { title: 'Identify Impacted Travelers',
+      desc: 'Agent follows IMPACTS edge to find travelers with active itineraries in the impact zone.',
+      highlight: ['incident','traveler'],
+      edges: ['e2'],
+      focus: 'traveler',
+      log: [
+        { cls:'trv', text:'TRAVERSE  incident ──IMPACTS──▶ traveler' },
+        { cls:'atr', text:'READ ATTR  itinerary_destination = Tokyo, Japan' },
+        { cls:'atr', text:'READ ATTR  booking_status = Active' },
+        { cls:'dec', text:'RESULT  1 traveler identified in impact zone' },
+      ]},
+    { title: 'Determine Activated Services',
+      desc: 'Agent queries all services with ACTIVATED_AT edges to Level 3. Reads authorization requirements from attributes.',
+      highlight: ['sev3','svc_alerts','svc_welfare','svc_response','svc_disrupt'],
+      edges: ['e5','e8','e11','e14'],
+      log: [
+        { cls:'trv', text:'TRAVERSE  * ──ACTIVATED_AT──▶ severity_level_3' },
+        { cls:'atr', text:'FOUND  Alerts (threshold=1) ✓' },
+        { cls:'atr', text:'FOUND  Welfare Checks (threshold=2) ✓' },
+        { cls:'atr', text:'FOUND  Incident Response (threshold=2) ✓' },
+        { cls:'atr', text:'FOUND  Disruption Assistance (threshold=2) ✓' },
+        { cls:'atr', text:'READ   svc_response.requires_client_authorization = true' },
+        { cls:'dec', text:'DECISION  4 services activated; incident response needs auth for extraordinary measures' },
+      ]},
+    { title: 'Verify Booking Visibility',
+      desc: 'Agent checks booking channel coverage. Approved Channel provides ENABLES_COVERAGE path to all services.',
+      highlight: ['ch_approved','svc_welfare','svc_alerts','svc_disrupt'],
+      edges: ['e40','e41','e42'],
+      log: [
+        { cls:'trv', text:'TRAVERSE  ch_approved ──ENABLES_COVERAGE──▶ [welfare, alerts, disruption]' },
+        { cls:'atr', text:'READ   enables_visibility = true' },
+        { cls:'dec', text:'RESULT  Traveler booked via Approved Channel — full coverage confirmed ✓' },
+      ]},
+    { title: 'Initiate Welfare Check',
+      desc: 'Agent sends outreach via configured channel priority. Welfare check delivered to traveler at T+8 min.',
+      highlight: ['svc_welfare','traveler'],
+      edges: ['e70'],
+      log: [
+        { cls:'qry', text:'ACTION  Initiate welfare check outreach' },
+        { cls:'atr', text:'CHANNEL PRIORITY  1.SMS  2.Email  3.Push  4.Voice' },
+        { cls:'dec', text:'SENT   SMS welfare check at T+8 min (SLO: 60 min ✓)' },
+        { cls:'dim', text:'⏳ Awaiting traveler response...' },
+      ]},
+    { title: 'Traveler Responds: NEED ASSISTANCE',
+      desc: 'Traveler replies NEED ASSISTANCE. Agent reads structured TMC action and timing from response status attributes.',
+      highlight: ['traveler','rs_need'],
+      edges: ['e31'],
+      focus: 'rs_need',
+      log: [
+        { cls:'trv', text:'TRAVERSE  traveler ──RESPONDS_WITH──▶ NEED_ASSISTANCE' },
+        { cls:'atr', text:'READ ATTR  tmc_action = "Attempt live contact within 15 min"' },
+        { cls:'atr', text:'READ ATTR  action_time_target = "15 minutes"' },
+        { cls:'atr', text:'READ ATTR  closes_outreach = false' },
+        { cls:'dec', text:'DECISION  Must attempt live voice contact within 15 min' },
+      ]},
+    { title: 'Trigger Incident Response',
+      desc: 'NEED ASSISTANCE status triggers incident response service via TRIGGERS_ACTION edge. Authorization noted.',
+      highlight: ['rs_need','svc_response','org_client'],
+      edges: ['e34','e60'],
+      focus: 'svc_response',
+      log: [
+        { cls:'trv', text:'TRAVERSE  NEED_ASSISTANCE ──TRIGGERS_ACTION──▶ svc_response' },
+        { cls:'atr', text:'READ ATTR  requires_client_authorization = true' },
+        { cls:'atr', text:'READ ATTR  authorization_details = "Evacuation, private security, medical evac..."' },
+        { cls:'trv', text:'TRAVERSE  svc_response ──REQUIRES_AUTH──▶ Client' },
+        { cls:'dec', text:'DECISION  Standard rebooking: proceed. Extraordinary measures: request Client auth.' },
+      ]},
+    { title: 'Escalate to Client Contacts',
+      desc: 'Agent follows ESCALATED_TO edges from Level 3 → determines which contacts to notify based on their attributes.',
+      highlight: ['sev3','cr_primary','cr_security'],
+      edges: ['e20','e21'],
+      log: [
+        { cls:'trv', text:'TRAVERSE  severity_level_3 ──ESCALATED_TO──▶ [contacts]' },
+        { cls:'atr', text:'READ  Primary Program Owner: condition="All incidents" ✓' },
+        { cls:'atr', text:'READ  Corporate Security: condition="Security-related" (earthquake=natural disaster)' },
+        { cls:'dec', text:'DECISION  Notify Primary Program Owner (mandatory)' },
+        { cls:'dec', text:'DECISION  Corporate Security: skip (not security-related)' },
+        { cls:'dec', text:'COMPLETE  All SLO targets met. Assistance in progress.' },
+      ]},
+  ]
+},
+{
+  id: 'non_responsive',
+  name: '🔇 Traveler Non-Responsive — Escalation Path',
+  steps: [
+    { title: 'Welfare Check — No Response',
+      desc: 'After outreach attempts, traveler has not responded. Agent reads NO RESPONSE attributes.',
+      highlight: ['traveler','rs_noresp'],
+      edges: ['e33'],
+      focus: 'rs_noresp',
+      log: [
+        { cls:'trv', text:'TRAVERSE  traveler ──RESPONDS_WITH──▶ NO_RESPONSE' },
+        { cls:'atr', text:'READ ATTR  tmc_action = "Escalate after 3 attempts / 2 channels / 90 min"' },
+        { cls:'atr', text:'READ ATTR  triggers_escalation = true' },
+        { cls:'atr', text:'READ ATTR  closes_outreach = false' },
+        { cls:'dec', text:'CHECK  3 attempts across 2 channels over 90 min completed? YES' },
+      ]},
+    { title: 'Escalation Triggered',
+      desc: 'NO RESPONSE triggers escalation. Agent follows TRIGGERS_ACTION → Incident Response, then reads authorization.',
+      highlight: ['rs_noresp','svc_response','org_client'],
+      edges: ['e35','e60'],
+      log: [
+        { cls:'trv', text:'TRAVERSE  NO_RESPONSE ──TRIGGERS_ACTION──▶ svc_response' },
+        { cls:'atr', text:'READ   requires_client_authorization = true' },
+        { cls:'dec', text:'DECISION  Escalate to Client for further locate authorization' },
+        { cls:'wrn', text:'NOTE   Further locate attempts (hotel desk, airline manifest, on-ground) require Client auth and may incur costs' },
+      ]},
+    { title: 'Identify Escalation Contacts',
+      desc: 'Agent queries contact roles for Level 3 escalation. Reads each role\'s conditions.',
+      highlight: ['sev3','cr_primary','cr_security','cr_hr'],
+      edges: ['e20','e21'],
+      log: [
+        { cls:'trv', text:'TRAVERSE  severity_level_3 ──ESCALATED_TO──▶ [contacts]' },
+        { cls:'atr', text:'READ  Primary Program Owner → position=Primary, all incidents ✓' },
+        { cls:'atr', text:'READ  Corporate Security → condition="Security-related" — SKIP' },
+        { cls:'atr', text:'READ  HR Duty → condition="Employee welfare/injury" — APPLICABLE ✓' },
+        { cls:'dec', text:'DECISION  Notify Primary + HR with traveler name, itinerary, last known location, outreach log' },
+      ]},
+    { title: 'Client Authorization for Locate',
+      desc: 'Client authorizes on-ground locate via Specialist Provider. Costs are pass-through.',
+      highlight: ['org_client','svc_response'],
+      edges: ['e60'],
+      log: [
+        { cls:'qry', text:'REQUEST  Client authorization for on-ground locate' },
+        { cls:'dec', text:'AUTHORIZED  Client approves Specialist Provider engagement' },
+        { cls:'dec', text:'ACTION  Engage Specialist Provider for hotel check, local contact' },
+        { cls:'dec', text:'COMPLETE  Locate efforts underway; status updates every 2 hours per SLO' },
+      ]},
+  ]
+},
+{
+  id: 'offchannel',
+  name: '⚠️ Off-Channel Booking — Coverage Gap',
+  steps: [
+    { title: 'Level 4 Crisis — Terrorist Attack',
+      desc: 'Critical incident in London. Agent identifies impacted travelers.',
+      highlight: ['incident','sev4'],
+      edges: [],
+      log: [
+        { cls:'qry', text:'ALERT  Level 4 Crisis — terrorist attack in London' },
+        { cls:'atr', text:'READ   sev4.alert_time_target = "30 minutes"' },
+        { cls:'atr', text:'READ   sev4.crisis_bridge_required = true' },
+        { cls:'dec', text:'DECISION  Immediate outreach + Crisis Bridge activation' },
+      ]},
+    { title: 'Check Traveler Booking Channel',
+      desc: 'Agent checks whether the traveler\'s booking has an ENABLES_COVERAGE path to duty of care services.',
+      highlight: ['ch_offchannel','traveler'],
+      edges: [],
+      log: [
+        { cls:'qry', text:'QUERY  traveler.booking_channel → Off-Channel' },
+        { cls:'trv', text:'TRAVERSE  ch_offchannel ──ENABLES_COVERAGE──▶ ???' },
+        { cls:'wrn', text:'RESULT  ⚠ NO ENABLES_COVERAGE edges exist from Off-Channel' },
+        { cls:'atr', text:'READ   ch_offchannel.enables_visibility = false' },
+      ]},
+    { title: 'Coverage Gap Identified',
+      desc: 'No ENABLES_COVERAGE path exists. Agent cannot provide welfare checks, alerts, or disruption assistance.',
+      highlight: ['ch_offchannel','svc_welfare','svc_alerts','svc_disrupt'],
+      edges: [],
+      log: [
+        { cls:'wrn', text:'GAP  Welfare Checks → BLOCKED (no itinerary visibility)' },
+        { cls:'wrn', text:'GAP  Alerts → BLOCKED (no contact data from booking)' },
+        { cls:'wrn', text:'GAP  Disruption Assistance → BLOCKED (no booking to modify)' },
+        { cls:'dec', text:'ACTION  Flag coverage gap to Client in incident report' },
+        { cls:'dec', text:'ACTION  Recommend Client deploy itinerary capture tools' },
+      ]},
+    { title: 'Contrast: Approved Channel Path',
+      desc: 'For comparison — the Approved Channel has full ENABLES_COVERAGE paths to all services.',
+      highlight: ['ch_approved','svc_welfare','svc_alerts','svc_disrupt'],
+      edges: ['e40','e41','e42'],
+      log: [
+        { cls:'trv', text:'TRAVERSE  ch_approved ──ENABLES_COVERAGE──▶ Welfare Checks ✓' },
+        { cls:'trv', text:'TRAVERSE  ch_approved ──ENABLES_COVERAGE──▶ Alerts ✓' },
+        { cls:'trv', text:'TRAVERSE  ch_approved ──ENABLES_COVERAGE──▶ Disruption Assistance ✓' },
+        { cls:'dec', text:'INSIGHT  Booking channel is the single gate for duty of care coverage' },
+        { cls:'dec', text:'INSIGHT  ~30% of corporate bookings are off-channel → material risk' },
+      ]},
+  ]
+}
+];
+
+// ======================================================================
+//  BUILD CYTOSCAPE ELEMENTS
+// ======================================================================
+function buildElements() {
+  const cyNodes = nodes.map(n => {
+    const ts = TYPE_STYLE[n.type] || { color:'#888', shape:'ellipse' };
+    let bg = ts.color;
+    if (n.type === 'SeverityLevel' && n.attrs.level) bg = SEV_COLORS[n.attrs.level] || bg;
+    return {
+      data: { id:n.id, label:n.name, entityType:n.type, attrs:n.attrs, bg },
+      position: n.pos,
+    };
+  });
+  const cyEdges = edges.map(e => ({
+    data: { id:e.id, source:e.src, target:e.tgt, label:e.label, relType:e.type },
+  }));
+  return [...cyNodes, ...cyEdges];
+}
+
+// ======================================================================
+//  INIT CYTOSCAPE
+// ======================================================================
+const cy = cytoscape({
+  container: document.getElementById('cy'),
+  elements: buildElements(),
+  layout: { name:'preset' },
+  style: [
+    { selector:'node', style:{
+      'label':'data(label)', 'font-size':9, 'color':'#cdd6e4',
+      'text-valign':'bottom', 'text-margin-y':6,
+      'background-color':'data(bg)', 'border-width':2, 'border-color':'data(bg)',
+      'width':36, 'height':36, 'text-wrap':'wrap', 'text-max-width':'90px',
+      'font-family':'Inter, sans-serif',
+      'text-outline-width':2, 'text-outline-color':'#0c1220',
+      'transition-property':'border-color, border-width, opacity, background-color',
+      'transition-duration':'0.25s',
+    }},
+    { selector:'node[entityType="SeverityLevel"]',  style:{ shape:'diamond', width:42, height:42 }},
+    { selector:'node[entityType="Service"]',         style:{ shape:'round-rectangle', width:44, height:32 }},
+    { selector:'node[entityType="ContactRole"]',     style:{ shape:'round-tag', width:40, height:28, 'font-size':8 }},
+    { selector:'node[entityType="TravelerResponseStatus"]', style:{ shape:'round-hexagon', width:40, height:40 }},
+    { selector:'node[entityType="Incident"]',        style:{ shape:'star', width:46, height:46 }},
+    { selector:'node[entityType="Traveler"]',        style:{ shape:'ellipse', width:40, height:40 }},
+    { selector:'node[entityType="Organization"]',    style:{ shape:'round-rectangle', width:44, height:28, 'font-size':8 }},
+    { selector:'node[entityType="BookingChannel"]',  style:{ shape:'pentagon', width:40, height:40, 'font-size':8 }},
+    { selector:'edge', style:{
+      'width':1.5, 'line-color':'#1e3050', 'target-arrow-color':'#1e3050',
+      'target-arrow-shape':'triangle', 'arrow-scale':.8,
+      'curve-style':'bezier', 'label':'data(label)', 'font-size':7,
+      'color':'#3d506d', 'text-rotation':'autorotate', 'text-margin-y':-8,
+      'font-family':'Inter, sans-serif',
+      'text-outline-width':2, 'text-outline-color':'#0c1220',
+      'transition-property':'line-color, target-arrow-color, width, opacity',
+      'transition-duration':'0.25s',
+    }},
+    // Highlight classes
+    { selector:'.hl-node', style:{
+      'border-width':4, 'border-color':'#60a5fa',
+      'shadow-blur':20, 'shadow-color':'rgba(59,130,246,.5)',
+      'shadow-offset-x':0, 'shadow-offset-y':0, 'shadow-opacity':1,
+      'z-index':999,
+    }},
+    { selector:'.hl-edge', style:{
+      'line-color':'#60a5fa', 'target-arrow-color':'#60a5fa',
+      'width':3, 'z-index':999, 'color':'#93c5fd',
+    }},
+    { selector:'.dimmed', style:{ 'opacity':.15 }},
+    { selector:'.hl-warn', style:{
+      'border-width':4, 'border-color':'#ef4444',
+      'shadow-blur':20, 'shadow-color':'rgba(239,68,68,.5)',
+      'shadow-offset-x':0, 'shadow-offset-y':0, 'shadow-opacity':1,
+    }},
+  ],
+  userZoomingEnabled: true, userPanningEnabled: true,
+  minZoom: .4, maxZoom: 2.5,
+});
+cy.fit(undefined, 50);
+
+// ======================================================================
+//  LEGEND
+// ======================================================================
+(function buildLegend(){
+  const el = document.getElementById('legend');
+  Object.entries(TYPE_STYLE).forEach(([type, s]) => {
+    el.innerHTML += `<div class="item"><div class="dot" style="background:${s.color}"></div>${s.label}</div>`;
+  });
+})();
+
+// ======================================================================
+//  INSPECTOR
+// ======================================================================
+const inspEl = document.getElementById('inspector');
+
+function showInspector(nodeId) {
+  const n = nodes.find(x => x.id === nodeId);
+  if (!n) return;
+  const ts = TYPE_STYLE[n.type] || {};
+  let rows = '';
+  if (n.attrs) {
+    Object.entries(n.attrs).forEach(([k,v]) => {
+      const display = typeof v === 'boolean' ? (v ? '✅ true' : '❌ false') :
+                      Array.isArray(v) ? v.join(', ') : v;
+      rows += `<tr><td>${k.replace(/_/g,' ')}</td><td>${display}</td></tr>`;
+    });
+  }
+  inspEl.innerHTML = `
+    <h2>Entity Inspector</h2>
+    <div class="ename">${n.name}</div>
+    <div class="etype">${n.type}</div>
+    ${rows ? `<table>${rows}</table>` : '<div class="edesc">No typed attributes</div>'}
+  `;
+}
+
+cy.on('tap','node', evt => showInspector(evt.target.id()));
+
+// ======================================================================
+//  SCENARIO ENGINE
+// ======================================================================
+let currentScenario = null;
+let currentStep = -1;
+let autoTimer = null;
+
+const selEl   = document.getElementById('scenario-select');
+const ctrEl   = document.getElementById('step-counter');
+const titEl   = document.getElementById('step-title');
+const descEl  = document.getElementById('step-desc');
+const logEl   = document.getElementById('agent-log');
+const btnPrev = document.getElementById('btn-prev');
+const btnNext = document.getElementById('btn-next');
+const btnAuto = document.getElementById('btn-auto');
+
+// Populate dropdown
+scenarios.forEach(s => {
+  const opt = document.createElement('option');
+  opt.value = s.id; opt.textContent = s.name;
+  selEl.appendChild(opt);
+});
+
+selEl.addEventListener('change', () => {
+  clearInterval(autoTimer);
+  const s = scenarios.find(x => x.id === selEl.value);
+  if (!s) { resetScenario(); return; }
+  currentScenario = s;
+  currentStep = -1;
+  logEl.innerHTML = '';
+  goStep(0);
+});
+
+function resetScenario() {
+  currentScenario = null; currentStep = -1;
+  ctrEl.textContent = ''; titEl.textContent = ''; descEl.textContent = '';
+  logEl.innerHTML = '';
+  btnPrev.disabled = btnNext.disabled = btnAuto.disabled = true;
+  clearHighlights();
+}
+
+function clearHighlights() {
+  cy.elements().removeClass('hl-node hl-edge hl-warn dimmed');
+}
+
+function goStep(idx) {
+  if (!currentScenario) return;
+  const steps = currentScenario.steps;
+  if (idx < 0 || idx >= steps.length) return;
+  currentStep = idx;
+  const step = steps[idx];
+
+  // Update text
+  ctrEl.textContent = `Step ${idx+1} / ${steps.length}`;
+  titEl.textContent = step.title;
+  descEl.textContent = step.desc;
+
+  // Buttons
+  btnPrev.disabled = idx === 0;
+  btnNext.disabled = idx === steps.length - 1;
+  btnAuto.disabled = false;
+
+  // Highlight graph
+  clearHighlights();
+  cy.elements().addClass('dimmed');
+
+  (step.highlight || []).forEach(nid => {
+    const n = cy.getElementById(nid);
+    n.removeClass('dimmed').addClass('hl-node');
+  });
+  (step.edges || []).forEach(eid => {
+    const e = cy.getElementById(eid);
+    e.removeClass('dimmed').addClass('hl-edge');
+    e.source().removeClass('dimmed');
+    e.target().removeClass('dimmed');
+  });
+
+  // Special: if scenario is offchannel step 2-3, use warn highlight on off-channel
+  if (currentScenario.id === 'offchannel' && (idx === 1 || idx === 2)) {
+    const oc = cy.getElementById('ch_offchannel');
+    oc.removeClass('hl-node').addClass('hl-warn');
+  }
+
+  // Focus node in inspector
+  if (step.focus) showInspector(step.focus);
+
+  // Append log lines
+  if (step.log) {
+    step.log.forEach((line, i) => {
+      setTimeout(() => {
+        const div = document.createElement('div');
+        div.className = `log-line ${line.cls}`;
+        div.textContent = line.text;
+        logEl.appendChild(div);
+        logEl.scrollTop = logEl.scrollHeight;
+      }, i * 120);
+    });
+  }
+}
+
+btnPrev.addEventListener('click', () => { clearInterval(autoTimer); goStep(currentStep - 1); });
+btnNext.addEventListener('click', () => { clearInterval(autoTimer); goStep(currentStep + 1); });
+btnAuto.addEventListener('click', () => {
+  if (autoTimer) { clearInterval(autoTimer); autoTimer = null; btnAuto.textContent = 'Auto ▶▶'; return; }
+  btnAuto.textContent = 'Pause ⏸';
+  autoTimer = setInterval(() => {
+    if (!currentScenario || currentStep >= currentScenario.steps.length - 1) {
+      clearInterval(autoTimer); autoTimer = null; btnAuto.textContent = 'Auto ▶▶'; return;
+    }
+    goStep(currentStep + 1);
+  }, 4000);
+});
+</script>
+</body>
+</html>
