@@ -13,21 +13,21 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import re
 import sys
 
 from anthropic import Anthropic
 from dotenv import load_dotenv
 
-from src.models import Relationship, SectionExtraction
+from src.models import Relationship, SectionExtraction, StageUsage
 from src.schemas import (
     BaseEntitySchema,
     generate_relationship_type_prompt_section,
     validate_relationship,
+    validate_relationship_with_flip,
 )
 
 load_dotenv()
-TEST_MODEL = os.environ.get("TEST_MODEL", "claude-haiku-4-5-20251001")
+_DEFAULT_MODEL = os.environ.get("_DEFAULT_MODEL", "claude-haiku-4-5-20251001")
 
 # ---------------------------------------------------------------------------
 # Debug mode
@@ -164,8 +164,7 @@ Each relationship object has these fields:
 
 HARD CONSTRAINT: source_section (in the relationship) MUST differ from target_section.
 
-OUTPUT FORMAT
-Produce ONLY the JSON object. No preamble, no markdown fences, no commentary.
+Produce the JSON object matching the schema above.
 </output_schema>
 
 <validation_checklist>
@@ -248,7 +247,7 @@ def build_cross_section_user_prompt(
         f"Extract all cross-section relationships across {len(section_extractions)} "
         f"sections ({total_entities} total entities). Every relationship must "
         f"connect entities from different sections and be grounded in the "
-        f"document text above. Produce only the JSON object."
+        f"document text above."
     )
 
     return "\n\n".join(parts)
@@ -262,18 +261,21 @@ def build_cross_section_user_prompt(
 def extract_cross_section_relationships(
     section_extractions: list[SectionExtraction],
     client: Anthropic | None = None,
-) -> tuple[list[Relationship], dict]:
+    model: str | None = None,
+) -> tuple[list[Relationship], dict, StageUsage]:
     """Extract cross-section relationships via a single LLM call.
 
     Args:
         section_extractions: Stage 2 outputs (entities + intra-section rels per section).
         client: Anthropic client.
+        model: LLM model ID. Defaults to env TEST_MODEL.
 
     Returns:
-        Tuple of (validated cross-section Relationships, log dict for result storage).
+        Tuple of (validated cross-section Relationships, log dict, StageUsage).
     """
     if client is None:
         client = Anthropic()
+    model = model or _DEFAULT_MODEL
 
     # Build entity lookup: id -> (type, section_id)
     entity_lookup: dict[str, tuple[str, str]] = {}
@@ -310,6 +312,8 @@ def extract_cross_section_relationships(
     }
 
     try:
+        from src.models import CrossSectionRelOutput
+
         # Use streaming to avoid 10-minute timeout on large prompts
         raw_text = ""
         thinking_text = ""
@@ -317,9 +321,10 @@ def extract_cross_section_relationships(
         output_tokens = 0
 
         with client.messages.stream(
-            model=TEST_MODEL,
+            model=model,
             max_tokens=32768,
             system=system_prompt,
+            output_format=CrossSectionRelOutput,
             thinking={
                 "type": "enabled",
                 "budget_tokens": 16384,
@@ -330,15 +335,12 @@ def extract_cross_section_relationships(
                 # Stream tokens live so you can watch the LLM work
                 print("\n[DEBUG] STREAMING RESPONSE")
                 print("=" * 60)
-                current_block = None
                 for event in stream:
                     if event.type == "content_block_start":
                         block = event.content_block
                         if block.type == "thinking":
-                            current_block = "thinking"
                             print("\n--- THINKING ---")
                         elif block.type == "text":
-                            current_block = "text"
                             print("\n--- TEXT ---")
                     elif event.type == "content_block_delta":
                         delta = event.delta
@@ -347,9 +349,7 @@ def extract_cross_section_relationships(
                         elif hasattr(delta, "text"):
                             print(delta.text, end="", flush=True)
                 print("\n" + "=" * 60)
-                response = stream.get_final_message()
-            else:
-                response = stream.get_final_message()
+            response = stream.get_final_message()
 
         for block in response.content:
             if block.type == "thinking":
@@ -376,9 +376,9 @@ def extract_cross_section_relationships(
             raw_text,
         )
 
-        # Parse JSON response
-        data = _parse_response(raw_text)
-        raw_rels = data.get("relationships", [])
+        # Parse from structured output
+        parsed: CrossSectionRelOutput = response.parsed_output
+        raw_rels = [r.model_dump() for r in parsed.relationships]
         log["raw_relationship_count"] = len(raw_rels)
 
         # Validate each relationship
@@ -415,21 +415,34 @@ def extract_cross_section_relationships(
                 })
                 continue
 
-            # Check 4: schema validation (type constraints)
-            warnings = validate_relationship(
+            # Check 4: schema validation (type constraints, with direction flip)
+            warnings, flipped = validate_relationship_with_flip(
                 rel_type, source_id, target_id, entity_type_lookup
             )
             if warnings:
                 rejected.append({"reason": "; ".join(warnings), **r})
                 continue
 
+            final_source = target_id if flipped else source_id
+            final_target = source_id if flipped else target_id
+
+            # Re-check cross-section constraint after potential flip
+            final_source_section = entity_lookup[final_source][1]
+            final_target_section = entity_lookup[final_target][1]
+            if final_source_section == final_target_section:
+                rejected.append({
+                    "reason": f"same section after direction flip ({final_source_section})",
+                    **r,
+                })
+                continue
+
             # Build source_sections from source_anchor
             anchor = r.get("source_anchor", {})
-            anchor_section = str(anchor.get("source_section", actual_source_section))
+            anchor_section = str(anchor.get("source_section", final_source_section))
 
             validated.append(Relationship(
-                source_id=source_id,
-                target_id=target_id,
+                source_id=final_source,
+                target_id=final_target,
                 type=rel_type,
                 description=description,
                 source_sections=[anchor_section],
@@ -445,34 +458,19 @@ def extract_cross_section_relationships(
             f"({len(rejected)} rejected)"
         )
 
-        return validated, log
+        usage = StageUsage(
+            stage="stage3a_cross_section",
+            model=model,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            api_calls=1,
+        )
+        return validated, log, usage
 
     except Exception as e:
         print(f"    WARNING: Cross-section extraction failed: {e}")
         log["error"] = str(e)
-        return [], log
-
-
-def _parse_response(raw: str) -> dict:
-    """Parse JSON from LLM response, stripping fences and analysis tags."""
-    cleaned = re.sub(
-        r"<extraction_analysis>[\s\S]*?</extraction_analysis>", "", raw
-    ).strip()
-
-    if cleaned.startswith("```"):
-        lines = cleaned.split("\n")
-        lines = lines[1:]
-        if lines and lines[-1].strip() == "```":
-            lines = lines[:-1]
-        cleaned = "\n".join(lines)
-
-    try:
-        return json.loads(cleaned)
-    except json.JSONDecodeError:
-        match = re.search(r"\{[\s\S]*\}", cleaned)
-        if match:
-            return json.loads(match.group())
-        raise
+        return [], log, StageUsage(stage="stage3a_cross_section", model=model)
 
 
 # ---------------------------------------------------------------------------
@@ -585,7 +583,8 @@ def main(argv: list[str] | None = None) -> None:
     section_extractions = _extractions_from_json(extractions_data, sections)
 
     client = Anthropic()
-    rels, log = extract_cross_section_relationships(section_extractions, client=client)
+    rels, log, usage = extract_cross_section_relationships(section_extractions, client=client)
+    print(f"  Tokens: {usage.input_tokens} in, {usage.output_tokens} out ({usage.api_calls} API call)")
 
     # Write relationships
     output_data = {

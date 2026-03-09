@@ -80,6 +80,20 @@ def save_run(
 
     # --- run_meta.json ---
     meta = ontology.extraction_metadata
+    # Build per-stage token usage breakdown
+    token_usage: dict = {}
+    for u in meta.stage_usages:
+        token_usage[u.stage] = {
+            "model": u.model,
+            "input": u.input_tokens,
+            "output": u.output_tokens,
+            "api_calls": u.api_calls,
+        }
+    token_usage["total"] = {
+        "input": meta.total_input_tokens,
+        "output": meta.total_output_tokens,
+        "api_calls": meta.total_api_calls,
+    }
     run_meta = {
         "run_id": run_id,
         "policy_file": policy_name,
@@ -94,9 +108,9 @@ def save_run(
         "total_output_tokens": meta.total_output_tokens,
         "final_entity_count": meta.final_entity_count,
         "final_relationship_count": meta.final_relationship_count,
-        "deduplication_merges": meta.deduplication_merges,
         "semantic_dedup_merges": meta.semantic_dedup_merges,
         "semantic_dedup_api_calls": meta.semantic_dedup_api_calls,
+        "token_usage": token_usage,
         "first_pass": {
             "sections_identified": len(first_pass_result.document_map.sections),
             "entities_pre_registered": len(first_pass_result.global_entity_pre_registration),

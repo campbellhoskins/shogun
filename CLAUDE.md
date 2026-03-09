@@ -38,7 +38,7 @@ uv run python -m src.extraction <chunks.json> --debug                           
 uv run python -m src.merge <extractions.json> <chunks.json> <source.md> -o <out>   # Stage 3
 
 # Agent & evaluation
-uv run python -m src.test_agent --graph <graph_id>                                  # Interactive agent REPL
+uv run python -m src.agent_repl --graph <graph_id>                                  # Interactive agent REPL
 uv run python -m src.eval --graph <graph_id> --qa data/*.qa.small.json              # Eval against Q&A set
 uv run python -m src.generate_qa data/231123_Duty_of_Care_Policy.pdf                # Generate Q&A test set
 uv run python -m src.validate data/231123_Duty_of_Care_Policy.pdf                   # Graph validation
@@ -153,6 +153,10 @@ LLM judge scores agent answers on 3 dimensions: accuracy (0-3), completeness (0-
 
 API key loaded from `.env` via `python-dotenv`. Model env vars: `TEST_MODEL`, `BEST_MODEL`, `LLM_CLI_MODEL`.
 
+## Cleanup Rules
+
+1. **Always delete screenshots after use.** When taking Playwright screenshots for debugging or verification, delete them (and the `screenshots/` directory) before finishing the task. Never commit screenshots to the repo.
+
 ## Critical Gotchas
 
 1. **Stage 1 is deterministic, not LLM-based.** If Stage 0's `beginning_text` is inaccurate, segmentation silently fails with wrong boundaries. No LLM fallback.
@@ -165,11 +169,9 @@ API key loaded from `.env` via `python-dotenv`. Model env vars: `TEST_MODEL`, `B
 8. **Anti-merge rules are strict.** Numbered/leveled entities (severity_level_1 through severity_level_4) and channel-specific entities never merge, even if names are similar.
 9. **JSON parsing has progressive fallback.** First pass and extraction both handle: raw parse → strip markdown fences → fix escape sequences → strip control characters.
 
-## PDF Parsers
+## PDF Parser
 
-**Parser 1 is active** (`src/pdf_parser.py`). Four-phase: extraction (PyMuPDF font metrics) → noise removal (headers/footers/page numbers/TOC dots) → font analysis (body size detection, heading level mapping) → markdown rendering (heading hierarchy, lists, definitions, paragraph joining).
-
-Parser 2 (`src/pdf_parser_2.py`) is a pymupdf4llm wrapper — better at tables/links, worse at heading detection/noise. Kept for comparison. Outputs go to `data/parser_1/` and `data/parser_2/` respectively.
+`src/pdf_parser.py` — custom heuristic parser using raw PyMuPDF font metrics. Four-phase: extraction (font size, bold, position per span) → noise removal (headers/footers/page numbers/TOC dots) → font analysis (body size detection, heading level mapping) → markdown rendering (heading hierarchy, lists, definitions, paragraph joining). Parsed markdown goes to `data/parser_1/`.
 
 ## Result Storage
 

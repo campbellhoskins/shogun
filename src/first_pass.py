@@ -18,16 +18,15 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import re
 import sys
 
 from anthropic import Anthropic
 from dotenv import load_dotenv
 
 load_dotenv()
-TEST_MODEL = os.environ.get("TEST_MODEL", "claude-haiku-4-5-20251001")
+_DEFAULT_MODEL = os.environ.get("_DEFAULT_MODEL", "claude-haiku-4-5-20251001")
 
-from src.models import FirstPassResult
+from src.models import FirstPassResult, StageUsage
 from src.schemas import VALID_ENTITY_TYPES
 
 # Module-level debug flag — set via CLI --debug or programmatically
@@ -236,8 +235,7 @@ Read the full document from beginning to end, noting the structure, the sections
 key entities mentioned throughout, and the ways in which different sections reference, \
 modify, or depend upon one another.
 
-Once you have read the full document, produce the outputs in valid JSON \
-format. Do not produce any output outside of the JSON structure.
+Once you have read the full document, produce the outputs in valid JSON format.
 
 <document_text>
 {document_text}
@@ -245,13 +243,10 @@ format. Do not produce any output outside of the JSON structure.
 
 <final_instructions>
 1. Read the entire document before writing a single character of output.
-2. Produce only the JSON object. No preamble, no explanation, no markdown outside of \
-the JSON code block.
-3. Ensure all section_ids referenced in global_entity_pre_registration \
+2. Ensure all section_ids referenced in global_entity_pre_registration \
 (mentioned_in_sections) exactly match section_ids defined in the document_map.
-4. The output must be valid, parseable JSON. Use null for any field where the value \
-is genuinely not present in the document. Do not use undefined or omit fields.
-5. Preserve verbatim accuracy in beginning_text fields. These will be used for exact \
+3. Use null for any field where the value is genuinely not present in the document.
+4. Preserve verbatim accuracy in beginning_text fields. These will be used for exact \
 string matching against the source document.\
 </final_instructions>
 """
@@ -262,89 +257,11 @@ def _build_entity_types_list() -> str:
     return "\n".join(f'- "{t}"' for t in sorted(VALID_ENTITY_TYPES))
 
 
-def _extract_text_from_response(response) -> str:
-    """Extract the text content from a thinking-enabled API response."""
-    for block in response.content:
-        if block.type == "text":
-            return block.text
-    return ""
-
-
-def _parse_json_response(raw: str) -> dict:
-    """Parse JSON from the LLM response, handling markdown fences."""
-    cleaned = raw.strip()
-
-    # Strip markdown code fences
-    if cleaned.startswith("```"):
-        lines = cleaned.split("\n")
-        lines = lines[1:]  # remove opening fence line
-        if lines and lines[-1].strip() == "```":
-            lines = lines[:-1]  # remove closing fence line
-        cleaned = "\n".join(lines)
-
-    def _try_parse(text: str) -> dict:
-        """Try to parse JSON, applying progressive fixes for common LLM errors."""
-        errors: list[str] = []
-
-        # Attempt 1: raw parse
-        try:
-            return json.loads(text)
-        except json.JSONDecodeError as e:
-            errors.append(f"raw: {e}")
-
-        # Attempt 2: fix invalid \escape sequences (e.g., \S, \s, \d)
-        fixed = re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', text)
-        try:
-            return json.loads(fixed)
-        except json.JSONDecodeError as e:
-            errors.append(f"escape-fix: {e}")
-
-        # Attempt 3: fix unescaped control characters inside JSON strings
-        # (LLM sometimes emits literal tabs/newlines inside string values)
-        def _fix_control_chars(s: str) -> str:
-            result = []
-            in_string = False
-            escape_next = False
-            for ch in s:
-                if escape_next:
-                    result.append(ch)
-                    escape_next = False
-                    continue
-                if ch == '\\' and in_string:
-                    result.append(ch)
-                    escape_next = True
-                    continue
-                if ch == '"' and not escape_next:
-                    in_string = not in_string
-                if in_string and ch == '\n':
-                    result.append('\\n')
-                    continue
-                if in_string and ch == '\t':
-                    result.append('\\t')
-                    continue
-                result.append(ch)
-            return ''.join(result)
-
-        try:
-            return json.loads(_fix_control_chars(fixed))
-        except json.JSONDecodeError as e:
-            errors.append(f"control-char-fix: {e}")
-            raise json.JSONDecodeError(
-                f"All parse attempts failed: {'; '.join(errors)}", text, 0
-            )
-
-    try:
-        return _try_parse(cleaned)
-    except json.JSONDecodeError:
-        match = re.search(r"\{[\s\S]*\}", cleaned)
-        if match:
-            return _try_parse(match.group())
-        raise
-
-
 def run_first_pass(
-    document_text: str, client: Anthropic | None = None
-) -> FirstPassResult:
+    document_text: str,
+    client: Anthropic | None = None,
+    model: str | None = None,
+) -> tuple[FirstPassResult, StageUsage]:
     """Run the first pass document analysis.
 
     Analyzes the full document in a single LLM call to produce a document map,
@@ -355,11 +272,11 @@ def run_first_pass(
         client: Anthropic client. Creates one if not provided.
 
     Returns:
-        FirstPassResult with document_map, global_entity_pre_registration,
-        and cross_section_dependencies.
+        Tuple of (FirstPassResult, StageUsage with token counts).
     """
     if client is None:
         client = Anthropic()
+    model = model or _DEFAULT_MODEL
 
     entity_types_list = _build_entity_types_list()
     user_prompt = FIRST_PASS_USER_PROMPT.format(
@@ -377,7 +294,7 @@ def run_first_pass(
     )
     _dbg(
         "API CALL",
-        f"model: {TEST_MODEL}\n"
+        f"model: {model}\n"
         f"max_tokens: 49152 (thinking: {_THINKING_CONFIG['budget_tokens']})\n"
         f"user_prompt length: {len(user_prompt)} chars",
     )
@@ -386,9 +303,10 @@ def run_first_pass(
     collected_thinking = ""
     collected_text = ""
     with client.messages.stream(
-        model=TEST_MODEL,
+        model=model,
         max_tokens=49152,
         thinking=_THINKING_CONFIG,
+        output_format=FirstPassResult,
         system=FIRST_PASS_SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_prompt}],
     ) as stream:
@@ -406,19 +324,28 @@ def run_first_pass(
             elif event.type == "content_block_stop":
                 if collected_thinking:
                     _dbg(f"THINKING ({len(collected_thinking)} chars)", collected_thinking)
+        response = stream.get_final_message()
 
     raw = collected_text
     _dbg(f"LLM RESPONSE ({len(raw)} chars)", raw)
 
-    data = _parse_json_response(raw)
-    _dbg(
-        "PARSED RESULT",
-        f"document_map sections: {len(data.get('document_map', {}).get('sections', []))}\n"
-        f"pre-registered entities: {len(data.get('global_entity_pre_registration', []))}\n"
-        f"cross-section dependencies: {len(data.get('cross_section_dependencies', []))}",
+    usage = StageUsage(
+        stage="stage0_first_pass",
+        model=model,
+        input_tokens=response.usage.input_tokens,
+        output_tokens=response.usage.output_tokens,
+        api_calls=1,
     )
 
-    return FirstPassResult(**data)
+    result: FirstPassResult = response.parsed_output
+    _dbg(
+        "PARSED RESULT",
+        f"document_map sections: {len(result.document_map.sections)}\n"
+        f"pre-registered entities: {len(result.global_entity_pre_registration)}\n"
+        f"cross-section dependencies: {len(result.cross_section_dependencies)}",
+    )
+
+    return result, usage
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -447,13 +374,11 @@ def main(argv: list[str] | None = None) -> None:
 
     _DEBUG = args.debug
 
-    from dotenv import load_dotenv
-    load_dotenv()
-
     input_text = open(args.input, encoding="utf-8").read()
     print(f"Read {len(input_text)} chars from {args.input}")
 
-    result = run_first_pass(input_text)
+    result, usage = run_first_pass(input_text)
+    print(f"  Tokens: {usage.input_tokens} in, {usage.output_tokens} out ({usage.api_calls} API call)")
 
     data = result.model_dump()
     with open(args.output, "w", encoding="utf-8") as f:

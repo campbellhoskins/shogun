@@ -27,7 +27,7 @@ from dotenv import load_dotenv
 from anthropic import Anthropic
 
 from src.main import load_document
-from src.parser import parse_policy
+from src.pipeline import extract_ontology
 from src.graph import build_graph
 from src.models import OntologyGraph
 
@@ -153,7 +153,7 @@ def main() -> None:
     print("\nParsing policy into ontology graph...")
     client = Anthropic()
     t0 = time.time()
-    ontology = parse_policy(policy_text, client=client)
+    ontology = extract_ontology(policy_text, client=client)
     parse_time = time.time() - t0
 
     g = build_graph(ontology)

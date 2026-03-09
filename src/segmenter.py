@@ -319,7 +319,6 @@ def _section_id_to_number(section_id: str) -> str:
 
 def segment_document(
     text: str,
-    client: object | None = None,  # DEPRECATED: ignored, kept for call-site compat
     first_pass_result: FirstPassResult | None = None,
 ) -> list[DocumentSection]:
     """Segment a document into chunks using deterministic boundary detection.

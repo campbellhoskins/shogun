@@ -1,30 +1,36 @@
-"""Pipeline orchestrator: chains segmentation, extraction, and merge stages.
+"""Pipeline orchestrator: chains all extraction stages (0-4).
 
 This is the top-level entry point for the Source-Anchored Extraction pipeline.
-Phase 1 implements Stages 1-3. Later phases will add stages 4-7.
+Stages: First Pass → Segmentation → Extraction → Cross-Section → Merge → Relationships.
 """
 
 from __future__ import annotations
 
+import os
 import time
 
 from anthropic import Anthropic
+from dotenv import load_dotenv
 
 from src.cross_section import extract_cross_section_relationships
 from src.extraction import extract_all_sections
 from src.first_pass import run_first_pass
 from src.merge import merge_extractions
-from src.models import OntologyGraph
+from src.models import OntologyGraph, StageUsage
 from src.relationships import extract_relationships
 from src.results import save_run
 from src.schemas import validate_relationship
 from src.segmenter import segment_document
+
+load_dotenv()
+_DEFAULT_MODEL = os.environ.get("TEST_MODEL", "claude-haiku-4-5-20251001")
 
 
 def extract_ontology(
     document_text: str,
     client: Anthropic | None = None,
     policy_name: str = "unknown",
+    model: str | None = None,
 ) -> OntologyGraph:
     """Full Source-Anchored Extraction pipeline.
 
@@ -45,14 +51,20 @@ def extract_ontology(
     """
     if client is None:
         client = Anthropic()
+    model = model or _DEFAULT_MODEL
 
     pipeline_start = time.time()
     stage_timings: dict[str, float] = {}
 
+    all_usages: list[StageUsage] = []
+
+    print(f"Using model: {model}")
+
     # --- Stage 0: First Pass ---
     print("Stage 0: First pass document analysis...")
     stage_start = time.time()
-    first_pass_result = run_first_pass(document_text, client=client)
+    first_pass_result, stage0_usage = run_first_pass(document_text, client=client, model=model)
+    all_usages.append(stage0_usage)
     stage_timings["first_pass"] = round(time.time() - stage_start, 1)
     fp_map = first_pass_result.document_map
     print(
@@ -66,7 +78,7 @@ def extract_ontology(
     print("\nStage 1: Chunking document (deterministic)...")
     stage_start = time.time()
     sections = segment_document(
-        document_text, client=client, first_pass_result=first_pass_result
+        document_text, first_pass_result=first_pass_result
     )
     stage_timings["segmentation"] = round(time.time() - stage_start, 1)
     print(f"  Found {len(sections)} chunks ({stage_timings['segmentation']}s)")
@@ -80,9 +92,10 @@ def extract_ontology(
     # --- Stage 2: Per-Section Extraction ---
     print("\nStage 2: Extracting entities per section...")
     stage_start = time.time()
-    section_extractions = extract_all_sections(
-        sections, client=client, first_pass_result=first_pass_result
+    section_extractions, stage2_usage = extract_all_sections(
+        sections, client=client, first_pass_result=first_pass_result, model=model
     )
+    all_usages.append(stage2_usage)
     stage_timings["extraction"] = round(time.time() - stage_start, 1)
 
     total_entities = sum(len(se.entities) for se in section_extractions)
@@ -100,9 +113,10 @@ def extract_ontology(
     # --- Stage 3a: Cross-Section Relationship Extraction ---
     print("\nStage 3a: Extracting cross-section relationships...")
     stage_start = time.time()
-    cross_section_rels, cross_section_log = extract_cross_section_relationships(
-        section_extractions, client=client
+    cross_section_rels, cross_section_log, stage3a_usage = extract_cross_section_relationships(
+        section_extractions, client=client, model=model
     )
+    all_usages.append(stage3a_usage)
     stage_timings["cross_section"] = round(time.time() - stage_start, 1)
     print(
         f"  {len(cross_section_rels)} cross-section relationships "
@@ -112,10 +126,11 @@ def extract_ontology(
     # --- Stage 3b: Merge + LLM Deduplication ---
     print("\nStage 3b: Merging and deduplicating (LLM-based)...")
     stage_start = time.time()
-    ontology, semantic_dedup_log = merge_extractions(
+    ontology, semantic_dedup_log, stage3b_usage = merge_extractions(
         section_extractions, document_text, sections, client=client,
-        cross_section_relationships=cross_section_rels,
+        cross_section_relationships=cross_section_rels, model=model,
     )
+    all_usages.append(stage3b_usage)
     stage_timings["merge"] = round(time.time() - stage_start, 1)
 
     meta = ontology.extraction_metadata
@@ -129,13 +144,15 @@ def extract_ontology(
     # --- Stage 4: Full-document relationship extraction ---
     print("\nStage 4: Extracting relationships (full document)...")
     stage_start = time.time()
-    stage4_rels, stage4_invalid, stage4_log = extract_relationships(
+    stage4_rels, stage4_invalid, stage4_log, stage4_usage = extract_relationships(
         entities=ontology.entities,
         sections=sections,
         cross_section_dependencies=first_pass_result.cross_section_dependencies,
         existing_relationships=ontology.relationships,
         client=client,
+        model=model,
     )
+    all_usages.append(stage4_usage)
     stage_timings["relationships"] = round(time.time() - stage_start, 1)
 
     # Combine Stage 4 relationships with existing ones
@@ -158,7 +175,12 @@ def extract_ontology(
     ontology.extraction_metadata.stage4_dedup_count = stage4_dedup
     ontology.extraction_metadata.stage4_api_calls = 1
     ontology.extraction_metadata.final_relationship_count = len(ontology.relationships)
-    ontology.extraction_metadata.total_api_calls += 1
+
+    # Aggregate token usage from all stages
+    ontology.extraction_metadata.stage_usages = all_usages
+    ontology.extraction_metadata.total_input_tokens = sum(u.input_tokens for u in all_usages)
+    ontology.extraction_metadata.total_output_tokens = sum(u.output_tokens for u in all_usages)
+    ontology.extraction_metadata.total_api_calls = sum(u.api_calls for u in all_usages)
 
     print(
         f"  {len(stage4_rels)} new relationships "
@@ -198,7 +220,13 @@ def extract_ontology(
             print(f"    ... and {len(rel_warnings) - 10} more")
 
     pipeline_elapsed = time.time() - pipeline_start
+    total_in = ontology.extraction_metadata.total_input_tokens
+    total_out = ontology.extraction_metadata.total_output_tokens
+    total_calls = ontology.extraction_metadata.total_api_calls
     print(f"\nPipeline complete in {pipeline_elapsed:.1f}s")
+    print(f"  Token usage: {total_in:,} in + {total_out:,} out = {total_in + total_out:,} total ({total_calls} API calls)")
+    for u in all_usages:
+        print(f"    {u.stage}: {u.input_tokens:,} in, {u.output_tokens:,} out ({u.api_calls} calls)")
 
     # --- Save results ---
     save_run(

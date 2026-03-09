@@ -4,11 +4,11 @@ Shows every tool call, its input, and the result — so you can see exactly
 how the agent traverses the graph to reach its answer.
 
 Usage:
-    uv run python -m src.test_agent --graph <graph_id>
+    uv run python -m src.agent_repl --graph <graph_id>
 
 Example:
-    uv run python -m src.test_agent --graph 1-1
-    uv run python -m src.test_agent --graph graph-1-1
+    uv run python -m src.agent_repl --graph 1-1
+    uv run python -m src.agent_repl --graph graph-1-1
 """
 from __future__ import annotations
 
@@ -118,11 +118,9 @@ def ask_verbose(question: str, g: nx.DiGraph, client: Anthropic, max_turns: int 
 
 
 def main() -> None:
-    load_dotenv()
-
     if "--graph" not in sys.argv:
         # Show available graphs and usage
-        print("Usage: uv run python -m src.test_agent --graph <graph_id>")
+        print("Usage: uv run python -m src.agent_repl --graph <graph_id>")
         print("\nAvailable graphs:")
         graphs = list_graphs()
         if not graphs:
