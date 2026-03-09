@@ -1,0 +1,42 @@
+[
+  {
+    "section_id": "SEC-00",
+    "header": "[Preamble]",
+    "section_number": "0",
+    "text": "# EXHIBIT D — DUTY OF CARE & TRAVEL RISK MANAGEMENT SERVICES\n\nThis Exhibit is incorporated into the Travel Services Agreement (the \"**Agreement**\") between \\_\\_\\_\\_\\_\\_\\_\\_ (\"**Client**\") and **Direct Travel, Inc.** (\"**Direct Travel**\" or \"**TMC**\").\n\n---\n\n## 1. PURPOSE AND LEGAL CONTEXT\n",
+    "char_count": 290,
+    "source_offset": 0,
+    "section_purpose": "",
+    "section_summary": ""
+  },
+  {
+    "section_id": "SEC-01",
+    "header": "PURPOSE AND LEGAL CONTEXT",
+    "section_number": "1",
+    "text": "### 1.1 Purpose\n\nThis Exhibit defines (a) Duty of Care services Direct Travel will provide to support Client's travel risk management (\"**TRM**\") program, (b) Severity Level classifications and service level objectives, (c) roles and responsibilities, (d) data handling and privacy requirements, and (e) limitations applicable to such services.\n\n### 1.2 Regulatory Background\n\nServices herein assist Client in meeting employer obligations under applicable duty of care frameworks, including:\n\n- **United States** — OSHA General Duty Clause, Section 5(a)(1) of the Occupational Safety and Health Act of 1970;\n- **United Kingdom** — Health and Safety at Work Act 1974; Management of Health and Safety at Work Regulations 1999; Corporate Manslaughter and Corporate Homicide Act 2007;\n- **European Union** — Framework Directive 89/391/EEC;\n- **International Standard** — ISO 31030:2021 (Travel Risk Management), derived from ISO 31000.\n\nClient retains **primary responsibility** for its duty of care obligations as an employer. Direct Travel provides services to enable and support Client's TRM program and does not assume the employer's duty of care.\n\n### 1.3 Standard of Care\n\nDirect Travel will perform services using **commercially reasonable efforts** consistent with generally accepted practices in the travel management industry. The standard is one of reasonableness, not perfection.\n\n---\n\n",
+    "char_count": 1394,
+    "source_offset": 291,
+    "section_purpose": "Establish duty of care framework and legal standard",
+    "section_summary": "Defines the purpose of the Exhibit, the regulatory frameworks supporting employer duty of care obligations under OSHA, UK HSE, EU, and ISO standards, and Direct Travel's standard of performance using commercially reasonable efforts."
+  },
+  {
+    "section_id": "SEC-02",
+    "header": "SEVERITY LEVELS AND SERVICE LEVEL OBJECTIVES",
+    "section_number": "2",
+    "text": "## 2. SEVERITY LEVELS AND SERVICE LEVEL OBJECTIVES\n\n### 2.1 Severity Level Definitions\n\n| Level | Classification | Description | Examples |\n|-------|---------------|-------------|----------|\n| **Level 1** | Advisory | Minor disruption; informational alert only | Localized weather warning, minor transport delay |\n| **Level 2** | Monitor | Moderate disruption; targeted alerts; optional welfare check | Regional transport strike, elevated security alert |\n| **Level 3** | Action Required | Significant disruption; proactive outreach required | Major weather event in Traveler area, airport closure, disease outbreak |\n| **Level 4** | Crisis | Immediate life safety risk; urgent outreach and crisis escalation | Terrorist attack, catastrophic natural disaster, pandemic border closures |\n\nSeverity determination is made by Direct Travel using commercially reasonable judgment informed by the Risk Intelligence Platform (currently Crisis24 Horizon).\n\n### 2.2 Service Level Objectives\n\n| Severity | Traveler Alert / Outreach | Client Escalation | Status Updates |\n|----------|--------------------------|-------------------|----------------|\n| **Level 1** | Advisory within 4 hours | Not required unless configured | As conditions change |\n| **Level 2** | Targeted alert within 2 hours | Primary contact within 4 hours | Every 4 hours |\n| **Level 3** | Outreach within 60 minutes | Escalation roster within 60 minutes | Every 2 hours |\n| **Level 4** | Outreach within 30 minutes | Roster within 30 min; Crisis Bridge within 60 min | Every 30 min (acute); hourly (sustained) |\n\n### 2.3 SLO Exceptions\n\nSLOs may be impacted by: telecommunications outages; government-imposed communication restrictions; supplier system outages (GDS, airline, hotel); incomplete Traveler profile data; Off-Channel Bookings without itinerary data; simultaneous multi-region incidents; or force majeure events.\n\n### 2.4 Traveler Outreach Standards\n\nWelfare checks follow default priority: (1) SMS, (2) email, (3) push notification, (4) voice call. Travelers confirm status using:\n\n| Response | Meaning | TMC Action |\n|----------|---------|------------|\n| **SAFE** | Not in danger; no assistance needed | Log status; no further action |\n| **NEED ASSISTANCE** | Requires support | Attempt live contact within 15 min |\n| **NOT IN AREA** | Not near affected area | Remove from active outreach |\n| **No Response** | No reply within outreach window | Escalate to Client contacts |\n\n---\n\n## 3. TRAVELER DATA, PRIVACY, AND SECURITY\n\n",
+    "char_count": 2499,
+    "source_offset": 1685,
+    "section_purpose": "Define severity classifications and service level timing",
+    "section_summary": "Establishes four severity levels (Advisory through Crisis), maps severity to Service Level Objectives for traveler outreach and client escalation timing, defines factors affecting SLO achievement, and specifies traveler response options and corresponding TMC actions."
+  },
+  {
+    "section_id": "SEC-03",
+    "header": "TRAVELER DATA, PRIVACY, AND SECURITY",
+    "section_number": "3",
+    "text": "### 3.1 Data Roles\n\nClient is the **data controller** for Traveler Data. Direct Travel acts as a **data processor**, processing Traveler Data solely on Client's documented instructions. Where required, a Data Processing Agreement (\"**DPA**\") is incorporated by reference.\n\n### 3.2 Lawful Basis\n\nProcessing is supported by Client's **legitimate interest** in protecting health and safety of travelers under Article 6(1)(f) GDPR and equivalent laws. Client is responsible for any required Legitimate Interest Assessment or Data Protection Impact Assessment.\n\n### 3.3 Minimum Required Traveler Profile Data\n\n| Data Element | Purpose | Impact if Missing |\n|-------------|---------|-------------------|\n| **Full legal name** | Traveler identification, supplier matching | Cannot confirm identity |\n| **Mobile phone number** (SMS-capable) | Primary welfare check channel | SMS outreach unavailable |\n| **Email address** | Secondary communication channel | Email alerts unavailable |\n| **Emergency contact** (name, relationship, phone) | Next-of-kin notification | Client must provide during incident |\n| **Passport details** (international travel) | Documentation verification | Cannot verify travel documents |\n\nService effectiveness is materially reduced where profile data is incomplete.\n\n### 3.4 Data Sharing During Incidents\n\nDirect Travel may share **minimum necessary** Traveler Data with: (a) Client's escalation contacts; (b) travel suppliers for rebooking; (c) Specialist Providers (security, medical, evacuation) authorized in the SOW; and (d) government authorities where required by law or to protect life safety.\n\n### 3.5 Location Data\n\nTraveler location derived from itinerary records (PNR-based) reflects **planned** location and does not constitute real-time GPS tracking. Continuous GPS tracking requires explicit SOW inclusion, a Data Protection Impact Assessment, and documented Client authorization.\n\n### 3.6 Cross-Border Transfers\n\nTransfers outside the EEA, UK, or other restricted jurisdictions are subject to appropriate safeguards (e.g., Standard Contractual Clauses, adequacy decisions) as specified in the DPA.",
+    "char_count": 2132,
+    "source_offset": 4184,
+    "section_purpose": "Establish data roles and compliance requirements",
+    "section_summary": "Defines Client as data controller and Direct Travel as data processor, specifies lawful basis for processing under GDPR, lists minimum required traveler profile data elements with impacts of missing data, defines permissible data sharing, and constrains location data collection and cross-border transfers."
+  }
+]

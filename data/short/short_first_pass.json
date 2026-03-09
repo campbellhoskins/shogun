@@ -1,0 +1,204 @@
+{
+  "document_map": {
+    "document_title": "EXHIBIT D — DUTY OF CARE & TRAVEL RISK MANAGEMENT SERVICES",
+    "issuing_organization": "Direct Travel, Inc.",
+    "effective_date": null,
+    "document_purpose_summary": "This Exhibit defines Direct Travel's Duty of Care and Travel Risk Management services provided to support the Client's TRM program, including Severity Level classifications, Service Level Objectives, roles and responsibilities, data handling requirements, and limitations on such services.",
+    "sections": [
+      {
+        "section_id": "SEC-01",
+        "section_name": "PURPOSE AND LEGAL CONTEXT",
+        "section_order": 1,
+        "section_purpose": "Establish duty of care framework and legal standard",
+        "section_summary": "Defines the purpose of the Exhibit, the regulatory frameworks supporting employer duty of care obligations under OSHA, UK HSE, EU, and ISO standards, and Direct Travel's standard of performance using commercially reasonable efforts.",
+        "beginning_text": "This Exhibit defines (a) Duty of Care services Direct Travel will provide to support Client's travel risk management (\"**TRM**\") program, (b) Severity Level classifications and service level objectives, (c) roles and responsibilities, (d) data handling and privacy requirements, and (e) limitations applicable to such services."
+      },
+      {
+        "section_id": "SEC-02",
+        "section_name": "SEVERITY LEVELS AND SERVICE LEVEL OBJECTIVES",
+        "section_order": 2,
+        "section_purpose": "Define severity classifications and service level timing",
+        "section_summary": "Establishes four severity levels (Advisory through Crisis), maps severity to Service Level Objectives for traveler outreach and client escalation timing, defines factors affecting SLO achievement, and specifies traveler response options and corresponding TMC actions.",
+        "beginning_text": "| Level | Classification | Description | Examples | **Level 1** | Advisory | Minor disruption; informational alert only | Localized weather warning, minor transport delay | **Level 2** | Monitor | Moderate disruption; targeted alerts; optional welfare check | Regional transport strike, elevated security alert | **Level 3** | Action Required | Significant disruption; proactive outreach required | Major weather event in Traveler area, airport closure, disease outbreak |"
+      },
+      {
+        "section_id": "SEC-03",
+        "section_name": "TRAVELER DATA, PRIVACY, AND SECURITY",
+        "section_order": 3,
+        "section_purpose": "Establish data roles and compliance requirements",
+        "section_summary": "Defines Client as data controller and Direct Travel as data processor, specifies lawful basis for processing under GDPR, lists minimum required traveler profile data elements with impacts of missing data, defines permissible data sharing, and constrains location data collection and cross-border transfers.",
+        "beginning_text": "Client is the **data controller** for Traveler Data. Direct Travel acts as a **data processor**, processing Traveler Data solely on Client's documented instructions. Where required, a Data Processing Agreement (\"**DPA**\") is incorporated by reference. Processing is supported by Client's **legitimate interest** in protecting health and safety of travelers under Article 6(1)(f) GDPR and equivalent laws."
+      }
+    ]
+  },
+  "global_entity_pre_registration": [
+    {
+      "entity_name": "direct_travel_inc",
+      "candidate_types": [
+        "ORGANIZATION",
+        "SERVICE_PROVIDER"
+      ],
+      "mentioned_in_sections": [
+        "SEC-01",
+        "SEC-02",
+        "SEC-03"
+      ],
+      "brief_description": "Direct Travel, Inc., also referred to as 'Direct Travel' or 'TMC' (Travel Management Company), named in the Agreement preamble as the service provider."
+    },
+    {
+      "entity_name": "client",
+      "candidate_types": [
+        "ORGANIZATION",
+        "EMPLOYER"
+      ],
+      "mentioned_in_sections": [
+        "SEC-01",
+        "SEC-02",
+        "SEC-03"
+      ],
+      "brief_description": "The employer party to the Agreement, referred to as 'Client'. Also designated as 'data controller' for Traveler Data in Section 3.1."
+    },
+    {
+      "entity_name": "traveler",
+      "candidate_types": [
+        "PERSON",
+        "DATA_SUBJECT"
+      ],
+      "mentioned_in_sections": [
+        "SEC-02",
+        "SEC-03"
+      ],
+      "brief_description": "Individual employees, contractors, or other persons referenced throughout the policy as the primary focus of welfare checks and risk management."
+    },
+    {
+      "entity_name": "traveler_data",
+      "candidate_types": [
+        "DATA_CATEGORY",
+        "INFORMATION_ASSET"
+      ],
+      "mentioned_in_sections": [
+        "SEC-02",
+        "SEC-03"
+      ],
+      "brief_description": "Collective term for personal and travel information about travelers, including profile data, itinerary data, location information, and emergency contact information."
+    },
+    {
+      "entity_name": "severity_level_1",
+      "candidate_types": [
+        "SEVERITY_CLASSIFICATION",
+        "INCIDENT_LEVEL"
+      ],
+      "mentioned_in_sections": [
+        "SEC-02"
+      ],
+      "brief_description": "Severity Level 1 classification, designated as 'Advisory' in the severity level definitions in Section 2.1, applied to minor disruptions."
+    },
+    {
+      "entity_name": "severity_level_2",
+      "candidate_types": [
+        "SEVERITY_CLASSIFICATION",
+        "INCIDENT_LEVEL"
+      ],
+      "mentioned_in_sections": [
+        "SEC-02"
+      ],
+      "brief_description": "Severity Level 2 classification, designated as 'Monitor' in the severity level definitions in Section 2.1, applied to moderate disruptions."
+    },
+    {
+      "entity_name": "severity_level_3",
+      "candidate_types": [
+        "SEVERITY_CLASSIFICATION",
+        "INCIDENT_LEVEL"
+      ],
+      "mentioned_in_sections": [
+        "SEC-02"
+      ],
+      "brief_description": "Severity Level 3 classification, designated as 'Action Required' in the severity level definitions in Section 2.1, applied to significant disruptions."
+    },
+    {
+      "entity_name": "severity_level_4",
+      "candidate_types": [
+        "SEVERITY_CLASSIFICATION",
+        "INCIDENT_LEVEL"
+      ],
+      "mentioned_in_sections": [
+        "SEC-02"
+      ],
+      "brief_description": "Severity Level 4 classification, designated as 'Crisis' in the severity level definitions in Section 2.1, applied to immediate life safety risks."
+    },
+    {
+      "entity_name": "outreach_channel_sms",
+      "candidate_types": [
+        "COMMUNICATION_CHANNEL",
+        "ALERT_MECHANISM"
+      ],
+      "mentioned_in_sections": [
+        "SEC-02",
+        "SEC-03"
+      ],
+      "brief_description": "SMS (text message) outreach channel, the default primary welfare check channel defined in Section 2.4, supported by mobile phone number data element in Section 3.3."
+    },
+    {
+      "entity_name": "outreach_channel_email",
+      "candidate_types": [
+        "COMMUNICATION_CHANNEL",
+        "ALERT_MECHANISM"
+      ],
+      "mentioned_in_sections": [
+        "SEC-02",
+        "SEC-03"
+      ],
+      "brief_description": "Email outreach channel, the default secondary welfare check channel defined in Section 2.4, supported by email address data element in Section 3.3."
+    },
+    {
+      "entity_name": "outreach_channel_push_notification",
+      "candidate_types": [
+        "COMMUNICATION_CHANNEL",
+        "ALERT_MECHANISM"
+      ],
+      "mentioned_in_sections": [
+        "SEC-02",
+        "SEC-03"
+      ],
+      "brief_description": "Push notification outreach channel, the default tertiary welfare check channel defined in Section 2.4."
+    },
+    {
+      "entity_name": "outreach_channel_voice_call",
+      "candidate_types": [
+        "COMMUNICATION_CHANNEL",
+        "ALERT_MECHANISM"
+      ],
+      "mentioned_in_sections": [
+        "SEC-02",
+        "SEC-03"
+      ],
+      "brief_description": "Voice call (telephone) outreach channel, the default fourth-priority welfare check channel defined in Section 2.4."
+    },
+    {
+      "entity_name": "travel_suppliers",
+      "candidate_types": [
+        "SUPPLIER",
+        "SERVICE_PROVIDER"
+      ],
+      "mentioned_in_sections": [
+        "SEC-02",
+        "SEC-03"
+      ],
+      "brief_description": "Third-party service providers such as airlines, hotels, and Global Distribution Systems (GDS), referenced in Section 2.3 as potential sources of system outages and in Section 3.4 as recipients of data for rebooking."
+    }
+  ],
+  "cross_section_dependencies": [
+    {
+      "primary_section_id": "SEC-02",
+      "dependent_section_id": "SEC-01",
+      "dependency_type": "REQUIRES_CONTEXT_FROM",
+      "dependency_description": "The severity level classifications and service level objectives in Section 2 are built upon the duty of care legal framework (OSHA, GDPR, ISO 31030) and standard of care ('commercially reasonable efforts') established in Section 1; without this context, the rationale for severity determinations and response timing cannot be understood."
+    },
+    {
+      "primary_section_id": "SEC-03",
+      "dependent_section_id": "SEC-02",
+      "dependency_type": "DEFINES_TERM_USED_BY",
+      "dependency_description": "Section 3 defines the minimum required Traveler Profile Data elements and outreach channels (SMS, email, push notification, voice call) that directly enable the outreach timing and channels specified in Section 2.2 and Section 2.4; Section 2.3 explicitly lists incomplete profile data as a factor affecting SLO achievement, establishing direct dependency."
+    }
+  ]
+}
