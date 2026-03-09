@@ -49,22 +49,22 @@ For each question:
 - Do not ask vague or opinion-based questions
 - Vary the difficulty: some should be straightforward lookups, others should require synthesizing information from multiple sections
 
-Return a JSON array of objects with this structure:
-[
-  {
-    "question": "The specific question",
-    "answer": "The correct answer based on the document, citing specific details",
-    "section": "Which section(s) of the document the answer comes from",
-    "difficulty": "easy | medium | hard"
-  }
-]
+Return a JSON object with key "qa_pairs" containing an array of objects with this structure:
+{
+  "qa_pairs": [
+    {
+      "question": "The specific question",
+      "answer": "The correct answer based on the document, citing specific details",
+      "section": "Which section(s) of the document the answer comes from",
+      "difficulty": "easy | medium | hard"
+    }
+  ]
+}
 
-Generate as many question-answer pairs as you can — aim for at least 100. Be exhaustive. Cover every section, every rule, every threshold, every role, every conditional. Return ONLY the JSON array."""
+Generate as many question-answer pairs as you can — aim for at least 100. Be exhaustive. Cover every section, every rule, every threshold, every role, every conditional."""
 
 
 def main() -> None:
-    load_dotenv()
-
     if len(sys.argv) < 2:
         print("Usage: uv run python -m src.generate_qa <path_to_document> [output_path]")
         sys.exit(1)
@@ -80,6 +80,8 @@ def main() -> None:
     print(f"  {len(text):,} characters")
 
     print("\nGenerating Q&A pairs (streaming)...")
+    from src.models import QAGenerationOutput
+
     client = Anthropic()
 
     raw = ""
@@ -87,6 +89,7 @@ def main() -> None:
         model=TEST_MODEL,
         max_tokens=16384,
         system=SYSTEM_PROMPT,
+        output_format=QAGenerationOutput,
         messages=[
             {
                 "role": "user",
@@ -100,14 +103,9 @@ def main() -> None:
             if len(raw) % 500 < len(text_chunk):
                 print(".", end="", flush=True)
     print()
-    if raw.startswith("```"):
-        lines = raw.split("\n")
-        lines = lines[1:]
-        if lines and lines[-1].strip() == "```":
-            lines = lines[:-1]
-        raw = "\n".join(lines)
 
-    qa_pairs = json.loads(raw)
+    data = json.loads(raw)
+    qa_pairs = data["qa_pairs"]
 
     output_path.write_text(json.dumps(qa_pairs, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"\nWrote {len(qa_pairs)} Q&A pairs to {output_path.name}")

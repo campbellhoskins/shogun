@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 # SourceAnchor lives in base_models to break circular import with schemas.py.
 # Re-exported here so existing `from src.models import SourceAnchor` still works.
@@ -89,6 +89,19 @@ class Relationship(BaseModel):
 from src.schemas import AnyEntity  # noqa: E402
 
 
+# --- Pipeline Telemetry ---
+
+
+class StageUsage(BaseModel):
+    """Token and API call usage for a single pipeline stage."""
+
+    stage: str = ""
+    model: str = ""
+    input_tokens: int = 0
+    output_tokens: int = 0
+    api_calls: int = 0
+
+
 # --- Extraction Pipeline ---
 
 
@@ -103,7 +116,6 @@ class ExtractionMetadata(BaseModel):
     total_output_tokens: int = 0
     final_entity_count: int = 0
     final_relationship_count: int = 0
-    deduplication_merges: int = 0
     exact_id_dedup_merges: int = 0
     semantic_dedup_merges: int = 0
     semantic_dedup_api_calls: int = 0
@@ -113,6 +125,7 @@ class ExtractionMetadata(BaseModel):
     stage4_invalid_count: int = 0
     stage4_dedup_count: int = 0
     stage4_api_calls: int = 0
+    stage_usages: list[StageUsage] = []
 
 
 class SectionExtraction(BaseModel):
@@ -124,6 +137,7 @@ class SectionExtraction(BaseModel):
 
 
 class OntologyGraph(BaseModel):
+    graph_title: str = ""
     entities: list[AnyEntity]
     relationships: list[Relationship]
     source_sections: list[DocumentSection] = []
@@ -140,3 +154,112 @@ class AgentResponse(BaseModel):
     answer: str
     referenced_entities: list[str] = []
     reasoning_path: str = ""
+
+
+# --- Structured Output Schemas ---
+# These models wrap LLM call outputs for Anthropic structured outputs.
+# Each defines the top-level JSON object the API will return.
+
+
+class ExtractedEntityItem(BaseModel):
+    """Lightweight entity container for raw LLM output.
+
+    Entity extraction uses messages.create() (not structured output) so the
+    LLM can produce typed attributes freely. extra="allow" lets Pydantic
+    accept any additional fields; validate_entity() maps them to the correct
+    typed subclass downstream.
+    """
+
+    model_config = ConfigDict(extra="allow")
+
+    id: str
+    type: str
+    name: str
+    description: str
+    source_anchor: SourceAnchor = Field(default_factory=SourceAnchor)
+
+
+class EntityExtractionOutput(BaseModel):
+    """Stage 2a entity extraction output."""
+
+    entities: list[ExtractedEntityItem]
+
+
+class RelationshipExtractionOutput(BaseModel):
+    """Stage 2b / Stage 4 relationship extraction output.
+
+    Uses plain str for type field — NOT an enum. Rationale: if the LLM
+    invents even one bad type (e.g. 'DEFINES_IN'), an enum constraint
+    causes Pydantic to reject the ENTIRE response (all relationships lost).
+    Post-processing via validate_relationship() rejects bad types
+    individually while keeping the valid ones.
+    """
+
+    relationships: list[Relationship]
+
+
+class MergeRemapping(BaseModel):
+    """Single entity ID remapping from semantic dedup."""
+
+    old_id: str
+    new_id: str
+    reason: str
+
+
+class SemanticDedupOutput(BaseModel):
+    """Stage 3 semantic deduplication output (wraps bare array)."""
+
+    remappings: list[MergeRemapping]
+
+
+class CrossSectionRelationshipItem(BaseModel):
+    """A relationship with cross-section metadata."""
+
+    source_id: str
+    target_id: str
+    source_section: str
+    target_section: str
+    type: str
+    description: str
+    source_anchor: SourceAnchor = Field(default_factory=SourceAnchor)
+
+
+class CrossSectionRelOutput(BaseModel):
+    """Stage 3a cross-section relationship output."""
+
+    relationships: list[CrossSectionRelationshipItem]
+
+
+class QAPair(BaseModel):
+    """Single Q&A pair."""
+
+    question: str
+    answer: str
+    section: str
+    difficulty: str
+
+
+class QAGenerationOutput(BaseModel):
+    """Q&A generation output (wraps bare array)."""
+
+    qa_pairs: list[QAPair]
+
+
+class JudgmentOutput(BaseModel):
+    """Eval judge scoring output."""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    accuracy: int
+    completeness: int
+    no_hallucination: int
+    total: int
+    pass_result: bool = Field(alias="pass")
+    explanation: str
+
+
+class LegacyExtractionOutput(BaseModel):
+    """Legacy single-pass extraction output."""
+
+    entities: list[ExtractedEntityItem]
+    relationships: list[Relationship]

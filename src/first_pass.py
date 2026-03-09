@@ -18,16 +18,15 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import re
 import sys
 
 from anthropic import Anthropic
 from dotenv import load_dotenv
 
 load_dotenv()
-TEST_MODEL = os.environ.get("TEST_MODEL", "claude-haiku-4-5-20251001")
+_DEFAULT_MODEL = os.environ.get("_DEFAULT_MODEL", "claude-haiku-4-5-20251001")
 
-from src.models import FirstPassResult
+from src.models import FirstPassResult, StageUsage
 from src.schemas import VALID_ENTITY_TYPES
 
 # Module-level debug flag — set via CLI --debug or programmatically
@@ -48,123 +47,120 @@ def _dbg(header: str, body: str = "") -> None:
         print(f"{'=' * 60}")
 
 FIRST_PASS_SYSTEM_PROMPT = """\
-You are an expert ontology knowledge graph extraction system specializing in corporate \
-travel policy documents. Your role is to perform a high-level structural analysis of a \
-travel policy document in preparation for a multi-stage ontology graph extraction pipeline.
+<system_role>
+You are an expert extraction system that analyzes corporate travel policy
+documents to build operational decision-support graphs. Your goal is NOT
+to model the document's legal structure — it is to identify everything a
+travel management company (TMC) agent would need to make correct, timely
+decisions when a traveler is affected by an incident abroad.
 
-You are operating at STAGE 1 of a 5-stage pipeline. Your output will be consumed by \
-downstream stages in the following ways:
+You are operating at STAGE 1 of a 5-stage pipeline. Your output will be
+consumed by downstream stages as follows:
 
-- The DOCUMENT MAP will be used by a chunking system to split the document into \
-section-level chunks for parallel entity extraction in Stage 2.
+- DOCUMENT MAP → used by a chunking system to split the document into
+  section-level chunks for parallel entity extraction in Stage 2.
 
-- The GLOBAL ENTITY PRE-REGISTRATION will be injected as context into every Stage 2 \
-section-level extraction call, ensuring that entities referenced across multiple \
-sections are consistently identified and named throughout the pipeline.
+- GLOBAL ENTITY PRE-REGISTRATION → injected into every Stage 2 call to
+  ensure consistent naming. Includes mandatory decomposition directives
+  that Stage 2 must follow.
 
-- The CROSS-SECTION DEPENDENCIES will be injected as additional context during Stage 2 \
-extraction calls for any section that has a declared dependency, ensuring that \
-relationship context is not lost when processing sections in isolation.
+- CROSS-SECTION DEPENDENCIES → injected into Stage 2 calls for sections
+  with declared dependencies, ensuring operational logic that spans
+  sections is not lost during isolated processing.
 
-You must be precise and consistent. Do not summarize loosely. Every output \
-field you produce will be consumed programmatically by downstream systems. Follow the \
-output schema exactly as specified.\
-"""
+You must be precise. Every output field will be consumed programmatically.
+Follow the output schema exactly.
+</system_role>
 
-FIRST_PASS_USER_PROMPT = """\
-Analyze the following travel policy document in its entirety before producing any output. \
-Read the full document from beginning to end, noting the structure, the sections, the \
-key entities mentioned throughout, and the ways in which different sections reference, \
-modify, or depend upon one another.
+<operational_framing>
+The graph you are helping to build will be used by TMC agents during live
+incidents. When an earthquake hits a city where travelers are located, an
+agent must rapidly determine:
 
-Once you have read the full document, produce the following outputs in valid JSON \
-format. Do not produce any output outside of the JSON structure.
+  - What severity level is this incident?
+  - What are my exact timing deadlines at this severity?
+  - Which travelers are potentially impacted?
+  - What outreach do I perform and in what order?
+  - What does each traveler response mean and what is my next action?
+  - Who on the client's side do I escalate to, and when?
+  - What actions require client authorization before I can proceed?
+  - What data do I need to have to act effectively?
 
----
+Every extraction decision you make should be evaluated against this
+question: "Does this help an agent make a correct decision faster?"
+</operational_framing>
 
-## DOCUMENT
-
-{document_text}
-
----
-
-## REQUIRED OUTPUT SCHEMA
-
+<required_outputs>
 Produce a single valid JSON object with exactly three top-level keys:
 1. "document_map"
 2. "global_entity_pre_registration"
 3. "cross_section_dependencies"
 
 The complete schema for each is defined below.
+</required_outputs>
 
----
+<output_schema id="1" name="document_map">
+Captures document structure for the chunking system. Each section is
+annotated with its operational significance to guide Stage 2 extraction
+priority.
 
-### OUTPUT 1: document_map
-
-The document map captures the identity of the document and a structured inventory of \
-every section it contains. This will be used by a downstream chunking system to split \
-the document into section-level chunks.
-
-```json
-{{
-  "document_map": {{
-    "document_title": "string — the official title of the document as it appears in the document",
-    "issuing_organization": "string — the name of the organization that issued this policy",
-    "effective_date": "string — the effective or proposed date of the document. Use ISO 8601 format if possible. Use null if not stated.",
-    "document_purpose_summary": "string — one to two sentences describing the overall purpose of this document and who it applies to",
+<format>
+{
+  "document_map": {
+    "document_title": "string — official title as it appears in the document",
+    "issuing_organization": "string — organization that issued this policy",
+    "effective_date": "string — ISO 8601 if possible, null if not stated",
+    "document_purpose_summary": "string — 1-2 sentences: what this document governs and who it applies to",
     "sections": [
-      {{
-        "section_id": "string — a unique identifier you assign to this section using the format SEC-01, SEC-02, etc. in order of appearance",
-        "section_name": "string — the exact heading or title of the section as it appears in the document",
-        "section_order": "integer — the ordinal position of this section in the document, starting at 1",
-        "section_purpose": "string — a short descriptive name (3-7 words) describing what functional purpose this section serves within the document. This is NOT the section title — it is your functional classification of what the section achieves. Examples: 'Defines air travel booking rules', 'Establishes reimbursement submission process'",
-        "section_summary": "string — exactly one sentence describing what this section covers and how it relates to the document as a whole. This sentence must be written in the context of the full document, not in isolation.",
-        "beginning_text": "string — copy the first 40-60 words of this section IMMEDIATELY after the section's main heading line (the line starting with ## or ###). If the first line after the heading is a subheading (e.g., ### 1.1 Purpose), include that subheading text as the start of beginning_text. Do NOT skip past subheadings or numbered items to reach body paragraphs. The text must start at the very first content line after the section heading. This will be used by the downstream chunking system to locate this section."
-      }}
+      {
+        "section_id": "string — SEC-00, SEC-01, etc. in order of appearance",
+        "section_name": "string — exact heading as it appears in the document",
+        "section_order": "integer — ordinal position starting at 1",
+        "section_purpose": "string — 3-7 word functional description",
+        "section_summary": "string — one sentence describing what this section covers in context of the full document",
+        "beginning_text": "string — verbatim first 40-60 words immediately after the section heading, used by chunking system for location matching"
+      }
     ]
-  }}
-}}
-```
+  }
+}
+</format>
 
-INSTRUCTIONS FOR document_map:
-- Sections should be TOP-LEVEL sections only (e.g., "1. PURPOSE AND LEGAL CONTEXT", \
-"2. DEFINITIONS", "3. SERVICE OVERVIEW"). Do NOT create separate entries for \
-subsections (e.g., 3.1, 3.2, 6.1, 6.2). Subsections are part of their parent section \
-and will be handled by the downstream chunking system. A typical policy document should \
-produce 10-25 sections, not 50+.
-- Every discrete top-level section of the document must be captured, including any \
-introductory sections, preambles, or quick reference sections.
-- Section order must be strictly sequential based on physical order in the document.
-- The beginning_text must be verbatim from the document. Do not paraphrase.
-- If the document contains a table of contents, do not treat it as a content section \
-unless it contains substantive policy information.
+<instructions>
+- Sections are TOP-LEVEL only. Do not create entries for subsections.
+- Every discrete section must be captured including preambles and appendices.
+- beginning_text must be verbatim from the document. Do not paraphrase.
+- contains_decision_tables is true for any table that maps inputs to
+  outputs (severity → timing, response → action, role → escalation path).
+  Narrative tables (definition lists, data element inventories) are false.
+</instructions>
+</output_schema>
 
----
-
-### OUTPUT 2: global_entity_pre_registration
+<output_schema id="2" name="global_entity_pre_registration">
 
 Scan the entire document and pre-register only those entities that require cross-section \
 naming coordination. This list is NOT an exhaustive inventory of the document's entities — \
 it is a targeted seed list that helps Stage 2 extractors use consistent canonical names \
 for entities that span multiple sections.
 
-```json
-{{
+<output_format>
+{
   "global_entity_pre_registration": [
-    {{
+    {
       "entity_name": "string — the canonical name for this entity. Choose the most complete and specific name used in the document. It should be lowercase_with_underscores, descriptive (e.g., "direct_travel_inc")",
       "candidate_types": "array of one to three strings from the permitted entity type list — these are provisional suggestions for Stage 2 to confirm, revise, or override based on contextual analysis. Stage 2 is not bound by these suggestions.",
       "mentioned_in_sections": "array of strings — every section_id in which this entity is referenced. Must match section_ids defined in the document_map. List in order of appearance.",
       "brief_description": "string — identity and disambiguation context ONLY: the entity's full name, any abbreviations or aliases used in the document, and the section where it first appears. Do NOT describe what the entity does, governs, or how it relates to other entities — that is Stage 2's job."
-    }}
+    }
   ]
-}}
-```
+}
+</output_format>
 
-PERMITTED ENTITY TYPES — candidate_types values must come from the following strings:
+<permitted_entity_types>
+PERMITTED ENTITY TYPES — candidate_types values MUST come from the following strings:
 {entity_types}
+</permitted_entity_types>
 
-INSTRUCTIONS FOR global_entity_pre_registration:
+<instructions>
 - Pre-register an entity ONLY if it satisfies at least one of these conditions:
   (a) It is referenced by name or role in TWO OR MORE sections of the document, \
 creating a cross-section naming coordination risk if left unregistered.
@@ -176,9 +172,6 @@ These entities appear in exactly one section, carry no cross-section coordinatio
 and will be discovered correctly by Stage 2 working on that section's text.
 - If the same entity is referred to by multiple names or abbreviations in the document, \
 choose the most complete name and note the alias in the brief_description.
-- Do NOT pre-register PolicySection entities. Section structure is already captured \
-by the document_map. PolicySection nodes will be generated from the document map by \
-pipeline infrastructure.
 - The brief_description field is for IDENTITY DISAMBIGUATION ONLY. Include: the entity's \
 full name as it appears in the document, any abbreviations or aliases, and the section \
 where it first appears. Do NOT include: what the entity does, rules that apply to it, \
@@ -188,6 +181,7 @@ remove it.
 - The candidate_types field provides provisional type suggestions. List one to three \
 plausible entity types. Stage 2 will make the final classification decision based on \
 contextual analysis of the section text.
+</instructions>
 
 <pre_registration_decomposition>
 When the document defines a multi-level classification (e.g., four
@@ -199,9 +193,9 @@ When the document provides templates per level and per channel,
 pre-register each combination (alert_level_3_sms,
 alert_level_3_email, alert_level_4_sms, etc.).
 </pre_registration_decomposition>
----
+</output_schema>
 
-### OUTPUT 3: cross_section_dependencies
+<output_schema id="3" name="cross_section_dependencies">
 
 Identify all pairs of sections where a meaningful dependency or modification relationship \
 exists between them. A dependency exists when:
@@ -210,28 +204,20 @@ exists between them. A dependency exists when:
 - One section modifies the applicability of rules defined in another section
 - Compliance with one section's rules is conditional on rules stated in another section
 
-```json
-{{
+<output_format>
+{
   "cross_section_dependencies": [
-    {{
+    {
       "primary_section_id": "string — the section_id of the section that contains the dependency or the section that is being modified",
       "dependent_section_id": "string — the section_id of the section that modifies, qualifies, or references the primary section",
-      "dependency_type": "string — must be exactly one of: MODIFIES | REFERENCES | CONDITIONALLY_APPLIES | DEFINES_TERM_USED_BY | OVERRIDES | REQUIRES_CONTEXT_FROM",
+      "dependency_type": "string — one of the following types: MODIFIES, REFERENCES, CONDITIONALLY_APPLIES, DEFINES_TERM_USED_BY, OVERRIDES, REQUIRES_CONTEXT_FROM",
       "dependency_description": "string — one sentence describing the nature of the dependency and why it is relevant for entity extraction. Explain what information from the dependent_section changes or contextualizes the primary_section."
-    }}
+    }
   ]
-}}
-```
+}
+</output_format>
 
-DEPENDENCY TYPE DEFINITIONS:
-- MODIFIES: The dependent section directly changes, limits, or expands rules in the primary section
-- REFERENCES: The dependent section explicitly mentions or points to the primary section
-- CONDITIONALLY_APPLIES: Rules in the primary section only apply under conditions defined in the dependent section
-- DEFINES_TERM_USED_BY: The dependent section defines a term, role, or concept that the primary section uses without defining
-- OVERRIDES: Rules in the dependent section take precedence over rules in the primary section under specific circumstances
-- REQUIRES_CONTEXT_FROM: Correct interpretation of the primary section's rules requires reading the dependent section first
-
-INSTRUCTIONS FOR cross_section_dependencies:
+<instructions>
 - Only include dependencies that are meaningful for entity and relationship extraction. \
 Do not include trivial or incidental cross-references.
 - A single pair of sections may appear multiple times if multiple distinct dependencies \
@@ -239,21 +225,30 @@ exist between them, each with a different dependency_type.
 - Both section IDs must match section_ids defined in the document_map.
 - Focus on dependencies that, if missed during isolated section extraction, would result \
 in incorrect, incomplete, or contradictory entities or relationships being extracted.
+</instructions>
+</output_schema>
+"""
 
----
+FIRST_PASS_USER_PROMPT = """\
+Analyze the following travel policy document in its entirety before producing any output. \
+Read the full document from beginning to end, noting the structure, the sections, the \
+key entities mentioned throughout, and the ways in which different sections reference, \
+modify, or depend upon one another.
 
-## FINAL INSTRUCTIONS
+Once you have read the full document, produce the outputs in valid JSON format.
 
+<document_text>
+{document_text}
+</document_text>
+
+<final_instructions>
 1. Read the entire document before writing a single character of output.
-2. Produce only the JSON object. No preamble, no explanation, no markdown outside of \
-the JSON code block.
-3. Ensure all section_ids referenced in global_entity_pre_registration \
-(mentioned_in_sections) and cross_section_dependencies exactly match section_ids \
-defined in the document_map.
-4. The output must be valid, parseable JSON. Use null for any field where the value \
-is genuinely not present in the document. Do not use undefined or omit fields.
-5. Preserve verbatim accuracy in beginning_text fields. These will be used for exact \
+2. Ensure all section_ids referenced in global_entity_pre_registration \
+(mentioned_in_sections) exactly match section_ids defined in the document_map.
+3. Use null for any field where the value is genuinely not present in the document.
+4. Preserve verbatim accuracy in beginning_text fields. These will be used for exact \
 string matching against the source document.\
+</final_instructions>
 """
 
 
@@ -262,46 +257,11 @@ def _build_entity_types_list() -> str:
     return "\n".join(f'- "{t}"' for t in sorted(VALID_ENTITY_TYPES))
 
 
-def _extract_text_from_response(response) -> str:
-    """Extract the text content from a thinking-enabled API response."""
-    for block in response.content:
-        if block.type == "text":
-            return block.text
-    return ""
-
-
-def _parse_json_response(raw: str) -> dict:
-    """Parse JSON from the LLM response, handling markdown fences."""
-    cleaned = raw.strip()
-
-    # Strip markdown code fences
-    if cleaned.startswith("```"):
-        lines = cleaned.split("\n")
-        lines = lines[1:]  # remove opening fence line
-        if lines and lines[-1].strip() == "```":
-            lines = lines[:-1]  # remove closing fence line
-        cleaned = "\n".join(lines)
-
-    def _try_parse(text: str) -> dict:
-        try:
-            return json.loads(text)
-        except json.JSONDecodeError:
-            # Fix invalid \escape sequences from LLM (e.g., \S, \s, \d)
-            fixed = re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', text)
-            return json.loads(fixed)
-
-    try:
-        return _try_parse(cleaned)
-    except json.JSONDecodeError:
-        match = re.search(r"\{[\s\S]*\}", cleaned)
-        if match:
-            return _try_parse(match.group())
-        raise
-
-
 def run_first_pass(
-    document_text: str, client: Anthropic | None = None
-) -> FirstPassResult:
+    document_text: str,
+    client: Anthropic | None = None,
+    model: str | None = None,
+) -> tuple[FirstPassResult, StageUsage]:
     """Run the first pass document analysis.
 
     Analyzes the full document in a single LLM call to produce a document map,
@@ -312,11 +272,11 @@ def run_first_pass(
         client: Anthropic client. Creates one if not provided.
 
     Returns:
-        FirstPassResult with document_map, global_entity_pre_registration,
-        and cross_section_dependencies.
+        Tuple of (FirstPassResult, StageUsage with token counts).
     """
     if client is None:
         client = Anthropic()
+    model = model or _DEFAULT_MODEL
 
     entity_types_list = _build_entity_types_list()
     user_prompt = FIRST_PASS_USER_PROMPT.format(
@@ -334,7 +294,7 @@ def run_first_pass(
     )
     _dbg(
         "API CALL",
-        f"model: {TEST_MODEL}\n"
+        f"model: {model}\n"
         f"max_tokens: 49152 (thinking: {_THINKING_CONFIG['budget_tokens']})\n"
         f"user_prompt length: {len(user_prompt)} chars",
     )
@@ -343,9 +303,10 @@ def run_first_pass(
     collected_thinking = ""
     collected_text = ""
     with client.messages.stream(
-        model=TEST_MODEL,
+        model=model,
         max_tokens=49152,
         thinking=_THINKING_CONFIG,
+        output_format=FirstPassResult,
         system=FIRST_PASS_SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_prompt}],
     ) as stream:
@@ -363,19 +324,28 @@ def run_first_pass(
             elif event.type == "content_block_stop":
                 if collected_thinking:
                     _dbg(f"THINKING ({len(collected_thinking)} chars)", collected_thinking)
+        response = stream.get_final_message()
 
     raw = collected_text
     _dbg(f"LLM RESPONSE ({len(raw)} chars)", raw)
 
-    data = _parse_json_response(raw)
-    _dbg(
-        "PARSED RESULT",
-        f"document_map sections: {len(data.get('document_map', {}).get('sections', []))}\n"
-        f"pre-registered entities: {len(data.get('global_entity_pre_registration', []))}\n"
-        f"cross-section dependencies: {len(data.get('cross_section_dependencies', []))}",
+    usage = StageUsage(
+        stage="stage0_first_pass",
+        model=model,
+        input_tokens=response.usage.input_tokens,
+        output_tokens=response.usage.output_tokens,
+        api_calls=1,
     )
 
-    return FirstPassResult(**data)
+    result: FirstPassResult = response.parsed_output
+    _dbg(
+        "PARSED RESULT",
+        f"document_map sections: {len(result.document_map.sections)}\n"
+        f"pre-registered entities: {len(result.global_entity_pre_registration)}\n"
+        f"cross-section dependencies: {len(result.cross_section_dependencies)}",
+    )
+
+    return result, usage
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -404,13 +374,11 @@ def main(argv: list[str] | None = None) -> None:
 
     _DEBUG = args.debug
 
-    from dotenv import load_dotenv
-    load_dotenv()
-
     input_text = open(args.input, encoding="utf-8").read()
     print(f"Read {len(input_text)} chars from {args.input}")
 
-    result = run_first_pass(input_text)
+    result, usage = run_first_pass(input_text)
+    print(f"  Tokens: {usage.input_tokens} in, {usage.output_tokens} out ({usage.api_calls} API call)")
 
     data = result.model_dump()
     with open(args.output, "w", encoding="utf-8") as f:

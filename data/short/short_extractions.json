@@ -1,0 +1,1131 @@
+[
+  {
+    "section_id": "SEC-00",
+    "section_number": "0",
+    "entity_count": 3,
+    "relationship_count": 2,
+    "entities": [
+      {
+        "id": "travel_services_agreement",
+        "type": "Agreement",
+        "name": "Travel Services Agreement",
+        "description": "The primary contractual agreement between Client and Direct Travel, Inc., into which Exhibit D (Duty of Care & Travel Risk Management Services) is formally incorporated. Defines the overarching terms and conditions under which duty of care and travel risk management services are provided.",
+        "source_anchor": {
+          "source_text": "This Exhibit is incorporated into the Travel Services Agreement (the \"Agreement\") between ______ (\"Client\") and Direct Travel, Inc. (\"Direct Travel\" or \"TMC\").",
+          "source_section": "SEC-00 Preamble",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-00"
+        ]
+      },
+      {
+        "id": "direct_travel_inc",
+        "type": "Organization",
+        "name": "Direct Travel, Inc.",
+        "description": "Travel Management Company (TMC) that is party to the Travel Services Agreement and provider of Duty of Care and Travel Risk Management services to the Client. Also referred to in the document as 'Direct Travel' and 'TMC'.",
+        "source_anchor": {
+          "source_text": "Direct Travel, Inc. (\"Direct Travel\" or \"TMC\")",
+          "source_section": "SEC-00 Preamble",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-00"
+        ]
+      },
+      {
+        "id": "client",
+        "type": "Organization",
+        "name": "Client",
+        "description": "Organization party to the Travel Services Agreement with Direct Travel, Inc. The specific Client identity is not provided in this preamble (shown as blank in template). Client is the party receiving Duty of Care and Travel Risk Management services.",
+        "source_anchor": {
+          "source_text": "between ______ (\"Client\") and Direct Travel, Inc.",
+          "source_section": "SEC-00 Preamble",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-00"
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "client",
+        "target_id": "travel_services_agreement",
+        "type": "PARTY_TO",
+        "description": "Client is a party to the Travel Services Agreement, as stated in the preamble identifying the agreement as being between the Client and Direct Travel, Inc.",
+        "source_sections": [
+          "SEC-00"
+        ]
+      },
+      {
+        "source_id": "direct_travel_inc",
+        "target_id": "travel_services_agreement",
+        "type": "PARTY_TO",
+        "description": "Direct Travel, Inc. (the TMC) is a party to the Travel Services Agreement, as stated in the preamble identifying the agreement as being between the Client and Direct Travel, Inc.",
+        "source_sections": [
+          "SEC-00"
+        ]
+      }
+    ]
+  },
+  {
+    "section_id": "SEC-01",
+    "section_number": "1",
+    "entity_count": 11,
+    "relationship_count": 15,
+    "entities": [
+      {
+        "id": "direct_travel_inc",
+        "type": "Organization",
+        "name": "Direct Travel, Inc.",
+        "description": "Service provider (TMC) party to the Agreement; provides duty of care and travel risk management services to support Client's TRM program.",
+        "source_anchor": {
+          "source_text": "Duty of Care services Direct Travel will provide to support Client's travel risk management",
+          "source_section": "SEC-01, 1.1",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ]
+      },
+      {
+        "id": "client",
+        "type": "Organization",
+        "name": "Client",
+        "description": "Employer party to the Agreement; retains primary responsibility for its duty of care obligations under applicable regulatory frameworks.",
+        "source_anchor": {
+          "source_text": "Client retains primary responsibility for its duty of care obligations as an employer.",
+          "source_section": "SEC-01, 1.2",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ]
+      },
+      {
+        "id": "duty_of_care_services",
+        "type": "Service",
+        "name": "Duty of Care Services",
+        "description": "Comprehensive service offering provided by Direct Travel to support Client's travel risk management program, encompassing Severity Level classifications, service level objectives, roles and responsibilities, data handling and privacy requirements, and service limitations.",
+        "source_anchor": {
+          "source_text": "This Exhibit defines (a) Duty of Care services Direct Travel will provide to support Client's travel risk management (\"TRM\") program, (b) Severity Level classifications and service level objectives, (c) roles and responsibilities, (d) data handling and privacy requirements, and (e) limitations applicable to such services.",
+          "source_section": "SEC-01, 1.1",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ],
+        "activation_severity_threshold": null,
+        "requires_client_authorization": null,
+        "authorization_details": ""
+      },
+      {
+        "id": "occupational_safety_and_health_act_1970",
+        "type": "Regulation",
+        "name": "Occupational Safety and Health Act of 1970",
+        "description": "U.S. federal law establishing employer duty of care obligations; referenced through Section 5(a)(1), commonly referred to as the OSHA General Duty Clause.",
+        "source_anchor": {
+          "source_text": "OSHA General Duty Clause, Section 5(a)(1) of the Occupational Safety and Health Act of 1970",
+          "source_section": "SEC-01, 1.2",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ]
+      },
+      {
+        "id": "health_and_safety_at_work_act_1974",
+        "type": "Regulation",
+        "name": "Health and Safety at Work Act 1974",
+        "description": "UK regulatory framework establishing employer duty of care obligations for health and safety at work.",
+        "source_anchor": {
+          "source_text": "Health and Safety at Work Act 1974",
+          "source_section": "SEC-01, 1.2",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ]
+      },
+      {
+        "id": "management_of_health_and_safety_at_work_regulations_1999",
+        "type": "Regulation",
+        "name": "Management of Health and Safety at Work Regulations 1999",
+        "description": "UK regulatory framework for management of health and safety at work, establishing employer duty of care obligations.",
+        "source_anchor": {
+          "source_text": "Management of Health and Safety at Work Regulations 1999",
+          "source_section": "SEC-01, 1.2",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ]
+      },
+      {
+        "id": "corporate_manslaughter_and_corporate_homicide_act_2007",
+        "type": "Regulation",
+        "name": "Corporate Manslaughter and Corporate Homicide Act 2007",
+        "description": "UK regulatory framework addressing corporate liability for manslaughter and homicide, establishing employer duty of care obligations.",
+        "source_anchor": {
+          "source_text": "Corporate Manslaughter and Corporate Homicide Act 2007",
+          "source_section": "SEC-01, 1.2",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ]
+      },
+      {
+        "id": "framework_directive_89_391_eec",
+        "type": "Regulation",
+        "name": "Framework Directive 89/391/EEC",
+        "description": "EU regulatory framework establishing employer duty of care obligations.",
+        "source_anchor": {
+          "source_text": "Framework Directive 89/391/EEC",
+          "source_section": "SEC-01, 1.2",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ]
+      },
+      {
+        "id": "iso_31030_2021",
+        "type": "Regulation",
+        "name": "ISO 31030:2021",
+        "description": "International standard for Travel Risk Management, derived from ISO 31000; provides normative framework for employer travel risk management and duty of care obligations.",
+        "source_anchor": {
+          "source_text": "ISO 31030:2021 (Travel Risk Management), derived from ISO 31000",
+          "source_section": "SEC-01, 1.2",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ]
+      },
+      {
+        "id": "client_primary_duty_of_care_responsibility",
+        "type": "Obligation",
+        "name": "Client Retains Primary Responsibility for Duty of Care",
+        "description": "Client retains primary responsibility for its duty of care obligations as an employer; Direct Travel provides services to enable and support Client's TRM program but does not assume or substitute for the employer's duty of care.",
+        "source_anchor": {
+          "source_text": "Client retains primary responsibility for its duty of care obligations as an employer. Direct Travel provides services to enable and support Client's TRM program and does not assume the employer's duty of care.",
+          "source_section": "SEC-01, 1.2",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ],
+        "section_reference": "SEC-01, 1.2",
+        "obligation_type": "Primary responsibility retention",
+        "obligated_party": "Client",
+        "conditionality": "Client's duty of care cannot be delegated to Direct Travel; Direct Travel role is enablement and support only"
+      },
+      {
+        "id": "direct_travel_commercially_reasonable_efforts_standard",
+        "type": "Obligation",
+        "name": "Direct Travel Commercially Reasonable Efforts Standard",
+        "description": "Direct Travel will perform services using commercially reasonable efforts consistent with generally accepted practices in the travel management industry; the standard applied is one of reasonableness, not perfection.",
+        "source_anchor": {
+          "source_text": "Direct Travel will perform services using commercially reasonable efforts consistent with generally accepted practices in the travel management industry. The standard is one of reasonableness, not perfection.",
+          "source_section": "SEC-01, 1.3",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-01"
+        ],
+        "section_reference": "SEC-01, 1.3",
+        "obligation_type": "Performance standard",
+        "obligated_party": "Direct Travel, Inc.",
+        "conditionality": "Industry-standard level of care; explicitly excludes perfection standard"
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "direct_travel_inc",
+        "target_id": "duty_of_care_services",
+        "type": "PROVIDES",
+        "description": "Direct Travel, Inc. provides Duty of Care services to support Client's travel risk management program, as stated in Section 1.1: 'Duty of Care services Direct Travel will provide to support Client's travel risk management program.'",
+        "source_sections": [
+          "SEC-01"
+        ]
+      },
+      {
+        "source_id": "client",
+        "target_id": "occupational_safety_and_health_act_1970",
+        "type": "COMPLIES_WITH",
+        "description": "Client must comply with the Occupational Safety and Health Act of 1970 (OSHA General Duty Clause) as part of its employer duty of care obligations referenced in Section 1.2.",
+        "source_sections": [
+          "SEC-01"
+        ]
+      },
+      {
+        "source_id": "client",
+        "target_id": "health_and_safety_at_work_act_1974",
+        "type": "COMPLIES_WITH",
+        "description": "Client must comply with the UK Health and Safety at Work Act 1974 as part of its employer duty of care obligations referenced in Section 1.2.",
+        "source_sections": [
+          "SEC-01"
+        ]
+      },
+      {
+        "source_id": "client",
+        "target_id": "management_of_health_and_safety_at_work_regulations_1999",
+        "type": "COMPLIES_WITH",
+        "description": "Client must comply with the UK Management of Health and Safety at Work Regulations 1999 as part of its employer duty of care obligations referenced in Section 1.2.",
+        "source_sections": [
+          "SEC-01"
+        ]
+      },
+      {
+        "source_id": "client",
+        "target_id": "corporate_manslaughter_and_corporate_homicide_act_2007",
+        "type": "COMPLIES_WITH",
+        "description": "Client must comply with the UK Corporate Manslaughter and Corporate Homicide Act 2007 as part of its employer duty of care obligations referenced in Section 1.2.",
+        "source_sections": [
+          "SEC-01"
+        ]
+      },
+      {
+        "source_id": "client",
+        "target_id": "framework_directive_89_391_eec",
+        "type": "COMPLIES_WITH",
+        "description": "Client must comply with the EU Framework Directive 89/391/EEC as part of its employer duty of care obligations referenced in Section 1.2.",
+        "source_sections": [
+          "SEC-01"
+        ]
+      },
+      {
+        "source_id": "client",
+        "target_id": "iso_31030_2021",
+        "type": "COMPLIES_WITH",
+        "description": "Client must comply with ISO 31030:2021 (Travel Risk Management) as part of its employer duty of care obligations referenced in Section 1.2.",
+        "source_sections": [
+          "SEC-01"
+        ]
+      },
+      {
+        "source_id": "client_primary_duty_of_care_responsibility",
+        "target_id": "client",
+        "type": "ASSIGNED_TO",
+        "description": "Client retains primary responsibility for its duty of care obligations as an employer, as stated in Section 1.2: 'Client retains primary responsibility for its duty of care obligations as an employer.'",
+        "source_sections": [
+          "SEC-01"
+        ]
+      },
+      {
+        "source_id": "direct_travel_commercially_reasonable_efforts_standard",
+        "target_id": "direct_travel_inc",
+        "type": "ASSIGNED_TO",
+        "description": "Direct Travel, Inc. is assigned the obligation to perform services using commercially reasonable efforts consistent with industry practices, as stated in Section 1.3.",
+        "source_sections": [
+          "SEC-01"
+        ]
+      },
+      {
+        "source_id": "client_primary_duty_of_care_responsibility",
+        "target_id": "occupational_safety_and_health_act_1970",
+        "type": "RELATES_TO",
+        "description": "Client's primary duty of care responsibility relates to the Occupational Safety and Health Act of 1970 (OSHA), referenced in Section 1.2 as an applicable duty of care framework.",
+        "source_sections": [
+          "SEC-01"
+        ]
+      },
+      {
+        "source_id": "client_primary_duty_of_care_responsibility",
+        "target_id": "health_and_safety_at_work_act_1974",
+        "type": "RELATES_TO",
+        "description": "Client's primary duty of care responsibility relates to the Health and Safety at Work Act 1974, referenced in Section 1.2 as an applicable duty of care framework.",
+        "source_sections": [
+          "SEC-01"
+        ]
+      },
+      {
+        "source_id": "client_primary_duty_of_care_responsibility",
+        "target_id": "management_of_health_and_safety_at_work_regulations_1999",
+        "type": "RELATES_TO",
+        "description": "Client's primary duty of care responsibility relates to the Management of Health and Safety at Work Regulations 1999, referenced in Section 1.2 as an applicable duty of care framework.",
+        "source_sections": [
+          "SEC-01"
+        ]
+      },
+      {
+        "source_id": "client_primary_duty_of_care_responsibility",
+        "target_id": "corporate_manslaughter_and_corporate_homicide_act_2007",
+        "type": "RELATES_TO",
+        "description": "Client's primary duty of care responsibility relates to the Corporate Manslaughter and Corporate Homicide Act 2007, referenced in Section 1.2 as an applicable duty of care framework.",
+        "source_sections": [
+          "SEC-01"
+        ]
+      },
+      {
+        "source_id": "client_primary_duty_of_care_responsibility",
+        "target_id": "framework_directive_89_391_eec",
+        "type": "RELATES_TO",
+        "description": "Client's primary duty of care responsibility relates to the EU Framework Directive 89/391/EEC, referenced in Section 1.2 as an applicable duty of care framework.",
+        "source_sections": [
+          "SEC-01"
+        ]
+      },
+      {
+        "source_id": "client_primary_duty_of_care_responsibility",
+        "target_id": "iso_31030_2021",
+        "type": "RELATES_TO",
+        "description": "Client's primary duty of care responsibility relates to ISO 31030:2021 (Travel Risk Management), referenced in Section 1.2 as an applicable international standard for duty of care frameworks.",
+        "source_sections": [
+          "SEC-01"
+        ]
+      }
+    ]
+  },
+  {
+    "section_id": "SEC-02",
+    "section_number": "2",
+    "entity_count": 18,
+    "relationship_count": 4,
+    "entities": [
+      {
+        "id": "severity_level_1",
+        "type": "SeverityLevel",
+        "name": "Severity Level 1 (Advisory)",
+        "description": "Minor disruption; informational alert only. Examples include localized weather warning and minor transport delay.",
+        "source_anchor": {
+          "source_text": "Level 1 | Advisory | Minor disruption; informational alert only | Localized weather warning, minor transport delay",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ],
+        "level": 1,
+        "classification": "Advisory",
+        "alert_time_target": "within 4 hours",
+        "client_escalation_time_target": "Not required unless configured",
+        "status_update_cadence": "As conditions change",
+        "crisis_bridge_required": false
+      },
+      {
+        "id": "severity_level_2",
+        "type": "SeverityLevel",
+        "name": "Severity Level 2 (Monitor)",
+        "description": "Moderate disruption; targeted alerts; optional welfare check. Examples include regional transport strike and elevated security alert.",
+        "source_anchor": {
+          "source_text": "Level 2 | Monitor | Moderate disruption; targeted alerts; optional welfare check | Regional transport strike, elevated security alert",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ],
+        "level": 2,
+        "classification": "Monitor",
+        "alert_time_target": "within 2 hours",
+        "client_escalation_time_target": "Primary contact within 4 hours",
+        "status_update_cadence": "Every 4 hours",
+        "crisis_bridge_required": false
+      },
+      {
+        "id": "severity_level_3",
+        "type": "SeverityLevel",
+        "name": "Severity Level 3 (Action Required)",
+        "description": "Significant disruption; proactive outreach required. Examples include major weather event in Traveler area, airport closure, and disease outbreak.",
+        "source_anchor": {
+          "source_text": "Level 3 | Action Required | Significant disruption; proactive outreach required | Major weather event in Traveler area, airport closure, disease outbreak",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ],
+        "level": 3,
+        "classification": "Action Required",
+        "alert_time_target": "within 60 minutes",
+        "client_escalation_time_target": "Escalation roster within 60 minutes",
+        "status_update_cadence": "Every 2 hours",
+        "crisis_bridge_required": false
+      },
+      {
+        "id": "severity_level_4",
+        "type": "SeverityLevel",
+        "name": "Severity Level 4 (Crisis)",
+        "description": "Immediate life safety risk; urgent outreach and crisis escalation. Examples include terrorist attack, catastrophic natural disaster, and pandemic border closures.",
+        "source_anchor": {
+          "source_text": "Level 4 | Crisis | Immediate life safety risk; urgent outreach and crisis escalation | Terrorist attack, catastrophic natural disaster, pandemic border closures",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ],
+        "level": 4,
+        "classification": "Crisis",
+        "alert_time_target": "within 30 minutes",
+        "client_escalation_time_target": "Roster within 30 min; Crisis Bridge within 60 min",
+        "status_update_cadence": "Every 30 min (acute); hourly (sustained)",
+        "crisis_bridge_required": true
+      },
+      {
+        "id": "direct_travel_inc",
+        "type": "Organization",
+        "name": "Direct Travel, Inc.",
+        "description": "Travel Management Company (TMC) providing duty of care and travel risk management services. Makes severity determinations using commercially reasonable judgment informed by the Risk Intelligence Platform.",
+        "source_anchor": {
+          "source_text": "Severity determination is made by Direct Travel using commercially reasonable judgment informed by the Risk Intelligence Platform (currently Crisis24 Horizon).",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      },
+      {
+        "id": "client",
+        "type": "Organization",
+        "name": "Client",
+        "description": "The employer party to the agreement who receives duty of care services and risk management support. Receives escalations and status updates according to severity level SLOs.",
+        "source_anchor": {
+          "source_text": "Client Escalation | Primary contact within 4 hours",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      },
+      {
+        "id": "traveler",
+        "type": "Traveler",
+        "name": "Traveler",
+        "description": "Individual employees, contractors, or other persons authorized by Client who travels on Client business and whose safety and welfare are the focus of outreach and monitoring under the duty of care program.",
+        "source_anchor": {
+          "source_text": "Traveler Alert / Outreach, Traveler area, Traveler profile data, Traveler Outreach Standards",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      },
+      {
+        "id": "traveler_data",
+        "type": "DataElement",
+        "name": "Traveler Data",
+        "description": "Collective personal and travel information about travelers, including profile data. Incomplete traveler profile data may impact SLO achievement.",
+        "source_anchor": {
+          "source_text": "SLOs may be impacted by: ... incomplete Traveler profile data ... Off-Channel Bookings without itinerary data ...",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      },
+      {
+        "id": "outreach_channel_sms",
+        "type": "Platform",
+        "name": "SMS",
+        "description": "Short Message Service (text message) outreach channel. Default primary welfare check channel in the outreach priority sequence.",
+        "source_anchor": {
+          "source_text": "Welfare checks follow default priority: (1) SMS, (2) email, (3) push notification, (4) voice call.",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      },
+      {
+        "id": "outreach_channel_email",
+        "type": "Platform",
+        "name": "Email",
+        "description": "Email outreach channel. Default secondary welfare check channel in the outreach priority sequence.",
+        "source_anchor": {
+          "source_text": "Welfare checks follow default priority: (1) SMS, (2) email, (3) push notification, (4) voice call.",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      },
+      {
+        "id": "outreach_channel_push_notification",
+        "type": "Platform",
+        "name": "Push Notification",
+        "description": "Application push notification outreach channel. Default tertiary welfare check channel in the outreach priority sequence.",
+        "source_anchor": {
+          "source_text": "Welfare checks follow default priority: (1) SMS, (2) email, (3) push notification, (4) voice call.",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      },
+      {
+        "id": "outreach_channel_voice_call",
+        "type": "Platform",
+        "name": "Voice Call",
+        "description": "Telephone voice call outreach channel. Default fourth-priority welfare check channel in the outreach priority sequence.",
+        "source_anchor": {
+          "source_text": "Welfare checks follow default priority: (1) SMS, (2) email, (3) push notification, (4) voice call.",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      },
+      {
+        "id": "travel_suppliers",
+        "type": "Organization",
+        "name": "Travel Suppliers",
+        "description": "Third-party service providers including airlines, hotels, and Global Distribution Systems (GDS). System outages at travel suppliers may impact SLO achievement.",
+        "source_anchor": {
+          "source_text": "SLOs may be impacted by: ... supplier system outages (GDS, airline, hotel) ...",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      },
+      {
+        "id": "crisis24_horizon",
+        "type": "Platform",
+        "name": "Crisis24 Horizon",
+        "description": "Risk Intelligence Platform used by Direct Travel to inform severity determination and incident classification decisions using commercially reasonable judgment.",
+        "source_anchor": {
+          "source_text": "Severity determination is made by Direct Travel using commercially reasonable judgment informed by the Risk Intelligence Platform (currently Crisis24 Horizon).",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ]
+      },
+      {
+        "id": "traveler_response_status_safe",
+        "type": "TravelerResponseStatus",
+        "name": "SAFE",
+        "description": "Traveler confirms not in danger and does not require assistance. Terminates outreach sequence.",
+        "source_anchor": {
+          "source_text": "SAFE | Not in danger; no assistance needed | Log status; no further action",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ],
+        "tmc_action": "Log status; no further action",
+        "action_time_target": "",
+        "closes_outreach": true,
+        "triggers_escalation": false
+      },
+      {
+        "id": "traveler_response_status_need_assistance",
+        "type": "TravelerResponseStatus",
+        "name": "NEED ASSISTANCE",
+        "description": "Traveler confirms requiring support or assistance. Requires immediate live contact attempt.",
+        "source_anchor": {
+          "source_text": "NEED ASSISTANCE | Requires support | Attempt live contact within 15 min",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ],
+        "tmc_action": "Attempt live contact",
+        "action_time_target": "within 15 min",
+        "closes_outreach": null,
+        "triggers_escalation": true
+      },
+      {
+        "id": "traveler_response_status_not_in_area",
+        "type": "TravelerResponseStatus",
+        "name": "NOT IN AREA",
+        "description": "Traveler confirms location is not in the affected area. Removes traveler from active outreach sequence.",
+        "source_anchor": {
+          "source_text": "NOT IN AREA | Not near affected area | Remove from active outreach",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ],
+        "tmc_action": "Remove from active outreach",
+        "action_time_target": "",
+        "closes_outreach": true,
+        "triggers_escalation": false
+      },
+      {
+        "id": "traveler_response_status_no_response",
+        "type": "TravelerResponseStatus",
+        "name": "No Response",
+        "description": "Traveler does not respond to welfare check within the outreach window. Requires escalation to Client contacts.",
+        "source_anchor": {
+          "source_text": "No Response | No reply within outreach window | Escalate to Client contacts",
+          "source_section": "SEC-02",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-02"
+        ],
+        "tmc_action": "Escalate to Client contacts",
+        "action_time_target": "",
+        "closes_outreach": null,
+        "triggers_escalation": true
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "traveler",
+        "target_id": "traveler_response_status_safe",
+        "type": "RESPONDS_WITH",
+        "description": "Travelers can confirm status as SAFE, indicating they are not in danger and require no assistance, which terminates outreach.",
+        "source_sections": [
+          "SEC-02"
+        ]
+      },
+      {
+        "source_id": "traveler",
+        "target_id": "traveler_response_status_need_assistance",
+        "type": "RESPONDS_WITH",
+        "description": "Travelers can confirm status as NEED ASSISTANCE, indicating they require support and triggering immediate TMC live contact attempt within 15 minutes.",
+        "source_sections": [
+          "SEC-02"
+        ]
+      },
+      {
+        "source_id": "traveler",
+        "target_id": "traveler_response_status_not_in_area",
+        "type": "RESPONDS_WITH",
+        "description": "Travelers can confirm status as NOT IN AREA, indicating their location is not affected by the incident and removing them from active outreach.",
+        "source_sections": [
+          "SEC-02"
+        ]
+      },
+      {
+        "source_id": "traveler",
+        "target_id": "traveler_response_status_no_response",
+        "type": "RESPONDS_WITH",
+        "description": "Travelers may not respond to welfare check within the outreach window, which requires escalation to Client contacts for further action.",
+        "source_sections": [
+          "SEC-02"
+        ]
+      }
+    ]
+  },
+  {
+    "section_id": "SEC-03",
+    "section_number": "3",
+    "entity_count": 18,
+    "relationship_count": 10,
+    "entities": [
+      {
+        "id": "client",
+        "type": "Organization",
+        "name": "Client",
+        "description": "The employer party to the Agreement, designated as the legal data controller for Traveler Data. Client is responsible for lawful basis assessment and data processing governance. Client provides documented instructions for data processing and authorizes data sharing and special processing requests.",
+        "source_anchor": {
+          "source_text": "Client is the **data controller** for Traveler Data. Direct Travel acts as a **data processor**, processing Traveler Data solely on Client's documented instructions.",
+          "source_section": "SEC-03, 3.1 Data Roles",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "direct_travel_inc",
+        "type": "Organization",
+        "name": "Direct Travel, Inc.",
+        "description": "The Travel Management Company (TMC) service provider. Acts as a data processor for Traveler Data on Client's documented instructions and is authorized to share minimum necessary data with Client's escalation contacts, travel suppliers, Specialist Providers, and government authorities.",
+        "source_anchor": {
+          "source_text": "Direct Travel acts as a **data processor**, processing Traveler Data solely on Client's documented instructions.",
+          "source_section": "SEC-03, 3.1 Data Roles",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "traveler",
+        "type": "Traveler",
+        "name": "Traveler",
+        "description": "Individual employee, contractor, or other person authorized by Client who travels on Client business. Subject of Traveler Data collection, welfare checks, and duty of care services.",
+        "source_anchor": {
+          "source_text": "**Minimum Required Traveler Profile Data** | Data Element | Purpose | Impact if Missing",
+          "source_section": "SEC-03, 3.3 Minimum Required Traveler Profile Data",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "traveler_data",
+        "type": "DataElement",
+        "name": "Traveler Data",
+        "description": "Collective category of personal and travel information about travelers, including profile data, itinerary data, location information, emergency contact information, and passport details. Governed by GDPR lawful basis for processing (legitimate interest in health and safety protection) and subject to minimum necessary sharing principle.",
+        "source_anchor": {
+          "source_text": "Client is the **data controller** for Traveler Data. Direct Travel acts as a **data processor**, processing Traveler Data solely on Client's documented instructions.",
+          "source_section": "SEC-03, 3.1 Data Roles",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "data_processing_agreement_dpa",
+        "type": "Agreement",
+        "name": "Data Processing Agreement (DPA)",
+        "description": "Contractual agreement incorporated by reference that establishes terms for Direct Travel's role as data processor. Specifies permissible data sharing, cross-border transfer safeguards (Standard Contractual Clauses, adequacy decisions), and compliance mechanisms.",
+        "source_anchor": {
+          "source_text": "Where required, a Data Processing Agreement (\"**DPA**\") is incorporated by reference.",
+          "source_section": "SEC-03, 3.1 Data Roles",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "gdpr",
+        "type": "Regulation",
+        "name": "GDPR (General Data Protection Regulation)",
+        "description": "European Union data protection regulation under which Client's processing of Traveler Data is supported by lawful basis of legitimate interest in protecting health and safety of travelers (Article 6(1)(f)). Equivalent laws in non-EEA jurisdictions apply similar protections.",
+        "source_anchor": {
+          "source_text": "Processing is supported by Client's **legitimate interest** in protecting health and safety of travelers under Article 6(1)(f) GDPR and equivalent laws.",
+          "source_section": "SEC-03, 3.2 Lawful Basis",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "data_element_full_legal_name",
+        "type": "DataElement",
+        "name": "Full Legal Name",
+        "description": "Traveler profile data element required for traveler identification and supplier matching. Absence prevents identity confirmation.",
+        "source_anchor": {
+          "source_text": "**Full legal name** | Traveler identification, supplier matching | Cannot confirm identity",
+          "source_section": "SEC-03, 3.3 Minimum Required Traveler Profile Data",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "data_element_mobile_phone_number",
+        "type": "DataElement",
+        "name": "Mobile Phone Number",
+        "description": "SMS-capable mobile phone number required as primary welfare check outreach channel. Absence prevents SMS-based welfare check outreach and limits crisis communication to secondary and tertiary channels.",
+        "source_anchor": {
+          "source_text": "**Mobile phone number** (SMS-capable) | Primary welfare check channel | SMS outreach unavailable",
+          "source_section": "SEC-03, 3.3 Minimum Required Traveler Profile Data",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "data_element_email_address",
+        "type": "DataElement",
+        "name": "Email Address",
+        "description": "Email address required as secondary communication channel for welfare checks and alerts. Absence prevents email-based alert delivery.",
+        "source_anchor": {
+          "source_text": "**Email address** | Secondary communication channel | Email alerts unavailable",
+          "source_section": "SEC-03, 3.3 Minimum Required Traveler Profile Data",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "data_element_emergency_contact",
+        "type": "DataElement",
+        "name": "Emergency Contact",
+        "description": "Emergency contact information (name, relationship, phone) required for next-of-kin notification during incidents. Absence requires Client to provide contact information during active incident response.",
+        "source_anchor": {
+          "source_text": "**Emergency contact** (name, relationship, phone) | Next-of-kin notification | Client must provide during incident",
+          "source_section": "SEC-03, 3.3 Minimum Required Traveler Profile Data",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "data_element_passport_details",
+        "type": "DataElement",
+        "name": "Passport Details",
+        "description": "Passport identification details required for international travel documentation verification and traveler identity confirmation at borders.",
+        "source_anchor": {
+          "source_text": "**Passport details** (international travel) | Documentation verification | Cannot verify travel documents",
+          "source_section": "SEC-03, 3.3 Minimum Required Traveler Profile Data",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "data_element_location_data",
+        "type": "DataElement",
+        "name": "Location Data",
+        "description": "Traveler location information derived from itinerary records (PNR-based planned location). Reflects forecasted destination and does not constitute real-time GPS tracking unless explicitly authorized in SOW with DPIA.",
+        "source_anchor": {
+          "source_text": "Traveler location derived from itinerary records (PNR-based) reflects **planned** location and does not constitute real-time GPS tracking.",
+          "source_section": "SEC-03, 3.5 Location Data",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "service_gps_tracking",
+        "type": "Service",
+        "name": "GPS Tracking (Continuous Real-Time Location)",
+        "description": "Optional continuous real-time GPS tracking service for traveler location monitoring. Distinct from default PNR-based planned location visibility.",
+        "source_anchor": {
+          "source_text": "Continuous GPS tracking requires explicit SOW inclusion, a Data Protection Impact Assessment, and documented Client authorization.",
+          "source_section": "SEC-03, 3.5 Location Data",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ],
+        "activation_severity_threshold": null,
+        "requires_client_authorization": true,
+        "authorization_details": "Requires explicit Statement of Work inclusion, completion of Data Protection Impact Assessment, and documented Client authorization"
+      },
+      {
+        "id": "outreach_channel_sms",
+        "type": "Service",
+        "name": "SMS Outreach Channel",
+        "description": "Primary welfare check outreach channel using SMS (text message) to mobile phone number. Enabled when mobile phone number data element is present.",
+        "source_anchor": {
+          "source_text": "**Mobile phone number** (SMS-capable) | Primary welfare check channel | SMS outreach unavailable",
+          "source_section": "SEC-03, 3.3 Minimum Required Traveler Profile Data",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ],
+        "activation_severity_threshold": null,
+        "requires_client_authorization": null,
+        "authorization_details": ""
+      },
+      {
+        "id": "outreach_channel_email",
+        "type": "Service",
+        "name": "Email Outreach Channel",
+        "description": "Secondary welfare check and alert outreach channel using email. Enabled when email address data element is present.",
+        "source_anchor": {
+          "source_text": "**Email address** | Secondary communication channel | Email alerts unavailable",
+          "source_section": "SEC-03, 3.3 Minimum Required Traveler Profile Data",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ],
+        "activation_severity_threshold": null,
+        "requires_client_authorization": null,
+        "authorization_details": ""
+      },
+      {
+        "id": "organization_specialist_providers",
+        "type": "Organization",
+        "name": "Specialist Providers",
+        "description": "Third-party service providers (security, medical, evacuation specialists) authorized in Statement of Work to receive minimum necessary Traveler Data for incident response, escalation, and traveler assistance.",
+        "source_anchor": {
+          "source_text": "Direct Travel may share **minimum necessary** Traveler Data with: (a) Client's escalation contacts; (b) travel suppliers for rebooking; (c) Specialist Providers (security, medical, evacuation) authorized in the SOW; and (d) government authorities where required by law or to protect life safety.",
+          "source_section": "SEC-03, 3.4 Data Sharing During Incidents",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "organization_travel_suppliers",
+        "type": "Organization",
+        "name": "Travel Suppliers",
+        "description": "Third-party airlines, hotels, Global Distribution Systems (GDS), and other travel service providers who may receive minimum necessary Traveler Data from Direct Travel for rebooking and incident-related service modifications.",
+        "source_anchor": {
+          "source_text": "Direct Travel may share **minimum necessary** Traveler Data with: (a) Client's escalation contacts; (b) travel suppliers for rebooking; (c) Specialist Providers (security, medical, evacuation) authorized in the SOW",
+          "source_section": "SEC-03, 3.4 Data Sharing During Incidents",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      },
+      {
+        "id": "organization_government_authorities",
+        "type": "Organization",
+        "name": "Government Authorities",
+        "description": "Government and regulatory bodies authorized to receive Traveler Data where legally required or necessary to protect life safety during incidents.",
+        "source_anchor": {
+          "source_text": "Direct Travel may share **minimum necessary** Traveler Data with: (a) Client's escalation contacts; (b) travel suppliers for rebooking; (c) Specialist Providers (security, medical, evacuation) authorized in the SOW; and (d) government authorities where required by law or to protect life safety.",
+          "source_section": "SEC-03, 3.4 Data Sharing During Incidents",
+          "source_offset": -1
+        },
+        "source_anchors": [],
+        "appears_in": [
+          "SEC-03"
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "source_id": "client",
+        "target_id": "data_processing_agreement_dpa",
+        "type": "PARTY_TO",
+        "description": "Client is party to the Data Processing Agreement, which establishes the legal framework for Direct Travel's role as data processor and governs permissible data sharing and cross-border transfer safeguards.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "direct_travel_inc",
+        "target_id": "data_processing_agreement_dpa",
+        "type": "PARTY_TO",
+        "description": "Direct Travel, Inc. is party to the Data Processing Agreement, which specifies its obligations as data processor for Traveler Data and delineates authorized data sharing with third parties and cross-border transfer safeguards.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "client",
+        "target_id": "gdpr",
+        "type": "COMPLIES_WITH",
+        "description": "Client's processing of Traveler Data is supported by lawful basis of legitimate interest in protecting health and safety of travelers under Article 6(1)(f) GDPR; Client is responsible for required Legitimate Interest Assessment and Data Protection Impact Assessment.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "direct_travel_inc",
+        "target_id": "organization_travel_suppliers",
+        "type": "ENGAGES",
+        "description": "Direct Travel engages travel suppliers (airlines, hotels, GDS) and is authorized to share minimum necessary Traveler Data with them for rebooking and incident-related service modifications during crisis response.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "direct_travel_inc",
+        "target_id": "organization_specialist_providers",
+        "type": "ENGAGES",
+        "description": "Direct Travel engages Specialist Providers (security, medical, evacuation specialists) authorized in the SOW and is authorized to share minimum necessary Traveler Data for incident response, escalation, and traveler assistance.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "direct_travel_inc",
+        "target_id": "organization_government_authorities",
+        "type": "ENGAGES",
+        "description": "Direct Travel engages government and regulatory authorities and is authorized to share Traveler Data where legally required by law or necessary to protect life safety during incidents.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "service_gps_tracking",
+        "target_id": "client",
+        "type": "REQUIRES_AUTHORIZATION_FROM",
+        "description": "Continuous GPS tracking service requires explicit Client authorization in SOW, a Data Protection Impact Assessment, and documented Client approval before activation; distinct from default PNR-based planned location visibility.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "outreach_channel_sms",
+        "target_id": "data_element_mobile_phone_number",
+        "type": "REQUIRES_DATA",
+        "description": "SMS outreach channel for primary welfare checks requires mobile phone number data element; absence of this data element makes SMS outreach unavailable and reduces service effectiveness.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "outreach_channel_email",
+        "target_id": "data_element_email_address",
+        "type": "REQUIRES_DATA",
+        "description": "Email outreach channel for secondary welfare checks and alerts requires email address data element; absence of this data element makes email alert delivery unavailable.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      },
+      {
+        "source_id": "service_gps_tracking",
+        "target_id": "data_element_location_data",
+        "type": "REQUIRES_DATA",
+        "description": "Continuous GPS tracking service requires real-time location data; continuous tracking is distinct from default PNR-based planned location and requires explicit SOW inclusion and Client authorization.",
+        "source_sections": [
+          "SEC-03"
+        ]
+      }
+    ]
+  }
+]

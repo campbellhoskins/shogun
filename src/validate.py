@@ -13,8 +13,8 @@ load_dotenv()
 TEST_MODEL = os.environ.get("TEST_MODEL", "claude-haiku-4-5-20251001")
 
 from src.main import load_document
-from src.parser import parse_policy
-from src.graph import build_graph, serialize_graph
+from src.pipeline import extract_ontology
+from src.graph import build_graph
 
 
 def structural_report(g) -> None:
@@ -149,8 +149,6 @@ def source_anchoring_report(ontology) -> None:
 
 
 def main() -> None:
-    load_dotenv()
-
     project_root = Path(__file__).parent.parent
 
     if len(sys.argv) > 1:
@@ -166,7 +164,7 @@ def main() -> None:
 
     print("\nParsing policy...")
     client = Anthropic()
-    ontology = parse_policy(policy_text, client=client)
+    ontology = extract_ontology(policy_text, client=client)
     print(f"  {len(ontology.entities)} entities, {len(ontology.relationships)} relationships")
 
     g = build_graph(ontology)

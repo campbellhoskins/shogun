@@ -1,0 +1,710 @@
+{
+  "graph_title": "LangChain Whole-Doc (Schema-Guided)",
+  "entities": [
+    {
+      "id": "Travel Services Agreement",
+      "type": "Agreement",
+      "name": "Travel Services Agreement",
+      "description": "Agreement: Travel Services Agreement"
+    },
+    {
+      "id": "Direct Travel, Inc.",
+      "type": "Organization",
+      "name": "Direct Travel, Inc.",
+      "description": "Organization: Direct Travel, Inc."
+    },
+    {
+      "id": "Client",
+      "type": "Organization",
+      "name": "Client",
+      "description": "Organization: Client"
+    },
+    {
+      "id": "Duty Of Care Services",
+      "type": "Service",
+      "name": "Duty Of Care Services",
+      "description": "Service: Duty Of Care Services"
+    },
+    {
+      "id": "Travel Risk Management",
+      "type": "Service",
+      "name": "Travel Risk Management",
+      "description": "Service: Travel Risk Management"
+    },
+    {
+      "id": "Osha General Duty Clause",
+      "type": "Regulation",
+      "name": "Osha General Duty Clause",
+      "description": "Regulation: Osha General Duty Clause"
+    },
+    {
+      "id": "Health And Safety At Work Act 1974",
+      "type": "Regulation",
+      "name": "Health And Safety At Work Act 1974",
+      "description": "Regulation: Health And Safety At Work Act 1974"
+    },
+    {
+      "id": "Corporate Manslaughter And Corporate Homicide Act 2007",
+      "type": "Regulation",
+      "name": "Corporate Manslaughter And Corporate Homicide Act 2007",
+      "description": "Regulation: Corporate Manslaughter And Corporate Homicide Act 2007"
+    },
+    {
+      "id": "Framework Directive 89/391/Eec",
+      "type": "Regulation",
+      "name": "Framework Directive 89/391/Eec",
+      "description": "Regulation: Framework Directive 89/391/Eec"
+    },
+    {
+      "id": "Iso 31030:2021",
+      "type": "Regulation",
+      "name": "Iso 31030:2021",
+      "description": "Regulation: Iso 31030:2021"
+    },
+    {
+      "id": "Risk Intelligence Platform",
+      "type": "Platform",
+      "name": "Risk Intelligence Platform",
+      "description": "Platform: Risk Intelligence Platform"
+    },
+    {
+      "id": "Crisis24 Horizon",
+      "type": "Platform",
+      "name": "Crisis24 Horizon",
+      "description": "Platform: Crisis24 Horizon"
+    },
+    {
+      "id": "Incident",
+      "type": "Incident",
+      "name": "Incident",
+      "description": "Incident: Incident"
+    },
+    {
+      "id": "Level 1",
+      "type": "SeverityLevel",
+      "name": "Level 1",
+      "description": "Severitylevel: Level 1"
+    },
+    {
+      "id": "Level 2",
+      "type": "SeverityLevel",
+      "name": "Level 2",
+      "description": "Severitylevel: Level 2"
+    },
+    {
+      "id": "Level 3",
+      "type": "SeverityLevel",
+      "name": "Level 3",
+      "description": "Severitylevel: Level 3"
+    },
+    {
+      "id": "Level 4",
+      "type": "SeverityLevel",
+      "name": "Level 4",
+      "description": "Severitylevel: Level 4"
+    },
+    {
+      "id": "Traveler",
+      "type": "Traveler",
+      "name": "Traveler",
+      "description": "Traveler: Traveler"
+    },
+    {
+      "id": "Traveler Data",
+      "type": "DataElement",
+      "name": "Traveler Data",
+      "description": "Dataelement: Traveler Data"
+    },
+    {
+      "id": "Itinerary Data",
+      "type": "DataElement",
+      "name": "Itinerary Data",
+      "description": "Dataelement: Itinerary Data"
+    },
+    {
+      "id": "Pnr",
+      "type": "DataElement",
+      "name": "Pnr",
+      "description": "Dataelement: Pnr"
+    },
+    {
+      "id": "Approved Channels",
+      "type": "BookingChannel",
+      "name": "Approved Channels",
+      "description": "Bookingchannel: Approved Channels"
+    },
+    {
+      "id": "Off-Channel Booking",
+      "type": "BookingChannel",
+      "name": "Off-Channel Booking",
+      "description": "Bookingchannel: Off-Channel Booking"
+    },
+    {
+      "id": "Booking",
+      "type": "Booking",
+      "name": "Booking",
+      "description": "Booking: Booking"
+    },
+    {
+      "id": "Welfare Check",
+      "type": "Service",
+      "name": "Welfare Check",
+      "description": "Service: Welfare Check"
+    },
+    {
+      "id": "Alert",
+      "type": "Alert",
+      "name": "Alert",
+      "description": "Alert: Alert"
+    },
+    {
+      "id": "Crisis Bridge",
+      "type": "Service",
+      "name": "Crisis Bridge",
+      "description": "Service: Crisis Bridge"
+    },
+    {
+      "id": "Safe",
+      "type": "TravelerResponseStatus",
+      "name": "Safe",
+      "description": "Travelerresponsestatus: Safe"
+    },
+    {
+      "id": "Need Assistance",
+      "type": "TravelerResponseStatus",
+      "name": "Need Assistance",
+      "description": "Travelerresponsestatus: Need Assistance"
+    },
+    {
+      "id": "Not In Area",
+      "type": "TravelerResponseStatus",
+      "name": "Not In Area",
+      "description": "Travelerresponsestatus: Not In Area"
+    },
+    {
+      "id": "No Response",
+      "type": "TravelerResponseStatus",
+      "name": "No Response",
+      "description": "Travelerresponsestatus: No Response"
+    },
+    {
+      "id": "Specialist Provider",
+      "type": "Organization",
+      "name": "Specialist Provider",
+      "description": "Organization: Specialist Provider"
+    },
+    {
+      "id": "Crisis24",
+      "type": "Organization",
+      "name": "Crisis24",
+      "description": "Organization: Crisis24"
+    },
+    {
+      "id": "International Sos",
+      "type": "Organization",
+      "name": "International Sos",
+      "description": "Organization: International Sos"
+    },
+    {
+      "id": "Escalation Roster",
+      "type": "ContactRole",
+      "name": "Escalation Roster",
+      "description": "Contactrole: Escalation Roster"
+    },
+    {
+      "id": "Primary Travel Program Owner",
+      "type": "ContactRole",
+      "name": "Primary Travel Program Owner",
+      "description": "Contactrole: Primary Travel Program Owner"
+    },
+    {
+      "id": "Alternate Travel Program Contact",
+      "type": "ContactRole",
+      "name": "Alternate Travel Program Contact",
+      "description": "Contactrole: Alternate Travel Program Contact"
+    },
+    {
+      "id": "After-Hours Duty Contact",
+      "type": "ContactRole",
+      "name": "After-Hours Duty Contact",
+      "description": "Contactrole: After-Hours Duty Contact"
+    },
+    {
+      "id": "Corporate Security",
+      "type": "ContactRole",
+      "name": "Corporate Security",
+      "description": "Contactrole: Corporate Security"
+    },
+    {
+      "id": "Human Resources Duty Contact",
+      "type": "ContactRole",
+      "name": "Human Resources Duty Contact",
+      "description": "Contactrole: Human Resources Duty Contact"
+    },
+    {
+      "id": "Senior Leadership Contact",
+      "type": "ContactRole",
+      "name": "Senior Leadership Contact",
+      "description": "Contactrole: Senior Leadership Contact"
+    },
+    {
+      "id": "Traveler Locate",
+      "type": "Service",
+      "name": "Traveler Locate",
+      "description": "Service: Traveler Locate"
+    },
+    {
+      "id": "Risk Intelligence Monitoring",
+      "type": "Service",
+      "name": "Risk Intelligence Monitoring",
+      "description": "Service: Risk Intelligence Monitoring"
+    },
+    {
+      "id": "Pre-Trip Services",
+      "type": "Service",
+      "name": "Pre-Trip Services",
+      "description": "Service: Pre-Trip Services"
+    },
+    {
+      "id": "In-Trip Monitoring",
+      "type": "Service",
+      "name": "In-Trip Monitoring",
+      "description": "Service: In-Trip Monitoring"
+    },
+    {
+      "id": "Incident Response",
+      "type": "Service",
+      "name": "Incident Response",
+      "description": "Service: Incident Response"
+    },
+    {
+      "id": "Post-Incident Reporting",
+      "type": "Service",
+      "name": "Post-Incident Reporting",
+      "description": "Service: Post-Incident Reporting"
+    },
+    {
+      "id": "Destination Risk Rating",
+      "type": "DataElement",
+      "name": "Destination Risk Rating",
+      "description": "Dataelement: Destination Risk Rating"
+    },
+    {
+      "id": "Pre-Trip Advisory",
+      "type": "Service",
+      "name": "Pre-Trip Advisory",
+      "description": "Service: Pre-Trip Advisory"
+    },
+    {
+      "id": "High-Risk Destination Approval",
+      "type": "Obligation",
+      "name": "High-Risk Destination Approval",
+      "description": "Obligation: High-Risk Destination Approval"
+    },
+    {
+      "id": "Travel Insurance Verification",
+      "type": "Service",
+      "name": "Travel Insurance Verification",
+      "description": "Service: Travel Insurance Verification"
+    },
+    {
+      "id": "Rebooking Support",
+      "type": "Service",
+      "name": "Rebooking Support",
+      "description": "Service: Rebooking Support"
+    },
+    {
+      "id": "Disruption Support",
+      "type": "Service",
+      "name": "Disruption Support",
+      "description": "Service: Disruption Support"
+    },
+    {
+      "id": "Data Processing Agreement",
+      "type": "Agreement",
+      "name": "Data Processing Agreement",
+      "description": "Agreement: Data Processing Agreement"
+    },
+    {
+      "id": "Gdpr",
+      "type": "Regulation",
+      "name": "Gdpr",
+      "description": "Regulation: Gdpr"
+    },
+    {
+      "id": "Legitimate Interest",
+      "type": "Obligation",
+      "name": "Legitimate Interest",
+      "description": "Obligation: Legitimate Interest"
+    },
+    {
+      "id": "Data Protection Impact Assessment",
+      "type": "Obligation",
+      "name": "Data Protection Impact Assessment",
+      "description": "Obligation: Data Protection Impact Assessment"
+    },
+    {
+      "id": "Corporate Travel Policy",
+      "type": "Obligation",
+      "name": "Corporate Travel Policy",
+      "description": "Obligation: Corporate Travel Policy"
+    },
+    {
+      "id": "Travel Insurance",
+      "type": "Obligation",
+      "name": "Travel Insurance",
+      "description": "Obligation: Travel Insurance"
+    },
+    {
+      "id": "Traveler Training",
+      "type": "Obligation",
+      "name": "Traveler Training",
+      "description": "Obligation: Traveler Training"
+    },
+    {
+      "id": "Advisory",
+      "type": "RiskCategory",
+      "name": "Advisory",
+      "description": "Riskcategory: Advisory"
+    },
+    {
+      "id": "Monitor",
+      "type": "RiskCategory",
+      "name": "Monitor",
+      "description": "Riskcategory: Monitor"
+    },
+    {
+      "id": "Action Required",
+      "type": "RiskCategory",
+      "name": "Action Required",
+      "description": "Riskcategory: Action Required"
+    },
+    {
+      "id": "Crisis",
+      "type": "RiskCategory",
+      "name": "Crisis",
+      "description": "Riskcategory: Crisis"
+    }
+  ],
+  "relationships": [
+    {
+      "source_id": "Travel Services Agreement",
+      "target_id": "Osha General Duty Clause",
+      "type": "COMPLIES_WITH",
+      "description": "Travel Services Agreement COMPLIES_WITH Osha General Duty Clause"
+    },
+    {
+      "source_id": "Travel Services Agreement",
+      "target_id": "Health And Safety At Work Act 1974",
+      "type": "COMPLIES_WITH",
+      "description": "Travel Services Agreement COMPLIES_WITH Health And Safety At Work Act 1974"
+    },
+    {
+      "source_id": "Travel Services Agreement",
+      "target_id": "Corporate Manslaughter And Corporate Homicide Act 2007",
+      "type": "COMPLIES_WITH",
+      "description": "Travel Services Agreement COMPLIES_WITH Corporate Manslaughter And Corporate Homicide Act 2007"
+    },
+    {
+      "source_id": "Travel Services Agreement",
+      "target_id": "Framework Directive 89/391/Eec",
+      "type": "COMPLIES_WITH",
+      "description": "Travel Services Agreement COMPLIES_WITH Framework Directive 89/391/Eec"
+    },
+    {
+      "source_id": "Travel Services Agreement",
+      "target_id": "Iso 31030:2021",
+      "type": "COMPLIES_WITH",
+      "description": "Travel Services Agreement COMPLIES_WITH Iso 31030:2021"
+    },
+    {
+      "source_id": "Direct Travel, Inc.",
+      "target_id": "Risk Intelligence Platform",
+      "type": "OPERATES",
+      "description": "Direct Travel, Inc. OPERATES Risk Intelligence Platform"
+    },
+    {
+      "source_id": "Direct Travel, Inc.",
+      "target_id": "Duty Of Care Services",
+      "type": "PROVIDES",
+      "description": "Direct Travel, Inc. PROVIDES Duty Of Care Services"
+    },
+    {
+      "source_id": "Direct Travel, Inc.",
+      "target_id": "Travel Risk Management",
+      "type": "PROVIDES",
+      "description": "Direct Travel, Inc. PROVIDES Travel Risk Management"
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "target_id": "Risk Intelligence Platform",
+      "type": "ENABLED_BY",
+      "description": "Duty Of Care Services ENABLED_BY Risk Intelligence Platform"
+    },
+    {
+      "source_id": "Traveler",
+      "target_id": "Booking",
+      "type": "HAS_BOOKING",
+      "description": "Traveler HAS_BOOKING Booking"
+    },
+    {
+      "source_id": "Booking",
+      "target_id": "Approved Channels",
+      "type": "BOOKED_THROUGH",
+      "description": "Booking BOOKED_THROUGH Approved Channels"
+    },
+    {
+      "source_id": "Approved Channels",
+      "target_id": "Duty Of Care Services",
+      "type": "ENABLES_COVERAGE",
+      "description": "Approved Channels ENABLES_COVERAGE Duty Of Care Services"
+    },
+    {
+      "source_id": "Incident",
+      "target_id": "Traveler",
+      "type": "IMPACTS",
+      "description": "Incident IMPACTS Traveler"
+    },
+    {
+      "source_id": "Alert",
+      "target_id": "Traveler",
+      "type": "SENT_TO",
+      "description": "Alert SENT_TO Traveler"
+    },
+    {
+      "source_id": "Alert",
+      "target_id": "Incident",
+      "type": "TRIGGERED_BY",
+      "description": "Alert TRIGGERED_BY Incident"
+    },
+    {
+      "source_id": "Incident",
+      "target_id": "Level 1",
+      "type": "CLASSIFIED_AS",
+      "description": "Incident CLASSIFIED_AS Level 1"
+    },
+    {
+      "source_id": "Incident",
+      "target_id": "Level 2",
+      "type": "CLASSIFIED_AS",
+      "description": "Incident CLASSIFIED_AS Level 2"
+    },
+    {
+      "source_id": "Incident",
+      "target_id": "Level 3",
+      "type": "CLASSIFIED_AS",
+      "description": "Incident CLASSIFIED_AS Level 3"
+    },
+    {
+      "source_id": "Incident",
+      "target_id": "Level 4",
+      "type": "CLASSIFIED_AS",
+      "description": "Incident CLASSIFIED_AS Level 4"
+    },
+    {
+      "source_id": "Traveler",
+      "target_id": "Safe",
+      "type": "RESPONDS_WITH",
+      "description": "Traveler RESPONDS_WITH Safe"
+    },
+    {
+      "source_id": "Traveler",
+      "target_id": "Need Assistance",
+      "type": "RESPONDS_WITH",
+      "description": "Traveler RESPONDS_WITH Need Assistance"
+    },
+    {
+      "source_id": "Traveler",
+      "target_id": "Not In Area",
+      "type": "RESPONDS_WITH",
+      "description": "Traveler RESPONDS_WITH Not In Area"
+    },
+    {
+      "source_id": "Traveler",
+      "target_id": "No Response",
+      "type": "RESPONDS_WITH",
+      "description": "Traveler RESPONDS_WITH No Response"
+    },
+    {
+      "source_id": "Need Assistance",
+      "target_id": "Rebooking Support",
+      "type": "TRIGGERS_ACTION",
+      "description": "Need Assistance TRIGGERS_ACTION Rebooking Support"
+    },
+    {
+      "source_id": "Need Assistance",
+      "target_id": "Disruption Support",
+      "type": "TRIGGERS_ACTION",
+      "description": "Need Assistance TRIGGERS_ACTION Disruption Support"
+    },
+    {
+      "source_id": "Specialist Provider",
+      "target_id": "Duty Of Care Services",
+      "type": "PROVIDES",
+      "description": "Specialist Provider PROVIDES Duty Of Care Services"
+    },
+    {
+      "source_id": "Crisis24",
+      "target_id": "Duty Of Care Services",
+      "type": "PROVIDES",
+      "description": "Crisis24 PROVIDES Duty Of Care Services"
+    },
+    {
+      "source_id": "International Sos",
+      "target_id": "Duty Of Care Services",
+      "type": "PROVIDES",
+      "description": "International Sos PROVIDES Duty Of Care Services"
+    },
+    {
+      "source_id": "Primary Travel Program Owner",
+      "target_id": "Client",
+      "type": "DESIGNATED_BY",
+      "description": "Primary Travel Program Owner DESIGNATED_BY Client"
+    },
+    {
+      "source_id": "Alternate Travel Program Contact",
+      "target_id": "Client",
+      "type": "DESIGNATED_BY",
+      "description": "Alternate Travel Program Contact DESIGNATED_BY Client"
+    },
+    {
+      "source_id": "After-Hours Duty Contact",
+      "target_id": "Client",
+      "type": "DESIGNATED_BY",
+      "description": "After-Hours Duty Contact DESIGNATED_BY Client"
+    },
+    {
+      "source_id": "Corporate Security",
+      "target_id": "Client",
+      "type": "DESIGNATED_BY",
+      "description": "Corporate Security DESIGNATED_BY Client"
+    },
+    {
+      "source_id": "Human Resources Duty Contact",
+      "target_id": "Client",
+      "type": "DESIGNATED_BY",
+      "description": "Human Resources Duty Contact DESIGNATED_BY Client"
+    },
+    {
+      "source_id": "Senior Leadership Contact",
+      "target_id": "Client",
+      "type": "DESIGNATED_BY",
+      "description": "Senior Leadership Contact DESIGNATED_BY Client"
+    },
+    {
+      "source_id": "Level 4",
+      "target_id": "Senior Leadership Contact",
+      "type": "ESCALATED_TO",
+      "description": "Level 4 ESCALATED_TO Senior Leadership Contact"
+    },
+    {
+      "source_id": "Level 3",
+      "target_id": "Corporate Security",
+      "type": "ESCALATED_TO",
+      "description": "Level 3 ESCALATED_TO Corporate Security"
+    },
+    {
+      "source_id": "Duty Of Care Services",
+      "target_id": "Client",
+      "type": "REQUIRES_AUTHORIZATION_FROM",
+      "description": "Duty Of Care Services REQUIRES_AUTHORIZATION_FROM Client"
+    },
+    {
+      "source_id": "High-Risk Destination Approval",
+      "target_id": "Travel Services Agreement",
+      "type": "DEFINED_IN",
+      "description": "High-Risk Destination Approval DEFINED_IN Travel Services Agreement"
+    },
+    {
+      "source_id": "High-Risk Destination Approval",
+      "target_id": "Client",
+      "type": "ASSIGNED_TO",
+      "description": "High-Risk Destination Approval ASSIGNED_TO Client"
+    },
+    {
+      "source_id": "Corporate Travel Policy",
+      "target_id": "Travel Services Agreement",
+      "type": "DEFINED_IN",
+      "description": "Corporate Travel Policy DEFINED_IN Travel Services Agreement"
+    },
+    {
+      "source_id": "Corporate Travel Policy",
+      "target_id": "Client",
+      "type": "ASSIGNED_TO",
+      "description": "Corporate Travel Policy ASSIGNED_TO Client"
+    },
+    {
+      "source_id": "Travel Insurance",
+      "target_id": "Travel Services Agreement",
+      "type": "DEFINED_IN",
+      "description": "Travel Insurance DEFINED_IN Travel Services Agreement"
+    },
+    {
+      "source_id": "Travel Insurance",
+      "target_id": "Client",
+      "type": "ASSIGNED_TO",
+      "description": "Travel Insurance ASSIGNED_TO Client"
+    },
+    {
+      "source_id": "Traveler Training",
+      "target_id": "Travel Services Agreement",
+      "type": "DEFINED_IN",
+      "description": "Traveler Training DEFINED_IN Travel Services Agreement"
+    },
+    {
+      "source_id": "Traveler Training",
+      "target_id": "Client",
+      "type": "ASSIGNED_TO",
+      "description": "Traveler Training ASSIGNED_TO Client"
+    },
+    {
+      "source_id": "Data Processing Agreement",
+      "target_id": "Travel Services Agreement",
+      "type": "INCORPORATES",
+      "description": "Data Processing Agreement INCORPORATES Travel Services Agreement"
+    },
+    {
+      "source_id": "Data Processing Agreement",
+      "target_id": "Gdpr",
+      "type": "COMPLIES_WITH",
+      "description": "Data Processing Agreement COMPLIES_WITH Gdpr"
+    },
+    {
+      "source_id": "Legitimate Interest",
+      "target_id": "Travel Services Agreement",
+      "type": "DEFINED_IN",
+      "description": "Legitimate Interest DEFINED_IN Travel Services Agreement"
+    },
+    {
+      "source_id": "Legitimate Interest",
+      "target_id": "Client",
+      "type": "ASSIGNED_TO",
+      "description": "Legitimate Interest ASSIGNED_TO Client"
+    },
+    {
+      "source_id": "Data Protection Impact Assessment",
+      "target_id": "Travel Services Agreement",
+      "type": "DEFINED_IN",
+      "description": "Data Protection Impact Assessment DEFINED_IN Travel Services Agreement"
+    },
+    {
+      "source_id": "Data Protection Impact Assessment",
+      "target_id": "Client",
+      "type": "ASSIGNED_TO",
+      "description": "Data Protection Impact Assessment ASSIGNED_TO Client"
+    },
+    {
+      "source_id": "Direct Travel, Inc.",
+      "target_id": "Specialist Provider",
+      "type": "ENGAGES",
+      "description": "Direct Travel, Inc. ENGAGES Specialist Provider"
+    }
+  ],
+  "source_document": "direct_travel_duty_of_care.md",
+  "source_sections": [],
+  "extraction_metadata": {
+    "section_count": 0,
+    "final_entity_count": 64,
+    "final_relationship_count": 52
+  }
+}

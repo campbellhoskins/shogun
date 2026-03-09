@@ -5,10 +5,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from anthropic import Anthropic
-from src.parser import parse_policy
 from src.pipeline import extract_ontology
-from src.graph import build_graph, serialize_graph
-from src.visualizer import generate_visualization
+from src.graph import build_graph
 from src.agent import ask
 from src.pdf_parser import parse_pdf
 
@@ -40,9 +38,6 @@ def main() -> None:
     else:
         policy_path = project_root / "data" / "sample_policy.md"
 
-    graph_html_path = project_root / "output" / "graph.html"
-    graph_html_path.parent.mkdir(exist_ok=True)
-
     # Load policy
     print(f"Loading policy document: {policy_path.name}")
     policy_text = load_document(policy_path)
@@ -58,7 +53,7 @@ def main() -> None:
     meta = ontology.extraction_metadata
     if meta.section_count > 0:
         print(f"  Sections: {meta.section_count}")
-        print(f"  Deduplication merges: {meta.deduplication_merges}")
+        print(f"  Deduplication merges: {meta.exact_id_dedup_merges + meta.semantic_dedup_merges}")
 
     # Build NetworkX graph
     print("\nBuilding graph...")
@@ -73,11 +68,6 @@ def main() -> None:
     print("\n  Entity types:")
     for t, count in sorted(type_counts.items(), key=lambda x: -x[1]):
         print(f"    {t}: {count}")
-
-    # Generate visualization
-    print(f"\nGenerating interactive visualization -> {graph_html_path}")
-    generate_visualization(g, output_path=graph_html_path)
-    print(f"  Open {graph_html_path} in your browser to explore the graph")
 
     # Interactive Q&A loop
     print("\n" + "=" * 60)

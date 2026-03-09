@@ -13,7 +13,6 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
-import re
 import sys
 from typing import Any
 
@@ -22,24 +21,25 @@ from anthropic import Anthropic, AsyncAnthropic
 # Thinking configuration for extraction calls
 _THINKING_CONFIG = {"type": "enabled", "budget_tokens": 10000}
 
-# Model used for extraction calls — loaded from .env TEST_MODEL
+# Default model for extraction calls — loaded from .env
 import os
 from dotenv import load_dotenv
 load_dotenv()
-TEST_MODEL = os.environ.get("TEST_MODEL", "claude-haiku-4-5-20251001")
+_DEFAULT_MODEL = os.environ.get("_DEFAULT_MODEL", "claude-haiku-4-5-20251001")
 
 from src.models import (
     DocumentSection,
     FirstPassEntity,
     FirstPassResult,
     Relationship,
+    RelationshipExtractionOutput,
     SectionExtraction,
     SourceAnchor,
+    StageUsage,
 )
 from src.schemas import (
     BaseEntitySchema,
     generate_entity_type_prompt_section,
-    generate_entity_type_prompt_section_slim,
     generate_relationship_type_prompt_section,
     validate_entity,
 )
@@ -177,7 +177,7 @@ provide the authoritative value and the merge step will fill it in.
 </attribute_grounding>
 
 <output_schema>
-Produce a single JSON object with one key: "entities" containing an array.
+Produce a JSON object with one key: "entities" containing an array.
 
 Each entity requires:
 - id: lowercase_with_underscores, descriptive
@@ -188,8 +188,6 @@ Each entity requires:
 - All typed attributes defined for the entity's type (see entity_types
   above). Populate every attribute for which the section text provides
   a value.
-
-Produce ONLY the JSON object.
 </output_schema>
 
 <pre_registration_rules>
@@ -219,7 +217,7 @@ ENTITY_USER_PROMPT = """\
 </section_text>
 
 <task>
-Extract all entities from section {section_id}. Produce only the JSON object. \
+Extract all entities from section {section_id}. \
 Do not extract from content outside <section_text>.
 </task>
 """
@@ -323,16 +321,14 @@ Use ONLY the types below. The Source Type and Target Type columns are hard const
 </relationship_types>
 
 <output_schema>
-Produce a single JSON object with one key: "relationships" containing an array of relationships.
+Produce a JSON object with one key: "relationships" containing an array of relationships.
 Each relationship must have:
 - **source_id**: MUST exactly match an entity id from the EXTRACTED ENTITIES list above
 - **target_id**: MUST exactly match an entity id from the EXTRACTED ENTITIES list above
 - **type**: One of the relationship types listed above
 - **description**: A specific description of HOW these entities relate, drawn \
   from the section text
-
-OUTPUT FORMAT
-Produce ONLY the JSON object. No preamble, no markdown fences, no commentary before or after.
+Ensure that the output is in valid JSON format. Do not include any text outside the JSON object.
 </output_schema>
 """
 
@@ -353,7 +349,7 @@ Every source_id and target_id must exactly match an id from this list.
 {entities_json}
 ```
 
-Extract all relationships from section {section_id}. Produce only the JSON object.
+Extract all relationships from section {section_id}. Return in valid JSON format.
 """
 
 
@@ -534,36 +530,47 @@ def _build_relationship_prompt(
 # ============================================================
 
 
-def _extract_text_from_response(response) -> str:
-    """Extract the text content from a thinking-enabled API response."""
+import re
+
+
+def _extract_text_block(response) -> str:
+    """Extract the text content block from an API response (skip thinking blocks)."""
     for block in response.content:
         if block.type == "text":
             return block.text
     return ""
 
 
-def _parse_extraction_response(raw: str) -> dict:
-    """Parse JSON from extraction response, stripping analysis tags and fences."""
-    # Strip <extraction_analysis>...</extraction_analysis> thinking block
-    cleaned = re.sub(
-        r"<extraction_analysis>[\s\S]*?</extraction_analysis>", "", raw
-    ).strip()
+def _parse_json_response(text: str) -> dict:
+    """Parse JSON from LLM text with progressive fallback.
 
-    # Strip markdown code fences
-    if cleaned.startswith("```"):
-        lines = cleaned.split("\n")
-        lines = lines[1:]
-        if lines and lines[-1].strip() == "```":
-            lines = lines[:-1]
-        cleaned = "\n".join(lines)
+    1. Raw json.loads
+    2. Strip markdown fences (```json ... ```)
+    3. Strip control characters
+    4. Raise ValueError with context
+    """
+    # Attempt 1: raw parse
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
 
+    # Attempt 2: strip markdown fences
+    stripped = re.sub(r"```(?:json)?\s*\n?", "", text).strip()
+    try:
+        return json.loads(stripped)
+    except json.JSONDecodeError:
+        pass
+
+    # Attempt 3: strip control characters (except newline/tab)
+    cleaned = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f]", "", stripped)
     try:
         return json.loads(cleaned)
-    except json.JSONDecodeError:
-        match = re.search(r"\{[\s\S]*\}", cleaned)
-        if match:
-            return json.loads(match.group())
-        raise
+    except json.JSONDecodeError as exc:
+        preview = text[:200] if len(text) > 200 else text
+        raise ValueError(
+            f"Failed to parse JSON after all fallbacks. Preview: {preview!r}"
+        ) from exc
 
 
 # ============================================================
@@ -571,51 +578,39 @@ def _parse_extraction_response(raw: str) -> dict:
 # ============================================================
 
 
-def _build_validated_entities(
-    data: dict, section: DocumentSection
+def _build_validated_entities_from_parsed(
+    parsed_entities: list, section: DocumentSection
 ) -> list[BaseEntitySchema]:
-    """Validate raw entity dicts from LLM output into typed entity objects.
+    """Post-process parsed AnyEntity objects from structured output.
 
-    Uses validate_entity() from schemas.py. Entities with unknown types or
-    validation failures are skipped with warnings.
+    Stamps source_anchor section and appears_in. Re-validates through
+    validate_entity() to ensure typed schema compliance.
     """
     entities = []
-    for e in data.get("entities", []):
-        # Ensure required base fields are present as strings
-        entity_dict: dict = {
-            "id": str(e.get("id", "")),
-            "type": str(e.get("type", "")),
-            "name": str(e.get("name", "")),
-            "description": str(e.get("description", "")),
-        }
+    for e in parsed_entities:
+        # Convert parsed Pydantic model to dict for re-validation.
+        # exclude_defaults strips empty typed-attribute fields from the flat
+        # union model so validate_entity() doesn't warn about irrelevant fields.
+        entity_dict = e.model_dump(exclude_defaults=True) if hasattr(e, "model_dump") else dict(e)
 
-        # Source anchor
-        anchor_data = e.get("source_anchor", {})
-        entity_dict["source_anchor"] = {
-            "source_text": str(anchor_data.get("source_text", "")),
-            "source_section": str(
-                anchor_data.get("source_section", section.section_id or section.section_number)
-            ),
-        }
+        # Ensure source_anchor has section info
+        anchor = entity_dict.get("source_anchor", {})
+        if not anchor.get("source_section"):
+            anchor["source_section"] = section.section_id or section.section_number
+            entity_dict["source_anchor"] = anchor
 
-        # Carry over all other fields from LLM output (typed attributes,
-        # or legacy "attributes" dict flattened to top-level).
-        if "attributes" in e and isinstance(e["attributes"], dict):
-            for k, v in e["attributes"].items():
+        # Flatten legacy "attributes" dict if present
+        if "attributes" in entity_dict and isinstance(entity_dict["attributes"], dict):
+            attrs = entity_dict.pop("attributes")
+            for k, v in attrs.items():
                 if k not in entity_dict:
                     entity_dict[k] = v
-        # Also carry any top-level typed attribute fields
-        skip_keys = {"id", "type", "name", "description", "source_anchor", "attributes"}
-        for k, v in e.items():
-            if k not in skip_keys and k not in entity_dict:
-                entity_dict[k] = v
 
         entity, warnings = validate_entity(entity_dict)
         if warnings:
             for w in warnings:
                 print(f"    [WARN] Section {section.section_number}: {w}")
         if entity is not None:
-            # Stamp appears_in with the section's SEC-XX id
             if section.section_id:
                 entity.appears_in = [section.section_id]
             entities.append(entity)
@@ -687,22 +682,29 @@ async def _api_call_with_retry(
     system_prompt: str,
     user_prompt: str,
     section_number: str,
+    model: str,
+    output_format: type | None = None,
     max_retries: int = 3,
     pass_name: str = "extraction",
 ) -> Any:
     """Make an async API call with rate-limit retry logic.
 
-    Returns the raw API response object.
+    Returns the raw API response object (ParsedMessage if output_format given).
     """
     for attempt in range(max_retries):
         try:
-            response = await client.messages.create(
-                model=TEST_MODEL,
-                max_tokens=16384,
-                system=system_prompt,
-                thinking=_THINKING_CONFIG,
-                messages=[{"role": "user", "content": user_prompt}],
-            )
+            kwargs: dict[str, Any] = {
+                "model": model,
+                "max_tokens": 16384,
+                "system": system_prompt,
+                "thinking": _THINKING_CONFIG,
+                "messages": [{"role": "user", "content": user_prompt}],
+            }
+            if output_format is not None:
+                kwargs["output_format"] = output_format
+                response = await client.messages.parse(**kwargs)
+            else:
+                response = await client.messages.create(**kwargs)
             return response
         except Exception as e:
             if "rate_limit" in str(e).lower() or "429" in str(e):
@@ -730,6 +732,7 @@ def extract_section(
     all_sections: list[DocumentSection],
     client: Anthropic | None = None,
     first_pass_result: FirstPassResult | None = None,
+    model: str | None = None,
 ) -> SectionExtraction:
     """Extract entities and relationships from a single section (two-pass).
 
@@ -741,12 +744,14 @@ def extract_section(
         all_sections: All sections for context outline.
         client: Anthropic client.
         first_pass_result: First pass output for global context.
+        model: LLM model ID. Defaults to env TEST_MODEL.
 
     Returns:
         SectionExtraction with entities, relationships, and source anchoring.
     """
     if client is None:
         client = Anthropic()
+    model = model or _DEFAULT_MODEL
 
     if first_pass_result is None:
         first_pass_result = FirstPassResult()
@@ -755,22 +760,26 @@ def extract_section(
     entity_sys, entity_user = _build_entity_prompt(section, all_sections, first_pass_result)
 
     response = client.messages.create(
-        model=TEST_MODEL,
+        model=model,
         max_tokens=16000,
         system=entity_sys,
         thinking=_THINKING_CONFIG,
         messages=[{"role": "user", "content": entity_user}],
     )
 
-    raw = _extract_text_from_response(response)
-    data = _parse_extraction_response(raw)
-    entities = _build_validated_entities(data, section)
+    try:
+        raw_entities = _parse_json_response(_extract_text_block(response)).get("entities", [])
+    except ValueError as exc:
+        print(f"    [WARN] Section {section.section_number}: entity JSON parse failed: {exc}")
+        raw_entities = []
+    entities = _build_validated_entities_from_parsed(raw_entities, section)
 
     # Retry if zero entities
     if not entities and len(section.text.strip()) > 100:
         entities = _retry_entity_extraction(
             section, all_sections, client,
             first_pass_result=first_pass_result,
+            model=model,
         )
 
     # Pass 2: Relationship extraction (skip if no entities)
@@ -778,16 +787,17 @@ def extract_section(
     if entities:
         rel_sys, rel_user = _build_relationship_prompt(section, entities)
 
-        response = client.messages.create(
-            model=TEST_MODEL,
+        rel_response = client.messages.parse(
+            model=model,
             max_tokens=16000,
             system=rel_sys,
             thinking=_THINKING_CONFIG,
+            output_format=RelationshipExtractionOutput,
             messages=[{"role": "user", "content": rel_user}],
         )
 
-        raw = _extract_text_from_response(response)
-        rel_data = _parse_extraction_response(raw)
+        rel_parsed: RelationshipExtractionOutput = rel_response.parsed_output
+        rel_data = {"relationships": [r.model_dump() for r in rel_parsed.relationships]}
         relationships = _build_validated_relationships(rel_data, entities, section)
 
     return SectionExtraction(
@@ -802,10 +812,12 @@ def _retry_entity_extraction(
     all_sections: list[DocumentSection],
     client: Anthropic,
     first_pass_result: FirstPassResult | None = None,
+    model: str | None = None,
 ) -> list[BaseEntitySchema]:
     """Retry entity extraction with a more aggressive prompt."""
     if first_pass_result is None:
         first_pass_result = FirstPassResult()
+    model = model or _DEFAULT_MODEL
 
     entity_sys, entity_user = _build_entity_prompt(section, all_sections, first_pass_result)
     retry_prefix = (
@@ -816,16 +828,19 @@ def _retry_entity_extraction(
     )
 
     response = client.messages.create(
-        model=TEST_MODEL,
+        model=model,
         max_tokens=16000,
         system=entity_sys,
         thinking=_THINKING_CONFIG,
         messages=[{"role": "user", "content": retry_prefix + entity_user}],
     )
 
-    raw = _extract_text_from_response(response)
-    data = _parse_extraction_response(raw)
-    return _build_validated_entities(data, section)
+    try:
+        raw_entities = _parse_json_response(_extract_text_block(response)).get("entities", [])
+    except ValueError as exc:
+        print(f"    [WARN] Section {section.section_number}: entity retry JSON parse failed: {exc}")
+        raw_entities = []
+    return _build_validated_entities_from_parsed(raw_entities, section)
 
 
 # ============================================================
@@ -840,14 +855,23 @@ async def _extract_section_async(
     semaphore: asyncio.Semaphore,
     max_retries: int = 3,
     first_pass_result: FirstPassResult | None = None,
-) -> SectionExtraction:
+    model: str | None = None,
+) -> tuple[SectionExtraction, StageUsage]:
     """Extract a single section asynchronously with two-pass approach.
 
     Both passes are sequential within the semaphore (pass 2 depends on pass 1).
     Different sections still run in parallel via asyncio.gather.
+
+    Returns:
+        Tuple of (SectionExtraction, StageUsage with accumulated token counts).
     """
     if first_pass_result is None:
         first_pass_result = FirstPassResult()
+    model = model or _DEFAULT_MODEL
+
+    section_input_tokens = 0
+    section_output_tokens = 0
+    section_api_calls = 0
 
     async with semaphore:
         # ---- Pass 1: Entity extraction ----
@@ -857,7 +881,7 @@ async def _extract_section_async(
 
         _dbg(
             f"ENTITY API CALL [{section.section_number}]",
-            f"model: {TEST_MODEL}\n"
+            f"model: {model}\n"
             f"max_tokens: 16384 (thinking: {_THINKING_CONFIG['budget_tokens']})\n"
             f"system prompt length: {len(entity_sys)} chars\n"
             f"user prompt length: {len(entity_user)} chars",
@@ -865,17 +889,22 @@ async def _extract_section_async(
 
         response = await _api_call_with_retry(
             client, entity_sys, entity_user,
-            section.section_number, max_retries, pass_name="entity pass",
+            section.section_number,
+            model=model,
+            max_retries=max_retries,
+            pass_name="entity pass",
         )
 
-        raw = _extract_text_from_response(response)
-        _dbg(
-            f"ENTITY RESPONSE [{section.section_number}] ({len(raw)} chars)",
-            raw,
-        )
+        section_input_tokens += response.usage.input_tokens
+        section_output_tokens += response.usage.output_tokens
+        section_api_calls += 1
 
-        data = _parse_extraction_response(raw)
-        entities = _build_validated_entities(data, section)
+        try:
+            raw_entities = _parse_json_response(_extract_text_block(response)).get("entities", [])
+        except ValueError as exc:
+            print(f"    [WARN] Section {section.section_number}: entity JSON parse failed: {exc}")
+            raw_entities = []
+        entities = _build_validated_entities_from_parsed(raw_entities, section)
 
         _dbg(
             f"ENTITY RESULT [{section.section_number}]",
@@ -896,16 +925,22 @@ async def _extract_section_async(
 
             response = await _api_call_with_retry(
                 client, entity_sys, retry_prefix + entity_user,
-                section.section_number, max_retries, pass_name="entity retry",
+                section.section_number,
+                model=model,
+                max_retries=max_retries,
+                pass_name="entity retry",
             )
 
-            raw = _extract_text_from_response(response)
-            _dbg(
-                f"ENTITY RETRY RESPONSE [{section.section_number}] ({len(raw)} chars)",
-                raw,
-            )
-            data = _parse_extraction_response(raw)
-            entities = _build_validated_entities(data, section)
+            section_input_tokens += response.usage.input_tokens
+            section_output_tokens += response.usage.output_tokens
+            section_api_calls += 1
+
+            try:
+                retry_raw = _parse_json_response(_extract_text_block(response)).get("entities", [])
+            except ValueError as exc:
+                print(f"    [WARN] Section {section.section_number}: entity retry JSON parse failed: {exc}")
+                retry_raw = []
+            entities = _build_validated_entities_from_parsed(retry_raw, section)
 
             _dbg(
                 f"ENTITY RETRY RESULT [{section.section_number}]",
@@ -924,18 +959,21 @@ async def _extract_section_async(
                 f"user prompt length: {len(rel_user)} chars",
             )
 
-            response = await _api_call_with_retry(
+            rel_response = await _api_call_with_retry(
                 client, rel_sys, rel_user,
-                section.section_number, max_retries, pass_name="relationship pass",
+                section.section_number,
+                model=model,
+                output_format=RelationshipExtractionOutput,
+                max_retries=max_retries,
+                pass_name="relationship pass",
             )
 
-            raw = _extract_text_from_response(response)
-            _dbg(
-                f"REL RESPONSE [{section.section_number}] ({len(raw)} chars)",
-                raw,
-            )
+            section_input_tokens += rel_response.usage.input_tokens
+            section_output_tokens += rel_response.usage.output_tokens
+            section_api_calls += 1
 
-            rel_data = _parse_extraction_response(raw)
+            rel_parsed: RelationshipExtractionOutput = rel_response.parsed_output
+            rel_data = {"relationships": [r.model_dump() for r in rel_parsed.relationships]}
             relationships = _build_validated_relationships(rel_data, entities, section)
 
             _dbg(
@@ -943,10 +981,21 @@ async def _extract_section_async(
                 f"relationships: {len(relationships)}",
             )
 
-        return SectionExtraction(
-            section=section,
-            entities=entities,
-            relationships=relationships,
+        usage = StageUsage(
+            stage="stage2_extraction",
+            model=model,
+            input_tokens=section_input_tokens,
+            output_tokens=section_output_tokens,
+            api_calls=section_api_calls,
+        )
+
+        return (
+            SectionExtraction(
+                section=section,
+                entities=entities,
+                relationships=relationships,
+            ),
+            usage,
         )
 
 
@@ -960,7 +1009,8 @@ def extract_all_sections(
     client: Anthropic | None = None,
     max_concurrent: int = 2,
     first_pass_result: FirstPassResult | None = None,
-) -> list[SectionExtraction]:
+    model: str | None = None,
+) -> tuple[list[SectionExtraction], StageUsage]:
     """Extract entities from all sections in parallel.
 
     Args:
@@ -968,12 +1018,14 @@ def extract_all_sections(
         client: Synchronous Anthropic client (used to get API key config).
         max_concurrent: Maximum concurrent API calls.
         first_pass_result: Optional first pass output for global context.
+        model: LLM model ID. Defaults to env TEST_MODEL.
 
     Returns:
-        List of SectionExtraction results in the same order as input sections.
+        Tuple of (list of SectionExtraction results, aggregated StageUsage).
     """
     if client is None:
         client = Anthropic()
+    model = model or _DEFAULT_MODEL
 
     # Force sequential execution in debug mode so output is readable
     if _DEBUG:
@@ -984,7 +1036,7 @@ def extract_all_sections(
             f"Sections: {', '.join(s.section_number for s in sections)}",
         )
 
-    async def _run() -> list[SectionExtraction]:
+    async def _run() -> tuple[list[SectionExtraction], StageUsage]:
         async_client = AsyncAnthropic()
         semaphore = asyncio.Semaphore(max_concurrent)
 
@@ -992,14 +1044,18 @@ def extract_all_sections(
             _extract_section_async(
                 section, sections, async_client, semaphore,
                 first_pass_result=first_pass_result,
+                model=model,
             )
             for section in sections
         ]
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        # Handle any exceptions
+        # Handle any exceptions and aggregate usage
         extractions = []
+        total_input = 0
+        total_output = 0
+        total_calls = 0
         for i, result in enumerate(results):
             if isinstance(result, Exception):
                 print(
@@ -1010,9 +1066,20 @@ def extract_all_sections(
                     SectionExtraction(section=sections[i])
                 )
             else:
-                extractions.append(result)
+                extraction, section_usage = result
+                extractions.append(extraction)
+                total_input += section_usage.input_tokens
+                total_output += section_usage.output_tokens
+                total_calls += section_usage.api_calls
 
-        return extractions
+        usage = StageUsage(
+            stage="stage2_extraction",
+            model=model,
+            input_tokens=total_input,
+            output_tokens=total_output,
+            api_calls=total_calls,
+        )
+        return extractions, usage
 
     return asyncio.run(_run())
 
@@ -1096,9 +1163,6 @@ def main(argv: list[str] | None = None) -> None:
 
     _DEBUG = args.debug
 
-    from dotenv import load_dotenv
-    load_dotenv()
-
     with open(args.input, encoding="utf-8") as f:
         chunks = json.load(f)
     print(f"Loaded {len(chunks)} chunks from {args.input}")
@@ -1110,7 +1174,8 @@ def main(argv: list[str] | None = None) -> None:
         print(f"Loaded first pass from {args.first_pass}")
 
     sections = _sections_from_chunks(chunks)
-    extractions = extract_all_sections(sections, first_pass_result=fp_result)
+    extractions, usage = extract_all_sections(sections, first_pass_result=fp_result)
+    print(f"  Tokens: {usage.input_tokens} in, {usage.output_tokens} out ({usage.api_calls} API calls)")
 
     data = serialize_extractions(extractions)
     with open(args.output, "w", encoding="utf-8") as f:

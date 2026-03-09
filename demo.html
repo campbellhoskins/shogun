@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shogun — Duty of Care Knowledge Graph Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0b0f1a;--panel:#141b2d;--panel2:#1a2238;--border:#1e2a45;
+  --text:#c9d1d9;--text2:#8b949e;--accent:#58a6ff;
+  --red:#f85149;--amber:#d29922;--green:#3fb950;--purple:#bc8cff;
+  --pink:#f778ba;--orange:#f0883e;--cyan:#39d2c0;
+}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+/* ─── PROGRESS BAR ─── */
+#progress-bar{position:fixed;top:0;left:0;right:0;height:3px;z-index:10000;display:flex;background:rgba(30,42,69,.5)}
+#progress-bar .seg{flex:1;height:100%;transition:background .4s;background:transparent}
+#progress-bar .seg.active{background:var(--accent)}
+#progress-bar .seg.done{background:rgba(88,166,255,.3)}
+
+/* ─── HEADER ─── */
+header{padding:10px 20px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;flex-shrink:0;z-index:5}
+header h1{font-size:14px;font-weight:700;letter-spacing:.2px}
+header h1 span{color:var(--accent)}
+header .tag{font-size:8px;background:var(--accent);color:#000;padding:2px 8px;border-radius:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+header .stats{font-size:10px;color:var(--text2);display:flex;gap:10px;margin-left:auto}
+header .stats b{color:var(--accent)}
+
+/* ─── MAIN LAYOUT ─── */
+main{display:flex;flex:1;min-height:0}
+#graph-wrap{flex:1;position:relative;background:var(--bg)}
+#graph-container{width:100%;height:100%}
+#graph-container::after{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0px,transparent 2px,rgba(255,255,255,.006) 2px,rgba(255,255,255,.006) 4px)}
+#right-panel{width:420px;flex-shrink:0;border-left:1px solid var(--border);display:flex;flex-direction:column;background:var(--panel)}
+
+/* ─── ZOOM ─── */
+.zoom-controls{position:absolute;top:14px;right:14px;z-index:10;display:flex;flex-direction:column;gap:2px;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:4px;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.zoom-btn{width:30px;height:30px;border:none;background:transparent;color:var(--text2);font-size:15px;cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:inherit}
+.zoom-btn:hover{background:var(--panel2);color:var(--text)}
+.zoom-div{height:1px;background:var(--border);margin:2px 4px}
+
+/* ─── FLOATING ENTITY CARD ─── */
+#entity-card{position:absolute;top:14px;left:14px;z-index:20;width:310px;max-height:48%;background:rgba(20,27,45,.94);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:10px;padding:14px 16px;overflow-y:auto;opacity:0;transform:translateY(-8px);transition:opacity .3s,transform .3s;pointer-events:none;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+#entity-card.visible{opacity:1;transform:translateY(0);pointer-events:all}
+#entity-card .ec-close{position:absolute;top:6px;right:8px;background:none;border:none;color:var(--text2);font-size:14px;cursor:pointer;padding:2px 6px;border-radius:4px;line-height:1}
+#entity-card .ec-close:hover{color:var(--text);background:var(--panel2)}
+#entity-card .ec-name{font-size:14px;font-weight:700;margin-bottom:2px;padding-right:24px}
+#entity-card .ec-type{font-size:10px;color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+#entity-card .ec-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0}
+#entity-card .ec-desc{font-size:10px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+#entity-card table{width:100%;font-size:10px;border-collapse:collapse}
+#entity-card td{padding:2px 0;vertical-align:top}
+#entity-card td:first-child{color:var(--text2);width:42%;padding-right:6px}
+#entity-card td:last-child{color:var(--text);font-weight:500}
+#entity-card tr{border-bottom:1px solid rgba(30,42,69,.6)}
+
+/* ─── LEGEND ─── */
+#legend{position:absolute;bottom:10px;left:10px;background:rgba(20,27,45,.92);border:1px solid var(--border);border-radius:8px;padding:8px 12px;display:flex;flex-wrap:wrap;gap:4px 12px;z-index:10;max-width:600px}
+#legend .item{display:flex;align-items:center;gap:4px;font-size:9px;color:var(--text2)}
+#legend .dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+
+/* ─── RIGHT PANEL: SCENARIO SELECTOR ─── */
+#panel-scenarios{flex:1;display:flex;flex-direction:column;padding:20px;overflow-y:auto}
+#panel-scenarios h2{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text2);margin-bottom:14px;font-weight:600}
+.scenario-btn{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:10px;cursor:pointer;text-align:left;transition:all .2s;font-size:13px;margin-bottom:8px;font-family:inherit;width:100%;display:block}
+.scenario-btn:hover{border-color:var(--accent);background:rgba(88,166,255,.06)}
+.scenario-btn.active{border-color:var(--accent);background:rgba(88,166,255,.1);box-shadow:0 0 12px rgba(88,166,255,.12)}
+.scenario-btn .sc-title{font-weight:700;color:#fff;display:block;margin-bottom:3px;font-size:13px}
+.scenario-btn .sc-desc{color:var(--text2);font-size:11px;line-height:1.4}
+.scenario-empty{color:var(--text2);font-size:12px;text-align:center;padding:40px 20px;line-height:1.6;font-style:italic}
+
+/* ─── RIGHT PANEL: ACTIVE SCENARIO ─── */
+#panel-active{flex:1;display:none;flex-direction:column;padding:20px;overflow-y:auto}
+#panel-active h2{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text2);margin-bottom:14px;font-weight:600}
+#step-progress{display:flex;gap:5px;margin-bottom:14px}
+#step-progress .dot{width:10px;height:10px;border-radius:50%;background:var(--border);transition:background .3s;cursor:pointer}
+#step-progress .dot.active{background:var(--accent);box-shadow:0 0 6px rgba(88,166,255,.4)}
+#step-progress .dot.done{background:rgba(88,166,255,.4)}
+#step-title{font-size:17px;font-weight:700;margin-bottom:6px;letter-spacing:-.2px}
+#step-counter{font-size:11px;color:var(--accent);font-weight:600;margin-bottom:10px}
+#step-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px}
+#manual-annotation{background:rgba(210,153,34,.06);border:1px solid rgba(210,153,34,.25);border-radius:8px;padding:12px;margin-bottom:14px;display:none}
+#manual-annotation .m-label{font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--amber);font-weight:700;margin-bottom:4px}
+#manual-annotation .m-text{font-size:12px;color:var(--amber);line-height:1.5;font-style:italic;opacity:.8}
+#agent-log-wrap{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column}
+#agent-log-label{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);margin-bottom:8px;font-weight:600}
+#agent-log{flex:1;overflow-y:auto;background:#080a12;border:1px solid var(--border);border-radius:8px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8}
+#agent-log .log-line{opacity:0;animation:fadeIn .3s forwards}
+#agent-log .qry{color:var(--cyan)}
+#agent-log .trv{color:var(--purple)}
+#agent-log .atr{color:var(--amber)}
+#agent-log .dec{color:var(--green)}
+#agent-log .wrn{color:var(--red)}
+#agent-log .dim{color:var(--text2)}
+@keyframes fadeIn{to{opacity:1}}
+#controls{display:flex;gap:8px;margin-top:14px;flex-shrink:0}
+#controls button{flex:1;padding:10px;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit}
+#controls button:hover{background:var(--accent);border-color:var(--accent);color:#000}
+#controls button:disabled{opacity:.25;cursor:default;background:var(--panel2);border-color:var(--border);color:var(--text)}
+
+/* ─── RIGHT PANEL: RESULTS ─── */
+#panel-results{flex:1;display:none;flex-direction:column;padding:20px;overflow-y:auto}
+#panel-results h2{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text2);margin-bottom:14px;font-weight:600}
+.plan-header{padding:10px 0;border-bottom:1px solid var(--border);margin-bottom:12px}
+.plan-incident{font-size:14px;color:#fff;font-weight:700}
+.plan-severity{font-size:13px;font-weight:700;display:inline-block;padding:3px 12px;border-radius:6px;margin-top:6px}
+.plan-severity.critical{background:rgba(248,81,73,.15);color:var(--red)}
+.plan-severity.high{background:rgba(210,153,34,.15);color:var(--amber)}
+.plan-severity.moderate{background:rgba(88,166,255,.15);color:var(--accent)}
+.action-item{padding:10px 0;border-bottom:1px solid rgba(30,42,69,.6);animation:fadeSlide .4s ease both}
+.action-item:last-child{border-bottom:none}
+.action-name{font-size:13px;font-weight:600;color:#fff}
+.action-meta{font-size:11px;color:var(--text2);margin-top:4px;line-height:1.6}
+.action-meta span{display:inline-block;margin-right:10px}
+.action-time{color:var(--purple)!important;font-weight:600}
+.action-who{color:var(--green)!important}
+@keyframes fadeSlide{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+.traversal-stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+.tstat{font-size:11px;color:var(--text2)}
+.tstat strong{color:var(--cyan)}
+.results-actions{margin-top:16px;display:flex;gap:8px}
+.results-actions button{flex:1;padding:10px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-another{background:var(--panel2);border:1px solid var(--border);color:var(--text)}
+.btn-another:hover{border-color:var(--accent);color:var(--accent)}
+.btn-restart{background:rgba(88,166,255,.1);border:1px solid rgba(88,166,255,.3);color:var(--accent)}
+.btn-restart:hover{background:rgba(88,166,255,.2)}
+
+/* ─── OVERLAYS ─── */
+.overlay{position:fixed;inset:0;z-index:9000;background:rgba(8,10,18,.95);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .5s}
+.overlay.visible{opacity:1;pointer-events:all}
+.ov-card{max-width:780px;width:92%;text-align:center;animation:slideUp .5s ease .1s both}
+@keyframes slideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+.ov-card h2{font-size:38px;font-weight:800;line-height:1.15;margin-bottom:20px;letter-spacing:-.5px}
+.ov-card h2 .hl{color:var(--accent)}
+.ov-card p{font-size:15px;color:var(--text2);line-height:1.7;margin-bottom:16px;max-width:620px;margin-left:auto;margin-right:auto}
+.ov-callout{font-size:13px;color:var(--amber);font-weight:600;padding:12px 20px;border:1px solid rgba(210,153,34,.2);border-radius:8px;background:rgba(210,153,34,.06);display:inline-block;margin:10px 0 24px}
+.ov-btn{display:inline-block;padding:14px 36px;background:var(--accent);color:#000;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;letter-spacing:.2px}
+.ov-btn:hover{background:#79bbff;transform:translateY(-1px)}
+/* PDF mockup */
+.pdf-mock{width:120px;height:160px;margin:0 auto 24px;background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:14px 12px;position:relative;overflow:hidden}
+.pdf-mock::before{content:'PDF';position:absolute;top:5px;right:7px;font-size:7px;font-weight:700;color:var(--red);letter-spacing:.5px;background:rgba(248,81,73,.1);padding:1px 5px;border-radius:3px}
+.pdf-ln{height:3px;background:rgba(201,209,217,.06);border-radius:2px;margin-bottom:4px}
+.pdf-ln:nth-child(2){width:85%}.pdf-ln:nth-child(3){width:92%}.pdf-ln:nth-child(4){width:78%}
+.pdf-ln:nth-child(5){width:88%}.pdf-ln:nth-child(6){width:70%}.pdf-ln:nth-child(7){width:95%}
+.pdf-ln:nth-child(8){width:80%}.pdf-ln:nth-child(9){width:65%}.pdf-ln:nth-child(10){width:90%}
+.pdf-ln:nth-child(11){width:76%}.pdf-ln:nth-child(12){width:82%}.pdf-ln:nth-child(13){width:60%}
+
+/* ─── PIPELINE OVERLAY ─── */
+.pipeline-section{margin:32px auto;max-width:860px}
+.pipeline-section h3{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text2);margin-bottom:18px;text-align:center;font-weight:600}
+.pipeline{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:nowrap}
+.stage{display:flex;flex-direction:column;align-items:center;padding:10px 8px;border-radius:10px;background:var(--panel2);border:1px solid var(--border);width:120px;flex-shrink:0;opacity:0;transform:translateY(12px);transition:all .4s}
+.stage.visible{opacity:1;transform:translateY(0)}
+.stage:hover{border-color:var(--accent);transform:translateY(-2px)}
+.stage-num{font-size:8px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
+.stage-icon{font-size:18px;margin-bottom:2px}
+.stage-title{font-size:10px;font-weight:600;color:#fff;text-align:center;line-height:1.3}
+.stage-desc{font-size:8px;color:var(--text2);text-align:center;margin-top:2px;line-height:1.3}
+.pipe-arrow{color:var(--accent);font-size:12px;margin:0 3px;flex-shrink:0;opacity:0;transition:opacity .3s}
+.pipe-arrow.visible{opacity:1}
+
+/* ─── TOOLTIP ─── */
+#graph-tooltip{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:rgba(20,27,45,.95);border:1px solid var(--border);border-radius:8px;padding:10px 18px;z-index:15;font-size:11px;color:var(--text2);text-align:center;opacity:0;transition:opacity .4s;pointer-events:none;max-width:520px}
+#graph-tooltip.visible{opacity:1}
+
+.nav-hint{position:fixed;bottom:16px;right:16px;z-index:9999;font-size:10px;color:var(--text2);opacity:.5;padding:5px 10px;background:rgba(20,27,45,.8);border:1px solid var(--border);border-radius:6px}
+</style>
+</head>
+<body>
+
+<div id="progress-bar">
+  <div class="seg" data-beat="1"></div>
+  <div class="seg" data-beat="2"></div>
+  <div class="seg" data-beat="3"></div>
+</div>
+
+<!-- BEAT 1: PROBLEM -->
+<div id="overlay-problem" class="overlay visible">
+  <div class="ov-card">
+    <div class="pdf-mock">
+      <div class="pdf-ln"></div><div class="pdf-ln"></div><div class="pdf-ln"></div>
+      <div class="pdf-ln"></div><div class="pdf-ln"></div><div class="pdf-ln"></div>
+      <div class="pdf-ln"></div><div class="pdf-ln"></div><div class="pdf-ln"></div>
+      <div class="pdf-ln"></div><div class="pdf-ln"></div><div class="pdf-ln"></div>
+      <div class="pdf-ln"></div>
+    </div>
+    <h2>Complex service obligations.<br><span class="hl">Buried in documents.</span></h2>
+    <p>Duty of care policies define severity tiers, escalation chains, authorization gates, and service activation rules across dozens of interlocking clauses. TMC agents navigate this under time pressure &mdash; when every minute counts.</p>
+    <div class="ov-callout">PNRs are touched 50+ times per trip. When disruptions hit, agents make cascading compliance decisions from documents like this.</div>
+    <p style="font-size:13px">What if every obligation was a traversable graph an AI agent could reason over?</p>
+    <br>
+    <button class="ov-btn" onclick="goToBeat(2)">See the Pipeline</button>
+  </div>
+</div>
+
+<!-- BEAT 2: PIPELINE -->
+<div id="overlay-pipeline" class="overlay">
+  <div class="ov-card">
+    <h2>From PDF to <span class="hl">Knowledge Graph</span></h2>
+    <p>A six-stage AI pipeline extracts structured entities, typed relationships, and operational rules &mdash; fully automated.</p>
+    <div class="pipeline-section">
+      <h3>Six-Stage Extraction Pipeline</h3>
+      <div class="pipeline" id="pipeline-stages">
+        <div class="stage" data-delay="0">
+          <div class="stage-num">Stage 0</div>
+          <div class="stage-icon">&#128196;</div>
+          <div class="stage-title">First Pass</div>
+          <div class="stage-desc">Document-level analysis &amp; section inventory</div>
+        </div>
+        <div class="pipe-arrow" data-delay="300">&rarr;</div>
+        <div class="stage" data-delay="400">
+          <div class="stage-num">Stage 1</div>
+          <div class="stage-icon">&#9988;</div>
+          <div class="stage-title">Semantic Splitting</div>
+          <div class="stage-desc">Deterministic section boundary detection</div>
+        </div>
+        <div class="pipe-arrow" data-delay="700">&rarr;</div>
+        <div class="stage" data-delay="800">
+          <div class="stage-num">Stage 2</div>
+          <div class="stage-icon">&#128269;</div>
+          <div class="stage-title">Extraction</div>
+          <div class="stage-desc">Per-section entity &amp; relationship identification</div>
+        </div>
+        <div class="pipe-arrow" data-delay="1100">&rarr;</div>
+        <div class="stage" data-delay="1200">
+          <div class="stage-num">Stage 3</div>
+          <div class="stage-icon">&#128279;</div>
+          <div class="stage-title">Semantic Merge</div>
+          <div class="stage-desc">Cross-section entity deduplication &amp; resolution</div>
+        </div>
+        <div class="pipe-arrow" data-delay="1500">&rarr;</div>
+        <div class="stage" data-delay="1600">
+          <div class="stage-num">Stage 4</div>
+          <div class="stage-icon">&#127760;</div>
+          <div class="stage-title">Global Relations</div>
+          <div class="stage-desc">Document-wide relationship inference</div>
+        </div>
+        <div class="pipe-arrow" data-delay="1900">&rarr;</div>
+        <div class="stage" data-delay="2000">
+          <div class="stage-num">Final</div>
+          <div class="stage-icon">&#129504;</div>
+          <div class="stage-title">Ontology Graph</div>
+          <div class="stage-desc">Structured graph ready for agent traversal</div>
+        </div>
+      </div>
+    </div>
+    <button class="ov-btn" onclick="goToBeat(3)">Explore the Graph</button>
+  </div>
+</div>
+
+<header>
+  <h1>Duty of Care <span>Knowledge Graph</span></h1>
+  <div class="tag">Live Extraction</div>
+  <div class="stats">
+    <span><b id="hdr-e">101</b> entities</span>
+    <span><b id="hdr-r">148</b> relationships</span>
+    <span><b id="hdr-t">15</b> types</span>
+  </div>
+</header>
+
+<main>
+  <div id="graph-wrap">
+    <div id="graph-container"></div>
+    <div class="zoom-controls">
+      <button class="zoom-btn" onclick="zoomIn()" title="Zoom in">+</button>
+      <button class="zoom-btn" onclick="zoomOut()" title="Zoom out">&minus;</button>
+      <div class="zoom-div"></div>
+      <button class="zoom-btn" onclick="zoomFit()" title="Fit to screen">&#x2302;</button>
+    </div>
+    <div id="entity-card">
+      <button class="ec-close" onclick="hideEntityCard()">&times;</button>
+      <div id="ec-content"></div>
+    </div>
+    <div id="legend"></div>
+    <div id="graph-tooltip">101 entities from the real policy. Node size = graph importance. Click any node to inspect.</div>
+  </div>
+
+  <div id="right-panel">
+    <!-- State 1: Scenario selector -->
+    <div id="panel-scenarios">
+      <h2>Scenario Simulator</h2>
+      <div class="scenario-empty">Select a scenario to watch the AI agent traverse the knowledge graph in real-time, building a complete response plan from structured policy data.</div>
+      <div id="scenario-buttons"></div>
+    </div>
+    <!-- State 2: Active scenario -->
+    <div id="panel-active">
+      <h2 id="active-scenario-name"></h2>
+      <div id="step-progress"></div>
+      <div id="step-counter"></div>
+      <div id="step-title"></div>
+      <div id="step-desc"></div>
+      <div id="manual-annotation">
+        <div class="m-label">Manual Process Comparison</div>
+        <div class="m-text" id="manual-text"></div>
+      </div>
+      <div id="agent-log-wrap">
+        <div id="agent-log-label">Agent Reasoning Trace</div>
+        <div id="agent-log"></div>
+      </div>
+      <div id="controls">
+        <button id="btn-prev" disabled>&#9664; Prev</button>
+        <button id="btn-next" disabled>Next &#9654;</button>
+        <button id="btn-auto" disabled>Auto &#9654;&#9654;</button>
+      </div>
+    </div>
+    <!-- State 3: Results -->
+    <div id="panel-results">
+      <h2>Incident Response Plan</h2>
+      <div id="results-content"></div>
+      <div class="results-actions">
+        <button class="btn-another" onclick="showScenarioSelector()">Choose Another</button>
+        <button class="btn-restart" onclick="restartCurrentScenario()">Replay Scenario</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="nav-hint">&#8592; &#8594; Arrow keys to navigate</div>
+
+<script>
+// ======================================================================
+//  GRAPH DATA
+// ======================================================================
+const GRAPH_ENTITIES = [
+    {"id": "travel_services_agreement", "type": "Agreement", "name": "Agreement", "desc": "The primary contractual document between Direct Travel and Client establishing terms, limitations of liability, and other conditions governing Duty of Care Services; referenced in section 10.3 and 10.7 as the governing document. The master Travel Services Agreement between Client and Direct Travel, ", "attrs": {}, "importance": 0.4657, "color": "#818cf8"},
+    {"id": "exhibit_d", "type": "Agreement", "name": "Exhibit D — Duty of Care & Travel Risk Management Services", "desc": "This document, which is incorporated into and forms part of the Travel Services Agreement. Defines the duty of care services, service levels, roles and responsibilities, data handling requirements, and escalation protocols for travel incidents affecting corporate travelers. This Exhibit defining Dut", "attrs": {}, "importance": 0.2445, "color": "#818cf8"},
+    {"id": "statement_of_work", "type": "Agreement", "name": "SOW", "desc": "Statement of Work document containing client-specific service configurations and pre-agreed commercial terms; referenced in connection with extraordinary measures cost allocation and exceptions to Client's authorization obligation. Statement of Work containing client-specific service configurations ", "attrs": {}, "importance": 0.3463, "color": "#818cf8"},
+    {"id": "direct_travel_inc", "type": "Organization", "name": "Direct Travel, Inc.", "desc": "The travel management company providing duty of care services, to which Client must notify of escalation roster changes, coordinate emergency contact procedures, authorize extraordinary measures, provide insurance policy details, respond to escalation notifications, and maintain coordination regardi", "attrs": {}, "importance": 0.7793, "color": "#f97316"},
+    {"id": "client", "type": "Organization", "name": "Client", "desc": "The organization contracting for travel management and duty of care services, which bears responsibility for establishing travel policies, maintaining escalation rosters, ensuring traveler profile completeness, providing training, authorizing extraordinary measures, procuring insurance, and conducti", "attrs": {}, "importance": 0.8937, "color": "#f97316"},
+    {"id": "duty_of_care_services", "type": "Service", "name": "Duty of Care Services", "desc": "The integrated services described in Section 3 that Direct Travel provides to support Client's travel risk management program, including itinerary visibility, risk intelligence monitoring, pre-trip services, in-trip monitoring, incident response, and post-incident reporting. The services Direct Trav", "attrs": {}, "importance": 0.2421, "color": "#3b82f6"},
+    {"id": "osha_general_duty_clause", "type": "Regulation", "name": "OSHA General Duty Clause", "desc": "Section 5(a)(1) of the Occupational Safety and Health Act of 1970 (United States), requiring employers to furnish a place of employment free from recognized hazards causing or likely to cause death or serious physical harm. This regulation establishes one of the employer duty of care frameworks that", "attrs": {}, "importance": 0.0, "color": "#6366f1"},
+    {"id": "health_and_safety_at_work_act_1974", "type": "Regulation", "name": "Health and Safety at Work Act 1974", "desc": "United Kingdom regulation requiring employers to ensure employees' health, safety, and welfare so far as is reasonably practicable. One of the employer duty of care frameworks that Direct Travel's services are designed to help Client meet.", "attrs": {}, "importance": 0.0, "color": "#6366f1"},
+    {"id": "management_of_health_and_safety_at_work_regulations_1999", "type": "Regulation", "name": "Management of Health and Safety at Work Regulations 1999", "desc": "United Kingdom regulation requiring employers to conduct risk assessments and provide relevant employee information and training. One of the employer duty of care frameworks that Direct Travel's services are designed to help Client meet.", "attrs": {}, "importance": 0.0, "color": "#6366f1"},
+    {"id": "corporate_manslaughter_and_corporate_homicide_act_2007", "type": "Regulation", "name": "Corporate Manslaughter and Corporate Homicide Act 2007", "desc": "United Kingdom regulation establishing corporate liability for manslaughter and homicide. One of the employer duty of care frameworks applicable to Client.", "attrs": {}, "importance": 0.0, "color": "#6366f1"},
+    {"id": "framework_directive_89_391_eec", "type": "Regulation", "name": "Framework Directive 89/391/EEC", "desc": "European Union regulation obligating employers to ensure the safety and health of workers in every aspect related to work, including risk assessment and preventive measures. One of the employer duty of care frameworks that Direct Travel's services are designed to help Client meet.", "attrs": {}, "importance": 0.0, "color": "#6366f1"},
+    {"id": "iso_31030_2021", "type": "Regulation", "name": "ISO 31030:2021", "desc": "International Standard for Travel Risk Management, derived from ISO 31000, providing a structured framework for travel risk management covering policy development, threat identification, risk assessment, prevention and mitigation strategies, traveler tracking, two-way communication, crisis managemen", "attrs": {}, "importance": 0.0, "color": "#6366f1"},
+    {"id": "approved_channels", "type": "BookingChannel", "name": "Approved Channels", "desc": "Bookings made through Client's designated online booking tool(s) as provided by Direct Travel, Direct Travel agent-assisted channels (phone, email, online chat), or any other booking channels expressly approved in writing by Client and integrated into the TMC's itinerary data feed. Bookings through ", "attrs": {}, "importance": 0.0868, "color": "#2dd4bf"},
+    {"id": "crisis_bridge", "type": "Service", "name": "Crisis Bridge", "desc": "A real-time conference line and/or digital collaboration channel established during Level 4 Incidents, including Direct Travel incident coordinators, Client escalation contacts, and Specialist Provider representatives, through which SITREPs are delivered. A real-time conference line and/or digital c", "attrs": {}, "importance": 0.0716, "color": "#3b82f6"},
+    {"id": "risk_intelligence_platform", "type": "Platform", "name": "Risk Intelligence Platform", "desc": "Third-party risk management platform aggregating commercially available data with global geographic and linguistic coverage, providing continuous monitoring, event triage, severity classification, and sourcing destination risk ratings and pre-trip briefing content. The third-party risk management pl", "attrs": {}, "importance": 0.1684, "color": "#22d3ee"},
+    {"id": "incident", "type": "Incident", "name": "Incident", "desc": "An event that may reasonably impact Traveler safety, security, health, or ability to continue travel, including natural disasters and severe weather events; civil unrest, political instability, and terrorism or security events; public health emergencies, disease outbreaks, and pandemics; major trans", "attrs": {}, "importance": 0.2001, "color": "#f43f5e"},
+    {"id": "off_channel_booking", "type": "Booking", "name": "Off-Channel Booking", "desc": "Any travel booking made by or on behalf of a Traveler outside of Approved Channels, including direct bookings on consumer travel sites, airline or hotel websites, or personal travel agency arrangements. Off-Channel Bookings are not automatically visible to Direct Travel and may not receive full duty", "attrs": {}, "importance": 0.0123, "color": "#34d399"},
+    {"id": "pnr", "type": "Booking", "name": "PNR", "desc": "Passenger Name Record; the foundational booking data record containing passenger name, itinerary segments, ticket information, contact details, and associated booking elements maintained in the global distribution system or NDC connection.", "attrs": {}, "importance": 0.0123, "color": "#34d399"},
+    {"id": "severity_level", "type": "SeverityLevel", "name": "Severity Level", "desc": "The four-tier classification system (Level 1 through Level 4) that determines the urgency and type of alert message sent to travelers, with corresponding message templates for each level: Advisory Alert, Monitor Alert, Action Required Welfare Check, and Crisis Welfare Check. Tiered classification (L", "attrs": {}, "importance": 0.3257, "color": "#ef4444"},
+    {"id": "specialist_provider", "type": "Organization", "name": "Specialist Provider", "desc": "A third-party provider of security, medical, insurance, evacuation, or other specialized risk management services engaged by Client or by Direct Travel on Client's behalf, including without limitation Crisis24 (a GardaWorld company), International SOS, or other providers specified in the SOW. Third-", "attrs": {}, "importance": 0.0625, "color": "#f97316"},
+    {"id": "traveler", "type": "Traveler", "name": "Traveler", "desc": "An individual authorized by Client who travels on Client business and must maintain complete and accurate profile information, book through Approved Channels, respond to welfare checks, contact local emergency services first when facing immediate threat, and comply with location tracking and monitor", "attrs": {}, "importance": 0.1435, "color": "#fbbf24"},
+    {"id": "traveler_data", "type": "DataElement", "name": "Traveler Data", "desc": "Personal data related to Travelers processed by Direct Travel in connection with providing services under the Agreement, including itinerary details, contact information, profile data, location information, and welfare check responses.", "attrs": {}, "importance": 0.1173, "color": "#818cf8"},
+    {"id": "platform", "type": "Platform", "name": "Platform", "desc": "Direct Travel's integrated technology ecosystem, including the designated online booking tool, Risk Intelligence Platform integration, and associated risk management, reporting, and communication tools, which may be updated from time to time.", "attrs": {}, "importance": 0.0766, "color": "#22d3ee"},
+    {"id": "crisis24", "type": "Organization", "name": "Crisis24", "desc": "A GardaWorld company providing risk intelligence platform services (Crisis24 Horizon) and specialized security and risk management services to support Direct Travel's duty of care delivery.", "attrs": {}, "importance": 0.1008, "color": "#f97316"},
+    {"id": "gardaworld", "type": "Organization", "name": "GardaWorld", "desc": "Parent organization of Crisis24, a provider of risk intelligence and specialized security services referenced as a Specialist Provider in this Exhibit.", "attrs": {}, "importance": 0.0083, "color": "#f97316"},
+    {"id": "international_sos", "type": "Organization", "name": "International SOS", "desc": "A third-party Specialist Provider of medical, security, evacuation, and other specialized risk management services engaged by Client or Direct Travel on Client's behalf. Medical assistance and evacuation specialist provider available for Client designation to deliver medical response and health coor", "attrs": {}, "importance": 0.0143, "color": "#f97316"},
+    {"id": "safe", "type": "TravelerResponseStatus", "name": "SAFE", "desc": "Standardized welfare-check response status indicating the traveler is not in immediate danger and does not require assistance; results in status logging with no further action unless conditions change. A welfare check response status indicating the traveler is safe and does not need assistance, used", "attrs": {}, "importance": 0.0123, "color": "#34d399"},
+    {"id": "need_assistance", "type": "TravelerResponseStatus", "name": "NEED ASSISTANCE", "desc": "A traveler status classification indicating the traveler requires support; tracked as a count in the Traveler Status Summary field of the incident activity log. Welfare check response status indicating the traveler requires support such as rebooking, information, or medical/security referral. Standa", "attrs": {}, "importance": 0.0557, "color": "#34d399"},
+    {"id": "not_in_area", "type": "TravelerResponseStatus", "name": "NOT IN AREA", "desc": "A traveler status classification indicating the traveler is not in or near the affected area; tracked as a count in the Traveler Status Summary field of the incident activity log. Welfare check response status indicating the traveler is not in the affected incident area. Standardized welfare-check r", "attrs": {}, "importance": 0.0123, "color": "#34d399"},
+    {"id": "no_response", "type": "TravelerResponseStatus", "name": "NO RESPONSE", "desc": "Welfare check response status indicating no response was received from the traveler during outreach, triggering escalation and continued follow-up efforts.", "attrs": {}, "importance": 0.0557, "color": "#34d399"},
+    {"id": "itinerary_visibility_and_traveler_locate", "type": "Service", "name": "Itinerary Visibility and Traveler Locate", "desc": "Service encompassing capture of itinerary records for approved bookings, provision of reporting dashboards with Traveler location visualization, impact zone identification during incidents, and support for Off-Channel Booking data ingestion.", "attrs": {}, "importance": 0.0602, "color": "#3b82f6"},
+    {"id": "risk_intelligence_and_monitoring", "type": "Service", "name": "Risk Intelligence and Monitoring", "desc": "Service providing continuous 24/7 monitoring of global events using the Risk Intelligence Platform, including event triage, severity classification, identification of potentially impacted Travelers, and integration of active threat alerts.", "attrs": {}, "importance": 0.0322, "color": "#3b82f6"},
+    {"id": "pre_trip_services", "type": "Service", "name": "Pre-Trip Services", "desc": "Service providing destination risk ratings, pre-trip briefing materials with risk summaries and entry requirements, high-risk destination approval workflows, and travel insurance verification.", "attrs": {}, "importance": 0.0226, "color": "#3b82f6"},
+    {"id": "in_trip_monitoring_and_alerts", "type": "Service", "name": "In-Trip Monitoring and Alerts", "desc": "Service delivering real-time destination-specific or event-based alerts to Travelers through email, SMS, or mobile push notification, and proactive monitoring for events impacting active Traveler itineraries.", "attrs": {}, "importance": 0.0731, "color": "#3b82f6"},
+    {"id": "incident_response_and_traveler_assistance", "type": "Service", "name": "Incident Response and Traveler Assistance", "desc": "Service providing welfare checks, rebooking and disruption support, Specialist Provider coordination, and Client escalation during Level 2+ Incidents, subject to authorization requirements for emergency actions.", "attrs": {}, "importance": 0.3934, "color": "#3b82f6"},
+    {"id": "post_incident_reporting", "type": "Service", "name": "Post-Incident Reporting", "desc": "Service providing post-incident summaries upon Client request or automatically for Level 4 Incidents, including impacted Travelers, timeline of actions, response statuses, supplier constraints, and post-incident review participation.", "attrs": {}, "importance": 0.0143, "color": "#3b82f6"},
+    {"id": "security_threats", "type": "RiskCategory", "name": "Security Threats", "desc": "Risk category encompassing terrorism, armed conflict, crime, and civil unrest subject to continuous monitoring.", "attrs": {}, "importance": 0.011, "color": "#e879f9"},
+    {"id": "natural_hazards", "type": "RiskCategory", "name": "Natural Hazards", "desc": "Risk category encompassing earthquakes, hurricanes, flooding, wildfire, and volcanic activity subject to continuous monitoring.", "attrs": {}, "importance": 0.011, "color": "#e879f9"},
+    {"id": "health_risks", "type": "RiskCategory", "name": "Health Risks", "desc": "Risk category encompassing disease outbreaks, pandemic developments, and environmental contamination subject to continuous monitoring.", "attrs": {}, "importance": 0.011, "color": "#e879f9"},
+    {"id": "transportation_disruptions", "type": "RiskCategory", "name": "Transportation Disruptions", "desc": "Risk category encompassing airport closures, airline operational failures, rail strikes, and border closures subject to continuous monitoring.", "attrs": {}, "importance": 0.011, "color": "#e879f9"},
+    {"id": "political_and_regulatory_changes", "type": "RiskCategory", "name": "Political and Regulatory Changes", "desc": "Risk category encompassing visa requirement changes, entry restrictions, and government advisories subject to continuous monitoring.", "attrs": {}, "importance": 0.011, "color": "#e879f9"},
+    {"id": "infrastructure_failures", "type": "RiskCategory", "name": "Infrastructure Failures", "desc": "Risk category encompassing telecommunications outages and power grid failures subject to continuous monitoring.", "attrs": {}, "importance": 0.011, "color": "#e879f9"},
+    {"id": "express_client_authorization_requirement", "type": "Obligation", "name": "Express Client Authorization Requirement", "desc": "Requirement that physical evacuation, private security deployment, medical evacuation, charter transportation, premium-class rebooking, and extraordinary cost actions require express Client authorization unless otherwise agreed in the SOW, establishing authorization constraints on Direct Travel's in", "attrs": {}, "importance": 0.0264, "color": "#a78bfa"},
+    {"id": "off_channel_booking_data_visibility_limitation", "type": "Obligation", "name": "Off-Channel Booking Data Visibility Limitation", "desc": "Client obligation acknowledging that Off-Channel Bookings without itinerary data provided to Direct Travel are not visible to Direct Travel systems, and Direct Travel cannot locate, alert, or assist Travelers for whom itinerary data is unavailable.", "attrs": {}, "importance": 0.047, "color": "#a78bfa"},
+    {"id": "traveler_emergency_services_responsibility", "type": "Obligation", "name": "Traveler Emergency Services Responsibility", "desc": "Obligation establishing that Travelers remain responsible for contacting local emergency services (police, fire, ambulance) in immediate threat situations, and clarifying that Direct Travel services are not a substitute for local emergency response.", "attrs": {}, "importance": 0.0181, "color": "#a78bfa"},
+    {"id": "booking_time_approval_configuration", "type": "Obligation", "name": "Booking-Time Approval Configuration", "desc": "Client's responsibility to define and maintain booking-time approval workflows based on destination risk ratings, including approval tiers, approver hierarchy, and destination-specific overrides as specified in the SOW.", "attrs": {}, "importance": 0.0167, "color": "#a78bfa"},
+    {"id": "traveler_outreach_standards", "type": "Obligation", "name": "Traveler Outreach Standards", "desc": "Direct Travel's binding obligation to conduct welfare checks via configured channels in priority order (SMS, email, mobile application push notification, voice call), log all attempts with timestamp and outcome, use standardized response framework, and provide live contact within 15 minutes for trav", "attrs": {}, "importance": 0.0167, "color": "#a78bfa"},
+    {"id": "primary_travel_program_owner", "type": "ContactRole", "name": "Primary Travel Program Owner", "desc": "First point of contact on the Client's escalation roster for all Incidents, required to provide name, title, mobile phone, and email.", "attrs": {}, "importance": 0.0355, "color": "#fb923c"},
+    {"id": "alternate_travel_program_contact", "type": "ContactRole", "name": "Alternate Travel Program Contact", "desc": "Backup escalation contact on the Client's roster when the Primary Travel Program Owner is unavailable, required to provide name, title, mobile phone, and email.", "attrs": {}, "importance": 0.0355, "color": "#fb923c"},
+    {"id": "after_hours_duty_contact", "type": "ContactRole", "name": "After-Hours Duty Contact", "desc": "Escalation contact for Incidents occurring outside Client Business Hours, required to provide name, title, mobile phone, and email.", "attrs": {}, "importance": 0.0355, "color": "#fb923c"},
+    {"id": "corporate_security", "type": "ContactRole", "name": "Corporate Security", "desc": "Escalation contact for security-related Incidents at Level 3 and above (if applicable to Client), required to provide name, title, mobile phone, and email.", "attrs": {}, "importance": 0.0355, "color": "#fb923c"},
+    {"id": "human_resources_duty_contact", "type": "ContactRole", "name": "Human Resources Duty Contact", "desc": "Escalation contact for Incidents involving employee welfare, injury, or fatality (if applicable to Client), required to provide name, title, mobile phone, and email.", "attrs": {}, "importance": 0.0355, "color": "#fb923c"},
+    {"id": "senior_leadership_contact", "type": "ContactRole", "name": "Senior Leadership Contact", "desc": "Escalation contact for Level 4 Crisis incidents requiring senior leadership awareness and decision-making, required to provide name, title, mobile phone, and email.", "attrs": {}, "importance": 0.0355, "color": "#fb923c"},
+    {"id": "escalation_roster_maintenance", "type": "Obligation", "name": "Escalation Roster Maintenance", "desc": "Client's obligation to provide and maintain a current 24/7 escalation roster with minimum six contact roles, updating Direct Travel of any changes within five (5) business days. Direct Travel is not responsible for escalation delays caused by outdated or incomplete roster information.", "attrs": {}, "importance": 0.0167, "color": "#a78bfa"},
+    {"id": "non_responsive_traveler_escalation", "type": "Obligation", "name": "Non-Responsive Traveler Escalation", "desc": "Direct Travel's obligation to escalate non-responsive Travelers during Level 3 and Level 4 Incidents after attempting at least three (3) contacts across at least two (2) channels over ninety (90) minutes, providing traveler name, itinerary, last known location, outreach attempts, and supplier inform", "attrs": {}, "importance": 0.0167, "color": "#a78bfa"},
+    {"id": "crisis_bridge_activation", "type": "Obligation", "name": "Crisis Bridge Activation", "desc": "Direct Travel's obligation to establish a Crisis Bridge within sixty (60) minutes of Level 4 Incident determination (where configured in SOW), including Direct Travel incident coordinator, Client's designated escalation contacts, and Specialist Provider representatives, with commercially reasonable ", "attrs": {}, "importance": 0.0167, "color": "#a78bfa"},
+    {"id": "sitrep_provision", "type": "Obligation", "name": "SITREP Provision", "desc": "Direct Travel's obligation to provide situation updates (SITREPs) during Crisis Bridge activation at approximately thirty (30) minute intervals during acute phase (first 4 hours) and hourly thereafter, including current event assessment, count and status of identified Travelers (safe, need assistanc", "attrs": {}, "importance": 0.0258, "color": "#a78bfa"},
+    {"id": "data_processing_agreement", "type": "Agreement", "name": "Data Processing Agreement", "desc": "A separate or incorporated agreement establishing data processing roles, safeguards, and compliance obligations under applicable data protection law.", "attrs": {}, "importance": 0.1149, "color": "#818cf8"},
+    {"id": "gdpr", "type": "Regulation", "name": "General Data Protection Regulation", "desc": "EU data protection regulation establishing the legitimate interest lawful basis (Article 6(1)(f)) supporting Traveler Data processing for duty of care purposes.", "attrs": {}, "importance": 0.0524, "color": "#6366f1"},
+    {"id": "legitimate_interest_assessment_obligation", "type": "Obligation", "name": "Conduct and Document Legitimate Interest Assessment", "desc": "Client's obligation to conduct and document a Legitimate Interest Assessment as required by data protection law to justify processing Traveler Data.", "attrs": {}, "importance": 0.0167, "color": "#a78bfa"},
+    {"id": "data_protection_impact_assessment_obligation", "type": "Obligation", "name": "Conduct and Document Data Protection Impact Assessment", "desc": "Client's obligation to conduct and document a Data Protection Impact Assessment for traveler tracking, location monitoring, and welfare check communications.", "attrs": {}, "importance": 0.0167, "color": "#a78bfa"},
+    {"id": "provide_traveler_notice_obligation", "type": "Obligation", "name": "Provide Notice to Travelers Regarding Data Processing", "desc": "Client's obligation to provide Travelers with transparent notice regarding collection, purposes, recipients, retention, and rights related to Traveler Data processing.", "attrs": {}, "importance": 0.0167, "color": "#a78bfa"},
+    {"id": "full_legal_name_data_element", "type": "DataElement", "name": "Full Legal Name", "desc": "Government-issued identification name required for Traveler identification and supplier matching; absence prevents identity confirmation.", "attrs": {}, "importance": 0.0156, "color": "#818cf8"},
+    {"id": "mobile_phone_number_data_element", "type": "DataElement", "name": "Mobile Phone Number", "desc": "SMS-capable phone number serving as primary welfare check communication channel; absence degrades response capability.", "attrs": {}, "importance": 0.0156, "color": "#818cf8"},
+    {"id": "email_address_data_element", "type": "DataElement", "name": "Email Address", "desc": "Secondary alert and communication channel for Traveler notifications; absence prevents email-based outreach.", "attrs": {}, "importance": 0.0156, "color": "#818cf8"},
+    {"id": "emergency_contact_data_element", "type": "DataElement", "name": "Emergency Contact", "desc": "Next-of-kin information (name, relationship, phone) required for critical situation notifications; absence requires Client to provide during incident.", "attrs": {}, "importance": 0.0228, "color": "#818cf8"},
+    {"id": "passport_details_data_element", "type": "DataElement", "name": "Passport Details", "desc": "International travel document information (number, expiry, issuing country) required for document verification and consular coordination.", "attrs": {}, "importance": 0.0228, "color": "#818cf8"},
+    {"id": "nationality_country_of_residence_data_element", "type": "DataElement", "name": "Nationality / Country of Residence", "desc": "Jurisdiction information required for consular and immigration assistance during international travel.", "attrs": {}, "importance": 0.0228, "color": "#818cf8"},
+    {"id": "travel_suppliers", "type": "Organization", "name": "Travel Suppliers", "desc": "Third-party travel service providers (airlines, hotels, ground transportation) who receive minimum necessary Traveler Data during incidents for rebooking and itinerary changes.", "attrs": {}, "importance": 0.0, "color": "#f97316"},
+    {"id": "mobile_application", "type": "Platform", "name": "Mobile Application", "desc": "Optional technology platform for mobile application-based location services where Travelers may enable voluntary or policy-required location sharing as specified in SOW.", "attrs": {}, "importance": 0.0, "color": "#22d3ee"},
+    {"id": "corporate_travel_policy", "type": "Agreement", "name": "Corporate Travel Policy", "desc": "A formal policy document that Client must establish, maintain, and communicate, containing duty of care provisions, requirements to book through Approved Channels, and approval criteria for high-risk destinations.", "attrs": {}, "importance": 0.0673, "color": "#818cf8"},
+    {"id": "escalation_roster", "type": "Agreement", "name": "Escalation Roster", "desc": "A current contact roster document that Client must provide and maintain per Section 6.1, including 24/7 contact availability for escalation of incidents, with notification of changes required within five business days.", "attrs": {}, "importance": 0.0673, "color": "#818cf8"},
+    {"id": "travel_insurance", "type": "Agreement", "name": "Travel Insurance", "desc": "Insurance contracts that Client must procure and maintain for all Travelers, covering medical treatment, emergency medical evacuation, repatriation, trip disruption, and personal liability, with policy details provided to Direct Travel where relevant.", "attrs": {}, "importance": 0.0482, "color": "#818cf8"},
+    {"id": "extraordinary_measures_authorization", "type": "Obligation", "name": "Extraordinary Measures Authorization", "desc": "Client's obligation to authorize and accept costs associated with extraordinary measures (evacuation, specialized security response, charter transport, premium-class rebooking) as they arise, subject to exception when costs are covered by insurance or pre-agreed commercial terms in the SOW.", "attrs": {}, "importance": 0.0167, "color": "#a78bfa"},
+    {"id": "escalation_response_obligation", "type": "Obligation", "name": "Escalation Response", "desc": "Client's obligation to respond in a timely manner to escalation notifications from Direct Travel, particularly during Level 3 and Level 4 Incidents, with authorized decision-makers available on a 24/7 basis.", "attrs": {}, "importance": 0.0167, "color": "#a78bfa"},
+    {"id": "data_protection_assessment_obligation", "type": "Obligation", "name": "Data Protection Assessment Compliance", "desc": "Client's obligation to conduct and maintain Data Protection Impact Assessments or Legitimate Interest Assessments as required under applicable data protection laws in connection with traveler tracking and location monitoring activities.", "attrs": {}, "importance": 0.0167, "color": "#a78bfa"},
+    {"id": "supplier_direct_connect_feeds", "type": "Platform", "name": "Supplier Direct-Connect Feeds", "desc": "A system integration that ingests real-time booking feeds directly from travel suppliers (airlines, hotels, car rental companies), serving as a mitigation measure to improve visibility into off-channel bookings.", "attrs": {}, "importance": 0.0131, "color": "#22d3ee"},
+    {"id": "automated_email_parsing_system", "type": "Platform", "name": "Automated Email Parsing System", "desc": "A system that ingests and parses forwarded itinerary confirmation emails to extract travel data and improve visibility into off-channel bookings.", "attrs": {}, "importance": 0.0131, "color": "#22d3ee"},
+    {"id": "booking_platform", "type": "Platform", "name": "Booking Platform", "desc": "The technology system used for making travel bookings, which Client can configure with policy enforcement rules to discourage or restrict off-channel bookings.", "attrs": {}, "importance": 0.0131, "color": "#22d3ee"},
+    {"id": "itinerary_data", "type": "DataElement", "name": "Itinerary Data", "desc": "The specific travel booking information required by Direct Travel to provide visibility and duty of care services. This data must be provided through Approved Channels or supported integrations for off-channel bookings.", "attrs": {}, "importance": 0.0131, "color": "#818cf8"},
+    {"id": "off_channel_visibility_limitation_acknowledgment", "type": "Obligation", "name": "Off-Channel Visibility Limitation Acknowledgment", "desc": "Client's contractual acknowledgment that Direct Travel cannot provide Duty of Care Services for off-channel bookings unless itinerary data is provided through supported integrations, and that travelers booking outside Approved Channels may not receive alerts, welfare checks, or disruption assistance", "attrs": {}, "importance": 0.0249, "color": "#a78bfa"},
+    {"id": "booking_compliance_policy_responsibility", "type": "Obligation", "name": "Booking Compliance Policy Responsibility", "desc": "Client's sole responsibility to establish internal policies and provide training to travelers to maximize booking compliance with Approved Channels and minimize off-channel bookings.", "attrs": {}, "importance": 0.0083, "color": "#a78bfa"},
+    {"id": "alerts_service", "type": "Service", "name": "Alerts", "desc": "A duty of care service component that delivers outbound notifications to travelers regarding incidents, risks, or disruptions. Service availability depends on booking visibility through Approved Channels.", "attrs": {}, "importance": 0.0264, "color": "#3b82f6"},
+    {"id": "welfare_checks_service", "type": "Service", "name": "Welfare Checks", "desc": "A duty of care service component that contacts travelers to verify their safety and status during incidents or disruptions. Service availability depends on booking visibility through Approved Channels.", "attrs": {}, "importance": 0.1407, "color": "#3b82f6"},
+    {"id": "disruption_assistance_service", "type": "Service", "name": "Disruption Assistance", "desc": "A duty of care service component that provides support to travelers experiencing travel disruptions, delays, or changed itineraries. Service availability depends on booking visibility through Approved Channels.", "attrs": {}, "importance": 0.0264, "color": "#3b82f6"},
+    {"id": "eu_package_travel_directive_2015_2302", "type": "Regulation", "name": "EU Package Travel Directive 2015/2302", "desc": "European Union regulation governing package travel arrangements to which parties must cooperate in structuring arrangements to avoid inadvertent creation of a package, or allocate responsibilities accordingly if one is created.", "attrs": {}, "importance": 0.0524, "color": "#6366f1"},
+    {"id": "uk_package_travel_and_linked_travel_arrangements_regulations_2018", "type": "Regulation", "name": "UK Package Travel and Linked Travel Arrangements Regulations 2018", "desc": "United Kingdom regulation governing package travel and linked travel arrangements to which parties must cooperate in structuring arrangements to avoid inadvertent creation of a package, or allocate responsibilities accordingly if one is created.", "attrs": {}, "importance": 0.0524, "color": "#6366f1"},
+    {"id": "risk_intelligence", "type": "Service", "name": "Risk Intelligence", "desc": "Informational service providing risk ratings, destination advisories, and threat assessments based on commercially available intelligence sources; disclaimed as not reflecting real-time conditions and not to be sole basis for travel authorization decisions.", "attrs": {}, "importance": 0.0, "color": "#3b82f6"},
+    {"id": "gds", "type": "Platform", "name": "GDS", "desc": "Global Distribution System; a supplier system whose availability affects the effectiveness of Duty of Care Services by enabling supplier system visibility for itinerary management.", "attrs": {}, "importance": 0.0131, "color": "#22d3ee"},
+    {"id": "risk_intelligence_dashboard_and_reporting", "type": "Platform", "name": "Risk Intelligence Dashboard", "desc": "Data visualization and reporting platform providing access to risk intelligence, incident metrics, and SLO performance; access level is configurable as Full, Read-only, or Disabled. Technology platform providing risk intelligence monitoring and reporting capabilities for which Client pays a platform", "attrs": {}, "importance": 0.0274, "color": "#22d3ee"},
+    {"id": "quarterly_business_reviews", "type": "Obligation", "name": "Quarterly Business Reviews", "desc": "A contractual obligation requiring the parties to conduct quarterly business reviews (or at cadence specified in SOW) covering duty of care program metrics, SLO performance, traveler welfare check response rates, off-channel booking visibility gaps, and program improvement recommendations", "attrs": {}, "importance": 0.025, "color": "#a78bfa"},
+    {"id": "post_incident_review", "type": "Obligation", "name": "Post-Incident Review", "desc": "A contractual obligation for Direct Travel to make commercially reasonable efforts to participate in a post-incident review within thirty days following a Level 4 Incident, to identify program improvements, assess response effectiveness, and update protocols", "attrs": {}, "importance": 0.0083, "color": "#a78bfa"},
+    {"id": "material_change_notification", "type": "Obligation", "name": "Material Change Notification", "desc": "A contractual obligation for Direct Travel to notify Client of material changes to the Risk Intelligence Platform, global service team structure or coverage model, or applicable regulatory requirements that may impact Duty of Care Services", "attrs": {}, "importance": 0.0083, "color": "#a78bfa"},
+    {"id": "crisis24_horizon", "type": "Platform", "name": "Crisis24 Horizon", "desc": "Risk intelligence monitoring platform designated as the default provider for threat analysis, geopolitical monitoring, and incident detection serving the duty of care program.", "attrs": {}, "importance": 0.0307, "color": "#22d3ee"},
+    {"id": "crisis24_response", "type": "Organization", "name": "Crisis24 Response", "desc": "Security response specialist provider available for Client designation to deliver on-ground security coordination and incident management services.", "attrs": {}, "importance": 0.0, "color": "#f97316"},
+    {"id": "global_guardian", "type": "Organization", "name": "Global Guardian", "desc": "Security response specialist provider available for Client designation to deliver on-ground security coordination and incident management services.", "attrs": {}, "importance": 0.0, "color": "#f97316"},
+    {"id": "interactive_global_map", "type": "Platform", "name": "Interactive Global Map", "desc": "Geographic visualization platform component enabling real-time traveler location monitoring and incident mapping; availability is configurable as Included or Not included.", "attrs": {}, "importance": 0.0, "color": "#22d3ee"},
+    {"id": "pre_trip_briefing_service", "type": "Service", "name": "Pre-Trip Briefing", "desc": "Pre-travel advisory service delivering destination risk guidance, travel advisories, and security recommendations; delivery method is configurable as Automatic, On-request, or Disabled, with threshold based on destination risk classification.", "attrs": {}, "importance": 0.0, "color": "#3b82f6"},
+    {"id": "travel_insurance_verification", "type": "Service", "name": "Travel Insurance Verification", "desc": "Service validating that travelers maintain appropriate insurance coverage for business travel; availability is configurable as Enabled or Disabled.", "attrs": {}, "importance": 0.0, "color": "#3b82f6"},
+    {"id": "sitrep_service", "type": "Service", "name": "SITREP", "desc": "Situational Report delivery service providing periodic status updates during Level 4 acute and sustained incidents; cadence is configurable in 15/30/60-minute intervals for acute incidents and 30/60/120-minute intervals for sustained incidents.", "attrs": {}, "importance": 0.0083, "color": "#3b82f6"},
+    {"id": "incident_activity_log", "type": "Platform", "name": "Incident Activity Log", "desc": "A documentation system maintained by Direct Travel for Level 3 and Level 4 incidents that records incident classification, dates, affected geography, traveler outreach, status summaries, client escalations, TMC actions, specialist provider engagement, and crisis bridge activation (for Level 4).", "attrs": {}, "importance": 0.0143, "color": "#22d3ee"}
+];
+
+const GRAPH_RELATIONSHIPS = [
+    {"id": "r0", "src": "travel_services_agreement", "tgt": "exhibit_d", "type": "INCORPORATES", "desc": "The Travel Services Agreement incorporates Exhibit D, which forms a part of the base agreement."},
+    {"id": "r1", "src": "client", "tgt": "travel_services_agreement", "type": "PARTY_TO", "desc": "The Client is a party to the Travel Services Agreement."},
+    {"id": "r2", "src": "direct_travel_inc", "tgt": "travel_services_agreement", "type": "PARTY_TO", "desc": "Direct Travel, Inc. is a party to the Travel Services Agreement."},
+    {"id": "r3", "src": "direct_travel_inc", "tgt": "duty_of_care_services", "type": "PROVIDES", "desc": "Direct Travel provides Duty of Care services to support Client's travel risk management program, as stated: 'the Duty of Care services Direct Travel will provide to support Client's travel risk manage"},
+    {"id": "r4", "src": "approved_channels", "tgt": "duty_of_care_services", "type": "ENABLES_COVERAGE", "desc": "Bookings made through Approved Channels provide Direct Travel visibility and enable the delivery of duty of care services. The text states that Approved Channels are a prerequisite mechanism for Direc"},
+    {"id": "r5", "src": "crisis24", "tgt": "risk_intelligence_platform", "type": "OPERATES", "desc": "Crisis24 provides and operates the Risk Intelligence Platform (currently Crisis24 Horizon) that delivers global threat monitoring, traveler locate capabilities, and mass communication services."},
+    {"id": "r6", "src": "incident", "tgt": "traveler", "type": "IMPACTS", "desc": "An Incident may reasonably impact a Traveler's safety, security, health, or ability to continue travel, as defined in Section 2.7."},
+    {"id": "r7", "src": "duty_of_care_services", "tgt": "traveler_data", "type": "REQUIRES_DATA", "desc": "Duty of Care Services require processing of Traveler Data, including itinerary details, contact information, profile data, location information, and welfare check responses, in order to support risk m"},
+    {"id": "r8", "src": "crisis_bridge", "tgt": "severity_level", "type": "ACTIVATED_AT", "desc": "The Crisis Bridge service is established during Level 4 Incidents, meaning it is activated when incidents reach the highest severity level to coordinate real-time response actions."},
+    {"id": "r9", "src": "duty_of_care_services", "tgt": "platform", "type": "ENABLED_BY", "desc": "Duty of Care Services are enabled by Direct Travel's integrated technology ecosystem, which includes the designated online booking tool, Risk Intelligence Platform integration, and associated risk man"},
+    {"id": "r10", "src": "incident_response_and_traveler_assistance", "tgt": "severity_level", "type": "ACTIVATED_AT", "desc": "Incident Response and Traveler Assistance services are activated at Severity Level 2 or above: 'During Incidents classified at Severity Level 2 or above, Direct Travel will provide the following servi"},
+    {"id": "r11", "src": "express_client_authorization_requirement", "tgt": "client", "type": "ASSIGNED_TO", "desc": "The obligation for express Client authorization is assigned to Client for emergency actions: 'The following actions require express Client authorization unless otherwise agreed in the SOW.'"},
+    {"id": "r12", "src": "off_channel_booking_data_visibility_limitation", "tgt": "client", "type": "ASSIGNED_TO", "desc": "The obligation acknowledging visibility limitations for off-channel bookings is assigned to Client: 'Client acknowledges that Off-Channel Bookings for which itinerary data has not been provided to Dir"},
+    {"id": "r13", "src": "incident", "tgt": "security_threats", "type": "CATEGORIZED_AS", "desc": "Incidents may be categorized as security threats, one of the risk intelligence categories monitored: 'Risk intelligence categories include...security threats (terrorism, armed conflict, crime, civil u"},
+    {"id": "r14", "src": "incident", "tgt": "natural_hazards", "type": "CATEGORIZED_AS", "desc": "Incidents may be categorized as natural hazards, one of the risk intelligence categories monitored: 'natural hazards (earthquakes, hurricanes, flooding, wildfire, volcanic activity).'"},
+    {"id": "r15", "src": "incident", "tgt": "health_risks", "type": "CATEGORIZED_AS", "desc": "Incidents may be categorized as health risks, one of the risk intelligence categories monitored: 'health risks (disease outbreaks, pandemic developments, environmental contamination).'"},
+    {"id": "r16", "src": "incident", "tgt": "transportation_disruptions", "type": "CATEGORIZED_AS", "desc": "Incidents may be categorized as transportation disruptions, one of the risk intelligence categories monitored: 'transportation disruptions (airport closures, airline operational failures, rail strikes"},
+    {"id": "r17", "src": "incident", "tgt": "political_and_regulatory_changes", "type": "CATEGORIZED_AS", "desc": "Incidents may be categorized as political and regulatory changes, one of the risk intelligence categories monitored: 'political and regulatory changes (visa requirement changes, entry restrictions, go"},
+    {"id": "r18", "src": "incident", "tgt": "infrastructure_failures", "type": "CATEGORIZED_AS", "desc": "Incidents may be categorized as infrastructure failures, one of the risk intelligence categories monitored: 'infrastructure failures (telecommunications outages, power grid failures).'"},
+    {"id": "r19", "src": "incident", "tgt": "severity_level", "type": "CLASSIFIED_AS", "desc": "Incidents are classified into severity levels: 'Monitoring includes: event triage and severity classification' and 'Incidents classified at Severity Level 2 or above, Direct Travel will provide the fo"},
+    {"id": "r20", "src": "express_client_authorization_requirement", "tgt": "statement_of_work", "type": "DEFINED_IN", "desc": "The express authorization requirement is defined in the SOW: 'The following actions require express Client authorization unless otherwise agreed in the SOW.'"},
+    {"id": "r21", "src": "off_channel_booking_data_visibility_limitation", "tgt": "statement_of_work", "type": "DEFINED_IN", "desc": "The off-channel booking data visibility limitation is defined in the SOW section addressing itinerary capture."},
+    {"id": "r22", "src": "traveler_emergency_services_responsibility", "tgt": "statement_of_work", "type": "DEFINED_IN", "desc": "The traveler emergency services responsibility is established in the SOW section on incident response."},
+    {"id": "r23", "src": "risk_intelligence_and_monitoring", "tgt": "risk_intelligence_platform", "type": "ENABLED_BY", "desc": "Risk Intelligence and Monitoring service is enabled by the Risk Intelligence Platform: 'Direct Travel will use commercially reasonable efforts to maintain continuous 24/7 monitoring of global events t"},
+    {"id": "r24", "src": "pre_trip_services", "tgt": "risk_intelligence_platform", "type": "ENABLED_BY", "desc": "Pre-Trip Services are enabled by the Risk Intelligence Platform: 'Briefing content is sourced from the Risk Intelligence Platform and updated on a continuous basis' and 'destination-specific risk rati"},
+    {"id": "r25", "src": "itinerary_visibility_and_traveler_locate", "tgt": "risk_intelligence_platform", "type": "ENABLED_BY", "desc": "Itinerary Visibility and Traveler Locate service is enabled by the Risk Intelligence Platform: 'global map displaying Traveler locations (based on itinerary data) overlaid with destination risk rating"},
+    {"id": "r26", "src": "in_trip_monitoring_and_alerts", "tgt": "risk_intelligence_platform", "type": "ENABLED_BY", "desc": "In-Trip Monitoring and Alerts service is enabled by the Risk Intelligence Platform for detecting conditions and generating alerts based on risk intelligence."},
+    {"id": "r27", "src": "approved_channels", "tgt": "itinerary_visibility_and_traveler_locate", "type": "ENABLES_COVERAGE", "desc": "Approved Channels enable coverage of Itinerary Visibility and Traveler Locate services: 'Direct Travel will capture and maintain itinerary records for all travel booked through Approved Channels.'"},
+    {"id": "r28", "src": "direct_travel_inc", "tgt": "specialist_provider", "type": "ENGAGES", "desc": "Direct Travel engages with Specialist Providers: 'Where Client has contracted Specialist Providers (security, medical, evacuation, insurance), Direct Travel will coordinate referrals and information s"},
+    {"id": "r29", "src": "direct_travel_inc", "tgt": "statement_of_work", "type": "PARTY_TO", "desc": "Direct Travel, Inc. is a party to the SOW as the service provider."},
+    {"id": "r30", "src": "client", "tgt": "statement_of_work", "type": "PARTY_TO", "desc": "Client is a party to the SOW as the contracting organization for duty of care services."},
+    {"id": "r31", "src": "direct_travel_inc", "tgt": "itinerary_visibility_and_traveler_locate", "type": "PROVIDES", "desc": "Direct Travel provides Itinerary Visibility and Traveler Locate services: 'Direct Travel will capture and maintain itinerary records for all travel booked through Approved Channels.'"},
+    {"id": "r32", "src": "direct_travel_inc", "tgt": "risk_intelligence_and_monitoring", "type": "PROVIDES", "desc": "Direct Travel provides Risk Intelligence and Monitoring services: 'Direct Travel will use commercially reasonable efforts to maintain continuous 24/7 monitoring of global events.'"},
+    {"id": "r33", "src": "direct_travel_inc", "tgt": "pre_trip_services", "type": "PROVIDES", "desc": "Direct Travel provides Pre-Trip Services: 'Direct Travel will make available to Client and Travelers destination-specific risk ratings' and 'Direct Travel will deliver pre-trip briefing materials to T"},
+    {"id": "r34", "src": "direct_travel_inc", "tgt": "in_trip_monitoring_and_alerts", "type": "PROVIDES", "desc": "Direct Travel provides In-Trip Monitoring and Alerts services: 'Direct Travel will deliver destination-specific or event-based alerts to Travelers.'"},
+    {"id": "r35", "src": "direct_travel_inc", "tgt": "incident_response_and_traveler_assistance", "type": "PROVIDES", "desc": "Direct Travel provides Incident Response and Traveler Assistance services: 'During Incidents classified at Severity Level 2 or above, Direct Travel will provide the following services.'"},
+    {"id": "r36", "src": "direct_travel_inc", "tgt": "post_incident_reporting", "type": "PROVIDES", "desc": "Direct Travel provides Post-Incident Reporting services: 'Direct Travel will provide a post-incident summary including: impacted Travelers (where known); timeline of actions taken.'"},
+    {"id": "r37", "src": "express_client_authorization_requirement", "tgt": "incident_response_and_traveler_assistance", "type": "RELATES_TO", "desc": "The express Client authorization requirement relates to Incident Response and Traveler Assistance services: 'Physical evacuation, private security deployment, medical evacuation...require express Clie"},
+    {"id": "r38", "src": "off_channel_booking_data_visibility_limitation", "tgt": "itinerary_visibility_and_traveler_locate", "type": "RELATES_TO", "desc": "The off-channel booking visibility limitation constrains the Itinerary Visibility and Traveler Locate service: 'Off-Channel Bookings for which itinerary data has not been provided to Direct Travel are"},
+    {"id": "r39", "src": "traveler_emergency_services_responsibility", "tgt": "incident_response_and_traveler_assistance", "type": "RELATES_TO", "desc": "The traveler emergency services responsibility clarifies limits of Incident Response and Traveler Assistance: 'Travelers remain responsible for contacting local emergency services (police, fire, ambul"},
+    {"id": "r40", "src": "incident_response_and_traveler_assistance", "tgt": "client", "type": "REQUIRES_AUTHORIZATION_FROM", "desc": "Incident Response and Traveler Assistance services require authorization from Client for certain actions: 'Physical evacuation or extraction from affected areas; Private security deployment...require "},
+    {"id": "r41", "src": "traveler", "tgt": "safe", "type": "RESPONDS_WITH", "desc": "Travelers respond with SAFE status during welfare checks: 'Outreach to potentially impacted Travelers to confirm status (SAFE / NEED ASSISTANCE / NOT IN AREA / NO RESPONSE).'"},
+    {"id": "r42", "src": "traveler", "tgt": "need_assistance", "type": "RESPONDS_WITH", "desc": "Travelers respond with NEED ASSISTANCE status during welfare checks."},
+    {"id": "r43", "src": "traveler", "tgt": "not_in_area", "type": "RESPONDS_WITH", "desc": "Travelers respond with NOT IN AREA status during welfare checks."},
+    {"id": "r44", "src": "traveler", "tgt": "no_response", "type": "RESPONDS_WITH", "desc": "Travelers respond with NO RESPONSE status during welfare checks: 'NO RESPONSE' status indicates no response received from the traveler during outreach."},
+    {"id": "r45", "src": "need_assistance", "tgt": "incident_response_and_traveler_assistance", "type": "TRIGGERS_ACTION", "desc": "NEED ASSISTANCE status triggers Incident Response and Traveler Assistance actions: Travelers indicating need for assistance receive rebooking, medical, security referral, and other support services."},
+    {"id": "r46", "src": "no_response", "tgt": "incident_response_and_traveler_assistance", "type": "TRIGGERS_ACTION", "desc": "NO RESPONSE status triggers escalation and continued follow-up efforts within Incident Response and Traveler Assistance: 'NO RESPONSE' status indicating no response was received...triggering escalatio"},
+    {"id": "r47", "src": "booking_time_approval_configuration", "tgt": "statement_of_work", "type": "DEFINED_IN", "desc": "The booking-time approval configuration, including approval tiers, approver hierarchy, and destination-specific overrides, will be defined in the SOW."},
+    {"id": "r48", "src": "booking_time_approval_configuration", "tgt": "client", "type": "ASSIGNED_TO", "desc": "Client is responsible for defining and maintaining the booking-time approval configuration based on destination risk ratings."},
+    {"id": "r49", "src": "direct_travel_inc", "tgt": "risk_intelligence_platform", "type": "OPERATES", "desc": "Direct Travel uses the Risk Intelligence Platform to inform commercially reasonable severity determinations and incident classification decisions."},
+    {"id": "r50", "src": "direct_travel_inc", "tgt": "client", "type": "ENGAGES", "desc": "Direct Travel engages with Client for severity classification review, escalation notifications at different severity levels, and status updates during incidents."},
+    {"id": "r51", "src": "traveler_outreach_standards", "tgt": "direct_travel_inc", "type": "ASSIGNED_TO", "desc": "Traveler Outreach Standards obligation is assigned to Direct Travel, requiring welfare checks via configured channels in priority order, response logging, and live contact for assistance requests."},
+    {"id": "r52", "src": "primary_travel_program_owner", "tgt": "client", "type": "DESIGNATED_BY", "desc": "The Primary Travel Program Owner contact role is designated by the Client as part of the required 24/7 escalation roster."},
+    {"id": "r53", "src": "alternate_travel_program_contact", "tgt": "client", "type": "DESIGNATED_BY", "desc": "The Alternate Travel Program Contact role is designated by the Client to serve as backup escalation contact."},
+    {"id": "r54", "src": "after_hours_duty_contact", "tgt": "client", "type": "DESIGNATED_BY", "desc": "The After-Hours Duty Contact role is designated by the Client for incidents occurring outside Client Business Hours."},
+    {"id": "r55", "src": "corporate_security", "tgt": "client", "type": "DESIGNATED_BY", "desc": "The Corporate Security contact role is designated by the Client (if applicable) to handle security-related incidents at Level 3-4."},
+    {"id": "r56", "src": "human_resources_duty_contact", "tgt": "client", "type": "DESIGNATED_BY", "desc": "The Human Resources Duty Contact role is designated by the Client (if applicable) for incidents involving employee welfare, injury, or fatality."},
+    {"id": "r57", "src": "senior_leadership_contact", "tgt": "client", "type": "DESIGNATED_BY", "desc": "The Senior Leadership Contact role is designated by the Client for Level 4 Crisis escalation."},
+    {"id": "r58", "src": "escalation_roster_maintenance", "tgt": "client", "type": "ASSIGNED_TO", "desc": "The obligation to maintain a current 24/7 escalation roster and notify Direct Travel of changes within five business days is assigned to the Client."},
+    {"id": "r59", "src": "non_responsive_traveler_escalation", "tgt": "direct_travel_inc", "type": "ASSIGNED_TO", "desc": "The obligation to escalate non-responsive Travelers during Level 3 and Level 4 incidents after conducting outreach attempts is assigned to Direct Travel."},
+    {"id": "r60", "src": "crisis_bridge_activation", "tgt": "direct_travel_inc", "type": "ASSIGNED_TO", "desc": "The obligation to establish a Crisis Bridge within sixty minutes of Level 4 incident determination is assigned to Direct Travel."},
+    {"id": "r61", "src": "sitrep_provision", "tgt": "direct_travel_inc", "type": "ASSIGNED_TO", "desc": "The obligation to provide situation updates (SITREPs) during Crisis Bridge activation is assigned to Direct Travel."},
+    {"id": "r62", "src": "escalation_roster_maintenance", "tgt": "statement_of_work", "type": "DEFINED_IN", "desc": "The escalation roster maintenance requirements and notification procedures are defined in the SOW."},
+    {"id": "r63", "src": "non_responsive_traveler_escalation", "tgt": "statement_of_work", "type": "DEFINED_IN", "desc": "The non-responsive traveler escalation procedures and outreach cadence are defined in the SOW, as referenced by 'as configured in the SOW'."},
+    {"id": "r64", "src": "crisis_bridge_activation", "tgt": "statement_of_work", "type": "DEFINED_IN", "desc": "Crisis Bridge activation requirements and configurations are defined in the SOW, as explicitly stated: 'where configured in the SOW'."},
+    {"id": "r65", "src": "sitrep_provision", "tgt": "statement_of_work", "type": "DEFINED_IN", "desc": "The SITREP provision obligations and cadence preferences are defined in the SOW."},
+    {"id": "r66", "src": "severity_level", "tgt": "primary_travel_program_owner", "type": "ESCALATED_TO", "desc": "Incidents are escalated to the Primary Travel Program Owner, who serves as the first point of contact for all incidents regardless of severity."},
+    {"id": "r67", "src": "severity_level", "tgt": "corporate_security", "type": "ESCALATED_TO", "desc": "Security-related incidents at Level 3 and above are escalated to the Corporate Security contact as designated in the escalation roster."},
+    {"id": "r68", "src": "severity_level", "tgt": "senior_leadership_contact", "type": "ESCALATED_TO", "desc": "Level 4 Crisis incidents are escalated to the Senior Leadership Contact for crisis-level decision-making and awareness."},
+    {"id": "r69", "src": "severity_level", "tgt": "human_resources_duty_contact", "type": "ESCALATED_TO", "desc": "Incidents involving employee welfare, injury, or fatality are escalated to the Human Resources Duty Contact."},
+    {"id": "r70", "src": "direct_travel_inc", "tgt": "crisis_bridge", "type": "PROVIDES", "desc": "Direct Travel provides the Crisis Bridge service, establishing real-time communication channels during Level 4 incidents."},
+    {"id": "r71", "src": "sitrep_provision", "tgt": "crisis_bridge", "type": "RELATES_TO", "desc": "The SITREP provision obligation relates to the Crisis Bridge service, as SITREPs are delivered through the Crisis Bridge at defined intervals during Level 4 incident response."},
+    {"id": "r72", "src": "travel_services_agreement", "tgt": "data_processing_agreement", "type": "INCORPORATES", "desc": "The Agreement incorporates a Data Processing Agreement by reference or as a separate exhibit to establish data processing roles and compliance obligations."},
+    {"id": "r73", "src": "travel_services_agreement", "tgt": "gdpr", "type": "COMPLIES_WITH", "desc": "The Agreement's processing of Traveler Data for duty of care purposes complies with GDPR Article 6(1)(f) regarding legitimate interest as the lawful basis for processing."},
+    {"id": "r74", "src": "legitimate_interest_assessment_obligation", "tgt": "client", "type": "ASSIGNED_TO", "desc": "Client is responsible for conducting and documenting any required Legitimate Interest Assessment as mandated by data protection law."},
+    {"id": "r75", "src": "data_protection_impact_assessment_obligation", "tgt": "client", "type": "ASSIGNED_TO", "desc": "Client is responsible for conducting and documenting a Data Protection Impact Assessment relating to traveler tracking, location monitoring, and welfare check communications."},
+    {"id": "r76", "src": "provide_traveler_notice_obligation", "tgt": "client", "type": "ASSIGNED_TO", "desc": "Client is responsible for providing notice to Travelers regarding data processing purposes, categories collected, recipients, retention periods, and Traveler rights."},
+    {"id": "r77", "src": "legitimate_interest_assessment_obligation", "tgt": "travel_services_agreement", "type": "DEFINED_IN", "desc": "The obligation to conduct and document a Legitimate Interest Assessment is defined in the Agreement's data protection terms."},
+    {"id": "r78", "src": "data_protection_impact_assessment_obligation", "tgt": "travel_services_agreement", "type": "DEFINED_IN", "desc": "The obligation to conduct and document a Data Protection Impact Assessment for traveler tracking and location monitoring is defined in the Agreement."},
+    {"id": "r79", "src": "provide_traveler_notice_obligation", "tgt": "travel_services_agreement", "type": "DEFINED_IN", "desc": "The obligation to provide transparent notice to Travelers regarding data processing is defined in the Agreement's data protection terms."},
+    {"id": "r80", "src": "client", "tgt": "data_processing_agreement", "type": "PARTY_TO", "desc": "Client is a party to the Data Processing Agreement that establishes data processor roles and safeguards."},
+    {"id": "r81", "src": "direct_travel_inc", "tgt": "data_processing_agreement", "type": "PARTY_TO", "desc": "Direct Travel, Inc. is a party to the Data Processing Agreement and acts as data processor under its terms."},
+    {"id": "r82", "src": "extraordinary_measures_authorization", "tgt": "client", "type": "ASSIGNED_TO", "desc": "Client is assigned the obligation to authorize extraordinary measures (evacuation, specialized security response, charter transport, premium-class rebooking) and accept associated costs as they arise,"},
+    {"id": "r83", "src": "escalation_response_obligation", "tgt": "client", "type": "ASSIGNED_TO", "desc": "Client is assigned the obligation to respond to escalation notifications from Direct Travel in a timely manner, particularly during Level 3 and Level 4 Incidents, and designate authorized decision-mak"},
+    {"id": "r84", "src": "data_protection_assessment_obligation", "tgt": "client", "type": "ASSIGNED_TO", "desc": "Client is assigned the obligation to conduct and maintain Data Protection Impact Assessments or Legitimate Interest Assessments as required under applicable data protection laws in connection with tra"},
+    {"id": "r85", "src": "extraordinary_measures_authorization", "tgt": "statement_of_work", "type": "DEFINED_IN", "desc": "The obligation to authorize extraordinary measures is defined within the SOW, where pre-agreed commercial terms establish exceptions to Client's authorization obligations when costs are covered by ins"},
+    {"id": "r86", "src": "escalation_response_obligation", "tgt": "escalation_roster", "type": "DEFINED_IN", "desc": "The obligation to respond to escalation notifications is defined within the escalation roster structure that Client must maintain per Section 6.1 with 24/7 contact availability, as referenced in Secti"},
+    {"id": "r87", "src": "data_protection_assessment_obligation", "tgt": "corporate_travel_policy", "type": "DEFINED_IN", "desc": "The obligation to conduct Data Protection Impact Assessments is defined within the corporate travel policy, which establishes duty of care provisions and addresses the existence and scope of location "},
+    {"id": "r88", "src": "client", "tgt": "corporate_travel_policy", "type": "PARTY_TO", "desc": "Client is party to and responsible for establishing, maintaining, and communicating the corporate travel policy that includes duty of care provisions, booking requirements, and high-risk destination a"},
+    {"id": "r89", "src": "client", "tgt": "escalation_roster", "type": "PARTY_TO", "desc": "Client is party to and responsible for providing and maintaining a current escalation roster per Section 6.1, including 24/7 contact availability, as stated in Section 8.2."},
+    {"id": "r90", "src": "client", "tgt": "travel_insurance", "type": "PARTY_TO", "desc": "Client is party to and responsible for procuring and maintaining appropriate travel insurance covering medical treatment, emergency medical evacuation, repatriation, trip disruption, and personal liab"},
+    {"id": "r91", "src": "client", "tgt": "direct_travel_inc", "type": "ENGAGES", "desc": "Client engages with Direct Travel, Inc., coordinating on escalation roster notifications, emergency contact procedures, authorization of extraordinary measures, insurance policy details, and escalatio"},
+    {"id": "r92", "src": "duty_of_care_services", "tgt": "itinerary_data", "type": "REQUIRES_DATA", "desc": "Duty of Care Services require itinerary data to be visible in Direct Travel's systems in order to provide coverage and support."},
+    {"id": "r93", "src": "duty_of_care_services", "tgt": "supplier_direct_connect_feeds", "type": "ENABLED_BY", "desc": "Duty of Care Services are enabled by integration of supplier direct-connect booking feeds from airlines, hotels, and car rental companies as a mitigation measure to improve off-channel booking visibil"},
+    {"id": "r94", "src": "duty_of_care_services", "tgt": "automated_email_parsing_system", "type": "ENABLED_BY", "desc": "Duty of Care Services are enabled by automated email parsing that ingests forwarded itinerary confirmation emails to improve visibility into off-channel bookings."},
+    {"id": "r95", "src": "duty_of_care_services", "tgt": "booking_platform", "type": "ENABLED_BY", "desc": "Duty of Care Services are enabled by Client-configured policy enforcement rules within the booking platform to discourage or restrict off-channel bookings."},
+    {"id": "r96", "src": "direct_travel_inc", "tgt": "alerts_service", "type": "PROVIDES", "desc": "Direct Travel provides alerts service as a component of Duty of Care Services to notify travelers of incidents, risks, or disruptions."},
+    {"id": "r97", "src": "direct_travel_inc", "tgt": "welfare_checks_service", "type": "PROVIDES", "desc": "Direct Travel provides welfare checks service as a component of Duty of Care Services to verify traveler safety and status."},
+    {"id": "r98", "src": "direct_travel_inc", "tgt": "disruption_assistance_service", "type": "PROVIDES", "desc": "Direct Travel provides disruption assistance service as a component of Duty of Care Services to support travelers experiencing travel disruptions or changes."},
+    {"id": "r99", "src": "off_channel_visibility_limitation_acknowledgment", "tgt": "client", "type": "ASSIGNED_TO", "desc": "Client acknowledges and accepts the obligation that Direct Travel has no visibility into off-channel bookings and cannot provide Duty of Care Services for them unless itinerary data is provided throug"},
+    {"id": "r100", "src": "off_channel_visibility_limitation_acknowledgment", "tgt": "duty_of_care_services", "type": "RELATES_TO", "desc": "The visibility limitation acknowledgment directly relates to the scope and constraints of Duty of Care Services coverage."},
+    {"id": "r101", "src": "booking_compliance_policy_responsibility", "tgt": "client", "type": "ASSIGNED_TO", "desc": "Client bears sole responsibility for establishing internal policies and providing training to maximize traveler compliance with Approved Channels and minimize off-channel bookings."},
+    {"id": "r102", "src": "traveler", "tgt": "off_channel_booking", "type": "HAS_BOOKING", "desc": "Travelers make off-channel bookings when they book outside Approved Channels, which creates visibility gaps in Duty of Care Services."},
+    {"id": "r103", "src": "duty_of_care_services", "tgt": "gds", "type": "ENABLED_BY", "desc": "Duty of Care Services are enabled by GDS (Global Distribution System) availability; the section identifies supplier system availability as a dependency affecting service effectiveness."},
+    {"id": "r104", "src": "travel_services_agreement", "tgt": "statement_of_work", "type": "INCORPORATES", "desc": "The Agreement incorporates the Statement of Work, which is a supplementary agreement document specifying which services and specialist providers are included in Direct Travel's engagement."},
+    {"id": "r105", "src": "travel_services_agreement", "tgt": "eu_package_travel_directive_2015_2302", "type": "COMPLIES_WITH", "desc": "The Agreement complies with the EU Package Travel Directive 2015/2302; the parties cooperate to structure arrangements to avoid inadvertent creation of a package within the meaning of this regulation "},
+    {"id": "r106", "src": "travel_services_agreement", "tgt": "uk_package_travel_and_linked_travel_arrangements_regulations_2018", "type": "COMPLIES_WITH", "desc": "The Agreement complies with the UK Package Travel and Linked Travel Arrangements Regulations 2018; the parties cooperate to structure arrangements to avoid inadvertent creation of a package within the"},
+    {"id": "r107", "src": "duty_of_care_services", "tgt": "risk_intelligence_dashboard_and_reporting", "type": "ENABLED_BY", "desc": "Duty of Care Services are enabled by and include access to the Risk Intelligence Dashboard and Reporting platform, for which Client pays a platform access fee"},
+    {"id": "r108", "src": "quarterly_business_reviews", "tgt": "direct_travel_inc", "type": "ASSIGNED_TO", "desc": "Direct Travel is obligated as one of the parties to conduct quarterly business reviews including duty of care program metrics, SLO performance, and program improvement recommendations."},
+    {"id": "r109", "src": "quarterly_business_reviews", "tgt": "client", "type": "ASSIGNED_TO", "desc": "Client is obligated as one of the parties to participate in quarterly business reviews (or at the cadence specified in the SOW) covering incident metrics and program performance."},
+    {"id": "r110", "src": "quarterly_business_reviews", "tgt": "statement_of_work", "type": "DEFINED_IN", "desc": "The cadence and specific requirements for quarterly business reviews are defined in the SOW, which may specify a different review frequency than the default quarterly schedule."},
+    {"id": "r111", "src": "post_incident_review", "tgt": "direct_travel_inc", "type": "ASSIGNED_TO", "desc": "Direct Travel is obligated to make commercially reasonable efforts to participate in post-incident reviews within thirty days following a Level 4 Incident to assess response effectiveness and update p"},
+    {"id": "r112", "src": "material_change_notification", "tgt": "direct_travel_inc", "type": "ASSIGNED_TO", "desc": "Direct Travel is obligated to notify Client of material changes to the Risk Intelligence Platform, global service team structure, or applicable regulatory requirements that may impact Duty of Care Ser"},
+    {"id": "r113", "src": "statement_of_work", "tgt": "exhibit_d", "type": "INCORPORATES", "desc": "The SOW incorporates Exhibit D as a component with lower precedence, unless the SOW expressly states otherwise with specific reference to the provision being overridden."},
+    {"id": "r114", "src": "direct_travel_inc", "tgt": "incident_activity_log", "type": "OPERATES", "desc": "Direct Travel maintains and operates the incident activity log for Level 3 and Level 4 incidents."},
+    {"id": "r115", "src": "exhibit_d", "tgt": "travel_services_agreement", "type": "INCORPORATES", "desc": "Exhibit D is incorporated into and forms part of the Travel Services Agreement, establishing the duty of care services framework within the master contract."},
+    {"id": "r116", "src": "direct_travel_inc", "tgt": "platform", "type": "OPERATES", "desc": "Direct Travel operates its integrated technology platform including the booking tool, Risk Intelligence Platform integration, and reporting tools."},
+    {"id": "r117", "src": "direct_travel_inc", "tgt": "risk_intelligence_dashboard_and_reporting", "type": "OPERATES", "desc": "Direct Travel operates the Risk Intelligence Dashboard providing access to risk intelligence, incident metrics, and SLO performance data."},
+    {"id": "r118", "src": "direct_travel_inc", "tgt": "crisis24", "type": "ENGAGES", "desc": "Direct Travel engages Crisis24 (a GardaWorld company) as a Specialist Provider for risk intelligence and security services."},
+    {"id": "r119", "src": "direct_travel_inc", "tgt": "international_sos", "type": "ENGAGES", "desc": "Direct Travel engages International SOS as a Specialist Provider for medical, security, evacuation, and risk management services."},
+    {"id": "r120", "src": "client", "tgt": "specialist_provider", "type": "ENGAGES", "desc": "Client may contract Specialist Providers directly or authorize Direct Travel to engage them on Client's behalf."},
+    {"id": "r121", "src": "approved_channels", "tgt": "in_trip_monitoring_and_alerts", "type": "ENABLES_COVERAGE", "desc": "Approved Channel bookings provide the itinerary visibility required to deliver in-trip monitoring and alert services."},
+    {"id": "r122", "src": "approved_channels", "tgt": "incident_response_and_traveler_assistance", "type": "ENABLES_COVERAGE", "desc": "Approved Channel bookings enable incident response and traveler assistance by providing location and contact data visibility."},
+    {"id": "r123", "src": "approved_channels", "tgt": "alerts_service", "type": "ENABLES_COVERAGE", "desc": "Approved Channel bookings provide the visibility required to deliver targeted alerts to travelers."},
+    {"id": "r124", "src": "approved_channels", "tgt": "welfare_checks_service", "type": "ENABLES_COVERAGE", "desc": "Approved Channel bookings provide the contact information and location data necessary to conduct welfare checks."},
+    {"id": "r125", "src": "approved_channels", "tgt": "disruption_assistance_service", "type": "ENABLES_COVERAGE", "desc": "Approved Channel bookings enable disruption assistance services by providing access to traveler itineraries and booking records."},
+    {"id": "r126", "src": "duty_of_care_services", "tgt": "risk_intelligence_platform", "type": "ENABLED_BY", "desc": "Duty of Care Services depend on the Risk Intelligence Platform for continuous monitoring, event triage, and severity classification."},
+    {"id": "r127", "src": "in_trip_monitoring_and_alerts", "tgt": "platform", "type": "ENABLED_BY", "desc": "In-trip monitoring and alert delivery depend on the platform's email, SMS, and mobile push notification capabilities."},
+    {"id": "r128", "src": "crisis_bridge", "tgt": "platform", "type": "ENABLED_BY", "desc": "Crisis Bridge communication depends on platform-provided real-time conference line and digital collaboration channels."},
+    {"id": "r129", "src": "traveler", "tgt": "pnr", "type": "HAS_BOOKING", "desc": "Each traveler has a Passenger Name Record (PNR) booking that provides Direct Travel with itinerary visibility."},
+    {"id": "r130", "src": "severity_level", "tgt": "alternate_travel_program_contact", "type": "ESCALATED_TO", "desc": "Incidents require escalation to the Alternate Travel Program Contact when the primary contact is unavailable."},
+    {"id": "r131", "src": "severity_level", "tgt": "after_hours_duty_contact", "type": "ESCALATED_TO", "desc": "Incidents occurring outside Business Hours require escalation to the After-Hours Duty Contact."},
+    {"id": "r132", "src": "welfare_checks_service", "tgt": "severity_level", "type": "ACTIVATED_AT", "desc": "Welfare checks are activated at Severity Level 2 and above as a required service component."},
+    {"id": "r133", "src": "sitrep_service", "tgt": "severity_level", "type": "ACTIVATED_AT", "desc": "SITREP delivery is activated for Level 4 incidents at configured cadence intervals."},
+    {"id": "r134", "src": "itinerary_visibility_and_traveler_locate", "tgt": "traveler_data", "type": "REQUIRES_DATA", "desc": "Itinerary visibility services require accurate traveler data including flight/hotel bookings and contact information."},
+    {"id": "r135", "src": "risk_intelligence_and_monitoring", "tgt": "traveler_data", "type": "REQUIRES_DATA", "desc": "Risk monitoring requires traveler location data derived from itineraries to identify potentially impacted travelers."},
+    {"id": "r136", "src": "in_trip_monitoring_and_alerts", "tgt": "traveler_data", "type": "REQUIRES_DATA", "desc": "Alert delivery requires traveler contact data (mobile phone, email address) to send notifications via configured channels."},
+    {"id": "r137", "src": "incident_response_and_traveler_assistance", "tgt": "traveler_data", "type": "REQUIRES_DATA", "desc": "Incident response requires traveler profile data including location, contact information, and emergency contacts."},
+    {"id": "r138", "src": "welfare_checks_service", "tgt": "full_legal_name_data_element", "type": "REQUIRES_DATA", "desc": "Welfare checks require traveler's full legal name to confirm identity with suppliers and emergency services."},
+    {"id": "r139", "src": "welfare_checks_service", "tgt": "mobile_phone_number_data_element", "type": "REQUIRES_DATA", "desc": "Welfare checks require a mobile phone number for SMS outreach, the primary welfare check communication channel."},
+    {"id": "r140", "src": "welfare_checks_service", "tgt": "email_address_data_element", "type": "REQUIRES_DATA", "desc": "Welfare checks require an email address as the secondary outreach channel when SMS is unavailable."},
+    {"id": "r141", "src": "incident_response_and_traveler_assistance", "tgt": "emergency_contact_data_element", "type": "REQUIRES_DATA", "desc": "Incident response requires emergency contact information for next-of-kin notification in critical situations."},
+    {"id": "r142", "src": "incident_response_and_traveler_assistance", "tgt": "passport_details_data_element", "type": "REQUIRES_DATA", "desc": "Incident response requires passport details for international travel verification and consular coordination."},
+    {"id": "r143", "src": "incident_response_and_traveler_assistance", "tgt": "nationality_country_of_residence_data_element", "type": "REQUIRES_DATA", "desc": "Incident response requires nationality and country of residence data to coordinate appropriate embassy and immigration assistance."},
+    {"id": "r144", "src": "off_channel_booking_data_visibility_limitation", "tgt": "duty_of_care_services", "type": "RELATES_TO", "desc": "The limitation that off-channel bookings without provided itinerary data create visibility gaps constrains the scope of Duty of Care Services."},
+    {"id": "r145", "src": "traveler_outreach_standards", "tgt": "in_trip_monitoring_and_alerts", "type": "RELATES_TO", "desc": "Traveler outreach standards define the protocols for delivering in-trip monitoring and alert communications."},
+    {"id": "r146", "src": "crisis24", "tgt": "crisis24_horizon", "type": "OPERATES", "desc": "Crisis24 (a GardaWorld company) operates the Crisis24 Horizon Risk Intelligence Platform designated by Direct Travel."},
+    {"id": "r147", "src": "gardaworld", "tgt": "crisis24", "type": "ENGAGES", "desc": "GardaWorld is the parent organization that operates Crisis24 as a subsidiary provider of risk intelligence and specialist services."}
+];
+
+
+// ======================================================================
+//  TYPE CONFIG
+// ======================================================================
+const TYPE_SHAPES = {
+  Agreement:'hexagon',Obligation:'hexagon',Regulation:'hexagon',
+  Organization:'triangle',ContactRole:'triangle',Traveler:'triangle',
+  Service:'square',Platform:'square',BookingChannel:'square',Booking:'square',
+  Incident:'star',SeverityLevel:'diamond',RiskCategory:'diamond',
+  Alert:'triangleDown',TravelerResponseStatus:'triangleDown',DataElement:'dot',
+};
+const TYPE_LABELS = {
+  Agreement:'Agreement',Obligation:'Obligation',Regulation:'Regulation',
+  Organization:'Organization',ContactRole:'Contact Role',Traveler:'Traveler',
+  Service:'Service',Platform:'Platform',BookingChannel:'Booking Channel',Booking:'Booking',
+  Incident:'Incident',SeverityLevel:'Severity Level',RiskCategory:'Risk Category',
+  Alert:'Alert',TravelerResponseStatus:'Response Status',DataElement:'Data Element',
+};
+
+// ======================================================================
+//  VIS-NETWORK SETUP
+// ======================================================================
+const impMap = {};
+GRAPH_ENTITIES.forEach(n => { impMap[n.id] = n.importance || 0; });
+
+function buildVisNode(n) {
+  const imp = n.importance || 0;
+  return {
+    id: n.id, label: n.name, title: n.name + ' [' + n.type + ']',
+    shape: TYPE_SHAPES[n.type] || 'dot',
+    color: { background: n.color, border: n.color,
+      highlight: { background: n.color, border: '#f59e0b' },
+      hover: { background: n.color, border: '#818cf8' } },
+    size: 10 + imp * 30,
+    font: { color: '#e8e6e3', size: 10 + imp * 8,
+      face: "'DM Sans', system-ui, sans-serif",
+      strokeWidth: 3, strokeColor: '#0b0f1a', vadjust: -2 },
+    scaling: { label: { enabled: true, min: 10, max: 16, drawThreshold: 8 } },
+    borderWidth: 1.5 + imp * 2, borderWidthSelected: 3,
+    opacity: 0.4 + imp * 0.6,
+    shadow: { enabled: true, color: n.color + (imp > 0.6 ? '60' : '20'), size: 6 + imp * 20, x: 0, y: 0 },
+    _type: n.type, _importance: imp,
+  };
+}
+
+function buildVisEdge(r) {
+  const avgImp = ((impMap[r.src] || 0) + (impMap[r.tgt] || 0)) / 2;
+  return {
+    id: r.id, from: r.src, to: r.tgt, label: r.type,
+    arrows: { to: { enabled: true, scaleFactor: 0.7 } },
+    color: { color: '#3a3a5c', highlight: '#f59e0b', hover: '#555580' },
+    font: { size: 10, color: '#6a6a8a', face: "'DM Sans', system-ui, sans-serif",
+      align: 'middle', strokeWidth: 2, strokeColor: '#0b0f1a', background: '#0b0f1a' },
+    smooth: { enabled: true, type: 'curvedCW', roundness: 0.15 },
+    width: 0.8 + avgImp * 2.5, hoverWidth: 0.5,
+  };
+}
+
+const visNodes = new vis.DataSet(GRAPH_ENTITIES.map(buildVisNode));
+const visEdges = new vis.DataSet(GRAPH_RELATIONSHIPS.map(buildVisEdge));
+
+const network = new vis.Network(
+  document.getElementById('graph-container'),
+  { nodes: visNodes, edges: visEdges },
+  {
+    physics: { solver: 'forceAtlas2Based',
+      forceAtlas2Based: { gravitationalConstant: -80, centralGravity: 0.01,
+        springLength: 160, springConstant: 0.08, damping: 0.4, avoidOverlap: 0.8 },
+      stabilization: { iterations: 300, updateInterval: 25 },
+      maxVelocity: 50, minVelocity: 0.75 },
+    interaction: { hover: true, tooltipDelay: 200, navigationButtons: false,
+      keyboard: { enabled: false }, zoomView: true, dragView: true },
+    layout: { hierarchical: false },
+  }
+);
+network.on('stabilizationIterationsDone', () => {
+  network.fit({ animation: { duration: 500, easingFunction: 'easeInOutQuad' } });
+});
+
+// ======================================================================
+//  ZOOM
+// ======================================================================
+function zoomIn() { network.moveTo({ scale: network.getScale() * 1.4, animation: { duration: 200, easingFunction: 'easeInOutQuad' } }); }
+function zoomOut() { network.moveTo({ scale: network.getScale() / 1.4, animation: { duration: 200, easingFunction: 'easeInOutQuad' } }); }
+function zoomFit() { network.fit({ animation: { duration: 400, easingFunction: 'easeInOutQuad' } }); }
+
+// ======================================================================
+//  LEGEND + STATS
+// ======================================================================
+(function(){
+  const el = document.getElementById('legend');
+  const seen = new Set();
+  GRAPH_ENTITIES.forEach(e => { if (seen.has(e.type)) return; seen.add(e.type);
+    el.innerHTML += '<div class="item"><div class="dot" style="background:'+e.color+'"></div>'+(TYPE_LABELS[e.type]||e.type)+'</div>'; });
+  document.getElementById('hdr-e').textContent = GRAPH_ENTITIES.length;
+  document.getElementById('hdr-r').textContent = GRAPH_RELATIONSHIPS.length;
+  document.getElementById('hdr-t').textContent = seen.size;
+})();
+
+// ======================================================================
+//  ENTITY CARD
+// ======================================================================
+const entityCard = document.getElementById('entity-card');
+const ecContent = document.getElementById('ec-content');
+
+function showEntityCard(nodeId) {
+  const n = GRAPH_ENTITIES.find(x => x.id === nodeId);
+  if (!n) return;
+  let rows = '';
+  if (n.attrs && Object.keys(n.attrs).length > 0)
+    Object.entries(n.attrs).forEach(([k,v]) => {
+      const d = typeof v === 'boolean' ? (v ? '\u2705 true' : '\u274C false') : Array.isArray(v) ? v.join(', ') : String(v);
+      rows += '<tr><td>'+k.replace(/_/g,' ')+'</td><td>'+d+'</td></tr>'; });
+  ecContent.innerHTML =
+    '<div class="ec-name">'+n.name+'</div>' +
+    '<div class="ec-type"><span class="ec-dot" style="background:'+n.color+'"></span>'+n.type+'</div>' +
+    (n.desc ? '<div class="ec-desc">'+n.desc+'</div>' : '') +
+    (rows ? '<table>'+rows+'</table>' : '');
+  entityCard.classList.add('visible');
+}
+function hideEntityCard() { entityCard.classList.remove('visible'); }
+
+network.on('click', p => { if (p.nodes.length > 0) showEntityCard(p.nodes[0]); else hideEntityCard(); });
+network.on('doubleClick', p => { if (p.nodes.length === 0) zoomFit(); });
+
+// ======================================================================
+//  GRAPH VISIBILITY CONTROL (progressive reveal)
+// ======================================================================
+let revealedNodes = new Set();
+let revealedEdges = new Set();
+let scenarioMode = false;
+
+function hideAllGraph() {
+  scenarioMode = true;
+  revealedNodes = new Set();
+  revealedEdges = new Set();
+  visNodes.update(GRAPH_ENTITIES.map(n => ({ id: n.id, hidden: true })));
+  visEdges.update(GRAPH_RELATIONSHIPS.map(r => ({ id: r.id, hidden: true })));
+}
+
+function revealItems(nodeIds, edgeIds) {
+  (nodeIds || []).forEach(nid => {
+    if (revealedNodes.has(nid)) return;
+    revealedNodes.add(nid);
+    const n = GRAPH_ENTITIES.find(x => x.id === nid);
+    if (!n) return;
+    const imp = n.importance || 0;
+    visNodes.update({ id: nid, hidden: false, opacity: 1,
+      borderWidth: 3, borderWidthSelected: 4,
+      color: { background: n.color, border: '#58a6ff',
+        highlight: { background: n.color, border: '#f59e0b' },
+        hover: { background: n.color, border: '#818cf8' } },
+      font: { color: '#e8e6e3', size: 10 + imp * 8,
+        face: "'DM Sans', system-ui, sans-serif",
+        strokeWidth: 3, strokeColor: '#0b0f1a', vadjust: -2 },
+      shadow: { enabled: true, color: '#58a6ff40', size: 16, x: 0, y: 0 },
+    });
+  });
+  (edgeIds || []).forEach(eid => {
+    if (revealedEdges.has(eid)) return;
+    revealedEdges.add(eid);
+    visEdges.update({ id: eid, hidden: false,
+      color: { color: '#58a6ff', highlight: '#f59e0b', hover: '#58a6ff' },
+      font: { size: 9, color: '#8bb8e8', face: "'DM Sans', system-ui, sans-serif",
+        align: 'middle', strokeWidth: 2, strokeColor: '#0b0f1a', background: '#0b0f1a' },
+      width: 2.5, arrows: { to: { enabled: true, scaleFactor: 0.7 } },
+    });
+  });
+  // Fit to revealed nodes
+  if (revealedNodes.size > 0) {
+    network.fit({ nodes: [...revealedNodes], animation: { duration: 400, easingFunction: 'easeInOutQuad' } });
+  }
+}
+
+function restoreFullGraph() {
+  scenarioMode = false;
+  visNodes.update(GRAPH_ENTITIES.map(n => { const v = buildVisNode(n); v.hidden = false; return v; }));
+  visEdges.update(GRAPH_RELATIONSHIPS.map(r => { const v = buildVisEdge(r); v.hidden = false; return v; }));
+  network.fit({ animation: { duration: 400, easingFunction: 'easeInOutQuad' } });
+}
+
+// ======================================================================
+//  SCENARIOS
+// ======================================================================
+const scenarios = [
+{
+  id: 'full_response',
+  name: '\u26A1 Level 3 Earthquake \u2014 Full Response',
+  desc: '9-step response chain: severity classification, service activation, welfare check, escalation',
+  severity: 'high', sevLabel: 'Level 3 \u2014 Action Required',
+  incidentLabel: 'Earthquake \u2014 Tokyo',
+  actions: [
+    { name: 'Welfare Check Outreach', time: '< 60 min (SLO)', who: 'Direct Travel' },
+    { name: 'Live Voice Contact', time: '< 15 min after response', who: 'Direct Travel' },
+    { name: 'Incident Response Activation', time: 'Immediate', who: 'Direct Travel' },
+    { name: 'Client Escalation Notification', time: '< 60 min', who: 'Primary Program Owner' },
+    { name: 'HR Welfare Notification', time: '< 60 min', who: 'HR Duty Contact' },
+    { name: 'Extraordinary Measures Authorization', time: 'As needed', who: 'Client' },
+    { name: 'Status Updates', time: 'Every 2 hours', who: 'Direct Travel' },
+  ],
+  steps: [
+    { title: 'Incident Detected',
+      desc: 'Risk Intelligence Platform detects a magnitude 6.1 earthquake near Tokyo.',
+      nodes: ['incident','risk_intelligence_platform'], edges: [],
+      log: [
+        { cls:'qry', text:'QUERY  get_entity("incident")' },
+        { cls:'atr', text:'READ   type=Incident' },
+        { cls:'trv', text:'TRAVERSE  incident \u2190 risk_intelligence_platform' },
+      ]},
+    { title: 'Severity Classification',
+      desc: 'Agent traverses CLASSIFIED_AS edge to severity framework.',
+      nodes: ['severity_level'], edges: ['r19'],
+      focus: 'severity_level',
+      manual: 'Agent opens PDF, searches for severity table, reads timing columns, cross-references crisis bridge section. 3\u20135 min.',
+      log: [
+        { cls:'trv', text:'TRAVERSE  incident \u2500\u2500CLASSIFIED_AS\u2500\u2500\u25B6 severity_level' },
+        { cls:'dec', text:'DECISION  Level 3: outreach within 60 min' },
+        { cls:'dec', text:'DECISION  Crisis Bridge NOT required (Level 4 only)' },
+      ]},
+    { title: 'Identify Impacted Travelers',
+      desc: 'Agent follows IMPACTS edge to find travelers in the impact zone.',
+      nodes: ['traveler','pnr'], edges: ['r6'],
+      focus: 'traveler',
+      log: [
+        { cls:'trv', text:'TRAVERSE  incident \u2500\u2500IMPACTS\u2500\u2500\u25B6 traveler' },
+        { cls:'trv', text:'TRAVERSE  traveler \u2500\u2500HAS_BOOKING\u2500\u2500\u25B6 pnr' },
+        { cls:'dec', text:'RESULT  1 traveler in impact zone' },
+      ]},
+    { title: 'Determine Activated Services',
+      desc: 'Agent queries services with ACTIVATED_AT edges to severity level.',
+      nodes: ['incident_response_and_traveler_assistance','welfare_checks_service','crisis_bridge'], edges: ['r10','r132','r8'],
+      manual: 'Agent scans service descriptions, mentally maps which apply. Risk of missing authorization gates.',
+      log: [
+        { cls:'trv', text:'TRAVERSE  * \u2500\u2500ACTIVATED_AT\u2500\u2500\u25B6 severity_level' },
+        { cls:'atr', text:'FOUND  Incident Response \u2713  Welfare Checks \u2713  Crisis Bridge (L4)' },
+        { cls:'dec', text:'DECISION  Incident Response needs Client auth for extraordinary measures' },
+      ]},
+    { title: 'Verify Booking Visibility',
+      desc: 'Approved Channels provide ENABLES_COVERAGE paths to services.',
+      nodes: ['approved_channels','alerts_service','disruption_assistance_service','itinerary_visibility_and_traveler_locate'], edges: ['r124','r123','r125','r27'],
+      manual: 'Agent checks booking system, may not think to verify channel coverage.',
+      log: [
+        { cls:'trv', text:'TRAVERSE  approved_channels \u2500\u2500ENABLES_COVERAGE\u2500\u2500\u25B6 [7 services]' },
+        { cls:'dec', text:'RESULT  Approved Channel \u2014 full coverage confirmed \u2713' },
+      ]},
+    { title: 'Initiate Welfare Check',
+      desc: 'Welfare check service activated. Agent reads required data elements.',
+      nodes: ['full_legal_name_data_element','mobile_phone_number_data_element','email_address_data_element'], edges: ['r132'],
+      log: [
+        { cls:'qry', text:'ACTION  Initiate welfare check outreach' },
+        { cls:'atr', text:'REQUIRED  Full Legal Name, Mobile Phone, Email' },
+        { cls:'dec', text:'SENT   SMS at T+8 min (SLO: 60 min \u2713)' },
+      ]},
+    { title: 'Traveler Responds: NEED ASSISTANCE',
+      desc: 'Agent reads TMC action from response status entity.',
+      nodes: ['need_assistance'], edges: ['r42'],
+      focus: 'need_assistance',
+      log: [
+        { cls:'trv', text:'TRAVERSE  traveler \u2500\u2500RESPONDS_WITH\u2500\u2500\u25B6 NEED_ASSISTANCE' },
+        { cls:'dec', text:'DECISION  Live voice contact within 15 min' },
+      ]},
+    { title: 'Trigger Incident Response',
+      desc: 'NEED ASSISTANCE triggers incident response. Authorization chain to Client.',
+      nodes: ['client'], edges: ['r45','r40'],
+      focus: 'incident_response_and_traveler_assistance',
+      log: [
+        { cls:'trv', text:'TRAVERSE  NEED_ASSISTANCE \u2500\u2500TRIGGERS_ACTION\u2500\u2500\u25B6 incident_response' },
+        { cls:'trv', text:'TRAVERSE  incident_response \u2500\u2500REQUIRES_AUTH\u2500\u2500\u25B6 client' },
+        { cls:'dec', text:'DECISION  Standard rebooking: proceed. Extraordinary: request Client auth.' },
+      ]},
+    { title: 'Escalate to Client Contacts',
+      desc: 'Agent follows ESCALATED_TO edges to determine who to notify.',
+      nodes: ['primary_travel_program_owner','corporate_security','human_resources_duty_contact','senior_leadership_contact'], edges: ['r66','r67','r68','r69'],
+      manual: 'Agent pulls up contact roster, reads role descriptions. Under pressure, may over- or under-notify.',
+      log: [
+        { cls:'trv', text:'TRAVERSE  severity_level \u2500\u2500ESCALATED_TO\u2500\u2500\u25B6 [6 contacts]' },
+        { cls:'dec', text:'NOTIFY  Primary Program Owner (mandatory)' },
+        { cls:'dec', text:'NOTIFY  HR Duty Contact (welfare concern)' },
+        { cls:'dec', text:'SKIP   Corporate Security (not security-related)' },
+      ]},
+  ]
+},
+{
+  id: 'non_responsive',
+  name: '\uD83D\uDD07 Non-Responsive Traveler \u2014 Escalation',
+  desc: '5-step escalation: threshold check, authorization chain, specialist engagement',
+  severity: 'high', sevLabel: 'Level 3 \u2014 Escalation Required',
+  incidentLabel: 'Non-Responsive Traveler',
+  actions: [
+    { name: 'Outreach Threshold Check', time: '90 min window', who: 'Direct Travel' },
+    { name: 'Client Escalation', time: 'Immediate after threshold', who: 'Primary Program Owner' },
+    { name: 'HR Notification', time: '< 30 min', who: 'HR Duty Contact' },
+    { name: 'Specialist Provider Engagement', time: 'Upon Client auth', who: 'Specialist Provider' },
+    { name: 'Status Updates', time: 'Every 2 hours', who: 'Direct Travel' },
+  ],
+  steps: [
+    { title: 'Welfare Check \u2014 No Response',
+      desc: 'Traveler has not responded after outreach attempts.',
+      nodes: ['traveler','no_response'], edges: ['r44'],
+      focus: 'no_response',
+      manual: 'Agent must remember the 3-attempt / 2-channel / 90-min threshold from training.',
+      log: [
+        { cls:'trv', text:'TRAVERSE  traveler \u2500\u2500RESPONDS_WITH\u2500\u2500\u25B6 NO_RESPONSE' },
+        { cls:'atr', text:'READ   Escalate after 3 attempts / 2 channels / 90 min' },
+        { cls:'dec', text:'CHECK  Threshold met? YES' },
+      ]},
+    { title: 'Escalation Triggered',
+      desc: 'NO RESPONSE triggers incident response. Authorization chain to Client.',
+      nodes: ['incident_response_and_traveler_assistance','client'], edges: ['r46','r40'],
+      log: [
+        { cls:'trv', text:'TRAVERSE  NO_RESPONSE \u2500\u2500TRIGGERS_ACTION\u2500\u2500\u25B6 incident_response' },
+        { cls:'trv', text:'TRAVERSE  incident_response \u2500\u2500REQUIRES_AUTH\u2500\u2500\u25B6 client' },
+        { cls:'dec', text:'DECISION  Escalate to Client for locate authorization' },
+      ]},
+    { title: 'Identify Escalation Contacts',
+      desc: 'Agent queries contact roles via ESCALATED_TO edges.',
+      nodes: ['severity_level','primary_travel_program_owner','human_resources_duty_contact','corporate_security'], edges: ['r66','r67','r69'],
+      log: [
+        { cls:'trv', text:'TRAVERSE  severity_level \u2500\u2500ESCALATED_TO\u2500\u2500\u25B6 [contacts]' },
+        { cls:'dec', text:'NOTIFY  Primary + HR (welfare concern)' },
+        { cls:'dec', text:'SKIP   Corporate Security (not security-related)' },
+      ]},
+    { title: 'Engage Specialist Provider',
+      desc: 'Client authorizes on-ground locate.',
+      nodes: ['specialist_provider','direct_travel_inc'], edges: ['r28'],
+      log: [
+        { cls:'qry', text:'REQUEST  Client authorization for on-ground locate' },
+        { cls:'trv', text:'TRAVERSE  direct_travel \u2500\u2500ENGAGES\u2500\u2500\u25B6 specialist_provider' },
+        { cls:'dec', text:'AUTHORIZED  Specialist Provider engaged' },
+      ]},
+  ]
+},
+{
+  id: 'offchannel',
+  name: '\u26A0\uFE0F Off-Channel Booking \u2014 Coverage Gap',
+  desc: '5-step gap analysis: booking check, coverage failure, structural risk identification',
+  severity: 'critical', sevLabel: 'Level 4 \u2014 Critical Gap',
+  incidentLabel: 'Off-Channel Coverage Failure',
+  actions: [
+    { name: 'Crisis Bridge Activation', time: '< 30 min', who: 'Direct Travel' },
+    { name: 'Coverage Gap Flagged', time: 'Immediate', who: 'Agent' },
+    { name: 'Client Incident Report', time: '< 4 hours', who: 'Direct Travel' },
+    { name: 'Itinerary Capture Recommendation', time: 'In report', who: 'Direct Travel' },
+    { name: 'Quarterly Business Review Item', time: 'Next QBR', who: 'Client + Direct Travel' },
+  ],
+  steps: [
+    { title: 'Level 4 Crisis \u2014 Terrorist Attack',
+      desc: 'Critical incident. Agent identifies crisis bridge requirement.',
+      nodes: ['incident','severity_level','crisis_bridge'], edges: ['r19','r8'],
+      log: [
+        { cls:'qry', text:'ALERT  Level 4 Crisis \u2014 London' },
+        { cls:'trv', text:'TRAVERSE  incident \u2500\u2500CLASSIFIED_AS\u2500\u2500\u25B6 severity_level' },
+        { cls:'dec', text:'DECISION  Crisis Bridge + Immediate outreach' },
+      ]},
+    { title: 'Check Traveler Booking Channel',
+      desc: 'Traveler booked off-channel. Checks for ENABLES_COVERAGE paths.',
+      nodes: ['off_channel_booking','traveler'], edges: [],
+      log: [
+        { cls:'trv', text:'TRAVERSE  traveler \u2500\u2500HAS_BOOKING\u2500\u2500\u25B6 off_channel_booking' },
+        { cls:'wrn', text:'RESULT  \u26A0 NO ENABLES_COVERAGE edges from Off-Channel' },
+      ]},
+    { title: 'Coverage Gap Identified',
+      desc: 'No coverage path. Services requiring booking visibility are blocked.',
+      nodes: ['welfare_checks_service','alerts_service','disruption_assistance_service','itinerary_visibility_and_traveler_locate'], edges: [],
+      manual: 'This gap is invisible in manual processes. Agents assume all travelers are covered.',
+      log: [
+        { cls:'wrn', text:'GAP  Welfare Checks \u2192 BLOCKED' },
+        { cls:'wrn', text:'GAP  Alerts \u2192 BLOCKED' },
+        { cls:'wrn', text:'GAP  Disruption Assistance \u2192 BLOCKED' },
+        { cls:'dec', text:'ACTION  Flag gap to Client' },
+      ]},
+    { title: 'Contrast: Approved Channel',
+      desc: 'Approved Channel has 7 ENABLES_COVERAGE paths \u2014 full access.',
+      nodes: ['approved_channels','in_trip_monitoring_and_alerts','incident_response_and_traveler_assistance','duty_of_care_services'], edges: ['r4','r27','r121','r122','r123','r124','r125'],
+      log: [
+        { cls:'trv', text:'TRAVERSE  approved_channels \u2500\u2500ENABLES_COVERAGE\u2500\u2500\u25B6 [7 services]' },
+        { cls:'dec', text:'INSIGHT  Booking channel = single gate for coverage' },
+        { cls:'dec', text:'INSIGHT  ~30% off-channel \u2192 material risk' },
+      ]},
+  ]
+}
+];
+
+// ======================================================================
+//  PRESENTATION STATE
+// ======================================================================
+let currentBeat = 1;
+let currentScenario = null;
+let currentStep = -1;
+let autoTimer = null;
+
+function goToBeat(beat) {
+  currentBeat = beat;
+  document.querySelectorAll('.overlay').forEach(o => o.classList.remove('visible'));
+  document.querySelectorAll('#progress-bar .seg').forEach(s => {
+    const b = parseInt(s.dataset.beat);
+    s.classList.remove('active','done');
+    if (b === beat) s.classList.add('active');
+    else if (b < beat) s.classList.add('done');
+  });
+  if (beat === 1) document.getElementById('overlay-problem').classList.add('visible');
+  else if (beat === 2) { document.getElementById('overlay-pipeline').classList.add('visible'); animPipeline(); }
+  else if (beat === 3) {
+    const tt = document.getElementById('graph-tooltip');
+    tt.classList.add('visible');
+    setTimeout(() => tt.classList.remove('visible'), 4000);
+    if (scenarioMode) restoreFullGraph();
+    showScenarioSelector();
+  }
+}
+
+function animPipeline() {
+  document.querySelectorAll('.stage, .pipe-arrow').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.stage, .pipe-arrow').forEach(el => {
+    const d = parseInt(el.dataset.delay) || 0;
+    setTimeout(() => el.classList.add('visible'), d + 200);
+  });
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') {
+    e.preventDefault();
+    if (currentBeat < 3) goToBeat(currentBeat + 1);
+    else if (currentScenario && currentStep < currentScenario.steps.length - 1) {
+      clearInterval(autoTimer); goStep(currentStep + 1);
+    } else if (currentScenario && currentStep >= currentScenario.steps.length - 1) {
+      showResults();
+    }
+  } else if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    if (currentBeat > 1 && !currentScenario) goToBeat(currentBeat - 1);
+    else if (currentScenario && currentStep > 0) { clearInterval(autoTimer); goStep(currentStep - 1); }
+  } else if (e.key === 'Escape') {
+    if (currentScenario) { showScenarioSelector(); restoreFullGraph(); }
+  }
+});
+
+// ======================================================================
+//  PANEL STATE
+// ======================================================================
+function showScenarioSelector() {
+  currentScenario = null; currentStep = -1;
+  if (autoTimer) clearInterval(autoTimer);
+  hideEntityCard();
+  document.getElementById('panel-scenarios').style.display = 'flex';
+  document.getElementById('panel-active').style.display = 'none';
+  document.getElementById('panel-results').style.display = 'none';
+  if (scenarioMode) restoreFullGraph();
+}
+
+function showActivePanel() {
+  document.getElementById('panel-scenarios').style.display = 'none';
+  document.getElementById('panel-active').style.display = 'flex';
+  document.getElementById('panel-results').style.display = 'none';
+}
+
+function showResultsPanel() {
+  document.getElementById('panel-scenarios').style.display = 'none';
+  document.getElementById('panel-active').style.display = 'none';
+  document.getElementById('panel-results').style.display = 'flex';
+}
+
+// ======================================================================
+//  SCENARIO BUTTONS
+// ======================================================================
+(function(){
+  const container = document.getElementById('scenario-buttons');
+  scenarios.forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'scenario-btn';
+    btn.innerHTML = '<span class="sc-title">'+s.name+'</span><span class="sc-desc">'+s.desc+'</span>';
+    btn.onclick = () => startScenario(s);
+    container.appendChild(btn);
+  });
+})();
+
+function startScenario(s) {
+  currentScenario = s;
+  currentStep = -1;
+  document.getElementById('active-scenario-name').textContent = s.name;
+  document.getElementById('agent-log').innerHTML = '';
+  hideAllGraph();
+  showActivePanel();
+  goStep(0);
+}
+
+function restartCurrentScenario() {
+  if (currentScenario) startScenario(currentScenario);
+}
+
+// ======================================================================
+//  STEP ENGINE (progressive reveal)
+// ======================================================================
+const logEl = document.getElementById('agent-log');
+const btnPrev = document.getElementById('btn-prev');
+const btnNext = document.getElementById('btn-next');
+const btnAuto = document.getElementById('btn-auto');
+
+function buildDots(total, current) {
+  const el = document.getElementById('step-progress');
+  el.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === current ? ' active' : i < current ? ' done' : '');
+    el.appendChild(d);
+  }
+}
+
+function goStep(idx) {
+  if (!currentScenario) return;
+  const steps = currentScenario.steps;
+  if (idx < 0 || idx >= steps.length) return;
+
+  // If going backward, we need to rebuild from scratch
+  if (idx < currentStep) {
+    hideAllGraph();
+    for (let i = 0; i <= idx; i++) {
+      const s = steps[i];
+      revealItems(s.nodes, s.edges);
+    }
+  }
+
+  currentStep = idx;
+  const step = steps[idx];
+
+  document.getElementById('step-counter').textContent = 'Step ' + (idx+1) + ' of ' + steps.length;
+  document.getElementById('step-title').textContent = step.title;
+  document.getElementById('step-desc').textContent = step.desc;
+  buildDots(steps.length, idx);
+
+  const manualEl = document.getElementById('manual-annotation');
+  if (step.manual) {
+    document.getElementById('manual-text').textContent = step.manual;
+    manualEl.style.display = 'block';
+  } else manualEl.style.display = 'none';
+
+  btnPrev.disabled = idx === 0;
+  btnNext.disabled = false;
+  btnNext.textContent = idx === steps.length - 1 ? 'See Results \u25B6' : 'Next \u25B6';
+  btnAuto.disabled = false;
+
+  // Progressive reveal
+  revealItems(step.nodes, step.edges);
+
+  if (step.focus) showEntityCard(step.focus);
+  else hideEntityCard();
+
+  if (step.log) {
+    step.log.forEach((line, i) => {
+      setTimeout(() => {
+        const div = document.createElement('div');
+        div.className = 'log-line ' + line.cls;
+        div.textContent = line.text;
+        logEl.appendChild(div);
+        logEl.scrollTop = logEl.scrollHeight;
+      }, i * 100);
+    });
+  }
+}
+
+btnPrev.addEventListener('click', () => { clearInterval(autoTimer); goStep(currentStep - 1); });
+btnNext.addEventListener('click', () => {
+  clearInterval(autoTimer);
+  if (currentStep >= currentScenario.steps.length - 1) showResults();
+  else goStep(currentStep + 1);
+});
+btnAuto.addEventListener('click', () => {
+  if (autoTimer) { clearInterval(autoTimer); autoTimer = null; btnAuto.textContent = 'Auto \u25B6\u25B6'; return; }
+  btnAuto.textContent = 'Pause \u23F8';
+  autoTimer = setInterval(() => {
+    if (!currentScenario || currentStep >= currentScenario.steps.length - 1) {
+      clearInterval(autoTimer); autoTimer = null; btnAuto.textContent = 'Auto \u25B6\u25B6';
+      if (currentScenario) showResults();
+      return;
+    }
+    goStep(currentStep + 1);
+  }, 3500);
+});
+
+// ======================================================================
+//  RESULTS
+// ======================================================================
+function showResults() {
+  if (autoTimer) clearInterval(autoTimer);
+  showResultsPanel();
+
+  const s = currentScenario;
+  const sevClass = s.severity;
+  let html = '<div class="plan-header">' +
+    '<div class="plan-incident">'+s.incidentLabel+'</div>' +
+    '<div class="plan-severity '+sevClass+'">'+s.sevLabel+'</div></div>';
+
+  s.actions.forEach((a, i) => {
+    html += '<div class="action-item" style="animation-delay:'+i*0.08+'s">' +
+      '<div class="action-name">'+(i+1)+'. '+a.name+'</div>' +
+      '<div class="action-meta">' +
+        '<span class="action-time">\u23F1 '+a.time+'</span>' +
+        '<span class="action-who">\uD83D\uDC64 '+a.who+'</span>' +
+      '</div></div>';
+  });
+
+  html += '<div class="traversal-stats">' +
+    '<div class="tstat"><strong>'+revealedNodes.size+'</strong> nodes traversed</div>' +
+    '<div class="tstat"><strong>'+revealedEdges.size+'</strong> edges followed</div>' +
+    '<div class="tstat"><strong>'+s.actions.length+'</strong> actions identified</div>' +
+    '<div class="tstat"><strong>< 1ms</strong> traversal time</div></div>';
+
+  document.getElementById('results-content').innerHTML = html;
+}
+
+// ======================================================================
+//  INIT
+// ======================================================================
+goToBeat(1);
+</script>
+</body>
+</html>

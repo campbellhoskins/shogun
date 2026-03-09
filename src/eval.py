@@ -57,7 +57,7 @@ Return a JSON object with exactly this structure:
 
 A "pass" requires total >= 4 (out of 6).
 
-Return ONLY the JSON object."""
+Return a JSON object with the structure described above."""
 
 
 def judge_answer(
@@ -67,10 +67,13 @@ def judge_answer(
     client: Anthropic,
 ) -> dict:
     """Use a separate LLM call to judge the agent's answer against ground truth."""
-    response = client.messages.create(
+    from src.models import JudgmentOutput
+
+    response = client.messages.parse(
         model=TEST_MODEL,
         max_tokens=1024,
         system=JUDGE_SYSTEM_PROMPT,
+        output_format=JudgmentOutput,
         messages=[
             {
                 "role": "user",
@@ -83,30 +86,18 @@ def judge_answer(
         ],
     )
 
-    raw = response.content[0].text
-    if raw.startswith("```"):
-        lines = raw.split("\n")
-        lines = lines[1:]
-        if lines and lines[-1].strip() == "```":
-            lines = lines[:-1]
-        raw = "\n".join(lines)
-
-    try:
-        return json.loads(raw)
-    except (json.JSONDecodeError, ValueError):
-        return {
-            "accuracy": 0,
-            "completeness": 0,
-            "no_hallucination": 0,
-            "total": 0,
-            "pass": False,
-            "explanation": f"Judge failed to return valid JSON: {raw[:200]}",
-        }
+    parsed: JudgmentOutput = response.parsed_output
+    return {
+        "accuracy": parsed.accuracy,
+        "completeness": parsed.completeness,
+        "no_hallucination": parsed.no_hallucination,
+        "total": parsed.total,
+        "pass": parsed.pass_result,
+        "explanation": parsed.explanation,
+    }
 
 
 def main() -> None:
-    load_dotenv()
-
     if "--graph" not in sys.argv or "--qa" not in sys.argv:
         print("Usage: uv run python -m src.eval --graph <graph_id> --qa <qa_path> [--out results.json]")
         print("\nAvailable graphs:")

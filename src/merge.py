@@ -30,6 +30,7 @@ from src.models import (
     Relationship,
     SectionExtraction,
     SourceAnchor,
+    StageUsage,
 )
 from src.schemas import (
     BaseEntitySchema,
@@ -38,7 +39,7 @@ from src.schemas import (
 )
 
 load_dotenv()
-TEST_MODEL = os.environ.get("TEST_MODEL", "claude-haiku-4-5-20251001")
+_DEFAULT_MODEL = os.environ.get("_DEFAULT_MODEL", "claude-haiku-4-5-20251001")
 
 
 # ---------------------------------------------------------------------------
@@ -109,19 +110,21 @@ they are NOT duplicates regardless of name or description similarity.
 </critical_anti_merge_rules>
 
 <output-format>
-Return ONLY a JSON array of remapping objects. Each object has exactly three fields:
+Return a JSON object with key "remappings" containing an array of remapping objects. Each object has exactly three fields:
 
-[
-  {
-    "old_id": "the entity ID to retire",
-    "new_id": "the canonical entity ID to remap to",
-    "reason": "brief explanation of why these are the same entity"
-  }
-]
+{
+  "remappings": [
+    {
+      "old_id": "the entity ID to retire",
+      "new_id": "the canonical entity ID to remap to",
+      "reason": "brief explanation of why these are the same entity"
+    }
+  ]
+}
 
-If no duplicates are found, return: []
+If no duplicates are found, return: {"remappings": []}
 
-Do NOT return the full entity list. Do NOT return entities that do not need remapping. Return ONLY the JSON array.
+Do NOT return the full entity list. Do NOT return entities that do not need remapping.
 </output-format>"""
 
 SEMANTIC_DEDUP_USER_PROMPT = """\
@@ -171,16 +174,8 @@ def _merge_entity_group(group: list[BaseEntitySchema]) -> BaseEntitySchema:
     for e in group:
         all_sections.update(e.appears_in)
 
-    # Combine descriptions: canonical first, then unique content from others
-    descriptions = [canonical.description]
-    for e in group[1:]:
-        if e.description and e.description not in canonical.description:
-            descriptions.append(e.description)
-    combined_description = descriptions[0]
-    if len(descriptions) > 1:
-        unique_additions = [d for d in descriptions[1:] if d not in combined_description]
-        if unique_additions:
-            combined_description = combined_description.rstrip(". ") + ". " + " ".join(unique_additions)
+    # Keep only the longest description (already sorted by length descending)
+    combined_description = canonical.description
 
     # Build merged entity dict
     entity_dict: dict = {
@@ -278,7 +273,8 @@ def merge_extractions(
     sections: list[DocumentSection],
     client: Anthropic | None = None,
     cross_section_relationships: list[Relationship] | None = None,
-) -> tuple[OntologyGraph, list[dict]]:
+    model: str | None = None,
+) -> tuple[OntologyGraph, list[dict], StageUsage]:
     """Merge all per-section extractions into a single OntologyGraph.
 
     Groups entities by type and uses an LLM to identify semantic duplicates.
@@ -292,8 +288,10 @@ def merge_extractions(
         cross_section_relationships: Relationships from Stage 3a (cross-section extraction).
 
     Returns:
-        Tuple of (OntologyGraph, dedup_log for result storage).
+        Tuple of (OntologyGraph, dedup_log, StageUsage).
     """
+    model = model or _DEFAULT_MODEL
+
     # Collect all entities and relationships
     all_entities: list[BaseEntitySchema] = []
     all_relationships: list[Relationship] = []
@@ -320,7 +318,7 @@ def merge_extractions(
     # Pass 2: LLM-based semantic deduplication (on reduced list)
     if client is not None:
         merged_entities, id_mapping, merge_count, api_calls, dedup_log = (
-            _llm_semantic_dedup(all_entities, client)
+            _llm_semantic_dedup(all_entities, client, model=model)
         )
     else:
         # No client — pass through without dedup
@@ -329,6 +327,20 @@ def merge_extractions(
         merge_count = 0
         api_calls = 0
         dedup_log = []
+
+    # Build StageUsage from dedup log (tokens already captured there)
+    dedup_input_tokens = 0
+    dedup_output_tokens = 0
+    for entry in dedup_log:
+        dedup_input_tokens += entry.get("input_tokens", 0)
+        dedup_output_tokens += entry.get("output_tokens", 0)
+    usage = StageUsage(
+        stage="stage3b_merge",
+        model=model,
+        input_tokens=dedup_input_tokens,
+        output_tokens=dedup_output_tokens,
+        api_calls=api_calls,
+    )
 
     # Update relationship references using the ID mapping
     merged_relationships = _update_relationships(all_relationships, id_mapping)
@@ -389,7 +401,7 @@ def merge_extractions(
         extraction_metadata=metadata,
     )
 
-    return ontology, dedup_log
+    return ontology, dedup_log, usage
 
 
 # ---------------------------------------------------------------------------
@@ -416,27 +428,6 @@ def _build_entities_block(entities: list[BaseEntitySchema]) -> str:
             }
         items.append(item)
     return json.dumps(items, indent=2, ensure_ascii=False)
-
-
-def _parse_dedup_response(raw: str) -> list[dict]:
-    """Parse JSON array from LLM dedup response."""
-    cleaned = raw.strip()
-    # Strip markdown code fences
-    if cleaned.startswith("```"):
-        lines = cleaned.split("\n")
-        lines = lines[1:]
-        if lines and lines[-1].strip() == "```":
-            lines = lines[:-1]
-        cleaned = "\n".join(lines)
-
-    try:
-        return json.loads(cleaned)
-    except json.JSONDecodeError:
-        # Try to find JSON array in the text
-        match = re.search(r"\[[\s\S]*\]", cleaned)
-        if match:
-            return json.loads(match.group())
-        raise
 
 
 def _apply_remappings(
@@ -532,6 +523,7 @@ def _apply_remappings(
 def _llm_semantic_dedup(
     entities: list[BaseEntitySchema],
     client: Anthropic,
+    model: str | None = None,
 ) -> tuple[list[BaseEntitySchema], dict[str, str], int, int, list[dict]]:
     """Pass 2: Single LLM call to identify semantic duplicates across all entities.
 
@@ -547,6 +539,7 @@ def _llm_semantic_dedup(
             - api call count (int)
             - dedup log for result storage (list[dict])
     """
+    model = model or _DEFAULT_MODEL
     print(f"    Semantic dedup: sending {len(entities)} entities to LLM...")
 
     entities_block = _build_entities_block(entities)
@@ -561,6 +554,8 @@ def _llm_semantic_dedup(
     }
 
     try:
+        from src.models import SemanticDedupOutput
+
         thinking_budget = min(32768, max(4096, len(entities) * 400))
         max_tokens = thinking_budget + min(8192, max(2048, len(entities) * 100))
 
@@ -570,11 +565,11 @@ def _llm_semantic_dedup(
         input_tokens = 0
         output_tokens = 0
 
-        in_thinking = False
         with client.messages.stream(
-            model=TEST_MODEL,
+            model=model,
             max_tokens=max_tokens,
             system=SEMANTIC_DEDUP_SYSTEM_PROMPT,
+            output_format=SemanticDedupOutput,
             thinking={
                 "type": "enabled",
                 "budget_tokens": thinking_budget,
@@ -584,10 +579,8 @@ def _llm_semantic_dedup(
             for event in stream:
                 if event.type == "content_block_start":
                     if event.content_block.type == "thinking":
-                        in_thinking = True
                         print("\n      [Thinking]", flush=True)
                     elif event.content_block.type == "text":
-                        in_thinking = False
                         print("\n      [Response]", flush=True)
                 elif event.type == "content_block_delta":
                     if hasattr(event.delta, "thinking"):
@@ -616,8 +609,9 @@ def _llm_semantic_dedup(
             raw_text,
         )
 
-        # Parse remappings
-        remappings = _parse_dedup_response(raw_text)
+        # Parse remappings from structured output
+        parsed: SemanticDedupOutput = response.parsed_output
+        remappings = [r.model_dump() for r in parsed.remappings]
         log_entry["remappings"] = remappings
 
         if not remappings:
@@ -871,9 +865,10 @@ def main(argv: list[str] | None = None) -> None:
     section_extractions = _extractions_from_json(extractions_data, sections)
 
     client = None if args.no_dedup else Anthropic()
-    ontology, dedup_log = merge_extractions(
+    ontology, dedup_log, usage = merge_extractions(
         section_extractions, source_text, sections, client=client
     )
+    print(f"  Tokens: {usage.input_tokens} in, {usage.output_tokens} out ({usage.api_calls} API calls)")
 
     # Write ontology
     with open(args.output, "w", encoding="utf-8") as f:

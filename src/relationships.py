@@ -20,7 +20,6 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import re
 import sys
 from collections import defaultdict
 
@@ -32,15 +31,17 @@ from src.models import (
     FirstPassDependency,
     FirstPassResult,
     Relationship,
+    StageUsage,
 )
 from src.schemas import (
     BaseEntitySchema,
-    RELATIONSHIP_SCHEMAS,
+    generate_relationship_type_prompt_section,
     validate_relationship,
+    validate_relationship_with_flip,
 )
 
 load_dotenv()
-TEST_MODEL = os.environ.get("TEST_MODEL", "claude-haiku-4-5-20251001")
+_DEFAULT_MODEL = os.environ.get("_DEFAULT_MODEL", "claude-haiku-4-5-20251001")
 
 # ---------------------------------------------------------------------------
 # Debug mode
@@ -67,60 +68,93 @@ def _dbg(header: str, body: str = "") -> None:
 # ---------------------------------------------------------------------------
 
 
-def _generate_relationship_types_section() -> str:
-    """Generate relationship type list with type + description only.
-
-    Intentionally omits source/target entity type constraints so the LLM
-    extracts freely. Validation happens post-extraction.
-    """
-    lines = []
-    seen: set[str] = set()
-    for rs in RELATIONSHIP_SCHEMAS:
-        if rs.type not in seen:
-            seen.add(rs.type)
-            lines.append(f"{rs.type:<28}{rs.description}")
-    return "\n".join(lines)
 
 
 RELATIONSHIP_SYSTEM_PROMPT = """\
-You are a relationship extraction system for corporate travel policy documents.
-You receive a set of entities and the full document. Extract every meaningful
-relationship between entities that is grounded in the document text.
+You are an expert ontology knowledge graph extraction system. Your role is to \
+extract relationships between entities that have already been identified in a \
+section of a corporate travel policy document.
 
-<rules>
-Every relationship must be supported by specific document text — not domain
-knowledge or entity type compatibility alone.
+<pipeline_context>
+Stage 2a (entity extraction) has already identified and validated all entities in this section. You receive those entities as input. Your task is to identify meaningful relationships between them, grounded in the section text.
 
-Relationships are directed: source is the actor or governing entity, target
-is the object or governed entity.
+Stage 3 receives entity and relationship sets from all sections simultaneously and resolves cross-section connections. Your relationship output must reference only entity IDs provided in the input. Any fabricated ID will create a dangling edge that breaks Stage 3 graph assembly.
+</pipeline_context>
 
-source_id and target_id must match IDs from the provided entity list exactly.
+<graph_purpose>
+This knowledge graph will be used by TMC agents during live incident
+response to answer operational questions such as:
+- "A Level 3 security incident just occurred — what are my timing
+  obligations and who do I escalate to?"
+- "The traveler replied NEED ASSISTANCE — what do I do next and
+  how quickly?"
+- "This booking was made off-channel — what services can I provide?"
+- "It has been 90 minutes with no response — what is my next step?"
 
-Extract as many valid, grounded relationships as you can find. Prioritize
-thoroughness and completeness.
-</rules>
+Prioritize extracting entities and relationships that support these
+real-time decisions. Document-structural facts (which section defines
+a term, which agreement incorporates another) are lower priority.
+</graph_purpose>
 
-<cross_section_dependencies>
-You are provided with a set of cross-section dependencies identified during an
-earlier document analysis pass. These describe structural connections between
-sections — where one section defines terms used by another, where one section
-modifies or constrains another, or where one section requires context from another
-to be fully understood.
+<extraction_principles>
+WHAT RELATIONSHIPS ARE
+A relationship captures a specific, stated connection between two entities as evidenced by the section text. It represents how entities interact: governance, enablement, constraint, containment, classification, assignment, provision.
 
-Use these dependencies as a starting point for relationship discovery. Each
-dependency suggests that entities from those two sections are likely connected.
-Read the referenced sections closely and extract the specific entity-to-entity
-relationships that underlie each dependency.
+GROUNDING REQUIREMENT
+Every relationship must be supported by specific text in the section. Do not infer relationships from general domain knowledge or from entity descriptions alone. If the section text does not state or clearly imply the connection, do not create the relationship.
 
-These dependencies are NOT exhaustive. They capture the most prominent structural
-connections but many valid relationships exist that are not represented in this
-list. Extract all grounded relationships you find, whether or not they correspond
-to a listed dependency.
+DIRECTIONALITY
+Relationships are directed (source → target). The source is the actor, subject, or governing entity; the target is the object, recipient, or governed entity. Do not create inverse duplicates.
 
-Do not treat the dependencies as relationships themselves. They describe
-section-to-section connections. Your job is to find the entity-to-entity
-relationships within and beyond them.
-</cross_section_dependencies>
+ENTITY TYPE CONSTRAINTS
+Each relationship type specifies permitted source and target entity types. Before producing a relationship, verify that the source entity's type and target entity's type match the permitted types. Relationships that violate type constraints are invalid and will be rejected by the pipeline validator.
+
+NO ENTITY FABRICATION
+Every source_id and target_id must exactly match an id from the provided entity list. If a valid relationship would require an entity that does not exist in the list, skip that relationship entirely. Do not create placeholder or implicit entities.
+</extraction_principles>
+
+<operational_priority>
+EXTRACTION PRIORITY ORDER:
+1. HIGHEST — Operational relationships: ACTIVATED_AT, ESCALATED_TO,
+   TRIGGERS_ACTION, REQUIRES_AUTHORIZATION_FROM, SENT_TO, TRIGGERED_BY
+2. HIGH — Service delivery: PROVIDES, ENABLED_BY, ENABLES_COVERAGE,
+   REQUIRES_DATA, RESPONDS_WITH
+3. MEDIUM — Classification: CLASSIFIED_AS, CATEGORIZED_AS, IMPACTS,
+   BOOKED_THROUGH, HAS_BOOKING, ENGAGES
+4. LOWER — Structural: DEFINED_IN, PARTY_TO, INCORPORATES,
+   COMPLIES_WITH, ASSIGNED_TO, DESIGNATED_BY, RELATES_TO, OPERATES
+
+Extract ALL valid relationships, but if you find yourself generating
+many DEFINED_IN or PARTY_TO relationships without corresponding
+operational relationships from the same text, re-read for operational
+content you may have missed.
+</operational_priority>
+
+<attribute_awareness>
+Entity schemas carry typed attributes that encode many operational
+facts (SLO timing, activation thresholds, channel priority, TMC
+actions, conditional triggers). Do NOT create relationships solely
+to duplicate information already captured in entity attributes.
+
+Focus relationships on connections BETWEEN entities that attributes
+cannot capture: which services activate at which severity levels,
+which contact roles receive escalations at which levels, which
+incidents impact which travelers, which response statuses trigger
+which services, which booking channels enable which services.
+</attribute_awareness>
+
+<procedural_sequences>
+When the document describes ordered steps (e.g., "first SMS, then
+Email, then Push Notification, then Voice Call"), extract FOLLOWED_BY
+relationships between the sequential steps.
+
+When an action is conditional (e.g., "Corporate Security is contacted
+only for security-related incidents at Level 3+"), extract a
+CONDITIONAL_ON relationship from the action/role to the condition entity.
+
+When a Workflow entity exists and the section describes its component
+steps, extract STEP_OF relationships from each step to the Workflow.
+</procedural_sequences>
 
 <relationship_types>
 {relationship_types_section}
@@ -134,7 +168,7 @@ Return a JSON object with key "relationships" containing an array. Each object:
   type             (string) From relationship_types above.
   description      (string) 1-2 sentences explaining the connection.
 
-Return ONLY the JSON object.
+Produce the JSON object matching the schema described above.
 </output_schema>"""
 
 
@@ -199,44 +233,10 @@ def _build_user_prompt(
     parts.append(
         f"\nExtract all meaningful relationships between the "
         f"{len(entity_list)} entities above grounded in the document text. "
-        f"Produce only the JSON object."
+        f"Produce the JSON object."
     )
 
     return "\n\n".join(parts)
-
-
-# ---------------------------------------------------------------------------
-# Response parsing
-# ---------------------------------------------------------------------------
-
-
-def _parse_relationships_response(raw: str) -> list[dict]:
-    """Parse the LLM response into a list of relationship dicts."""
-    cleaned = raw.strip()
-
-    # Strip markdown code fences
-    if cleaned.startswith("```"):
-        lines = cleaned.split("\n")
-        lines = lines[1:]
-        if lines and lines[-1].strip() == "```":
-            lines = lines[:-1]
-        cleaned = "\n".join(lines)
-
-    try:
-        data = json.loads(cleaned)
-    except json.JSONDecodeError:
-        # Try to find JSON object in text
-        match = re.search(r"\{[\s\S]*\}", cleaned)
-        if match:
-            data = json.loads(match.group())
-        else:
-            raise
-
-    if isinstance(data, dict) and "relationships" in data:
-        return data["relationships"]
-    if isinstance(data, list):
-        return data
-    raise ValueError(f"Unexpected response format: {type(data)}")
 
 
 # ---------------------------------------------------------------------------
@@ -250,7 +250,8 @@ def extract_relationships(
     cross_section_dependencies: list[FirstPassDependency],
     existing_relationships: list[Relationship],
     client: Anthropic,
-) -> tuple[list[Relationship], list[dict], list[dict]]:
+    model: str | None = None,
+) -> tuple[list[Relationship], list[dict], list[dict], StageUsage]:
     """Stage 4: Extract relationships across the full document.
 
     Args:
@@ -265,9 +266,12 @@ def extract_relationships(
             - valid_relationships: Relationships that pass schema validation
             - invalid_relationships: Dicts with relationship + validation warnings
             - log: Pipeline log entries for result storage
+            - usage: StageUsage with token counts
     """
-    # Build relationship types section (type + description only, no constraints)
-    rel_types_section = _generate_relationship_types_section()
+    model = model or _DEFAULT_MODEL
+
+    # Build relationship types section with source/target type constraints
+    rel_types_section = generate_relationship_type_prompt_section()
     system_prompt = RELATIONSHIP_SYSTEM_PROMPT.format(
         relationship_types_section=rel_types_section,
     )
@@ -294,6 +298,8 @@ def extract_relationships(
     }
 
     try:
+        from src.models import RelationshipExtractionOutput
+
         thinking_budget = min(32768, max(8192, len(entities) * 500))
         max_tokens = thinking_budget + min(32768, max(8192, len(entities) * 300))
 
@@ -301,9 +307,10 @@ def extract_relationships(
         thinking_text = ""
 
         with client.messages.stream(
-            model=TEST_MODEL,
+            model=model,
             max_tokens=max_tokens,
             system=system_prompt,
+            output_format=RelationshipExtractionOutput,
             thinking={
                 "type": "enabled",
                 "budget_tokens": thinking_budget,
@@ -337,8 +344,9 @@ def extract_relationships(
         if thinking_text:
             log_entry["thinking"] = thinking_text
 
-        # Parse response
-        raw_rels = _parse_relationships_response(raw_text)
+        # Parse from structured output
+        parsed: RelationshipExtractionOutput = response.parsed_output
+        raw_rels = [r.model_dump() for r in parsed.relationships]
         log_entry["total_extracted"] = len(raw_rels)
         print(f"    Extracted {len(raw_rels)} relationships from LLM")
 
@@ -376,7 +384,8 @@ def extract_relationships(
             existing_keys.add(key)
 
             # Validate relationship type and entity type constraints
-            warnings = validate_relationship(
+            # Try direction flip if original direction fails
+            warnings, flipped = validate_relationship_with_flip(
                 rel_type, source_id, target_id, entity_type_lookup
             )
             if warnings:
@@ -386,9 +395,12 @@ def extract_relationships(
                 })
                 continue
 
+            final_source = target_id if flipped else source_id
+            final_target = source_id if flipped else target_id
+
             valid_relationships.append(Relationship(
-                source_id=source_id,
-                target_id=target_id,
+                source_id=final_source,
+                target_id=final_target,
                 type=rel_type,
                 description=description,
                 source_sections=[],
@@ -412,12 +424,19 @@ def extract_relationships(
             if len(invalid_relationships) > 5:
                 print(f"      ... and {len(invalid_relationships) - 5} more")
 
-        return valid_relationships, invalid_relationships, [log_entry]
+        usage = StageUsage(
+            stage="stage4_relationships",
+            model=model,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            api_calls=1,
+        )
+        return valid_relationships, invalid_relationships, [log_entry], usage
 
     except Exception as e:
         print(f"    WARNING: Relationship extraction failed: {e}")
         log_entry["error"] = str(e)
-        return [], [], [log_entry]
+        return [], [], [log_entry], StageUsage(stage="stage4_relationships", model=model)
 
 
 # ---------------------------------------------------------------------------
@@ -447,12 +466,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument(
         "-o", "--output",
         default=None,
-        help="Path to write output JSON (default: print to stdout).",
-    )
-    parser.add_argument(
-        "--output-ontology",
-        default=None,
-        help="Path to write updated ontology JSON with new relationships merged in.",
+        help="Path to write updated ontology with all relationships merged (default: print to stdout).",
     )
     parser.add_argument(
         "--debug",
@@ -501,50 +515,42 @@ def main(argv: list[str] | None = None) -> None:
     )
 
     client = Anthropic()
-    valid_rels, invalid_rels, log = extract_relationships(
+    valid_rels, invalid_rels, log, usage = extract_relationships(
         entities=ontology.entities,
         sections=sections,
         cross_section_dependencies=cross_deps,
         existing_relationships=ontology.relationships,
         client=client,
     )
+    print(f"  Tokens: {usage.input_tokens} in, {usage.output_tokens} out ({usage.api_calls} API call)")
+
+    # Merge Stage 4 relationships with existing ones
+    combined = list(ontology.relationships) + valid_rels
+    seen_keys: set[tuple[str, str, str]] = set()
+    deduped = []
+    for r in combined:
+        key = (r.source_id, r.target_id, r.type)
+        if key not in seen_keys:
+            seen_keys.add(key)
+            deduped.append(r)
+    ontology.relationships = deduped
+    ontology.extraction_metadata.stage4_relationship_count = len(valid_rels)
+    ontology.extraction_metadata.stage4_invalid_count = len(invalid_rels)
+    ontology.extraction_metadata.final_relationship_count = len(deduped)
 
     # Output
-    result = {
-        "valid_relationships": [r.model_dump() for r in valid_rels],
-        "invalid_relationships": invalid_rels,
-        "stats": {
-            "valid": len(valid_rels),
-            "invalid": len(invalid_rels),
-        },
-    }
-
     if args.output:
         with open(args.output, "w", encoding="utf-8") as f:
-            json.dump(result, f, indent=2, ensure_ascii=False, default=str)
-        print(f"\nWrote {len(valid_rels)} relationships to {args.output}")
+            json.dump(ontology.model_dump(), f, indent=2, ensure_ascii=False, default=str)
+        print(
+            f"\nWrote ontology to {args.output}: "
+            f"{len(deduped)} total relationships "
+            f"({len(ontology.relationships) - len(valid_rels)} existing + {len(valid_rels)} new)"
+        )
     else:
-        print(f"\n{len(valid_rels)} valid relationships extracted")
+        print(f"\n{len(valid_rels)} new relationships extracted, {len(deduped)} total")
         for r in valid_rels:
             print(f"  {r.source_id} --[{r.type}]--> {r.target_id}: {r.description}")
-
-    # Write updated ontology with new relationships merged in
-    if args.output_ontology:
-        combined = list(ontology.relationships) + valid_rels
-        seen_keys: set[tuple[str, str, str]] = set()
-        deduped = []
-        for r in combined:
-            key = (r.source_id, r.target_id, r.type)
-            if key not in seen_keys:
-                seen_keys.add(key)
-                deduped.append(r)
-        ontology.relationships = deduped
-        ontology.extraction_metadata.stage4_relationship_count = len(valid_rels)
-        ontology.extraction_metadata.stage4_invalid_count = len(invalid_rels)
-        ontology.extraction_metadata.final_relationship_count = len(deduped)
-        with open(args.output_ontology, "w", encoding="utf-8") as f:
-            json.dump(ontology.model_dump(), f, indent=2, ensure_ascii=False, default=str)
-        print(f"Wrote updated ontology to {args.output_ontology}: {len(deduped)} total relationships")
 
 
 if __name__ == "__main__":

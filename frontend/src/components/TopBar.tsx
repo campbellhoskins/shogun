@@ -2,17 +2,20 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { api } from '../api';
 import type { GraphStats, EntitySummary } from '../types';
 import EntityChip from './EntityChip';
+import GraphSelector from './GraphSelector';
 import '../styles/TopBar.css';
 
 interface Props {
   stats: GraphStats | null;
   typeColors: Record<string, string>;
+  graphTitle: string;
   onEntitySelect: (entityId: string) => void;
   onFitToScreen: () => void;
   onClearHighlights: () => void;
+  onGraphSwitch: (filename: string) => void;
 }
 
-export default function TopBar({ stats, typeColors, onEntitySelect, onFitToScreen, onClearHighlights }: Props) {
+export default function TopBar({ stats, typeColors, graphTitle, onEntitySelect, onFitToScreen, onClearHighlights, onGraphSwitch }: Props) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<EntitySummary[]>([]);
   const [showResults, setShowResults] = useState(false);
@@ -61,6 +64,8 @@ export default function TopBar({ stats, typeColors, onEntitySelect, onFitToScree
     <div className="topbar">
       <span className="topbar-brand">SHOGUN</span>
       <div className="topbar-separator" />
+
+      <GraphSelector currentTitle={graphTitle} onGraphSwitch={onGraphSwitch} />
 
       {stats && (
         <>

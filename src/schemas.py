@@ -36,8 +36,7 @@ class BaseEntitySchema(BaseModel):
     3. Give all typed attribute fields defaults (empty string, None, etc.)
 
     extra="allow" captures unexpected LLM attributes in __pydantic_extra__
-    rather than raising validation errors. Phase 2 replaces this with the
-    full 4-tier unknown-attribute protocol.
+    rather than raising validation errors.
     """
 
     model_config = ConfigDict(extra="allow")
@@ -540,7 +539,7 @@ INCORPORATES = RelationshipSchema(
         "precedence over another."
     ),
     valid_source_types=["Agreement"],
-    valid_target_types=["Agreement"],
+    valid_target_types=["Agreement", "Regulation"],
     cardinality="many_to_many",
     is_directed=True,
     mandatory=False,
@@ -700,10 +699,10 @@ ENABLED_BY = RelationshipSchema(
 COMPLIES_WITH = RelationshipSchema(
     type="COMPLIES_WITH",
     description=(
-        "A contractual document or the services it governs are designed to "
+        "A contractual document, service, or organization is designed to "
         "satisfy or align with a regulatory framework."
     ),
-    valid_source_types=["Agreement"],
+    valid_source_types=["Agreement", "Service", "Organization"],
     valid_target_types=["Regulation"],
     cardinality="many_to_many",
     is_directed=True,
@@ -852,9 +851,10 @@ REQUIRES_AUTHORIZATION_FROM = RelationshipSchema(
 ASSIGNED_TO = RelationshipSchema(
     type="ASSIGNED_TO",
     description=(
-        "A contractual obligation is borne by a specific party (TMC or Client)."
+        "An obligation or service is assigned to or borne by a specific "
+        "party (TMC or Client)."
     ),
-    valid_source_types=["Obligation"],
+    valid_source_types=["Obligation", "Service"],
     valid_target_types=["Organization"],
     cardinality="many_to_one",
     is_directed=True,
@@ -868,11 +868,12 @@ ASSIGNED_TO = RelationshipSchema(
 RELATES_TO = RelationshipSchema(
     type="RELATES_TO",
     description=(
-        "An obligation pertains to, enables, or constrains a specific duty "
-        "of care service."
+        "An entity pertains to, enables, or constrains another entity. "
+        "General-purpose relationship for connections that don't fit a "
+        "more specific type."
     ),
-    valid_source_types=["Obligation"],
-    valid_target_types=["Service"],
+    valid_source_types=["Obligation", "Service", "Regulation"],
+    valid_target_types=["Service", "SeverityLevel", "Organization", "Regulation"],
     cardinality="many_to_many",
     is_directed=True,
     mandatory=False,
@@ -885,11 +886,11 @@ RELATES_TO = RelationshipSchema(
 DEFINED_IN = RelationshipSchema(
     type="DEFINED_IN",
     description=(
-        "An obligation is established or specified within a particular "
-        "contractual document."
+        "An entity (service, obligation, severity level, etc.) is established "
+        "or specified within a contractual document."
     ),
-    valid_source_types=["Obligation"],
-    valid_target_types=["Agreement"],
+    valid_source_types=["Obligation", "Service", "SeverityLevel", "Regulation"],
+    valid_target_types=["Agreement", "Regulation"],
     cardinality="many_to_many",
     is_directed=True,
     mandatory=False,
@@ -1575,6 +1576,31 @@ def validate_relationship(
         )
 
     return warnings
+
+
+def validate_relationship_with_flip(
+    rel_type: str,
+    source_id: str,
+    target_id: str,
+    entity_type_lookup: dict[str, str],
+) -> tuple[list[str], bool]:
+    """Validate a relationship, attempting a direction flip if the original fails.
+
+    Returns:
+        Tuple of (warnings, flipped). If warnings is empty, the relationship
+        is valid. If flipped is True, source and target should be swapped.
+    """
+    warnings = validate_relationship(rel_type, source_id, target_id, entity_type_lookup)
+    if not warnings:
+        return [], False
+
+    # Try flipping source <-> target
+    flipped_warnings = validate_relationship(rel_type, target_id, source_id, entity_type_lookup)
+    if not flipped_warnings:
+        return [], True
+
+    # Neither direction works — return original warnings
+    return warnings, False
 
 
 def reconstruct_merged_entity(
