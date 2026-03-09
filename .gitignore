@@ -9,12 +9,10 @@ __pycache__/
 results/runs/
 results/latest.txt
 
-# Build artifacts
-output/graph.html
-output/eval_results.json
-output/graphs/
+# Build artifacts and generated output
+output/
 
-# Keep output/parsed/ tracked (PDF-to-markdown conversions are useful to version)
+docs/
 
 # Frontend
 frontend/node_modules/
