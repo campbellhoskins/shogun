@@ -18,8 +18,7 @@ from typing import Any
 
 from anthropic import Anthropic, AsyncAnthropic
 
-# Thinking configuration for extraction calls
-_THINKING_CONFIG = {"type": "enabled", "budget_tokens": 10000}
+from src.llm import thinking_config
 
 # Default model for extraction calls — loaded from .env
 import os
@@ -697,7 +696,7 @@ async def _api_call_with_retry(
                 "model": model,
                 "max_tokens": 16384,
                 "system": system_prompt,
-                "thinking": _THINKING_CONFIG,
+                "thinking": thinking_config(model, budget_tokens=10000),
                 "messages": [{"role": "user", "content": user_prompt}],
             }
             if output_format is not None:
@@ -763,7 +762,7 @@ def extract_section(
         model=model,
         max_tokens=16000,
         system=entity_sys,
-        thinking=_THINKING_CONFIG,
+        thinking=thinking_config(model, budget_tokens=10000),
         messages=[{"role": "user", "content": entity_user}],
     )
 
@@ -791,7 +790,7 @@ def extract_section(
             model=model,
             max_tokens=16000,
             system=rel_sys,
-            thinking=_THINKING_CONFIG,
+            thinking=thinking_config(model, budget_tokens=10000),
             output_format=RelationshipExtractionOutput,
             messages=[{"role": "user", "content": rel_user}],
         )
@@ -831,7 +830,7 @@ def _retry_entity_extraction(
         model=model,
         max_tokens=16000,
         system=entity_sys,
-        thinking=_THINKING_CONFIG,
+        thinking=thinking_config(model, budget_tokens=10000),
         messages=[{"role": "user", "content": retry_prefix + entity_user}],
     )
 
@@ -882,7 +881,7 @@ async def _extract_section_async(
         _dbg(
             f"ENTITY API CALL [{section.section_number}]",
             f"model: {model}\n"
-            f"max_tokens: 16384 (thinking: {_THINKING_CONFIG['budget_tokens']})\n"
+            f"max_tokens: 16384 (thinking: adaptive/enabled)\n"
             f"system prompt length: {len(entity_sys)} chars\n"
             f"user prompt length: {len(entity_user)} chars",
         )

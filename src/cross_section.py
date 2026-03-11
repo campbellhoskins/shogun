@@ -320,15 +320,13 @@ def extract_cross_section_relationships(
         input_tokens = 0
         output_tokens = 0
 
+        from src.llm import thinking_config
         with client.messages.stream(
             model=model,
             max_tokens=32768,
             system=system_prompt,
             output_format=CrossSectionRelOutput,
-            thinking={
-                "type": "enabled",
-                "budget_tokens": 16384,
-            },
+            thinking=thinking_config(model, budget_tokens=16384),
             messages=[{"role": "user", "content": user_prompt}],
         ) as stream:
             if _DEBUG:

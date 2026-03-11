@@ -306,15 +306,13 @@ def extract_relationships(
         raw_text = ""
         thinking_text = ""
 
+        from src.llm import thinking_config
         with client.messages.stream(
             model=model,
             max_tokens=max_tokens,
             system=system_prompt,
             output_format=RelationshipExtractionOutput,
-            thinking={
-                "type": "enabled",
-                "budget_tokens": thinking_budget,
-            },
+            thinking=thinking_config(model, budget_tokens=thinking_budget),
             messages=[{"role": "user", "content": user_prompt}],
         ) as stream:
             for event in stream:

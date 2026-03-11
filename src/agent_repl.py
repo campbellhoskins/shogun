@@ -4,11 +4,12 @@ Shows every tool call, its input, and the result — so you can see exactly
 how the agent traverses the graph to reach its answer.
 
 Usage:
-    uv run python -m src.agent_repl --graph <graph_id>
+    uv run python -m src.agent_repl --graph <path/to/ontology.json>
+    uv run python -m src.agent_repl --latest
 
 Example:
-    uv run python -m src.agent_repl --graph 1-1
-    uv run python -m src.agent_repl --graph graph-1-1
+    uv run python -m src.agent_repl --graph data/final_graphs/shogun_pipeline_v1.json
+    uv run python -m src.agent_repl --latest
 """
 from __future__ import annotations
 
@@ -26,10 +27,9 @@ from anthropic import Anthropic
 load_dotenv()
 TEST_MODEL = os.environ.get("TEST_MODEL", "claude-haiku-4-5-20251001")
 
-from src.build_graph import load_graph_file, list_graphs
 from src.graph import build_graph
 from src.agent import SYSTEM_PROMPT, TOOLS, _execute_tool
-from src.models import AgentResponse
+from src.models import AgentResponse, OntologyGraph
 
 
 def ask_verbose(question: str, g: nx.DiGraph, client: Anthropic, max_turns: int = 15) -> AgentResponse:
@@ -117,27 +117,47 @@ def ask_verbose(question: str, g: nx.DiGraph, client: Anthropic, max_turns: int 
     )
 
 
-def main() -> None:
-    if "--graph" not in sys.argv:
-        # Show available graphs and usage
-        print("Usage: uv run python -m src.agent_repl --graph <graph_id>")
-        print("\nAvailable graphs:")
-        graphs = list_graphs()
-        if not graphs:
-            print("  None. Build one first: uv run python -m src.build_graph <policy> --prompt <version>")
-        else:
-            for g in graphs:
-                print(f"  {g['graph_id']}  ({g['node_count']} nodes, {g['edge_count']} edges, policy: {g['policy_file']})")
+def _load_ontology(args: Any) -> tuple[OntologyGraph, str]:
+    """Load an OntologyGraph from CLI arguments.
+
+    Returns (ontology, label) where label is used for display.
+    """
+    if args.latest:
+        from src.results import load_latest_ontology
+        ontology = load_latest_ontology()
+        return ontology, "latest pipeline run"
+
+    graph_path = Path(args.graph)
+    if not graph_path.exists():
+        print(f"Error: File not found: {graph_path}", file=sys.stderr)
         sys.exit(1)
 
-    graph_idx = sys.argv.index("--graph")
-    graph_id = sys.argv[graph_idx + 1]
+    data = json.loads(graph_path.read_text(encoding="utf-8"))
 
-    print(f"Loading graph: {graph_id}")
-    ontology, metadata = load_graph_file(graph_id)
+    # Handle wrapped format (e.g. legacy build_graph output with "ontology" key)
+    if "ontology" in data and isinstance(data["ontology"], dict):
+        data = data["ontology"]
+
+    ontology = OntologyGraph(**data)
+    return ontology, str(graph_path)
+
+
+def main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        prog="python -m src.agent_repl",
+        description="Interactive agent REPL for querying ontology graphs",
+    )
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--graph", type=str, help="Path to ontology JSON file")
+    group.add_argument("--latest", action="store_true", help="Load the latest pipeline run")
+    args = parser.parse_args()
+
+    print(f"Loading graph: {args.graph or 'latest'}")
+    ontology, label = _load_ontology(args)
     g = build_graph(ontology)
-    print(f"  Prompt version: v{metadata['prompt_version']}")
-    print(f"  Policy: {metadata['policy_file']}")
+    print(f"  Source: {label}")
     print(f"  {g.number_of_nodes()} nodes, {g.number_of_edges()} edges")
 
     # Type summary
@@ -151,7 +171,7 @@ def main() -> None:
     client = Anthropic()
 
     print("\n" + "=" * 60)
-    print(f"  GRAPH AGENT TEST HARNESS  [{metadata['graph_id']}]")
+    print(f"  GRAPH AGENT REPL  [{label}]")
     print("  Ask questions. Every tool call will be shown.")
     print("  Type 'quit' to exit.")
     print("=" * 60)
