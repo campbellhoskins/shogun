@@ -7,16 +7,16 @@ Two modes:
 
 Usage:
   # Schema-free extraction
-  uv run python scripts/langchain_kg_baseline.py data/direct_travel_duty_of_care.md --mode free
+  uv run python scripts/langchain_kg_baseline.py data/duty_of_care.md --mode free
 
   # Schema-guided extraction (uses Shogun's entity types + relationship triples)
-  uv run python scripts/langchain_kg_baseline.py data/direct_travel_duty_of_care.md --mode guided
+  uv run python scripts/langchain_kg_baseline.py data/duty_of_care.md --mode guided
 
   # Whole-document (no chunking) — default
-  uv run python scripts/langchain_kg_baseline.py data/direct_travel_duty_of_care.md --mode guided --whole
+  uv run python scripts/langchain_kg_baseline.py data/duty_of_care.md --mode guided --whole
 
   # Chunked (split into N-char chunks before extraction)
-  uv run python scripts/langchain_kg_baseline.py data/direct_travel_duty_of_care.md --mode guided --chunk-size 4000
+  uv run python scripts/langchain_kg_baseline.py data/duty_of_care.md --mode guided --chunk-size 4000
 
 Output is saved to data/langchain_kg_{mode}_{strategy}.json in a format that
 can be compared against Shogun's ontology.json.

@@ -747,6 +747,6 @@
     "chunk_size": null,
     "model": "claude-haiku-4-5-20251001",
     "extraction_time_seconds": 24.48,
-    "document": "direct_travel_duty_of_care.md"
+    "document": "duty_of_care.md"
   }
 }
