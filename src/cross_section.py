@@ -144,23 +144,12 @@ These are prompts for where to look, not an exhaustive list.
 </relationship_types>
 
 <output_schema>
-Produce a single JSON object with one key: "relationships" containing an array.
+Return a JSON object with key "relationships" containing an array. Each object:
 
-Each relationship object has these fields:
-
-  source_id       (string, required) Must match an entity id from the provided list.
-  source_section  (string, required) Section ID where the source entity was extracted.
-  target_id       (string, required) Must match an entity id from the provided list.
-  target_section  (string, required) Section ID where the target entity was extracted.
-  type            (string, required) One of the types from <relationship_types>.
-  description     (string, required) 1-2 sentences describing this specific cross-section
-                  connection as stated in the document text.
-  source_anchor   (object, required)
-      source_text     (string) EXACT verbatim quote from section text that evidences
-                      this relationship. Copy character-for-character from the text.
-                      Cite the passage that makes the cross-reference or states the
-                      connection.
-      source_section  (string) Section ID where the quoted text appears.
+  source_id        (string) Entity ID from provided list.
+  target_id        (string) Entity ID from provided list.
+  type             (string) From relationship_types above.
+  description      (string) 1-2 sentences explaining the connection.
 
 HARD CONSTRAINT: source_section (in the relationship) MUST differ from target_section.
 
@@ -174,9 +163,6 @@ Before including each relationship:
 3. source entity's section ≠ target entity's section
 4. Source entity's type matches permitted source type for the relationship type
 5. Target entity's type matches permitted target type for the relationship type
-6. source_anchor contains a verbatim quote from the document text
-7. The quoted text states or directly implies the cross-section connection
-8. No duplicate or inverse relationship already exists in your output
 
 If any check fails, do not include that relationship.
 </validation_checklist>"""
@@ -197,55 +183,97 @@ def build_cross_section_system_prompt() -> str:
 def build_cross_section_user_prompt(
     section_extractions: list[SectionExtraction],
 ) -> str:
-    """Build the Stage 3a cross-section relationship extraction prompt.
+    """Build the cross-section relationship extraction prompt from SectionExtractions.
 
-    For each SectionExtraction, includes section_id, header, summary, full text,
-    and a slim entity list (id, type, name, description only).
+    Lists all sections first (with metadata and text), then all entities
+    with their section membership. This gives the LLM a complete picture
+    of document structure before seeing entities.
     """
+    from src.models import DocumentSection
+    sections = [se.section for se in section_extractions]
+
+    # Collect all entities with section membership
+    entities: list[tuple[BaseEntitySchema, str]] = []
+    for se in section_extractions:
+        sid = se.section.section_id or se.section.section_number
+        for e in se.entities:
+            entities.append((e, sid))
+
+    # Build entity slim list with appears_in
+    entity_dicts = []
+    for e, sid in entities:
+        appears_in = getattr(e, "appears_in", None) or [sid]
+        entity_dicts.append({
+            "id": e.id,
+            "type": e.type,
+            "name": e.name,
+            "description": e.description,
+            "appears_in": appears_in,
+        })
+
+    return _build_user_prompt_core(sections, entity_dicts)
+
+
+def build_cross_section_user_prompt_from_ontology(
+    ontology: "OntologyGraph",
+) -> str:
+    """Build the cross-section relationship extraction prompt from a merged OntologyGraph.
+
+    Same structure as the SectionExtraction version but uses deduplicated entities.
+    """
+    entities_slim = []
+    for e in ontology.entities:
+        appears_in = getattr(e, "appears_in", None) or []
+        if not appears_in and e.source_anchor and e.source_anchor.source_section:
+            appears_in = [e.source_anchor.source_section]
+        entities_slim.append({
+            "id": e.id,
+            "type": e.type,
+            "name": e.name,
+            "description": e.description,
+            "appears_in": appears_in,
+        })
+
+    return _build_user_prompt_core(ontology.source_sections, entities_slim)
+
+
+def _build_user_prompt_core(
+    sections: list,
+    entities: list[dict],
+) -> str:
+    """Shared prompt builder: sections first, then all entities."""
     parts = []
 
     parts.append(
         "## DOCUMENT SECTIONS\n\n"
-        "Below are all sections of the document with their full text and "
-        "extracted entities. Read all sections before producing output. "
-        "Create relationships ONLY between entities from DIFFERENT sections."
+        "Below are all sections of the document. Read all sections before "
+        "producing output. Create relationships ONLY between entities from "
+        "DIFFERENT sections."
     )
 
-    total_entities = 0
-    for se in section_extractions:
-        section = se.section
+    for section in sections:
         sid = section.section_id or section.section_number
-        entity_count = len(se.entities)
-        total_entities += entity_count
-
-        # Slim entity format — no attributes, no source_anchors
-        entities_slim = [
-            {
-                "id": e.id,
-                "type": e.type,
-                "name": e.name,
-                "description": e.description,
-            }
-            for e in se.entities
-        ]
-        entity_block = json.dumps(entities_slim, indent=2)
-
         section_block = (
             f"### {sid}: {section.header}\n"
             f"Summary: {section.section_summary}\n\n"
             f"Text:\n"
             f"--- BEGIN ---\n"
             f"{section.text.strip()}\n"
-            f"--- END ---\n\n"
-            f"Entities ({entity_count}):\n\n"
-            f"```json\n{entity_block}\n```"
+            f"--- END ---"
         )
-
         parts.append(section_block)
 
+    # All entities with section membership
+    entity_block = json.dumps(entities, indent=2)
     parts.append(
-        f"Extract all cross-section relationships across {len(section_extractions)} "
-        f"sections ({total_entities} total entities). Every relationship must "
+        f"## ENTITIES ({len(entities)} total)\n\n"
+        f"Each entity lists the sections it appears in via `appears_in`.\n\n"
+        f"```json\n{entity_block}\n```"
+    )
+
+    parts.append(
+        f"Extract all cross-section relationships across {len(sections)} "
+        f"sections ({len(entities)} total entities). Every relationship must "
         f"connect entities from different sections and be grounded in the "
         f"document text above."
     )
@@ -263,16 +291,7 @@ def extract_cross_section_relationships(
     client: Anthropic | None = None,
     model: str | None = None,
 ) -> tuple[list[Relationship], dict, StageUsage]:
-    """Extract cross-section relationships via a single LLM call.
-
-    Args:
-        section_extractions: Stage 2 outputs (entities + intra-section rels per section).
-        client: Anthropic client.
-        model: LLM model ID. Defaults to env TEST_MODEL.
-
-    Returns:
-        Tuple of (validated cross-section Relationships, log dict, StageUsage).
-    """
+    """Extract cross-section relationships from per-section extractions."""
     if client is None:
         client = Anthropic()
     model = model or _DEFAULT_MODEL
@@ -289,24 +308,73 @@ def extract_cross_section_relationships(
     system_prompt = build_cross_section_system_prompt()
     user_prompt = build_cross_section_user_prompt(section_extractions)
 
-    _dbg(
-        f"SYSTEM PROMPT ({len(system_prompt)} chars)",
-        system_prompt,
-    )
-    _dbg(
-        f"USER PROMPT ({len(user_prompt)} chars)",
-        user_prompt,
-    )
-
     total_entities = sum(len(se.entities) for se in section_extractions)
     print(
         f"    Cross-section extraction: {len(section_extractions)} sections, "
-        f"{total_entities} entities"
+        f"{total_entities} entities (model: {model})"
     )
 
+    return _run_cross_section_llm(
+        system_prompt, user_prompt,
+        entity_lookup, entity_type_lookup,
+        client, model,
+    )
+
+
+def extract_cross_section_from_ontology(
+    ontology: "OntologyGraph",
+    client: Anthropic | None = None,
+    model: str | None = None,
+) -> tuple[list[Relationship], dict, StageUsage]:
+    """Extract cross-section relationships from a merged OntologyGraph.
+
+    Uses deduplicated entities and their appears_in metadata.
+    """
+    if client is None:
+        client = Anthropic()
+    model = model or _DEFAULT_MODEL
+
+    # Build entity lookup from ontology entities
+    entity_lookup: dict[str, tuple[str, str]] = {}
+    for e in ontology.entities:
+        section = ""
+        if e.appears_in:
+            section = e.appears_in[0]
+        elif e.source_anchor and e.source_anchor.source_section:
+            section = e.source_anchor.source_section
+        entity_lookup[e.id] = (e.type, section)
+
+    entity_type_lookup = {eid: etype for eid, (etype, _) in entity_lookup.items()}
+
+    system_prompt = build_cross_section_system_prompt()
+    user_prompt = build_cross_section_user_prompt_from_ontology(ontology)
+
+    print(
+        f"    Cross-section extraction: {len(ontology.source_sections)} sections, "
+        f"{len(ontology.entities)} entities (model: {model})"
+    )
+
+    return _run_cross_section_llm(
+        system_prompt, user_prompt,
+        entity_lookup, entity_type_lookup,
+        client, model,
+    )
+
+
+def _run_cross_section_llm(
+    system_prompt: str,
+    user_prompt: str,
+    entity_lookup: dict[str, tuple[str, str]],
+    entity_type_lookup: dict[str, str],
+    client: Anthropic,
+    model: str,
+) -> tuple[list[Relationship], dict, StageUsage]:
+    """Shared LLM call + validation for cross-section extraction."""
+    _dbg(f"SYSTEM PROMPT ({len(system_prompt)} chars)", system_prompt)
+    _dbg(f"USER PROMPT ({len(user_prompt)} chars)", user_prompt)
+
     log: dict = {
-        "section_count": len(section_extractions),
-        "total_entities": total_entities,
+        "total_entities": len(entity_lookup),
         "system_prompt_length": len(system_prompt),
         "user_prompt_length": len(user_prompt),
     }
@@ -314,7 +382,6 @@ def extract_cross_section_relationships(
     try:
         from src.models import CrossSectionRelOutput
 
-        # Use streaming to avoid 10-minute timeout on large prompts
         raw_text = ""
         thinking_text = ""
         input_tokens = 0
@@ -323,14 +390,13 @@ def extract_cross_section_relationships(
         from src.llm import thinking_config
         with client.messages.stream(
             model=model,
-            max_tokens=32768,
+            max_tokens=16000,
             system=system_prompt,
             output_format=CrossSectionRelOutput,
-            thinking=thinking_config(model, budget_tokens=16384),
+            thinking=thinking_config(model, budget_tokens=10000),
             messages=[{"role": "user", "content": user_prompt}],
         ) as stream:
             if _DEBUG:
-                # Stream tokens live so you can watch the LLM work
                 print("\n[DEBUG] STREAMING RESPONSE")
                 print("=" * 60)
                 for event in stream:
@@ -364,13 +430,9 @@ def extract_cross_section_relationships(
         if thinking_text:
             log["thinking"] = thinking_text
 
+        _dbg(f"THINKING ({len(thinking_text)} chars)", thinking_text)
         _dbg(
-            f"THINKING ({len(thinking_text)} chars)",
-            thinking_text,
-        )
-        _dbg(
-            f"RESPONSE ({response.usage.input_tokens} in, "
-            f"{response.usage.output_tokens} out, {len(raw_text)} chars)",
+            f"RESPONSE ({input_tokens} in, {output_tokens} out, {len(raw_text)} chars)",
             raw_text,
         )
 
@@ -386,34 +448,25 @@ def extract_cross_section_relationships(
         for r in raw_rels:
             source_id = str(r.get("source_id", ""))
             target_id = str(r.get("target_id", ""))
-            source_section = str(r.get("source_section", ""))
-            target_section = str(r.get("target_section", ""))
             rel_type = str(r.get("type", ""))
             description = str(r.get("description", ""))
 
-            # Check 1: source_id exists
             if source_id not in entity_lookup:
                 rejected.append({"reason": f"source_id '{source_id}' not found", **r})
                 continue
-
-            # Check 2: target_id exists
             if target_id not in entity_lookup:
                 rejected.append({"reason": f"target_id '{target_id}' not found", **r})
                 continue
 
-            # Use actual section from entity lookup (more reliable than LLM output)
             actual_source_section = entity_lookup[source_id][1]
             actual_target_section = entity_lookup[target_id][1]
 
-            # Check 3: cross-section constraint
             if actual_source_section == actual_target_section:
                 rejected.append({
-                    "reason": f"same section ({actual_source_section})",
-                    **r,
+                    "reason": f"same section ({actual_source_section})", **r,
                 })
                 continue
 
-            # Check 4: schema validation (type constraints, with direction flip)
             warnings, flipped = validate_relationship_with_flip(
                 rel_type, source_id, target_id, entity_type_lookup
             )
@@ -424,7 +477,6 @@ def extract_cross_section_relationships(
             final_source = target_id if flipped else source_id
             final_target = source_id if flipped else target_id
 
-            # Re-check cross-section constraint after potential flip
             final_source_section = entity_lookup[final_source][1]
             final_target_section = entity_lookup[final_target][1]
             if final_source_section == final_target_section:
@@ -434,7 +486,6 @@ def extract_cross_section_relationships(
                 })
                 continue
 
-            # Build source_sections from source_anchor
             anchor = r.get("source_anchor", {})
             anchor_section = str(anchor.get("source_section", final_source_section))
 
@@ -545,15 +596,20 @@ def main(argv: list[str] | None = None) -> None:
     """CLI entry point: extract cross-section relationships."""
     parser = argparse.ArgumentParser(
         prog="python -m src.cross_section",
-        description="Stage 3a: Extract cross-section relationships.",
+        description="Extract cross-section relationships.",
+    )
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument(
+        "--ontology",
+        help="Path to merged ontology.json (uses deduplicated entities).",
+    )
+    source.add_argument(
+        "--extractions",
+        help="Path to extractions.json (Stage 2 output, requires --chunks).",
     )
     parser.add_argument(
-        "extractions",
-        help="Path to extractions.json (Stage 2 output).",
-    )
-    parser.add_argument(
-        "chunks",
-        help="Path to chunks.json (Stage 1 output).",
+        "--chunks",
+        help="Path to chunks.json (required with --extractions).",
     )
     parser.add_argument(
         "-o", "--output",
@@ -570,18 +626,28 @@ def main(argv: list[str] | None = None) -> None:
     global _DEBUG
     _DEBUG = args.debug
 
-    with open(args.extractions, encoding="utf-8") as f:
-        extractions_data = json.load(f)
-    with open(args.chunks, encoding="utf-8") as f:
-        chunks_data = json.load(f)
-
-    print(f"Loaded {len(extractions_data)} extractions, {len(chunks_data)} chunks")
-
-    sections = _sections_from_chunks(chunks_data)
-    section_extractions = _extractions_from_json(extractions_data, sections)
-
     client = Anthropic()
-    rels, log, usage = extract_cross_section_relationships(section_extractions, client=client)
+
+    if args.ontology:
+        from src.models import OntologyGraph
+        data = json.loads(open(args.ontology, encoding="utf-8").read())
+        if "ontology" in data and isinstance(data["ontology"], dict):
+            data = data["ontology"]
+        ontology = OntologyGraph(**data)
+        print(f"Loaded ontology: {len(ontology.entities)} entities, {len(ontology.source_sections)} sections")
+        rels, log, usage = extract_cross_section_from_ontology(ontology, client=client)
+    else:
+        if not args.chunks:
+            parser.error("--chunks is required when using --extractions")
+        with open(args.extractions, encoding="utf-8") as f:
+            extractions_data = json.load(f)
+        with open(args.chunks, encoding="utf-8") as f:
+            chunks_data = json.load(f)
+        print(f"Loaded {len(extractions_data)} extractions, {len(chunks_data)} chunks")
+        sections = _sections_from_chunks(chunks_data)
+        section_extractions = _extractions_from_json(extractions_data, sections)
+        rels, log, usage = extract_cross_section_relationships(section_extractions, client=client)
+
     print(f"  Tokens: {usage.input_tokens} in, {usage.output_tokens} out ({usage.api_calls} API call)")
 
     # Write relationships
