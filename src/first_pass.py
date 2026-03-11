@@ -27,13 +27,12 @@ load_dotenv()
 _DEFAULT_MODEL = os.environ.get("_DEFAULT_MODEL", "claude-haiku-4-5-20251001")
 
 from src.models import FirstPassResult, StageUsage
-from src.schemas import VALID_ENTITY_TYPES
+from src.schemas import ENTITY_TYPE_MAP
 
 # Module-level debug flag — set via CLI --debug or programmatically
 _DEBUG = False
 
-# Thinking configuration for the first pass call
-_THINKING_CONFIG = {"type": "enabled", "budget_tokens": 32768}
+from src.llm import thinking_config
 
 
 def _dbg(header: str, body: str = "") -> None:
@@ -105,24 +104,24 @@ annotated with its operational significance to guide Stage 2 extraction
 priority.
 
 <format>
-{
-  "document_map": {
+{{
+  "document_map": {{
     "document_title": "string — official title as it appears in the document",
     "issuing_organization": "string — organization that issued this policy",
     "effective_date": "string — ISO 8601 if possible, null if not stated",
     "document_purpose_summary": "string — 1-2 sentences: what this document governs and who it applies to",
     "sections": [
-      {
+      {{
         "section_id": "string — SEC-00, SEC-01, etc. in order of appearance",
         "section_name": "string — exact heading as it appears in the document",
         "section_order": "integer — ordinal position starting at 1",
         "section_purpose": "string — 3-7 word functional description",
         "section_summary": "string — one sentence describing what this section covers in context of the full document",
         "beginning_text": "string — verbatim first 40-60 words immediately after the section heading, used by chunking system for location matching"
-      }
+      }}
     ]
-  }
-}
+  }}
+}}
 </format>
 
 <instructions>
@@ -143,16 +142,16 @@ it is a targeted seed list that helps Stage 2 extractors use consistent canonica
 for entities that span multiple sections.
 
 <output_format>
-{
+{{
   "global_entity_pre_registration": [
-    {
+    {{
       "entity_name": "string — the canonical name for this entity. Choose the most complete and specific name used in the document. It should be lowercase_with_underscores, descriptive (e.g., "direct_travel_inc")",
       "candidate_types": "array of one to three strings from the permitted entity type list — these are provisional suggestions for Stage 2 to confirm, revise, or override based on contextual analysis. Stage 2 is not bound by these suggestions.",
       "mentioned_in_sections": "array of strings — every section_id in which this entity is referenced. Must match section_ids defined in the document_map. List in order of appearance.",
       "brief_description": "string — identity and disambiguation context ONLY: the entity's full name, any abbreviations or aliases used in the document, and the section where it first appears. Do NOT describe what the entity does, governs, or how it relates to other entities — that is Stage 2's job."
-    }
+    }}
   ]
-}
+}}
 </output_format>
 
 <permitted_entity_types>
@@ -205,16 +204,16 @@ exists between them. A dependency exists when:
 - Compliance with one section's rules is conditional on rules stated in another section
 
 <output_format>
-{
+{{
   "cross_section_dependencies": [
-    {
+    {{
       "primary_section_id": "string — the section_id of the section that contains the dependency or the section that is being modified",
       "dependent_section_id": "string — the section_id of the section that modifies, qualifies, or references the primary section",
       "dependency_type": "string — one of the following types: MODIFIES, REFERENCES, CONDITIONALLY_APPLIES, DEFINES_TERM_USED_BY, OVERRIDES, REQUIRES_CONTEXT_FROM",
       "dependency_description": "string — one sentence describing the nature of the dependency and why it is relevant for entity extraction. Explain what information from the dependent_section changes or contextualizes the primary_section."
-    }
+    }}
   ]
-}
+}}
 </output_format>
 
 <instructions>
@@ -253,8 +252,12 @@ string matching against the source document.\
 
 
 def _build_entity_types_list() -> str:
-    """Generate the permitted entity types list from schemas.py."""
-    return "\n".join(f'- "{t}"' for t in sorted(VALID_ENTITY_TYPES))
+    """Generate the permitted entity types list with descriptions from schemas.py."""
+    lines = []
+    for type_name, cls in sorted(ENTITY_TYPE_MAP.items()):
+        doc = (cls.__doc__ or "").strip()
+        lines.append(f'- "{type_name}": {doc}')
+    return "\n".join(lines)
 
 
 def run_first_pass(
@@ -279,23 +282,26 @@ def run_first_pass(
     model = model or _DEFAULT_MODEL
 
     entity_types_list = _build_entity_types_list()
+    system_prompt = FIRST_PASS_SYSTEM_PROMPT.format(
+        entity_types=entity_types_list,
+    )
     user_prompt = FIRST_PASS_USER_PROMPT.format(
         document_text=document_text,
-        entity_types=entity_types_list,
     )
 
     _dbg(
-        f"SYSTEM PROMPT ({len(FIRST_PASS_SYSTEM_PROMPT)} chars)",
-        FIRST_PASS_SYSTEM_PROMPT,
+        f"SYSTEM PROMPT ({len(system_prompt)} chars)",
+        system_prompt,
     )
     _dbg(
         f"USER PROMPT ({len(user_prompt)} chars)",
         user_prompt,
     )
+    thinking = thinking_config(model, budget_tokens=32768)
     _dbg(
         "API CALL",
         f"model: {model}\n"
-        f"max_tokens: 49152 (thinking: {_THINKING_CONFIG['budget_tokens']})\n"
+        f"max_tokens: 49152 (thinking: {thinking})\n"
         f"user_prompt length: {len(user_prompt)} chars",
     )
 
@@ -305,9 +311,9 @@ def run_first_pass(
     with client.messages.stream(
         model=model,
         max_tokens=49152,
-        thinking=_THINKING_CONFIG,
+        thinking=thinking,
         output_format=FirstPassResult,
-        system=FIRST_PASS_SYSTEM_PROMPT,
+        system=system_prompt,
         messages=[{"role": "user", "content": user_prompt}],
     ) as stream:
         for event in stream:

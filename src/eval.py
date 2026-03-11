@@ -1,10 +1,11 @@
 """Evaluate the ontology graph + reasoning agent against a Q&A test set.
 
 Usage:
-    uv run python -m src.eval --graph <graph_id> --qa <qa_path> [--out results.json]
+    uv run python -m src.eval --graph <path/to/ontology.json> --qa <qa_path> [--out results.json]
+    uv run python -m src.eval --latest --qa <qa_path>
 
 Example:
-    uv run python -m src.eval --graph 1-1 --qa data/231123_Duty_of_Care_Policy.qa.small.json
+    uv run python -m src.eval --graph data/final_graphs/shogun_pipeline_v1.json --qa data/direct_travel_duty_of_care.qa.small.json
 """
 from __future__ import annotations
 
@@ -21,9 +22,9 @@ from anthropic import Anthropic
 load_dotenv()
 TEST_MODEL = os.environ.get("TEST_MODEL", "claude-haiku-4-5-20251001")
 
-from src.build_graph import load_graph_file, list_graphs
 from src.graph import build_graph
 from src.agent import ask
+from src.models import OntologyGraph
 
 JUDGE_SYSTEM_PROMPT = """\
 You are an impartial judge evaluating whether an agent's answer to a question is correct, given the ground truth answer.
@@ -97,32 +98,51 @@ def judge_answer(
     }
 
 
-def main() -> None:
-    if "--graph" not in sys.argv or "--qa" not in sys.argv:
-        print("Usage: uv run python -m src.eval --graph <graph_id> --qa <qa_path> [--out results.json]")
-        print("\nAvailable graphs:")
-        for g in list_graphs():
-            print(f"  {g['graph_id']}  (v{g['prompt_version']}, {g['node_count']} nodes, {g['edge_count']} edges)")
+def _load_ontology_for_eval(args) -> tuple[OntologyGraph, str]:
+    """Load an OntologyGraph from CLI arguments."""
+    if args.latest:
+        from src.results import load_latest_ontology
+        ontology = load_latest_ontology()
+        return ontology, "latest pipeline run"
+
+    graph_path = Path(args.graph)
+    if not graph_path.exists():
+        print(f"Error: File not found: {graph_path}", file=sys.stderr)
         sys.exit(1)
 
-    graph_id = sys.argv[sys.argv.index("--graph") + 1]
-    qa_path = Path(sys.argv[sys.argv.index("--qa") + 1])
-    out_path = None
+    data = json.loads(graph_path.read_text(encoding="utf-8"))
+    if "ontology" in data and isinstance(data["ontology"], dict):
+        data = data["ontology"]
 
-    if "--out" in sys.argv:
-        idx = sys.argv.index("--out")
-        if idx + 1 < len(sys.argv):
-            out_path = Path(sys.argv[idx + 1])
+    return OntologyGraph(**data), str(graph_path)
+
+
+def main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        prog="python -m src.eval",
+        description="Evaluate agent against a Q&A test set",
+    )
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--graph", type=str, help="Path to ontology JSON file")
+    group.add_argument("--latest", action="store_true", help="Load the latest pipeline run")
+    parser.add_argument("--qa", type=str, required=True, help="Path to Q&A test set JSON")
+    parser.add_argument("--out", type=str, default=None, help="Output path for results JSON")
+    args = parser.parse_args()
+
+    qa_path = Path(args.qa)
+    out_path = Path(args.out) if args.out else None
 
     if not qa_path.is_absolute():
         qa_path = Path.cwd() / qa_path
 
     # Load graph
-    print(f"Graph: {graph_id}")
-    ontology, metadata = load_graph_file(graph_id)
+    graph_label = args.graph or "latest"
+    print(f"Graph: {graph_label}")
+    ontology, label = _load_ontology_for_eval(args)
     g = build_graph(ontology)
-    print(f"  Prompt version: v{metadata['prompt_version']}")
-    print(f"  Policy: {metadata['policy_file']}")
+    print(f"  Source: {label}")
     print(f"  {g.number_of_nodes()} nodes, {g.number_of_edges()} edges")
 
     print(f"Test set: {qa_path.name}")
@@ -130,7 +150,6 @@ def main() -> None:
     print(f"  {len(qa_pairs)} questions loaded")
 
     client = Anthropic()
-    parse_time = metadata.get("parse_time_seconds", 0)
 
     # Run eval
     print(f"\nRunning evaluation ({len(qa_pairs)} questions)...\n")
@@ -186,7 +205,7 @@ def main() -> None:
     print("\n" + "=" * 60)
     print(f"  RESULTS: {passed}/{len(qa_pairs)} passed ({pct:.1f}%)")
     print(f"  Average score: {avg_score:.2f}/6.00 ({total_score}/{max_possible})")
-    print(f"  Graph: {metadata['graph_id']} (v{metadata['prompt_version']}, {g.number_of_nodes()} nodes, {g.number_of_edges()} edges)")
+    print(f"  Graph: {label} ({g.number_of_nodes()} nodes, {g.number_of_edges()} edges)")
 
     # Breakdown by difficulty
     for diff in ("easy", "medium", "hard"):
@@ -205,9 +224,7 @@ def main() -> None:
     out_path.parent.mkdir(exist_ok=True)
 
     summary = {
-        "graph_id": metadata["graph_id"],
-        "prompt_version": metadata["prompt_version"],
-        "policy": metadata["policy_file"],
+        "graph_source": label,
         "test_set": qa_path.name,
         "total_questions": len(qa_pairs),
         "passed": passed,
@@ -218,7 +235,6 @@ def main() -> None:
         "max_points": max_possible,
         "graph_nodes": g.number_of_nodes(),
         "graph_edges": g.number_of_edges(),
-        "parse_time_seconds": round(parse_time, 1),
         "results": results,
     }
 

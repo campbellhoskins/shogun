@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Purpose
 
-Shogun is a "Palantir for Travel" demo — an AI pipeline that ingests unstructured travel duty-of-care policy PDFs and builds structured ontology graphs that reasoning agents can traverse. It demonstrates the full loop: **Ingest → Extract → Reason → Evaluate**. The quality bar is production-grade enterprise tooling, not prototype.
+Shogun is an AI pipeline that ingests unstructured travel duty-of-care policy documents and builds structured ontology graphs. The pipeline extracts typed entities, relationships, and source anchors, then saves the result as a reloadable ontology. Separate tools (agent REPL, frontend, eval) can consume the saved graphs. The quality bar is production-grade enterprise tooling, not prototype.
 
 **Document scope:** Travel duty of care policies only (risk classifications, approval workflows, evacuation procedures, personnel tracking). Not education/school duty of care.
 
@@ -27,8 +27,8 @@ Shogun is a "Palantir for Travel" demo — an AI pipeline that ingests unstructu
 uv sync                     # Install Python dependencies
 cd frontend && npm install   # Install frontend dependencies (first time)
 
-# Full pipeline: PDF -> ontology graph -> interactive Q&A
-uv run python -m src.main data/231123_Duty_of_Care_Policy.pdf
+# Full pipeline: document -> ontology graph -> save to runs/
+uv run python -m src.main data/direct_travel_duty_of_care.md
 
 # Individual pipeline stages
 uv run python -m src.first_pass <input.md> -o <first_pass.json>                    # Stage 0
@@ -37,14 +37,13 @@ uv run python -m src.extraction <chunks.json> --first-pass <fp.json> -o <out>   
 uv run python -m src.extraction <chunks.json> --debug                              # Stage 2 with prompt tracing
 uv run python -m src.merge <extractions.json> <chunks.json> <source.md> -o <out>   # Stage 3
 
-# Agent & evaluation
-uv run python -m src.agent_repl --graph <graph_id>                                  # Interactive agent REPL
-uv run python -m src.eval --graph <graph_id> --qa data/*.qa.small.json              # Eval against Q&A set
-uv run python -m src.generate_qa data/231123_Duty_of_Care_Policy.pdf                # Generate Q&A test set
-uv run python -m src.validate data/231123_Duty_of_Care_Policy.pdf                   # Graph validation
-
-# Legacy single-pass extraction (for A/B comparison)
-uv run python -m src.build_graph data/231123_Duty_of_Care_Policy.pdf --prompt 1
+# Agent & evaluation (consume saved graphs)
+uv run python -m src.agent_repl --graph <path/to/ontology.json>                     # Interactive agent REPL
+uv run python -m src.agent_repl --latest                                            # Agent REPL with latest run
+uv run python -m src.eval --graph <path/to/ontology.json> --qa data/*.qa.small.json # Eval against Q&A set
+uv run python -m src.eval --latest --qa data/*.qa.small.json                       # Eval latest run
+uv run python -m src.generate_qa data/direct_travel_duty_of_care.md                 # Generate Q&A test set
+uv run python -m src.validate data/direct_travel_duty_of_care.md                    # Graph validation
 
 # Frontend
 cd frontend && npm run build                                        # Build React SPA
@@ -61,10 +60,10 @@ cd frontend && npx playwright test --reporter=list         # Verbose output
 
 ## Architecture
 
-### Pipeline Overview (6 stages, orchestrated by `src/pipeline.py`)
+### Pipeline Overview (5 stages, orchestrated by `src/pipeline.py`)
 
 ```
-PDF → pdf_parser.py → markdown
+Document (PDF/markdown) → pdf_parser.py (if PDF) → markdown
     ↓
 [Stage 0] first_pass.py      1 LLM call (streaming + thinking)  → FirstPassResult
     ↓
@@ -72,9 +71,7 @@ PDF → pdf_parser.py → markdown
     ↓
 [Stage 2] extraction.py      2N LLM calls (async, 2 concurrent) → SectionExtraction[]
     ↓
-[Stage 3a] cross_section.py  1 LLM call                         → Relationship[] (cross-section)
-    ↓
-[Stage 3b] merge.py          1 LLM call (semantic dedup)         → OntologyGraph
+[Stage 3] merge.py            1 LLM call (semantic dedup)         → OntologyGraph
     ↓
 [Stage 4] relationships.py   1 LLM call (full-doc relationships) → Relationship[]
     ↓
@@ -94,14 +91,12 @@ results.py → saves to results/runs/{timestamp}_{policy}/
 - **Pass 1 (Entities)**: Extracts typed entities using schemas from `src/schemas.py`. Uses thinking (budget: 10000). Zero-entity results trigger auto-retry with aggressive fallback prompt.
 - **Pass 2 (Relationships)**: Extracts relationships constrained by entity type pairs from schemas. Validates source/target IDs exist (dangling edges rejected).
 
-**Stage 3a — Cross-Section** (`src/cross_section.py`): Extracts relationships that connect entities from different sections. Hard validation: `source_section != target_section`.
-
-**Stage 3b — Merge** (`src/merge.py`): Two-pass deduplication:
+**Stage 3 — Merge** (`src/merge.py`): Two-pass deduplication:
 - Pass 1 (deterministic): Groups by `(id, type)` tuple after stripping section prefixes (e.g., `SEC-01:client` → `client`). Merges attributes, source anchors.
 - Pass 2 (LLM): Semantic dedup with thinking budget scaled to entity count. Anti-merge rules: numbered/leveled entities and channel-specific entities never merge.
 - Post-merge: Remaps all relationship IDs, removes orphaned edges, deduplicates by `(source_id, target_id, type)`.
 
-**Stage 4 — Relationships** (`src/relationships.py`): Full-document relationship extraction using all deduplicated entities. No cross-section restriction (intra-section allowed). Deduplicates against existing Stage 2-3a relationships.
+**Stage 4 — Relationships** (`src/relationships.py`): Full-document relationship extraction using all deduplicated entities. No cross-section restriction (intra-section allowed). Deduplicates against existing Stage 2-3 relationships.
 
 ### Key Modules
 
@@ -177,7 +172,7 @@ API key loaded from `.env` via `python-dotenv`. Model env vars: `TEST_MODEL`, `B
 
 Every pipeline run auto-saves to `results/runs/{YYYY-MM-DDTHH-MM-SS}_{policy_name}/`. Run IDs are immutable. `ontology.json` is the source of truth (reloadable via `OntologyGraph(**data)`). Latest run ID stored in `results/latest.txt`.
 
-**Files per run:** `run_meta.json`, `first_pass.json`, `sections.json`, `extractions.json`, `ontology.json`, `entities.json`, `relationships.json`, plus optional `semantic_dedup.json`, `cross_section.json`, `relationships_log.json`.
+**Files per run:** `run_meta.json`, `first_pass.json`, `sections.json`, `extractions.json`, `ontology.json`, `entities.json`, `relationships.json`, plus optional `semantic_dedup.json`, `relationships_log.json`.
 
 **Rules:**
 1. Never lose API results — every LLM output gets a file.

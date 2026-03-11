@@ -272,7 +272,6 @@ def merge_extractions(
     source_document: str,
     sections: list[DocumentSection],
     client: Anthropic | None = None,
-    cross_section_relationships: list[Relationship] | None = None,
     model: str | None = None,
 ) -> tuple[OntologyGraph, list[dict], StageUsage]:
     """Merge all per-section extractions into a single OntologyGraph.
@@ -285,7 +284,6 @@ def merge_extractions(
         source_document: The full original document text.
         sections: The document sections from segmentation.
         client: Anthropic client for LLM dedup calls.
-        cross_section_relationships: Relationships from Stage 3a (cross-section extraction).
 
     Returns:
         Tuple of (OntologyGraph, dedup_log, StageUsage).
@@ -300,14 +298,9 @@ def merge_extractions(
         all_entities.extend(se.entities)
         all_relationships.extend(se.relationships)
 
-    if cross_section_relationships:
-        all_relationships.extend(cross_section_relationships)
-
-    cross_section_count = len(cross_section_relationships) if cross_section_relationships else 0
     print(
         f"    Collected {len(all_entities)} entities, "
         f"{len(all_relationships)} relationships "
-        f"({cross_section_count} cross-section) "
         f"from {len(section_extractions)} sections"
     )
 
@@ -378,7 +371,6 @@ def merge_extractions(
     _compute_source_offsets(merged_entities, source_document)
 
     # Build metadata
-    cross_section_count = len(cross_section_relationships) if cross_section_relationships else 0
     metadata = ExtractionMetadata(
         document_char_count=len(source_document),
         section_count=len(sections),
@@ -389,8 +381,6 @@ def merge_extractions(
         exact_id_dedup_merges=exact_merges,
         semantic_dedup_merges=merge_count,
         semantic_dedup_api_calls=api_calls,
-        cross_section_relationship_count=cross_section_count,
-        cross_section_api_calls=1 if cross_section_count > 0 else 0,
     )
 
     ontology = OntologyGraph(
@@ -556,7 +546,7 @@ def _llm_semantic_dedup(
     try:
         from src.models import SemanticDedupOutput
 
-        thinking_budget = min(32768, max(4096, len(entities) * 400))
+        thinking_budget = min(48000, max(4096, len(entities) * 400))
         max_tokens = thinking_budget + min(8192, max(2048, len(entities) * 100))
 
         # Use streaming to avoid timeout on large entity lists
@@ -565,15 +555,13 @@ def _llm_semantic_dedup(
         input_tokens = 0
         output_tokens = 0
 
+        from src.llm import thinking_config
         with client.messages.stream(
             model=model,
             max_tokens=max_tokens,
             system=SEMANTIC_DEDUP_SYSTEM_PROMPT,
             output_format=SemanticDedupOutput,
-            thinking={
-                "type": "enabled",
-                "budget_tokens": thinking_budget,
-            },
+            thinking=thinking_config(model, budget_tokens=thinking_budget),
             messages=[{"role": "user", "content": user_prompt}],
         ) as stream:
             for event in stream:
