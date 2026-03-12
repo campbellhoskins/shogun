@@ -4,6 +4,8 @@ import type { GraphData, GraphNode as GNode } from '../types';
 import { TYPE_SHAPES, DEFAULT_SHAPE, PHYSICS_OPTIONS, LAYOUT_OPTIONS } from '../constants';
 import '../styles/GraphCanvas.css';
 
+const FONT_FACE = "'IBM Plex Sans', system-ui, sans-serif";
+
 /** Build a vis-network node object from a GraphNode. */
 function buildVisNode(n: GNode) {
   const imp = n.importance ?? 0;
@@ -31,7 +33,7 @@ function buildVisNode(n: GNode) {
     font: {
       color: '#e8e6e3',
       size: fontSize,
-      face: "'IBM Plex Sans', system-ui, sans-serif",
+      face: FONT_FACE,
       strokeWidth: 3,
       strokeColor: '#0b0d14',
       vadjust: -2,
@@ -58,6 +60,9 @@ interface Props {
   highlightedNodeIds: Set<string>;
   highlightedEdgeKeys: Set<string>;
   collapsedNodeIds: Set<string>;
+  scenarioActive: boolean;
+  revealedNodeIds: Set<string>;
+  revealedEdgeKeys: Set<string>;
   onNodeClick: (nodeId: string) => void;
   onBackgroundClick: () => void;
   onNodeDoubleClick: (nodeId: string) => void;
@@ -66,6 +71,7 @@ interface Props {
 export interface GraphCanvasHandle {
   fitToScreen: () => void;
   focusNode: (nodeId: string) => void;
+  fitToNodes: (nodeIds: string[]) => void;
 }
 
 const GraphCanvas = forwardRef<GraphCanvasHandle, Props>(({
@@ -74,6 +80,9 @@ const GraphCanvas = forwardRef<GraphCanvasHandle, Props>(({
   highlightedNodeIds,
   highlightedEdgeKeys,
   collapsedNodeIds,
+  scenarioActive,
+  revealedNodeIds,
+  revealedEdgeKeys,
   onNodeClick,
   onBackgroundClick,
   onNodeDoubleClick,
@@ -101,6 +110,14 @@ const GraphCanvas = forwardRef<GraphCanvasHandle, Props>(({
         animation: { duration: 600, easingFunction: 'easeInOutQuad' },
       });
       networkRef.current.selectNodes([nodeId]);
+    },
+    fitToNodes: (nodeIds: string[]) => {
+      if (!networkRef.current || nodeIds.length === 0) return;
+      lastFocusedRef.current = null;
+      networkRef.current.fit({
+        nodes: nodeIds,
+        animation: { duration: 600, easingFunction: 'easeInOutQuad' },
+      });
     },
   }));
 
@@ -159,7 +176,7 @@ const GraphCanvas = forwardRef<GraphCanvasHandle, Props>(({
           font: {
             size: 10,
             color: '#6a6a8a',
-            face: "'IBM Plex Sans', system-ui, sans-serif",
+            face: FONT_FACE,
             align: 'middle' as const,
             strokeWidth: 2,
             strokeColor: '#0b0d14',
@@ -216,9 +233,10 @@ const GraphCanvas = forwardRef<GraphCanvasHandle, Props>(({
       }
     });
 
-    // Fit to screen after stabilization
+    // Fit to screen after stabilization, then freeze physics so nodes stop drifting
     network.on('stabilizationIterationsDone', () => {
       network.fit({ animation: { duration: 500, easingFunction: 'easeInOutQuad' } });
+      network.setOptions({ physics: false });
     });
 
     return () => {
@@ -230,6 +248,9 @@ const GraphCanvas = forwardRef<GraphCanvasHandle, Props>(({
   // Focus on selected node — only when the node actually changes
   useEffect(() => {
     if (!networkRef.current) return;
+
+    // In scenario mode, don't auto-focus on selection changes (camera is controlled by scenario)
+    if (scenarioActive) return;
 
     if (!selectedNodeId) {
       // Node was deselected — zoom back out to full graph
@@ -250,7 +271,7 @@ const GraphCanvas = forwardRef<GraphCanvasHandle, Props>(({
       animation: { duration: 600, easingFunction: 'easeInOutQuad' },
     });
     networkRef.current.selectNodes([selectedNodeId]);
-  }, [selectedNodeId]);
+  }, [selectedNodeId, scenarioActive]);
 
   // Handle collapsed node visibility
   useEffect(() => {
@@ -335,7 +356,7 @@ const GraphCanvas = forwardRef<GraphCanvasHandle, Props>(({
           font: {
             size: 9,
             color: '#5a5a7a',
-            face: "'IBM Plex Sans', system-ui, sans-serif",
+            face: FONT_FACE,
             align: 'middle' as const,
             strokeWidth: 2,
             strokeColor: '#0b0d14',
@@ -348,16 +369,91 @@ const GraphCanvas = forwardRef<GraphCanvasHandle, Props>(({
     }
   }, [collapsedNodeIds, getHiddenNodeIds]);
 
-  // Update highlights for paths
+  // Update highlights: supports both normal path highlighting and progressive scenario reveal
   useEffect(() => {
     if (!nodesRef.current || !edgesRef.current || !graphDataRef.current) return;
 
     const hasHighlights = highlightedNodeIds.size > 0;
 
-    // Update nodes
+    // === NODE UPDATES ===
     const nodeUpdates = graphDataRef.current.nodes.map((n) => {
       const imp = n.importance ?? 0;
       const isHighlighted = highlightedNodeIds.has(n.id);
+
+      if (scenarioActive) {
+        const isRevealed = revealedNodeIds.has(n.id);
+
+        if (isHighlighted) {
+          // Current step: cyan accent glow
+          return {
+            id: n.id,
+            opacity: 1,
+            color: {
+              background: '#58a6ff',
+              border: '#58a6ff',
+              highlight: { background: '#58a6ff', border: '#79b8ff' },
+              hover: { background: '#58a6ff', border: '#79b8ff' },
+            },
+            font: {
+              color: '#ffffff',
+              size: 13,
+              face: FONT_FACE,
+              strokeWidth: 3,
+              strokeColor: '#0b0d14',
+              vadjust: -2,
+            },
+            shadow: { enabled: true, color: '#58a6ff60', size: 25, x: 0, y: 0 },
+            borderWidth: 3,
+          };
+        } else if (isRevealed) {
+          // Previously revealed: visible but subdued
+          const baseFontSize = 10 + imp * 8;
+          return {
+            id: n.id,
+            opacity: 0.55,
+            color: {
+              background: n.color,
+              border: n.color,
+              highlight: { background: n.color, border: '#f59e0b' },
+              hover: { background: n.color, border: '#818cf8' },
+            },
+            font: {
+              color: '#8b949e',
+              size: baseFontSize,
+              face: FONT_FACE,
+              strokeWidth: 3,
+              strokeColor: '#0b0d14',
+              vadjust: -2,
+            },
+            shadow: { enabled: true, color: n.color + '20', size: 6, x: 0, y: 0 },
+            borderWidth: 1.5,
+          };
+        } else {
+          // Not yet revealed: nearly invisible
+          return {
+            id: n.id,
+            opacity: 0.06,
+            color: {
+              background: '#1a1a2e',
+              border: '#1a1a2e',
+              highlight: { background: '#1a1a2e', border: '#1a1a2e' },
+              hover: { background: '#1a1a2e', border: '#1a1a2e' },
+            },
+            font: {
+              color: '#0b0d14',
+              size: 8,
+              face: FONT_FACE,
+              strokeWidth: 0,
+              strokeColor: '#0b0d14',
+              vadjust: -2,
+            },
+            shadow: { enabled: false, color: '#00000000', size: 0, x: 0, y: 0 },
+            borderWidth: 0.5,
+          };
+        }
+      }
+
+      // Non-scenario mode (existing logic, with color reset for clean transitions)
       const dimmed = hasHighlights && !isHighlighted;
       const baseOpacity = 0.4 + imp * 0.6;
       const baseFontSize = 10 + imp * 8;
@@ -367,12 +463,19 @@ const GraphCanvas = forwardRef<GraphCanvasHandle, Props>(({
       return {
         id: n.id,
         opacity: dimmed ? 0.15 : baseOpacity,
+        color: {
+          background: n.color,
+          border: n.color,
+          highlight: { background: n.color, border: '#f59e0b' },
+          hover: { background: n.color, border: '#818cf8' },
+        },
         font: {
           color: dimmed ? '#3a3a5c' : '#e8e6e3',
           size: baseFontSize,
-          face: "'IBM Plex Sans', system-ui, sans-serif",
+          face: FONT_FACE,
           strokeWidth: 3,
           strokeColor: '#0b0d14',
+          vadjust: -2,
         },
         shadow: {
           enabled: true,
@@ -386,10 +489,63 @@ const GraphCanvas = forwardRef<GraphCanvasHandle, Props>(({
     });
     nodesRef.current.update(nodeUpdates);
 
-    // Update edges
+    // === EDGE UPDATES ===
     const edgeUpdates = graphDataRef.current.edges.map((e, i) => {
       const edgeKey = `${e.from_id}->${e.to_id}`;
       const isHighlighted = highlightedEdgeKeys.has(edgeKey);
+
+      if (scenarioActive) {
+        const isRevealed = revealedEdgeKeys.has(edgeKey);
+
+        if (isHighlighted) {
+          return {
+            id: `edge-${i}`,
+            color: { color: '#58a6ff', highlight: '#58a6ff', hover: '#58a6ff' },
+            width: 3,
+            font: {
+              size: 10,
+              color: '#58a6ff',
+              face: FONT_FACE,
+              align: 'middle' as const,
+              strokeWidth: 2,
+              strokeColor: '#0b0d14',
+              background: '#0b0d14',
+            },
+          };
+        } else if (isRevealed) {
+          return {
+            id: `edge-${i}`,
+            color: { color: '#3a3a5c', highlight: '#f59e0b', hover: '#555580' },
+            width: 1,
+            font: {
+              size: 9,
+              color: '#5a5a7a',
+              face: FONT_FACE,
+              align: 'middle' as const,
+              strokeWidth: 2,
+              strokeColor: '#0b0d14',
+              background: '#0b0d14',
+            },
+          };
+        } else {
+          return {
+            id: `edge-${i}`,
+            color: { color: '#0a0f1a', highlight: '#0a0f1a', hover: '#0a0f1a' },
+            width: 0.3,
+            font: {
+              size: 0,
+              color: '#0a0f1a',
+              face: FONT_FACE,
+              align: 'middle' as const,
+              strokeWidth: 0,
+              strokeColor: '#0a0f1a',
+              background: '#0a0f1a',
+            },
+          };
+        }
+      }
+
+      // Non-scenario mode
       const dimmed = hasHighlights && !isHighlighted;
       return {
         id: `edge-${i}`,
@@ -402,7 +558,7 @@ const GraphCanvas = forwardRef<GraphCanvasHandle, Props>(({
         font: {
           size: 9,
           color: isHighlighted ? '#f59e0b' : dimmed ? '#1a1a30' : '#5a5a7a',
-          face: "'IBM Plex Sans', system-ui, sans-serif",
+          face: FONT_FACE,
           align: 'middle' as const,
           strokeWidth: 2,
           strokeColor: '#0b0d14',
@@ -410,7 +566,7 @@ const GraphCanvas = forwardRef<GraphCanvasHandle, Props>(({
       };
     });
     edgesRef.current.update(edgeUpdates);
-  }, [highlightedNodeIds, highlightedEdgeKeys]);
+  }, [highlightedNodeIds, highlightedEdgeKeys, scenarioActive, revealedNodeIds, revealedEdgeKeys]);
 
   const handleZoomIn = useCallback(() => {
     if (!networkRef.current) return;

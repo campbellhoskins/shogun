@@ -1,4 +1,4 @@
-import type { GraphNode, ChatMessage, CascadeResponse, Scenario } from '../types';
+import type { GraphNode, ChatMessage, CascadeResponse, Scenario, ScenarioUpdate } from '../types';
 import PathFinder from './PathFinder';
 import AgentChat from './AgentChat';
 import CascadePanel from './CascadePanel';
@@ -20,8 +20,8 @@ interface Props {
   cascade: CascadeResponse | null;
   onClearCascade: () => void;
   scenarios: Scenario[];
-  onHighlight: (nodeIds: Set<string>, edgeKeys: Set<string>) => void;
-  onClearHighlights: () => void;
+  onScenarioActivate: (active: boolean) => void;
+  onScenarioStep: (update: ScenarioUpdate) => void;
 }
 
 export default function LeftPanel({
@@ -37,8 +37,8 @@ export default function LeftPanel({
   cascade,
   onClearCascade,
   scenarios,
-  onHighlight,
-  onClearHighlights,
+  onScenarioActivate,
+  onScenarioStep,
 }: Props) {
   return (
     <div className="left-panel-inner">
@@ -94,9 +94,8 @@ export default function LeftPanel({
         ) : (
           <ScenarioPanel
             scenarios={scenarios}
-            onHighlight={onHighlight}
-            onClearHighlights={onClearHighlights}
-            onFocusNode={onEntitySelect}
+            onScenarioActivate={onScenarioActivate}
+            onScenarioStep={onScenarioStep}
           />
         )}
       </div>

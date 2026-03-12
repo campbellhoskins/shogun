@@ -400,8 +400,18 @@ def _execute_tool(tool_name: str, tool_input: dict, g: nx.DiGraph) -> str:
     return f"Unknown tool: {tool_name}"
 
 
-def ask(question: str, g: nx.DiGraph, client: Anthropic | None = None, max_turns: int = 15) -> AgentResponse:
-    """Ask a question by letting the agent iteratively query the graph via tool use."""
+def ask(
+    question: str,
+    g: nx.DiGraph,
+    client: Anthropic | None = None,
+    max_turns: int = 15,
+    verbose: bool = True,
+) -> AgentResponse:
+    """Ask a question by letting the agent iteratively query the graph via tool use.
+
+    When verbose=True (default), prints every tool call, result, and reasoning
+    step to the console so the user can follow the agent's traversal live.
+    """
     if client is None:
         client = Anthropic()
 
@@ -411,6 +421,11 @@ def ask(question: str, g: nx.DiGraph, client: Anthropic | None = None, max_turns
 
     referenced_entities: set[str] = set()
     turn_count = 0
+
+    if verbose:
+        print(f"\n{'─' * 60}")
+        print(f"  Question: {question}")
+        print(f"{'─' * 60}")
 
     while turn_count < max_turns:
         turn_count += 1
@@ -425,6 +440,12 @@ def ask(question: str, g: nx.DiGraph, client: Anthropic | None = None, max_turns
 
         # Check if the model wants to use tools
         if response.stop_reason == "tool_use":
+            # Print any reasoning text the model produced before tool calls
+            if verbose:
+                for block in response.content:
+                    if hasattr(block, "text") and block.text.strip():
+                        print(f"\n  Thinking: {block.text.strip()}")
+
             # Process all tool calls in this response
             tool_results = []
             for block in response.content:
@@ -442,7 +463,24 @@ def ask(question: str, g: nx.DiGraph, client: Anthropic | None = None, max_turns
                     if "start_entity_id" in tool_input:
                         referenced_entities.add(tool_input["start_entity_id"])
 
+                    # Print the tool call
+                    if verbose:
+                        input_str = ", ".join(f"{k}={v!r}" for k, v in tool_input.items())
+                        print(f"\n  [{turn_count}] {tool_name}({input_str})")
+
                     result = _execute_tool(tool_name, tool_input, g)
+
+                    # Print the result (truncate long output)
+                    if verbose:
+                        result_lines = result.split("\n")
+                        if len(result_lines) > 20:
+                            for line in result_lines[:18]:
+                                print(f"      {line}")
+                            print(f"      ... ({len(result_lines) - 18} more lines)")
+                        else:
+                            for line in result_lines:
+                                print(f"      {line}")
+
                     tool_results.append({
                         "type": "tool_result",
                         "tool_use_id": block.id,
@@ -460,6 +498,11 @@ def ask(question: str, g: nx.DiGraph, client: Anthropic | None = None, max_turns
                 if hasattr(block, "text"):
                     answer_text += block.text
 
+            if verbose:
+                print(f"\n  Turns used: {turn_count}")
+                print(f"  Entities queried: {', '.join(sorted(referenced_entities)) if referenced_entities else 'none'}")
+                print(f"{'─' * 60}")
+
             return AgentResponse(
                 answer=answer_text,
                 referenced_entities=sorted(referenced_entities),
@@ -467,6 +510,10 @@ def ask(question: str, g: nx.DiGraph, client: Anthropic | None = None, max_turns
             )
 
     # If we hit max_turns, return whatever we have
+    if verbose:
+        print(f"\n  Hit max turns ({max_turns})")
+        print(f"{'─' * 60}")
+
     return AgentResponse(
         answer="Agent reached maximum number of turns without producing a final answer.",
         referenced_entities=sorted(referenced_entities),

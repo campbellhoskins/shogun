@@ -55,7 +55,6 @@ def save_run(
     stage_timings: dict[str, float] | None = None,
     semantic_dedup_log: list[dict] | None = None,
     first_pass_result: FirstPassResult | None = None,
-    cross_section_log: dict | None = None,
     relationships_log: list[dict] | None = None,
 ) -> Path:
     """Save a complete pipeline run.
@@ -68,7 +67,6 @@ def save_run(
         stage_timings: Optional dict of stage name -> elapsed seconds.
         semantic_dedup_log: LLM dedup decisions per entity type.
         first_pass_result: Stage 0 output.
-        cross_section_log: Stage 3a cross-section extraction log.
         relationships_log: Stage 4 relationship extraction log.
 
     Returns:
@@ -128,10 +126,6 @@ def save_run(
                 and e.source_anchor.source_offset >= 0
             ),
         },
-        "cross_section": {
-            "relationship_count": meta.cross_section_relationship_count,
-            "api_calls": meta.cross_section_api_calls,
-        } if cross_section_log else None,
         "stage4_relationships": {
             "valid_count": meta.stage4_relationship_count,
             "invalid_count": meta.stage4_invalid_count,
@@ -237,10 +231,6 @@ def save_run(
             "type_groups": semantic_dedup_log,
         })
 
-    # --- cross_section.json ---
-    if cross_section_log:
-        _write_json(run_dir / "cross_section.json", cross_section_log)
-
     # --- relationships_log.json ---
     if relationships_log:
         _write_json(run_dir / "relationships_log.json", relationships_log)
@@ -261,7 +251,7 @@ def load_run(run_id: str) -> dict:
         raise FileNotFoundError(f"Run not found: {run_dir}")
 
     result = {}
-    for name in ["run_meta", "sections", "first_pass", "extractions", "ontology", "entities", "relationships", "semantic_dedup", "cross_section", "relationships_log"]:
+    for name in ["run_meta", "sections", "first_pass", "extractions", "ontology", "entities", "relationships", "semantic_dedup", "relationships_log"]:
         filepath = run_dir / f"{name}.json"
         if filepath.exists():
             result[name] = json.loads(filepath.read_text(encoding="utf-8"))

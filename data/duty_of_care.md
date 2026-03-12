@@ -1,6 +1,6 @@
 # EXHIBIT D — DUTY OF CARE & TRAVEL RISK MANAGEMENT SERVICES
 
-This Exhibit is incorporated into and forms part of the Travel Services Agreement dated \_\_\_\_\_\_\_\_\_\_ (the "**Agreement**") by and between \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ ("**Client**") and **Direct Travel, Inc.** ("**Direct Travel**" or "**TMC**"). Capitalized terms not defined herein have the meanings set forth in the Agreement or the applicable Statement of Work ("**SOW**").
+This Exhibit is incorporated into and forms part of the Travel Services Agreement dated (the "**Agreement**") by and between ("**Client**") and **Direct Travel, Inc.** ("**Direct Travel**" or "**TMC**"). Capitalized terms not defined herein have the meanings set forth in the Agreement or the applicable Statement of Work ("**SOW**").
 
 ---
 
@@ -405,16 +405,6 @@ Liability for Duty of Care Services is subject to the limitation of liability pr
 ## 14. ORDER OF PRECEDENCE
 
 In the event of conflict between this Exhibit and other components of the Agreement: (1) the Agreement (master terms), (2) the SOW, then (3) this Exhibit, unless the SOW expressly states otherwise with specific reference to the provision being overridden.
-
----
-
-## 15. ACCEPTANCE
-
-| | **Direct Travel, Inc.** | **Client** |
-|---|---|---|
-| **By:** | \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ | \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |
-| **Name / Title:** | \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ | \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |
-| **Date:** | \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ | \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |
 
 ---
 

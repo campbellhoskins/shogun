@@ -127,6 +127,14 @@ export interface ScenarioStep {
   highlight_edges: string[];
   focus_node: string | null;
   log: ScenarioLogLine[];
+  annotation?: string;
+}
+
+export interface ScenarioUpdate {
+  revealedNodeIds: Set<string>;
+  revealedEdgeKeys: Set<string>;
+  currentNodeIds: Set<string>;
+  currentEdgeKeys: Set<string>;
 }
 
 export interface Scenario {

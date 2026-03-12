@@ -12,7 +12,6 @@ import time
 from anthropic import Anthropic
 from dotenv import load_dotenv
 
-from src.cross_section import extract_cross_section_relationships
 from src.extraction import extract_all_sections
 from src.first_pass import run_first_pass
 from src.merge import merge_extractions
@@ -110,25 +109,12 @@ def extract_ontology(
             f"{len(se.entities)} entities, {len(se.relationships)} rels"
         )
 
-    # --- Stage 3a: Cross-Section Relationship Extraction ---
-    print("\nStage 3a: Extracting cross-section relationships...")
-    stage_start = time.time()
-    cross_section_rels, cross_section_log, stage3a_usage = extract_cross_section_relationships(
-        section_extractions, client=client, model=model
-    )
-    all_usages.append(stage3a_usage)
-    stage_timings["cross_section"] = round(time.time() - stage_start, 1)
-    print(
-        f"  {len(cross_section_rels)} cross-section relationships "
-        f"({stage_timings['cross_section']}s)"
-    )
-
-    # --- Stage 3b: Merge + LLM Deduplication ---
-    print("\nStage 3b: Merging and deduplicating (LLM-based)...")
+    # --- Stage 3: Merge + LLM Deduplication ---
+    print("\nStage 3: Merging and deduplicating (LLM-based)...")
     stage_start = time.time()
     ontology, semantic_dedup_log, stage3b_usage = merge_extractions(
         section_extractions, document_text, sections, client=client,
-        cross_section_relationships=cross_section_rels, model=model,
+        model=model,
     )
     all_usages.append(stage3b_usage)
     stage_timings["merge"] = round(time.time() - stage_start, 1)
@@ -237,7 +223,6 @@ def extract_ontology(
         stage_timings=stage_timings,
         semantic_dedup_log=semantic_dedup_log,
         first_pass_result=first_pass_result,
-        cross_section_log=cross_section_log,
         relationships_log=stage4_log,
     )
 
