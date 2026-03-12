@@ -66,7 +66,7 @@ The project includes pre-built graphs in `data/final_graphs/`:
 
 ```bash
 # Load a specific graph file
-uv run python -m src.frontend --graph data/final_graphs/shogun_pipeline_v1.json
+uv run python -m src.frontend --graph data/final_graphs/shogun_pipeline_v2.json
 
 # Or just launch — it auto-loads the first graph in data/final_graphs/
 uv run python -m src.frontend
@@ -97,7 +97,7 @@ You can switch between graphs at runtime using the graph selector dropdown in th
 The agent can be used independently against any saved graph:
 
 ```bash
-uv run python -m src.agent_repl --graph data/final_graphs/shogun_pipeline_v1.json
+uv run python -m src.agent_repl --graph data/final_graphs/shogun_pipeline_v2.json
 uv run python -m src.agent_repl --latest
 ```
 
