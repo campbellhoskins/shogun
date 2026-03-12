@@ -280,7 +280,7 @@ def extract_relationships(
     _dbg("SYSTEM PROMPT", system_prompt)
     _dbg(f"USER PROMPT ({len(entities)} entities, {len(sections)} sections)", user_prompt)
 
-    print(f"    Sending {len(entities)} entities, {len(sections)} sections to LLM...")
+    print(f"    Sending {len(entities)} entities, {len(sections)} sections to LLM (model: {model})...")
 
     entity_ids = {e.id for e in entities}
     entity_type_lookup = {e.id: e.type for e in entities}
@@ -300,8 +300,8 @@ def extract_relationships(
     try:
         from src.models import RelationshipExtractionOutput
 
-        thinking_budget = min(32768, max(8192, len(entities) * 500))
-        max_tokens = thinking_budget + min(32768, max(8192, len(entities) * 300))
+        thinking_budget = min(50000, max(8192, len(entities) * 500))
+        max_tokens = thinking_budget + min(50000, max(8192, len(entities) * 300))
 
         raw_text = ""
         thinking_text = ""

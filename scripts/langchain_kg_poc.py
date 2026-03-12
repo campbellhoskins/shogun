@@ -31,7 +31,7 @@ from langchain_experimental.graph_transformers import LLMGraphTransformer
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from src.schemas import VALID_ENTITY_TYPES, VALID_RELATIONSHIP_TYPES
 
-INPUT_PATH = Path(__file__).parent.parent / "data" / "direct_travel_duty_of_care.md"
+INPUT_PATH = Path(__file__).parent.parent / "data" / "duty_of_care.md"
 OUTPUT_DIR = Path(__file__).parent.parent / "data"
 
 # Shogun entity types (LangChain uses these as allowed_nodes)

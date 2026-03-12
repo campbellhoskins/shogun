@@ -397,3 +397,212 @@
   font-size: 11px;
   color: var(--text-muted);
 }
+
+/* --- Step Progress Dots --- */
+
+.scenario-step-dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-bottom: 12px;
+  padding: 4px 0;
+}
+
+.scenario-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-subtle);
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.scenario-dot:hover {
+  border-color: var(--accent-primary);
+  transform: scale(1.3);
+}
+
+.scenario-dot.completed {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.scenario-dot.current {
+  background: #58a6ff;
+  border-color: #58a6ff;
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.6);
+  transform: scale(1.2);
+}
+
+/* --- Manual Annotation --- */
+
+.scenario-annotation {
+  flex-shrink: 0;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: rgba(210, 153, 34, 0.06);
+  border-left: 3px solid #d29922;
+  border-radius: 0 6px 6px 0;
+}
+
+.scenario-annotation-label {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #d29922;
+  margin-bottom: 4px;
+}
+
+.scenario-annotation-text {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* --- Results View --- */
+
+.scenario-results {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px 16px;
+  animation: resultsFadeIn 400ms ease-out;
+}
+
+@keyframes resultsFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.scenario-results-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.08);
+  border: 1px solid rgba(74, 222, 128, 0.25);
+  border-radius: 4px;
+  padding: 3px 10px;
+  margin-bottom: 12px;
+}
+
+.scenario-results-name {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  margin-bottom: 20px;
+}
+
+.scenario-results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  max-width: 280px;
+  margin-bottom: 16px;
+}
+
+.scenario-stat {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 12px 8px;
+}
+
+.scenario-stat-value {
+  font-family: var(--font-mono);
+  font-size: 24px;
+  font-weight: 700;
+  color: #58a6ff;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.scenario-stat-label {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.scenario-results-hint {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 20px;
+  max-width: 280px;
+}
+
+.scenario-results-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.scenario-btn-replay,
+.scenario-btn-exit {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 8px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.scenario-btn-replay {
+  border: 1px solid var(--accent-primary);
+  color: var(--accent-primary);
+  background: transparent;
+}
+
+.scenario-btn-replay:hover {
+  background: rgba(129, 140, 248, 0.1);
+}
+
+.scenario-btn-exit {
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  background: var(--bg-elevated);
+}
+
+.scenario-btn-exit:hover {
+  color: var(--text-primary);
+  border-color: var(--text-muted);
+}
+
+/* --- Keyboard Hint --- */
+
+.scenario-keyboard-hint {
+  flex-shrink: 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  opacity: 0.5;
+  margin-top: 8px;
+}

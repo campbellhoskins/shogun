@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { api } from './api';
-import type { GraphData, GraphStats, EntityDetail, ChatMessage, CascadeResponse, Scenario } from './types';
+import type { GraphData, GraphStats, EntityDetail, ChatMessage, CascadeResponse, Scenario, ScenarioUpdate } from './types';
 import TopBar from './components/TopBar';
 import GraphCanvas, { type GraphCanvasHandle } from './components/GraphCanvas';
 import Legend from './components/Legend';
@@ -22,6 +22,11 @@ export default function App() {
   const [collapsedNodeIds, setCollapsedNodeIds] = useState<Set<string>>(new Set());
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
 
+  // Progressive reveal state for scenario walkthroughs
+  const [scenarioActive, setScenarioActive] = useState(false);
+  const [revealedNodeIds, setRevealedNodeIds] = useState<Set<string>>(new Set());
+  const [revealedEdgeKeys, setRevealedEdgeKeys] = useState<Set<string>>(new Set());
+
   const graphRef = useRef<GraphCanvasHandle>(null);
 
   const resetState = useCallback(() => {
@@ -33,6 +38,9 @@ export default function App() {
     setChatMessages([]);
     setCollapsedNodeIds(new Set());
     setScenarios([]);
+    setScenarioActive(false);
+    setRevealedNodeIds(new Set());
+    setRevealedEdgeKeys(new Set());
   }, []);
 
   const loadCurrentGraph = useCallback(() => {
@@ -61,10 +69,12 @@ export default function App() {
     }
   }, [resetState, loadCurrentGraph]);
 
-  // Keyboard shortcuts
+  // Keyboard shortcuts — Escape clears selection (only when no scenario active)
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        // When scenario is active, ScenarioPanel handles Escape
+        if (scenarioActive) return;
         setSelectedNodeId(null);
         setNodeDetail(null);
         setHighlightedNodeIds(new Set());
@@ -74,7 +84,7 @@ export default function App() {
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, []);
+  }, [scenarioActive]);
 
   /** Compute the 1-hop neighborhood of a node from graphData. */
   const computeNeighborHighlight = useCallback((nodeId: string) => {
@@ -146,16 +156,29 @@ export default function App() {
   }, [highlightedNodeIds, computeNeighborHighlight]);
 
   const handleNodeClick = useCallback(async (nodeId: string) => {
+    if (scenarioActive) {
+      // In scenario mode: show detail panel only, don't change highlights
+      setSelectedNodeId(nodeId);
+      try {
+        const detail = await api.getEntity(nodeId);
+        setNodeDetail(detail);
+      } catch (err) {
+        console.error('Failed to load entity:', err);
+      }
+      return;
+    }
     await selectAndHighlight(nodeId);
-  }, [selectAndHighlight]);
+  }, [scenarioActive, selectAndHighlight]);
 
   const handleBackgroundClick = useCallback(() => {
     setSelectedNodeId(null);
     setNodeDetail(null);
-    setHighlightedNodeIds(new Set());
-    setHighlightedEdgeKeys(new Set());
-    setCascade(null);
-  }, []);
+    if (!scenarioActive) {
+      setHighlightedNodeIds(new Set());
+      setHighlightedEdgeKeys(new Set());
+      setCascade(null);
+    }
+  }, [scenarioActive]);
 
   const navigateToEntity = useCallback(async (entityId: string) => {
     graphRef.current?.focusNode(entityId);
@@ -197,10 +220,38 @@ export default function App() {
   const handleFitToScreen = useCallback(() => {
     setSelectedNodeId(null);
     setNodeDetail(null);
-    setHighlightedNodeIds(new Set());
-    setHighlightedEdgeKeys(new Set());
-    setCascade(null);
+    if (!scenarioActive) {
+      setHighlightedNodeIds(new Set());
+      setHighlightedEdgeKeys(new Set());
+      setCascade(null);
+    }
     graphRef.current?.fitToScreen();
+  }, [scenarioActive]);
+
+  // Scenario callbacks
+  const handleScenarioActivate = useCallback((active: boolean) => {
+    setScenarioActive(active);
+    setSelectedNodeId(null);
+    setNodeDetail(null);
+    if (!active) {
+      setRevealedNodeIds(new Set());
+      setRevealedEdgeKeys(new Set());
+      setHighlightedNodeIds(new Set());
+      setHighlightedEdgeKeys(new Set());
+      graphRef.current?.fitToScreen();
+    }
+  }, []);
+
+  const handleScenarioStep = useCallback((update: ScenarioUpdate) => {
+    setRevealedNodeIds(update.revealedNodeIds);
+    setRevealedEdgeKeys(update.revealedEdgeKeys);
+    setHighlightedNodeIds(update.currentNodeIds);
+    setHighlightedEdgeKeys(update.currentEdgeKeys);
+    // Fit camera to the current step's nodes
+    const stepNodes = [...update.currentNodeIds];
+    if (stepNodes.length > 0) {
+      graphRef.current?.fitToNodes(stepNodes);
+    }
   }, []);
 
   const isDetailOpen = nodeDetail !== null;
@@ -232,8 +283,8 @@ export default function App() {
           cascade={cascade}
           onClearCascade={handleClearCascade}
           scenarios={scenarios}
-          onHighlight={handlePathsFound}
-          onClearHighlights={clearHighlights}
+          onScenarioActivate={handleScenarioActivate}
+          onScenarioStep={handleScenarioStep}
         />
       </div>
 
@@ -245,6 +296,9 @@ export default function App() {
           highlightedNodeIds={highlightedNodeIds}
           highlightedEdgeKeys={highlightedEdgeKeys}
           collapsedNodeIds={collapsedNodeIds}
+          scenarioActive={scenarioActive}
+          revealedNodeIds={revealedNodeIds}
+          revealedEdgeKeys={revealedEdgeKeys}
           onNodeClick={handleNodeClick}
           onBackgroundClick={handleBackgroundClick}
           onNodeDoubleClick={handleNodeDoubleClick}

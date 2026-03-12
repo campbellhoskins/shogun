@@ -1,18 +1,17 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { api } from '../api';
-import type { Scenario, ScenarioLogLine } from '../types';
+import type { Scenario, ScenarioLogLine, ScenarioUpdate } from '../types';
 import '../styles/ScenarioPanel.css';
 
 interface Props {
   scenarios: Scenario[];
-  onHighlight: (nodeIds: Set<string>, edgeKeys: Set<string>) => void;
-  onClearHighlights: () => void;
-  onFocusNode: (entityId: string) => void;
+  onScenarioActivate: (active: boolean) => void;
+  onScenarioStep: (update: ScenarioUpdate) => void;
 }
 
 type Mode = 'scripted' | 'live';
 
-export default function ScenarioPanel({ scenarios, onHighlight, onClearHighlights, onFocusNode }: Props) {
+export default function ScenarioPanel({ scenarios, onScenarioActivate, onScenarioStep }: Props) {
   const [mode, setMode] = useState<Mode>('scripted');
 
   // Shared step playback state
@@ -20,6 +19,7 @@ export default function ScenarioPanel({ scenarios, onHighlight, onClearHighlight
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
   const [visibleLogLines, setVisibleLogLines] = useState<ScenarioLogLine[]>([]);
+  const [showResults, setShowResults] = useState(false);
 
   // Scripted mode state
   const [selectedScenarioId, setSelectedScenarioId] = useState<string | null>(null);
@@ -34,10 +34,10 @@ export default function ScenarioPanel({ scenarios, onHighlight, onClearHighlight
   const logEndRef = useRef<HTMLDivElement>(null);
 
   // Stable refs for callbacks to avoid render loops
-  const onHighlightRef = useRef(onHighlight);
-  onHighlightRef.current = onHighlight;
-  const onFocusNodeRef = useRef(onFocusNode);
-  onFocusNodeRef.current = onFocusNode;
+  const onScenarioActivateRef = useRef(onScenarioActivate);
+  onScenarioActivateRef.current = onScenarioActivate;
+  const onScenarioStepRef = useRef(onScenarioStep);
+  onScenarioStepRef.current = onScenarioStep;
 
   const currentStep = activeScenario?.steps[currentStepIndex] || null;
   const totalSteps = activeScenario?.steps.length || 0;
@@ -48,16 +48,31 @@ export default function ScenarioPanel({ scenarios, onHighlight, onClearHighlight
     logTimersRef.current = [];
   }, []);
 
-  // Apply step: highlight + focus + stagger log lines
+  // Compute cumulative revealed sets up to a given step index
+  const computeRevealed = useCallback((scenario: Scenario, upToStep: number) => {
+    const revealedNodes = new Set<string>();
+    const revealedEdges = new Set<string>();
+    for (let i = 0; i <= upToStep && i < scenario.steps.length; i++) {
+      scenario.steps[i].highlight_nodes.forEach((n) => revealedNodes.add(n));
+      scenario.steps[i].highlight_edges.forEach((e) => revealedEdges.add(e));
+    }
+    return { revealedNodes, revealedEdges };
+  }, []);
+
+  // Apply step: compute progressive reveal + stagger log lines
   const applyStep = useCallback((stepIndex: number) => {
     if (!activeScenario) return;
     const step = activeScenario.steps[stepIndex];
     if (!step) return;
 
-    onHighlightRef.current(new Set(step.highlight_nodes), new Set(step.highlight_edges));
-    if (step.focus_node) {
-      onFocusNodeRef.current(step.focus_node);
-    }
+    const { revealedNodes, revealedEdges } = computeRevealed(activeScenario, stepIndex);
+
+    onScenarioStepRef.current({
+      revealedNodeIds: revealedNodes,
+      revealedEdgeKeys: revealedEdges,
+      currentNodeIds: new Set(step.highlight_nodes),
+      currentEdgeKeys: new Set(step.highlight_edges),
+    });
 
     clearLogTimers();
 
@@ -73,13 +88,20 @@ export default function ScenarioPanel({ scenarios, onHighlight, onClearHighlight
       }, (i + 1) * 120);
       logTimersRef.current.push(timer);
     });
-  }, [activeScenario, clearLogTimers]);
+  }, [activeScenario, computeRevealed, clearLogTimers]);
 
   // Step navigation
   const goStep = useCallback((index: number) => {
     if (index < 0 || index >= totalSteps) return;
+    setShowResults(false);
     setCurrentStepIndex(index);
   }, [totalSteps]);
+
+  // Go to results view
+  const goToResults = useCallback(() => {
+    setIsAutoPlaying(false);
+    setShowResults(true);
+  }, []);
 
   // Activate a scenario (from either mode)
   const activateScenario = useCallback((scenario: Scenario) => {
@@ -88,6 +110,19 @@ export default function ScenarioPanel({ scenarios, onHighlight, onClearHighlight
     setCurrentStepIndex(0);
     setIsAutoPlaying(false);
     setVisibleLogLines([]);
+    setShowResults(false);
+    onScenarioActivateRef.current(true);
+  }, [clearLogTimers]);
+
+  // Exit scenario — restore full graph
+  const exitScenario = useCallback(() => {
+    clearLogTimers();
+    setActiveScenario(null);
+    setCurrentStepIndex(0);
+    setIsAutoPlaying(false);
+    setVisibleLogLines([]);
+    setShowResults(false);
+    onScenarioActivateRef.current(false);
   }, [clearLogTimers]);
 
   // Select scripted scenario
@@ -106,6 +141,7 @@ export default function ScenarioPanel({ scenarios, onHighlight, onClearHighlight
     setLiveLoading(true);
     setActiveScenario(null);
     setVisibleLogLines([]);
+    setShowResults(false);
     clearLogTimers();
 
     try {
@@ -126,6 +162,7 @@ export default function ScenarioPanel({ scenarios, onHighlight, onClearHighlight
           const next = prev + 1;
           if (next >= activeScenario.steps.length) {
             setIsAutoPlaying(false);
+            setShowResults(true);
             return prev;
           }
           return next;
@@ -146,15 +183,52 @@ export default function ScenarioPanel({ scenarios, onHighlight, onClearHighlight
 
   // Apply step when currentStepIndex changes
   useEffect(() => {
-    if (activeScenario && currentStepIndex >= 0) {
+    if (activeScenario && currentStepIndex >= 0 && !showResults) {
       applyStep(currentStepIndex);
     }
-  }, [currentStepIndex, activeScenario, applyStep]);
+  }, [currentStepIndex, activeScenario, applyStep, showResults]);
 
   // Auto-scroll log to bottom
   useEffect(() => {
     logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [visibleLogLines]);
+
+  // Keyboard navigation (document-level)
+  useEffect(() => {
+    if (!activeScenario) return;
+
+    const handler = (e: KeyboardEvent) => {
+      // Don't interfere with input elements
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        if (showResults) return;
+        setCurrentStepIndex((prev) => {
+          if (prev >= totalSteps - 1) {
+            setIsAutoPlaying(false);
+            setShowResults(true);
+            return prev;
+          }
+          setShowResults(false);
+          return prev + 1;
+        });
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (showResults) {
+          setShowResults(false);
+          return;
+        }
+        setCurrentStepIndex((prev) => Math.max(0, prev - 1));
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        exitScenario();
+      }
+    };
+
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [activeScenario, totalSteps, showResults, exitScenario]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -171,23 +245,32 @@ export default function ScenarioPanel({ scenarios, onHighlight, onClearHighlight
     setCurrentStepIndex(0);
     setIsAutoPlaying(false);
     setVisibleLogLines([]);
+    setShowResults(false);
     setLivePrompt('');
     setLiveLoading(false);
     clearLogTimers();
-    onClearHighlights();
-  }, [scenarios, clearLogTimers, onClearHighlights]);
+    onScenarioActivateRef.current(false);
+  }, [scenarios, clearLogTimers]);
 
   // Switch mode resets active scenario
   const handleModeSwitch = useCallback((newMode: Mode) => {
     if (newMode === mode) return;
     setMode(newMode);
-    setActiveScenario(null);
-    setCurrentStepIndex(0);
-    setIsAutoPlaying(false);
-    setVisibleLogLines([]);
-    clearLogTimers();
-    onClearHighlights();
-  }, [mode, clearLogTimers, onClearHighlights]);
+    exitScenario();
+  }, [mode, exitScenario]);
+
+  // Compute results stats
+  const resultsStats = activeScenario ? (() => {
+    const { revealedNodes, revealedEdges } = computeRevealed(activeScenario, totalSteps - 1);
+    const decisions = activeScenario.steps.reduce((count, step) =>
+      count + step.log.filter((l) => l.type === 'decision').length, 0);
+    return {
+      nodes: revealedNodes.size,
+      edges: revealedEdges.size,
+      steps: totalSteps,
+      decisions,
+    };
+  })() : null;
 
   return (
     <div className="scenario-panel">
@@ -282,9 +365,61 @@ export default function ScenarioPanel({ scenarios, onHighlight, onClearHighlight
         </div>
       )}
 
+      {/* Results View */}
+      {showResults && activeScenario && resultsStats && (
+        <div className="scenario-results">
+          <div className="scenario-results-badge">COMPLETE</div>
+          <div className="scenario-results-name">{activeScenario.name}</div>
+
+          <div className="scenario-results-grid">
+            <div className="scenario-stat">
+              <div className="scenario-stat-value">{resultsStats.nodes}</div>
+              <div className="scenario-stat-label">Nodes Traversed</div>
+            </div>
+            <div className="scenario-stat">
+              <div className="scenario-stat-value">{resultsStats.edges}</div>
+              <div className="scenario-stat-label">Edges Followed</div>
+            </div>
+            <div className="scenario-stat">
+              <div className="scenario-stat-value">{resultsStats.steps}</div>
+              <div className="scenario-stat-label">Steps</div>
+            </div>
+            <div className="scenario-stat">
+              <div className="scenario-stat-value">{resultsStats.decisions}</div>
+              <div className="scenario-stat-label">Decisions</div>
+            </div>
+          </div>
+
+          <div className="scenario-results-hint">
+            The agent traversed the ontology graph using only structural relationships — no access to the raw document.
+          </div>
+
+          <div className="scenario-results-actions">
+            <button className="scenario-btn-replay" onClick={() => { setShowResults(false); setCurrentStepIndex(0); }}>
+              Replay
+            </button>
+            <button className="scenario-btn-exit" onClick={exitScenario}>
+              Exit
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Step Content (shared between both modes) */}
-      {currentStep && (
+      {currentStep && !showResults && (
         <>
+          {/* Step progress dots */}
+          <div className="scenario-step-dots">
+            {activeScenario!.steps.map((_, i) => (
+              <button
+                key={i}
+                className={`scenario-dot ${i < currentStepIndex ? 'completed' : i === currentStepIndex ? 'current' : ''}`}
+                onClick={() => goStep(i)}
+                title={`Step ${i + 1}`}
+              />
+            ))}
+          </div>
+
           <div className="scenario-step-header">
             <div className="scenario-step-counter">
               Step {currentStepIndex + 1} / {totalSteps}
@@ -292,6 +427,14 @@ export default function ScenarioPanel({ scenarios, onHighlight, onClearHighlight
             <div className="scenario-step-title">{currentStep.title}</div>
             <div className="scenario-step-description">{currentStep.description}</div>
           </div>
+
+          {/* Manual Annotation */}
+          {currentStep.annotation && (
+            <div className="scenario-annotation">
+              <div className="scenario-annotation-label">Manual Annotation</div>
+              <div className="scenario-annotation-text">{currentStep.annotation}</div>
+            </div>
+          )}
 
           <div className="scenario-log">
             {visibleLogLines.map((line, i) => (
@@ -312,10 +455,15 @@ export default function ScenarioPanel({ scenarios, onHighlight, onClearHighlight
             </button>
             <button
               className="scenario-btn-next"
-              onClick={() => goStep(currentStepIndex + 1)}
-              disabled={currentStepIndex >= totalSteps - 1}
+              onClick={() => {
+                if (currentStepIndex >= totalSteps - 1) {
+                  goToResults();
+                } else {
+                  goStep(currentStepIndex + 1);
+                }
+              }}
             >
-              Next
+              {currentStepIndex >= totalSteps - 1 ? 'Results' : 'Next'}
             </button>
             <button
               className={`scenario-btn-auto ${isAutoPlaying ? 'playing' : ''}`}
@@ -323,6 +471,10 @@ export default function ScenarioPanel({ scenarios, onHighlight, onClearHighlight
             >
               {isAutoPlaying ? 'Pause' : 'Auto'}
             </button>
+          </div>
+
+          <div className="scenario-keyboard-hint">
+            Use arrow keys to navigate, Esc to exit
           </div>
         </>
       )}

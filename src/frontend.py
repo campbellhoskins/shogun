@@ -670,7 +670,7 @@ def main():
     if args.graph or args.latest:
         _load_graph_cli(args)
     elif FINAL_GRAPHS_DIR.exists() and list(FINAL_GRAPHS_DIR.glob("*.json")):
-        graph_files = sorted(f for f in FINAL_GRAPHS_DIR.glob("*.json") if not f.name.endswith(".scenarios.json"))
+        graph_files = sorted((f for f in FINAL_GRAPHS_DIR.glob("*.json") if not f.name.endswith(".scenarios.json")), reverse=True)
         if not graph_files:
             print("Error: No graph files found in data/final_graphs/.", file=sys.stderr)
             sys.exit(1)

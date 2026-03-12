@@ -32,10 +32,10 @@ cd frontend && npm install && npm run build && cd ..
 
 ### 1. Run the Pipeline
 
-The included source document is `data/direct_travel_duty_of_care.md` — a travel management company's duty of care policy covering destination risk classification, travel approval workflows, personnel tracking, emergency evacuation, and incident severity levels.
+The included source document is `data/duty_of_care.md` — a travel management company's duty of care policy covering destination risk classification, travel approval workflows, personnel tracking, emergency evacuation, and incident severity levels.
 
 ```bash
-uv run python -m src.main data/direct_travel_duty_of_care.md
+uv run python -m src.main data/duty_of_care.md
 ```
 
 This runs a five-stage extraction pipeline:
@@ -107,16 +107,16 @@ Each pipeline stage is a standalone CLI if you want to run them separately:
 
 ```bash
 # Stage 0: First pass analysis
-uv run python -m src.first_pass data/direct_travel_duty_of_care.md -o first_pass.json
+uv run python -m src.first_pass data/duty_of_care.md -o first_pass.json
 
 # Stage 1: Segmentation (requires Stage 0 output)
-uv run python -m src.segmenter data/direct_travel_duty_of_care.md --first-pass first_pass.json -o sections.json
+uv run python -m src.segmenter data/duty_of_care.md --first-pass first_pass.json -o sections.json
 
 # Stage 2: Extraction (requires Stages 0-1 output)
 uv run python -m src.extraction sections.json --first-pass first_pass.json -o extractions.json
 
 # Stage 3: Merge
-uv run python -m src.merge extractions.json sections.json data/direct_travel_duty_of_care.md -o ontology.json
+uv run python -m src.merge extractions.json sections.json data/duty_of_care.md -o ontology.json
 ```
 
 ## Evaluation
@@ -125,10 +125,10 @@ Test the agent's ability to answer questions about the extracted graph:
 
 ```bash
 # Generate a Q&A test set from the source document
-uv run python -m src.generate_qa data/direct_travel_duty_of_care.md
+uv run python -m src.generate_qa data/duty_of_care.md
 
 # Run evaluation (scores: accuracy 0-3, completeness 0-2, no-hallucination 0-1, pass ≥ 4/6)
-uv run python -m src.eval --graph <graph_id> --qa data/direct_travel_duty_of_care.qa.small.json
+uv run python -m src.eval --graph <graph_id> --qa data/duty_of_care.qa.small.json
 ```
 
 ## Project Structure
@@ -160,7 +160,7 @@ frontend/
 └── tests/             # Playwright E2E tests
 
 data/
-├── direct_travel_duty_of_care.md    # Source policy document
+├── duty_of_care.md    # Source policy document
 ├── final_graphs/                     # Pre-built ontology graphs for visualization
 └── parser_1/                         # PDF-to-markdown conversions
 

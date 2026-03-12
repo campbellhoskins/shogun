@@ -28,7 +28,7 @@ uv sync                     # Install Python dependencies
 cd frontend && npm install   # Install frontend dependencies (first time)
 
 # Full pipeline: document -> ontology graph -> save to runs/
-uv run python -m src.main data/direct_travel_duty_of_care.md
+uv run python -m src.main data/duty_of_care.md
 
 # Individual pipeline stages
 uv run python -m src.first_pass <input.md> -o <first_pass.json>                    # Stage 0
@@ -42,8 +42,8 @@ uv run python -m src.agent_repl --graph <path/to/ontology.json>                 
 uv run python -m src.agent_repl --latest                                            # Agent REPL with latest run
 uv run python -m src.eval --graph <path/to/ontology.json> --qa data/*.qa.small.json # Eval against Q&A set
 uv run python -m src.eval --latest --qa data/*.qa.small.json                       # Eval latest run
-uv run python -m src.generate_qa data/direct_travel_duty_of_care.md                 # Generate Q&A test set
-uv run python -m src.validate data/direct_travel_duty_of_care.md                    # Graph validation
+uv run python -m src.generate_qa data/duty_of_care.md                 # Generate Q&A test set
+uv run python -m src.validate data/duty_of_care.md                    # Graph validation
 
 # Frontend
 cd frontend && npm run build                                        # Build React SPA

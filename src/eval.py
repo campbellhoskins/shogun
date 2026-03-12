@@ -5,7 +5,7 @@ Usage:
     uv run python -m src.eval --latest --qa <qa_path>
 
 Example:
-    uv run python -m src.eval --graph data/final_graphs/shogun_pipeline_v1.json --qa data/direct_travel_duty_of_care.qa.small.json
+    uv run python -m src.eval --graph data/final_graphs/shogun_pipeline_v1.json --qa data/duty_of_care.qa.small.json
 """
 from __future__ import annotations
 

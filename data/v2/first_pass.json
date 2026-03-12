@@ -1,0 +1,590 @@
+{
+  "document_map": {
+    "document_title": "EXHIBIT D — DUTY OF CARE & TRAVEL RISK MANAGEMENT SERVICES",
+    "issuing_organization": "Direct Travel, Inc.",
+    "effective_date": null,
+    "document_purpose_summary": "This Exhibit defines the Duty of Care and Travel Risk Management services Direct Travel provides to support Client's corporate travel risk management program, including severity level classifications, service level objectives, escalation protocols, data handling requirements, and applicable limitations.",
+    "sections": [
+      {
+        "section_id": "SEC-00",
+        "section_name": "Preamble",
+        "section_order": 1,
+        "section_purpose": "Contractual incorporation and party identification",
+        "section_summary": "Establishes that this Exhibit is part of the Travel Services Agreement between Client and Direct Travel, Inc. and incorporates defined terms from the Agreement and Statement of Work.",
+        "beginning_text": "This Exhibit is incorporated into and forms part of the Travel Services Agreement dated (the \"Agreement\") by and between (\"Client\") and Direct Travel, Inc. (\"Direct Travel\" or \"TMC\"). Capitalized terms not defined herein have the meanings set forth in the Agreement or the applicable Statement of Work (\"SOW\")."
+      },
+      {
+        "section_id": "SEC-01",
+        "section_name": "1. PURPOSE AND LEGAL CONTEXT",
+        "section_order": 2,
+        "section_purpose": "Legal framework and standard of care",
+        "section_summary": "Defines the purpose of the Exhibit, lists applicable duty of care regulatory frameworks (OSHA, UK HSWA, EU Directive, ISO 31030), confirms Client retains primary employer duty of care, and establishes Direct Travel's commercially reasonable standard of care.",
+        "beginning_text": "This Exhibit defines (a) the Duty of Care services Direct Travel will provide to support Client's travel risk management (\"TRM\") program, (b) Severity Level classifications and corresponding service level objectives, (c) roles and responsibilities of each party, (d) data handling and privacy requirements, (e) escalation and crisis communication protocols, and (f) limitations applicable to such services."
+      },
+      {
+        "section_id": "SEC-02",
+        "section_name": "2. DEFINITIONS",
+        "section_order": 3,
+        "section_purpose": "Key term definitions",
+        "section_summary": "Defines fourteen capitalized terms used throughout the Exhibit, including Approved Channels, Incident, Severity Level, Traveler, PNR, Specialist Provider, Risk Intelligence Platform, Off-Channel Booking, Crisis Bridge, and Traveler Data.",
+        "beginning_text": "\"Approved Channels\" means bookings made through (a) Client's designated online booking tool(s) as provided by Direct Travel, (b) Direct Travel agent-assisted channels (phone, email, online chat), and (c) any other booking channels expressly approved in writing by Client and integrated into the TMC's itinerary data feed."
+      },
+      {
+        "section_id": "SEC-03",
+        "section_name": "3. SCOPE OF DUTY OF CARE SERVICES",
+        "section_order": 4,
+        "section_purpose": "Duty of care service scope definition",
+        "section_summary": "Defines the six core service components: itinerary visibility and traveler locate, risk intelligence and monitoring, pre-trip services, in-trip monitoring and alerts, incident response and traveler assistance (including actions requiring Client authorization), and post-incident reporting.",
+        "beginning_text": "Direct Travel will capture and maintain itinerary records for all travel booked through Approved Channels, including air, hotel, rail, car rental, and ground transportation segments, regardless of airline distribution channel. Direct Travel will provide Client with access to reporting dashboards showing active Travelers by destination, travel dates, and booking status."
+      },
+      {
+        "section_id": "SEC-04",
+        "section_name": "4. TRAVELER CATEGORIES AND RISK-TIERED SERVICES",
+        "section_order": 5,
+        "section_purpose": "Risk-tiered traveler service differentiation",
+        "section_summary": "Provides for SOW-defined differentiated service levels for specific traveler populations (VIP, high-risk destination, group travel) and booking-time approval workflows based on destination risk ratings.",
+        "beginning_text": "Where Client requires differentiated service levels for specific Traveler populations (e.g., VIP/executive travelers, high-risk destination travelers, group travel), such categories and the corresponding service enhancements will be defined in the SOW. Where Client requires booking-time approval workflows based on destination risk ratings, the approval tiers, approver"
+      },
+      {
+        "section_id": "SEC-05",
+        "section_name": "5. SEVERITY LEVELS AND SERVICE LEVEL OBJECTIVES",
+        "section_order": 6,
+        "section_purpose": "Severity classification and response timelines",
+        "section_summary": "Defines four severity levels (Advisory, Monitor, Action Required, Crisis) with corresponding service level objectives for traveler outreach timing, client escalation notification, and status update cadence, plus SLO exceptions and standardized traveler outreach and response framework.",
+        "beginning_text": "Level 1 | Advisory | Minor disruption with limited direct impact on Travelers; informational alert only | Localized weather warning, minor transportation delay, low-level protest in non-traveler area | Level 2 | Monitor | Moderate disruption that may impact Travelers; targeted alerts issued; optional welfare check"
+      },
+      {
+        "section_id": "SEC-06",
+        "section_name": "6. ESCALATION AND COMMUNICATIONS",
+        "section_order": 7,
+        "section_purpose": "Escalation procedures and crisis communications",
+        "section_summary": "Defines Client's required 24/7 escalation roster with six contact roles, the non-responsive traveler escalation procedure (three contacts across two channels in ninety minutes), and Level 4 Crisis Bridge activation and SITREP protocols.",
+        "beginning_text": "Client shall provide Direct Travel with a 24/7 escalation roster containing, at minimum: Primary Travel Program Owner — Name, title, phone (mobile), email — First point of contact for all Incidents. Alternate Travel Program Contact — Name, title, phone (mobile), email — Backup when primary is unavailable."
+      },
+      {
+        "section_id": "SEC-07",
+        "section_name": "7. TRAVELER DATA, PRIVACY, AND SECURITY",
+        "section_order": 8,
+        "section_purpose": "Data privacy and processing requirements",
+        "section_summary": "Establishes data controller/processor roles, lawful basis for processing traveler data (legitimate interest under GDPR), minimum required traveler profile data elements, incident data sharing rules, location data and tracking limitations, retention, and cross-border transfer requirements.",
+        "beginning_text": "Direct Travel will process Traveler Data only to provide services under the Agreement and as otherwise permitted by the Agreement's data protection terms. Where required by applicable law, a Data Processing Agreement (\"DPA\") is incorporated by reference or attached as a separate exhibit to the Agreement."
+      },
+      {
+        "section_id": "SEC-08",
+        "section_name": "8. CLIENT OBLIGATIONS",
+        "section_order": 9,
+        "section_purpose": "Client contractual obligations",
+        "section_summary": "Enumerates nine specific Client obligations including maintaining a corporate travel policy, keeping the escalation roster current, defining high-risk destination approvals, ensuring traveler profile completeness, training travelers, authorizing extraordinary measures, procuring travel insurance, responding to escalations, and conducting data protection assessments.",
+        "beginning_text": "Client shall: Establish, maintain, and communicate a corporate travel policy that includes duty of care provisions, requires booking through Approved Channels, and defines approval requirements for high-risk destinations. Provide and maintain a current escalation roster per Section 6.1, including 24/7 contact availability, and notify"
+      },
+      {
+        "section_id": "SEC-09",
+        "section_name": "9. OFF-CHANNEL BOOKINGS AND VISIBILITY",
+        "section_order": 10,
+        "section_purpose": "Off-channel booking visibility management",
+        "section_summary": "Quantifies the off-channel visibility gap (approximately 30% of bookings), describes mitigation measures (supplier feeds, email parsing, expense mining, policy enforcement), and documents Client acknowledgment that Direct Travel cannot serve travelers booked outside visible channels.",
+        "beginning_text": "Industry data indicates that approximately 30% of corporate travel bookings are made outside managed travel programs. Direct Travel can only provide Duty of Care Services for travel that is visible in its systems. Off-Channel Bookings for which itinerary data has not been provided to Direct Travel"
+      },
+      {
+        "section_id": "SEC-10",
+        "section_name": "10. LIMITATIONS, DISCLAIMERS, AND ALLOCATION OF RISK",
+        "section_order": 11,
+        "section_purpose": "Liability limitations and service disclaimers",
+        "section_summary": "Establishes that Direct Travel does not guarantee safety, disclaims professional advice and supplier liability, clarifies the advisory nature of risk intelligence, addresses Package Travel Regulations, and subjects Duty of Care Services to the Agreement's limitation of liability provisions.",
+        "beginning_text": "Direct Travel does not and cannot guarantee Traveler safety. The Duty of Care Services are designed to support Client's TRM program through information, communication, and coordination. Direct Travel does not control the actions of third parties including airlines, hotels, ground transportation providers, governments, emergency services,"
+      },
+      {
+        "section_id": "SEC-11",
+        "section_name": "11. FEES AND PASS-THROUGH COSTS",
+        "section_order": 12,
+        "section_purpose": "Fee structure and cost allocation",
+        "section_summary": "Specifies that fee components are defined in the SOW, enumerates pass-through costs borne by Client (specialist providers, evacuation, charter transport, rebooking differences, premium upgrades, extended accommodation, satellite communications), and requires Client authorization for costs exceeding the SOW threshold.",
+        "beginning_text": "Fees for Duty of Care Services are specified in the SOW and may include: a per-Traveler or per-trip fee component; a platform access fee for risk intelligence dashboard and reporting; incident response fees (if any, based on Severity Level and effort); and Specialist Provider access fees."
+      },
+      {
+        "section_id": "SEC-12",
+        "section_name": "12. GOVERNANCE AND CONTINUOUS IMPROVEMENT",
+        "section_order": 13,
+        "section_purpose": "Program governance and improvement process",
+        "section_summary": "Requires quarterly business reviews covering incident metrics, SLO performance, welfare check response rates, and off-channel gap analysis; mandates post-incident review within thirty days of Level 4 incidents; and requires notification of material platform, staffing, or regulatory changes.",
+        "beginning_text": "The parties will conduct quarterly business reviews (or at the cadence specified in the SOW) that include duty of care program metrics, including: Incident counts by Severity Level and geography; SLO performance (response times, outreach completion rates); Traveler welfare check response rates; Off-Channel booking visibility gap analysis;"
+      },
+      {
+        "section_id": "SEC-13",
+        "section_name": "13. TERM AND SURVIVAL",
+        "section_order": 14,
+        "section_purpose": "Term duration and surviving provisions",
+        "section_summary": "States the Exhibit is coterminous with the Agreement and identifies provisions that survive termination: Section 7 (data privacy) for the retention period, Section 10 (limitations), and accrued rights or obligations.",
+        "beginning_text": "This Exhibit is coterminous with the Agreement unless earlier terminated in accordance with the Agreement's termination provisions. The following provisions survive termination or expiration of this Exhibit: Section 7 (Traveler Data, Privacy, and Security) — for the duration of any data retention period; Section 10"
+      },
+      {
+        "section_id": "SEC-14",
+        "section_name": "14. ORDER OF PRECEDENCE",
+        "section_order": 15,
+        "section_purpose": "Document hierarchy and conflict resolution",
+        "section_summary": "Establishes that in case of conflict, the Agreement master terms prevail first, then the SOW, then this Exhibit, unless the SOW expressly overrides with specific reference.",
+        "beginning_text": "In the event of conflict between this Exhibit and other components of the Agreement: (1) the Agreement (master terms), (2) the SOW, then (3) this Exhibit, unless the SOW expressly states otherwise with specific reference to the provision being overridden."
+      },
+      {
+        "section_id": "SEC-15",
+        "section_name": "APPENDIX A — CONFIGURABLE PARAMETERS (SOW-DRIVEN)",
+        "section_order": 16,
+        "section_purpose": "SOW-configurable service parameter defaults",
+        "section_summary": "Provides configurable parameter tables with default values for outreach configuration (channels, priority, attempt counts, windows, language), coverage model (response coverage, Crisis Bridge, SITREP cadence), integrations and providers, pre-trip services, and reporting and dashboards.",
+        "beginning_text": "The following parameters are configurable per Client and should be defined in the SOW: Outreach channels — SMS / Email / Phone / Mobile App Push — Default: SMS + Email. Outreach priority order — Configurable sequence — Default: SMS, Email, Phone. Non-response attempt count"
+      },
+      {
+        "section_id": "SEC-16",
+        "section_name": "APPENDIX B — STANDARD MESSAGE TEMPLATES",
+        "section_order": 17,
+        "section_purpose": "Outreach message templates per severity-channel",
+        "section_summary": "Provides standardized message templates for each severity level across applicable channels: Level 1 email advisory, Level 2 SMS and email monitor alert, Level 3 SMS, email, and voice welfare check, and Level 4 SMS, email, and voice crisis welfare check.",
+        "beginning_text": "Level 1 — Advisory Alert (Email): Subject: Travel Advisory — [EVENT TYPE] in [CITY/REGION]. A [EVENT TYPE] has been reported in/near [CITY/REGION]. Based on current assessment, this event is classified as Level 1 — Advisory and is not expected to directly impact your travel plans."
+      },
+      {
+        "section_id": "SEC-17",
+        "section_name": "APPENDIX C — INCIDENT ACTIVITY LOG TEMPLATE",
+        "section_order": 18,
+        "section_purpose": "Incident activity log field structure",
+        "section_summary": "Defines the required fields for the incident activity log maintained during Level 3 and Level 4 incidents, including incident identification, traveler counts, outreach logs, escalation logs, actions taken, specialist provider engagement, and Crisis Bridge log.",
+        "beginning_text": "For Level 3 and Level 4 Incidents, Direct Travel will maintain an incident activity log containing the following fields: Incident ID — Unique identifier assigned by Direct Travel. Incident Classification — Severity Level (1–4) and event type. Date/Time Opened — UTC timestamp of incident determination."
+      }
+    ]
+  },
+  "global_entity_pre_registration": [
+    {
+      "entity_name": "direct_travel_inc",
+      "candidate_types": ["Organization"],
+      "mentioned_in_sections": ["SEC-00", "SEC-01", "SEC-02", "SEC-03", "SEC-05", "SEC-06", "SEC-07", "SEC-08", "SEC-09", "SEC-10", "SEC-11", "SEC-12", "SEC-13", "SEC-14", "SEC-15", "SEC-16", "SEC-17"],
+      "brief_description": "Direct Travel, Inc., also referred to as 'Direct Travel' and 'TMC'. First appears in SEC-00."
+    },
+    {
+      "entity_name": "client",
+      "candidate_types": ["Organization"],
+      "mentioned_in_sections": ["SEC-00", "SEC-01", "SEC-02", "SEC-03", "SEC-04", "SEC-05", "SEC-06", "SEC-07", "SEC-08", "SEC-09", "SEC-10", "SEC-11", "SEC-12", "SEC-13", "SEC-14", "SEC-15"],
+      "brief_description": "The unnamed corporate client party to the Agreement, referred to throughout as 'Client'. First appears in SEC-00."
+    },
+    {
+      "entity_name": "travel_services_agreement",
+      "candidate_types": ["Agreement"],
+      "mentioned_in_sections": ["SEC-00", "SEC-01", "SEC-07", "SEC-10", "SEC-13", "SEC-14"],
+      "brief_description": "The Travel Services Agreement between Client and Direct Travel, referred to as 'the Agreement'. First appears in SEC-00."
+    },
+    {
+      "entity_name": "statement_of_work",
+      "candidate_types": ["Agreement"],
+      "mentioned_in_sections": ["SEC-00", "SEC-02", "SEC-03", "SEC-04", "SEC-05", "SEC-06", "SEC-07", "SEC-08", "SEC-09", "SEC-11", "SEC-12", "SEC-14", "SEC-15"],
+      "brief_description": "The Statement of Work, abbreviated 'SOW', containing client-specific configurations, fee terms, and service parameters. First appears in SEC-00."
+    },
+    {
+      "entity_name": "traveler",
+      "candidate_types": ["Traveler"],
+      "mentioned_in_sections": ["SEC-02", "SEC-03", "SEC-04", "SEC-05", "SEC-06", "SEC-07", "SEC-08", "SEC-09", "SEC-10", "SEC-11", "SEC-16", "SEC-17"],
+      "brief_description": "A Client employee or authorized person traveling on Client business, as defined in Section 2.12. First appears in SEC-02."
+    },
+    {
+      "entity_name": "incident",
+      "candidate_types": ["Incident"],
+      "mentioned_in_sections": ["SEC-02", "SEC-03", "SEC-05", "SEC-06", "SEC-07", "SEC-08", "SEC-11", "SEC-12", "SEC-17"],
+      "brief_description": "An event that may reasonably impact Traveler safety, security, health, or ability to continue travel, as defined in Section 2.7. Also referred to as 'Incident'. First appears in SEC-02."
+    },
+    {
+      "entity_name": "severity_level_1",
+      "candidate_types": ["SeverityLevel"],
+      "mentioned_in_sections": ["SEC-05", "SEC-16"],
+      "brief_description": "Level 1 — Advisory. First appears in SEC-05, Section 5.1."
+    },
+    {
+      "entity_name": "severity_level_2",
+      "candidate_types": ["SeverityLevel"],
+      "mentioned_in_sections": ["SEC-03", "SEC-05", "SEC-16"],
+      "brief_description": "Level 2 — Monitor. First appears in SEC-03, Section 3.5(a)."
+    },
+    {
+      "entity_name": "severity_level_3",
+      "candidate_types": ["SeverityLevel"],
+      "mentioned_in_sections": ["SEC-05", "SEC-06", "SEC-08", "SEC-15", "SEC-16", "SEC-17"],
+      "brief_description": "Level 3 — Action Required. First appears in SEC-05, Section 5.1."
+    },
+    {
+      "entity_name": "severity_level_4",
+      "candidate_types": ["SeverityLevel"],
+      "mentioned_in_sections": ["SEC-02", "SEC-03", "SEC-05", "SEC-06", "SEC-08", "SEC-12", "SEC-15", "SEC-16", "SEC-17"],
+      "brief_description": "Level 4 — Crisis. First appears in SEC-02, Section 2.4 (Crisis Bridge definition references Level 4)."
+    },
+    {
+      "entity_name": "approved_channels",
+      "candidate_types": ["BookingChannel"],
+      "mentioned_in_sections": ["SEC-02", "SEC-03", "SEC-08", "SEC-09", "SEC-10"],
+      "brief_description": "Bookings made through Client's designated OBT, Direct Travel agent-assisted channels, or other expressly approved and integrated channels, as defined in Section 2.1. First appears in SEC-02."
+    },
+    {
+      "entity_name": "off_channel_booking",
+      "candidate_types": ["BookingChannel"],
+      "mentioned_in_sections": ["SEC-02", "SEC-03", "SEC-05", "SEC-09", "SEC-10", "SEC-12"],
+      "brief_description": "Travel booked outside Approved Channels, including direct bookings on consumer sites, airline/hotel websites, or personal agency arrangements, as defined in Section 2.8. Also referred to as 'Off-Channel Bookings'. First appears in SEC-02."
+    },
+    {
+      "entity_name": "risk_intelligence_platform",
+      "candidate_types": ["Platform"],
+      "mentioned_in_sections": ["SEC-02", "SEC-03", "SEC-05", "SEC-12", "SEC-15"],
+      "brief_description": "The third-party risk management platform designated by Direct Travel, currently Crisis24 Horizon, as defined in Section 2.6. Also referred to as 'Risk Intelligence Platform'. First appears in SEC-02."
+    },
+    {
+      "entity_name": "specialist_provider",
+      "candidate_types": ["Organization"],
+      "mentioned_in_sections": ["SEC-02", "SEC-03", "SEC-06", "SEC-07", "SEC-10", "SEC-11", "SEC-15", "SEC-17"],
+      "brief_description": "Third-party providers of security, medical, insurance, evacuation, or other specialized risk management services, as defined in Section 2.11. Examples include Crisis24 and International SOS. First appears in SEC-02."
+    },
+    {
+      "entity_name": "crisis_bridge",
+      "candidate_types": ["Workflow", "Platform"],
+      "mentioned_in_sections": ["SEC-02", "SEC-05", "SEC-06", "SEC-15", "SEC-17"],
+      "brief_description": "A real-time conference line and/or digital collaboration channel established during Level 4 Incidents, as defined in Section 2.4. First appears in SEC-02."
+    },
+    {
+      "entity_name": "duty_of_care_services",
+      "candidate_types": ["Service"],
+      "mentioned_in_sections": ["SEC-01", "SEC-02", "SEC-03", "SEC-09", "SEC-10", "SEC-11", "SEC-12"],
+      "brief_description": "The services described in Section 3, as defined in Section 2.5. Also referred to as 'Duty of Care Services'. First appears in SEC-01."
+    },
+    {
+      "entity_name": "pnr",
+      "candidate_types": ["Booking"],
+      "mentioned_in_sections": ["SEC-02", "SEC-07"],
+      "brief_description": "Passenger Name Record, the foundational booking data record, as defined in Section 2.9. Abbreviated 'PNR'. First appears in SEC-02."
+    },
+    {
+      "entity_name": "traveler_data",
+      "candidate_types": ["DataElement"],
+      "mentioned_in_sections": ["SEC-02", "SEC-07", "SEC-13"],
+      "brief_description": "Personal data related to Travelers processed by Direct Travel in connection with services, as defined in Section 2.13. Also referred to as 'Traveler Data'. First appears in SEC-02."
+    },
+    {
+      "entity_name": "traveler_response_safe",
+      "candidate_types": ["TravelerResponseStatus"],
+      "mentioned_in_sections": ["SEC-05", "SEC-06", "SEC-16", "SEC-17"],
+      "brief_description": "SAFE — standardized welfare check response status. First appears in SEC-05, Section 5.4(c)."
+    },
+    {
+      "entity_name": "traveler_response_need_assistance",
+      "candidate_types": ["TravelerResponseStatus"],
+      "mentioned_in_sections": ["SEC-03", "SEC-05", "SEC-06", "SEC-16", "SEC-17"],
+      "brief_description": "NEED ASSISTANCE — standardized welfare check response status. Also rendered as 'NEED HELP' in message templates. First appears in SEC-03, Section 3.5(a)."
+    },
+    {
+      "entity_name": "traveler_response_not_in_area",
+      "candidate_types": ["TravelerResponseStatus"],
+      "mentioned_in_sections": ["SEC-05", "SEC-16", "SEC-17"],
+      "brief_description": "NOT IN AREA — standardized welfare check response status. First appears in SEC-05, Section 5.4(c)."
+    },
+    {
+      "entity_name": "traveler_response_no_response",
+      "candidate_types": ["TravelerResponseStatus"],
+      "mentioned_in_sections": ["SEC-05", "SEC-06", "SEC-15", "SEC-16", "SEC-17"],
+      "brief_description": "No Response — standardized welfare check status indicating traveler has not responded within the configured outreach window. First appears in SEC-05, Section 5.4(c)."
+    },
+    {
+      "entity_name": "primary_travel_program_owner",
+      "candidate_types": ["ContactRole"],
+      "mentioned_in_sections": ["SEC-05", "SEC-06", "SEC-08"],
+      "brief_description": "First point of contact for all Incidents on Client's 24/7 escalation roster. Also referenced as 'primary program contact' in SEC-05 SLO table. First appears in SEC-05."
+    },
+    {
+      "entity_name": "alternate_travel_program_contact",
+      "candidate_types": ["ContactRole"],
+      "mentioned_in_sections": ["SEC-06", "SEC-08"],
+      "brief_description": "Backup contact when the Primary Travel Program Owner is unavailable. First appears in SEC-06, Section 6.1 roster table."
+    },
+    {
+      "entity_name": "after_hours_duty_contact",
+      "candidate_types": ["ContactRole"],
+      "mentioned_in_sections": ["SEC-06", "SEC-08"],
+      "brief_description": "Client contact for Incidents occurring outside Client Business Hours. First appears in SEC-06, Section 6.1 roster table."
+    },
+    {
+      "entity_name": "corporate_security_contact",
+      "candidate_types": ["ContactRole"],
+      "mentioned_in_sections": ["SEC-06", "SEC-08"],
+      "brief_description": "Client contact for security-related Incidents at Level 3–4, listed as 'if applicable'. Also referred to as 'Corporate Security'. First appears in SEC-06, Section 6.1 roster table."
+    },
+    {
+      "entity_name": "human_resources_duty_contact",
+      "candidate_types": ["ContactRole"],
+      "mentioned_in_sections": ["SEC-06", "SEC-08"],
+      "brief_description": "Client contact for Incidents involving employee welfare, injury, or fatality, listed as 'if applicable'. Also referred to as 'Human Resources Duty Contact'. First appears in SEC-06, Section 6.1 roster table."
+    },
+    {
+      "entity_name": "senior_leadership_contact",
+      "candidate_types": ["ContactRole"],
+      "mentioned_in_sections": ["SEC-06", "SEC-08"],
+      "brief_description": "Client contact for Level 4 Crisis escalation. First appears in SEC-06, Section 6.1 roster table."
+    },
+    {
+      "entity_name": "alert_level_1_email",
+      "candidate_types": ["Alert"],
+      "mentioned_in_sections": ["SEC-05", "SEC-16"],
+      "brief_description": "Level 1 Advisory Alert email template, designated B.1 in Appendix B. First appears in SEC-16."
+    },
+    {
+      "entity_name": "alert_level_2_sms",
+      "candidate_types": ["Alert"],
+      "mentioned_in_sections": ["SEC-05", "SEC-16"],
+      "brief_description": "Level 2 Monitor Alert SMS template, designated B.2 in Appendix B. First appears in SEC-16."
+    },
+    {
+      "entity_name": "alert_level_2_email",
+      "candidate_types": ["Alert"],
+      "mentioned_in_sections": ["SEC-05", "SEC-16"],
+      "brief_description": "Level 2 Monitor Alert email template, designated B.2 in Appendix B. First appears in SEC-16."
+    },
+    {
+      "entity_name": "alert_level_3_sms",
+      "candidate_types": ["Alert"],
+      "mentioned_in_sections": ["SEC-05", "SEC-16"],
+      "brief_description": "Level 3 Action Required welfare check SMS template, designated B.3 in Appendix B. First appears in SEC-16."
+    },
+    {
+      "entity_name": "alert_level_3_email",
+      "candidate_types": ["Alert"],
+      "mentioned_in_sections": ["SEC-05", "SEC-16"],
+      "brief_description": "Level 3 Action Required welfare check email template, designated B.3 in Appendix B. First appears in SEC-16."
+    },
+    {
+      "entity_name": "alert_level_3_voice",
+      "candidate_types": ["Alert"],
+      "mentioned_in_sections": ["SEC-05", "SEC-16"],
+      "brief_description": "Level 3 Action Required welfare check voice script, designated B.3 in Appendix B. First appears in SEC-16."
+    },
+    {
+      "entity_name": "alert_level_4_sms",
+      "candidate_types": ["Alert"],
+      "mentioned_in_sections": ["SEC-05", "SEC-16"],
+      "brief_description": "Level 4 Crisis welfare check SMS template, designated B.4 in Appendix B. First appears in SEC-16."
+    },
+    {
+      "entity_name": "alert_level_4_email",
+      "candidate_types": ["Alert"],
+      "mentioned_in_sections": ["SEC-05", "SEC-16"],
+      "brief_description": "Level 4 Crisis welfare check email template, designated B.4 in Appendix B. First appears in SEC-16."
+    },
+    {
+      "entity_name": "alert_level_4_voice",
+      "candidate_types": ["Alert"],
+      "mentioned_in_sections": ["SEC-05", "SEC-16"],
+      "brief_description": "Level 4 Crisis welfare check voice script, designated B.4 in Appendix B. First appears in SEC-16."
+    },
+    {
+      "entity_name": "welfare_check_workflow",
+      "candidate_types": ["Workflow"],
+      "mentioned_in_sections": ["SEC-03", "SEC-05", "SEC-06", "SEC-08", "SEC-16"],
+      "brief_description": "The multi-step outreach sequence used to contact Travelers during Incidents and confirm their status. First appears in SEC-03, Section 3.5(a)."
+    },
+    {
+      "entity_name": "non_responsive_traveler_escalation_workflow",
+      "candidate_types": ["Workflow"],
+      "mentioned_in_sections": ["SEC-05", "SEC-06", "SEC-15"],
+      "brief_description": "The escalation procedure for Travelers who do not respond to welfare check outreach, defined in Section 6.2. First referenced in SEC-05, Section 5.4(c)."
+    },
+    {
+      "entity_name": "crisis_bridge_activation_workflow",
+      "candidate_types": ["Workflow"],
+      "mentioned_in_sections": ["SEC-05", "SEC-06", "SEC-15"],
+      "brief_description": "The procedure for establishing a Crisis Bridge during Level 4 Incidents, defined in Section 6.3. First referenced in SEC-05, Section 5.2 SLO table."
+    },
+    {
+      "entity_name": "itinerary_visibility_service",
+      "candidate_types": ["Service"],
+      "mentioned_in_sections": ["SEC-03", "SEC-09", "SEC-10"],
+      "brief_description": "The service component for capturing, maintaining, and reporting on Traveler itinerary data, defined in Section 3.1. Also referred to as 'Itinerary Visibility and Traveler Locate'. First appears in SEC-03."
+    },
+    {
+      "entity_name": "risk_intelligence_monitoring_service",
+      "candidate_types": ["Service"],
+      "mentioned_in_sections": ["SEC-03", "SEC-05", "SEC-10"],
+      "brief_description": "The 24/7 global event monitoring and triage service component, defined in Section 3.2. Also referred to as 'Risk Intelligence and Monitoring'. First appears in SEC-03."
+    },
+    {
+      "entity_name": "pre_trip_services",
+      "candidate_types": ["Service"],
+      "mentioned_in_sections": ["SEC-03", "SEC-15"],
+      "brief_description": "The service component providing destination risk ratings, pre-trip advisories, high-risk destination approval, and travel insurance verification, defined in Section 3.3. First appears in SEC-03."
+    },
+    {
+      "entity_name": "in_trip_monitoring_service",
+      "candidate_types": ["Service"],
+      "mentioned_in_sections": ["SEC-03", "SEC-05"],
+      "brief_description": "The service component providing real-time alerts and active trip monitoring, defined in Section 3.4. Also referred to as 'In-Trip Monitoring and Alerts'. First appears in SEC-03."
+    },
+    {
+      "entity_name": "incident_response_service",
+      "candidate_types": ["Service"],
+      "mentioned_in_sections": ["SEC-03", "SEC-05", "SEC-06", "SEC-11"],
+      "brief_description": "The service component providing welfare checks, rebooking, specialist provider coordination, and client escalation during incidents at Severity Level 2 or above, defined in Section 3.5. Also referred to as 'Incident Response and Traveler Assistance'. First appears in SEC-03."
+    },
+    {
+      "entity_name": "post_incident_reporting_service",
+      "candidate_types": ["Service"],
+      "mentioned_in_sections": ["SEC-03", "SEC-12"],
+      "brief_description": "The service component providing post-incident summaries and post-incident review participation, defined in Section 3.6. Also referred to as 'Post-Incident Reporting'. First appears in SEC-03."
+    }
+  ],
+  "cross_section_dependencies": [
+    {
+      "primary_section_id": "SEC-03",
+      "dependent_section_id": "SEC-05",
+      "dependency_type": "CONDITIONALLY_APPLIES",
+      "dependency_description": "Section 3.5 incident response services activate only at Severity Level 2 or above as classified in SEC-05, meaning extraction of service activation conditions in SEC-03 requires severity level definitions from SEC-05."
+    },
+    {
+      "primary_section_id": "SEC-05",
+      "dependent_section_id": "SEC-03",
+      "dependency_type": "REFERENCES",
+      "dependency_description": "The SLO table in SEC-05 specifies outreach and response actions that correspond to the service components defined in SEC-03 (Sections 3.4 and 3.5), and Section 5.4(d) explicitly references Section 3.5 for NEED ASSISTANCE follow-up."
+    },
+    {
+      "primary_section_id": "SEC-05",
+      "dependent_section_id": "SEC-06",
+      "dependency_type": "REFERENCES",
+      "dependency_description": "Section 5.4(c) explicitly references Section 6.2 for escalation of non-responsive Travelers, making the No Response action in the response framework dependent on the escalation procedure defined in SEC-06."
+    },
+    {
+      "primary_section_id": "SEC-06",
+      "dependent_section_id": "SEC-05",
+      "dependency_type": "REQUIRES_CONTEXT_FROM",
+      "dependency_description": "Escalation procedures in SEC-06 are triggered by severity levels and traveler response statuses defined in SEC-05; without SEC-05 context, the escalation activation conditions (Level 3/4 for non-responsive, Level 4 for Crisis Bridge) cannot be correctly extracted."
+    },
+    {
+      "primary_section_id": "SEC-06",
+      "dependent_section_id": "SEC-03",
+      "dependency_type": "REFERENCES",
+      "dependency_description": "Section 6.2(c) references further locate attempts including contacting hotels and engaging Specialist Providers, which are assistance actions defined in SEC-03 Section 3.5."
+    },
+    {
+      "primary_section_id": "SEC-03",
+      "dependent_section_id": "SEC-02",
+      "dependency_type": "REQUIRES_CONTEXT_FROM",
+      "dependency_description": "SEC-03 uses defined terms from SEC-02 including Approved Channels, Off-Channel Booking, Risk Intelligence Platform, Specialist Provider, and Traveler, which must be consistently linked to their SEC-02 definitions during extraction."
+    },
+    {
+      "primary_section_id": "SEC-05",
+      "dependent_section_id": "SEC-02",
+      "dependency_type": "REQUIRES_CONTEXT_FROM",
+      "dependency_description": "SEC-05 uses defined terms from SEC-02 including Incident, Severity Level, and Risk Intelligence Platform, which must match their canonical SEC-02 definitions during extraction."
+    },
+    {
+      "primary_section_id": "SEC-09",
+      "dependent_section_id": "SEC-03",
+      "dependency_type": "MODIFIES",
+      "dependency_description": "SEC-09 establishes that Off-Channel Bookings create a material gap in duty of care coverage, directly limiting the scope and applicability of all services defined in SEC-03 for travelers not booked through visible channels."
+    },
+    {
+      "primary_section_id": "SEC-09",
+      "dependent_section_id": "SEC-02",
+      "dependency_type": "REQUIRES_CONTEXT_FROM",
+      "dependency_description": "SEC-09 relies on the Approved Channels and Off-Channel Booking definitions from SEC-02 to delineate the visibility boundary that determines service applicability."
+    },
+    {
+      "primary_section_id": "SEC-08",
+      "dependent_section_id": "SEC-06",
+      "dependency_type": "REFERENCES",
+      "dependency_description": "Client obligation 8.2 explicitly references Section 6.1 for the escalation roster requirement, and obligation 8.8 requires timely response to escalation notifications during Level 3 and Level 4 Incidents as defined in SEC-06."
+    },
+    {
+      "primary_section_id": "SEC-08",
+      "dependent_section_id": "SEC-07",
+      "dependency_type": "REFERENCES",
+      "dependency_description": "Client obligation 8.4 references the minimum data elements specified in Section 7.4, and obligation 8.9 requires data protection impact assessments relating to traveler tracking described in SEC-07."
+    },
+    {
+      "primary_section_id": "SEC-08",
+      "dependent_section_id": "SEC-03",
+      "dependency_type": "REFERENCES",
+      "dependency_description": "Client obligation 8.6 requires authorization of extraordinary measures (evacuation, charter, premium rebooking) defined in Section 3.5(b) of SEC-03, linking Client obligations to specific service constraints."
+    },
+    {
+      "primary_section_id": "SEC-07",
+      "dependent_section_id": "SEC-03",
+      "dependency_type": "REQUIRES_CONTEXT_FROM",
+      "dependency_description": "The data elements in Section 7.4 and data sharing rules in Section 7.5 exist to support service delivery defined in SEC-03; their operational significance (impact if missing) can only be correctly extracted with SEC-03 service context."
+    },
+    {
+      "primary_section_id": "SEC-10",
+      "dependent_section_id": "SEC-03",
+      "dependency_type": "MODIFIES",
+      "dependency_description": "SEC-10 imposes limitations and disclaimers that constrain every service defined in SEC-03, including no guarantee of safety (10.1), dependency on data and systems (10.2), no professional advice (10.3), and supplier liability exclusions (10.4)."
+    },
+    {
+      "primary_section_id": "SEC-10",
+      "dependent_section_id": "SEC-05",
+      "dependency_type": "MODIFIES",
+      "dependency_description": "SEC-10 Section 10.2 lists dependencies (itinerary visibility, profile data, telecom availability) that overlap with and reinforce the SLO exceptions in Section 5.3, affecting how SLO obligations are interpreted."
+    },
+    {
+      "primary_section_id": "SEC-15",
+      "dependent_section_id": "SEC-05",
+      "dependency_type": "MODIFIES",
+      "dependency_description": "Appendix A Section A.1 provides configurable parameters with defaults that override or specify the SLO values in SEC-05, including non-response attempt counts, non-response windows, and outreach channels and priority order."
+    },
+    {
+      "primary_section_id": "SEC-15",
+      "dependent_section_id": "SEC-06",
+      "dependency_type": "MODIFIES",
+      "dependency_description": "Appendix A Sections A.1 and A.2 provide configurable parameters (non-response windows, Crisis Bridge availability, SITREP cadence) that modify the default escalation and communication procedures defined in SEC-06."
+    },
+    {
+      "primary_section_id": "SEC-16",
+      "dependent_section_id": "SEC-05",
+      "dependency_type": "REFERENCES",
+      "dependency_description": "Appendix B message templates implement the outreach described in SEC-05's SLO table and response framework, providing the actual content that traveler-facing alerts and welfare checks must contain at each severity level."
+    },
+    {
+      "primary_section_id": "SEC-17",
+      "dependent_section_id": "SEC-05",
+      "dependency_type": "REQUIRES_CONTEXT_FROM",
+      "dependency_description": "The incident activity log fields in Appendix C (Incident Classification, Outreach Log, Traveler Status Summary) directly reference severity levels and traveler response statuses defined in SEC-05."
+    },
+    {
+      "primary_section_id": "SEC-17",
+      "dependent_section_id": "SEC-06",
+      "dependency_type": "REQUIRES_CONTEXT_FROM",
+      "dependency_description": "The incident activity log fields (Client Escalation Log, Crisis Bridge Log) capture the escalation actions and contacts defined in SEC-06, requiring SEC-06 context to correctly map log fields to escalation entities."
+    },
+    {
+      "primary_section_id": "SEC-11",
+      "dependent_section_id": "SEC-03",
+      "dependency_type": "REFERENCES",
+      "dependency_description": "Fee structure and pass-through costs in SEC-11 correspond to specific services defined in SEC-03, including incident response fees, specialist provider fees, and emergency rebooking costs from Section 3.5(b)."
+    },
+    {
+      "primary_section_id": "SEC-12",
+      "dependent_section_id": "SEC-05",
+      "dependency_type": "REFERENCES",
+      "dependency_description": "Quarterly business review metrics in SEC-12 include Incident counts by Severity Level and SLO performance, directly referencing the severity classification system and service level objectives defined in SEC-05."
+    },
+    {
+      "primary_section_id": "SEC-13",
+      "dependent_section_id": "SEC-07",
+      "dependency_type": "REFERENCES",
+      "dependency_description": "Section 13.2 explicitly designates Section 7 (Traveler Data, Privacy, and Security) as surviving termination for the duration of any data retention period, modifying the temporal scope of SEC-07 obligations."
+    },
+    {
+      "primary_section_id": "SEC-13",
+      "dependent_section_id": "SEC-10",
+      "dependency_type": "REFERENCES",
+      "dependency_description": "Section 13.2 explicitly designates Section 10 (Limitations, Disclaimers, and Allocation of Risk) as surviving termination, modifying the temporal scope of SEC-10 provisions."
+    },
+    {
+      "primary_section_id": "SEC-14",
+      "dependent_section_id": "SEC-00",
+      "dependency_type": "OVERRIDES",
+      "dependency_description": "SEC-14 establishes that in case of conflict, the Agreement and SOW (referenced in SEC-00) prevail over this Exhibit, meaning any entity or rule extracted from this Exhibit may be overridden by terms in the Agreement or SOW."
+    },
+    {
+      "primary_section_id": "SEC-04",
+      "dependent_section_id": "SEC-03",
+      "dependency_type": "MODIFIES",
+      "dependency_description": "SEC-04 allows SOW-defined traveler categories (VIP, high-risk destination) to receive differentiated service enhancements beyond the standard services defined in SEC-03, conditionally modifying service scope per traveler population."
+    }
+  ]
+}
